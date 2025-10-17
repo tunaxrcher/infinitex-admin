@@ -1,5 +1,5 @@
 import { ReactNode, Suspense } from 'react';
-import { Inter } from 'next/font/google';
+import { Kanit } from 'next/font/google';
 import { cn } from '@src/shared/lib/utils';
 import { SettingsProvider } from '@src/shared/providers/settings-provider';
 import { TooltipsProvider } from '@src/shared/providers/tooltips-provider';
@@ -11,15 +11,20 @@ import { I18nProvider } from '@src/shared/providers/i18n-provider';
 import { QueryProvider } from '@src/shared/providers/query-provider';
 import { ThemeProvider } from '@src/shared/providers/theme-provider';
 
-const inter = Inter({ subsets: ['latin'] });
+const kanit = Kanit({
+  subsets: ['thai', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-kanit',
+});
 
 import '@src/shared/css/styles.css';
 import '@src/shared/components/keenicons/assets/styles.css';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Metronic',
-    default: 'Metronic', // a default is required when creating a template
+    template: '%s | InfiniteX',
+    default: 'InfiniteX Admin', // a default is required when creating a template
   },
 };
 
@@ -33,7 +38,7 @@ export default async function RootLayout({
       <body
         className={cn(
           'antialiased flex h-full text-base text-foreground bg-background',
-          inter.className,
+          kanit.className,
         )}
       >
         <QueryProvider>

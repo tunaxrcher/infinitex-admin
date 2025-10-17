@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RiErrorWarningFill } from '@remixicon/react';
-import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, LoaderCircleIcon } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
@@ -20,8 +20,6 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { LoaderCircleIcon } from 'lucide-react';
-import { Icons } from '@src/shared/components/common/icons';
 import { getSigninSchema, SigninSchemaType } from '../forms/signin-schema';
 
 export default function Page() {
@@ -74,12 +72,20 @@ export default function Page() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="block w-full space-y-5"
       >
-        <div className="space-y-1.5 pb-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-center">
-            Sign in to Metronic
+        <div className="flex flex-col items-center space-y-4 pb-3">
+          <Image
+            src="/images/logo.png"
+            alt="InfiniteX Logo"
+            width={280}
+            height={80}
+            priority
+            className="object-contain"
+          />
+          <h1 className="text-xl font-semibold tracking-tight text-center text-muted-foreground">
+            ล็อกอิน เพื่อเข้าสู่ระบบ
           </h1>
         </div>
-
+{/* 
         <Alert size="sm" close={false}>
           <AlertIcon>
             <RiErrorWarningFill className="text-primary" />
@@ -90,9 +96,9 @@ export default function Page() {
             <span className="text-mono font-semibold">demo123</span> for demo
             access.
           </AlertTitle>
-        </Alert>
+        </Alert> */}
 
-        <div className="flex flex-col gap-3.5">
+        {/* <div className="flex flex-col gap-3.5">
           <Button
             variant="outline"
             type="button"
@@ -101,16 +107,16 @@ export default function Page() {
             <Icons.googleColorful className="size-5! opacity-100!" /> Sign in
             with Google
           </Button>
-        </div>
+        </div> */}
 
-        <div className="relative py-1.5">
+        {/* <div className="relative py-1.5">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">or</span>
           </div>
-        </div>
+        </div> */}
 
         {error && (
           <Alert variant="destructive">
@@ -203,11 +209,11 @@ export default function Page() {
         <div className="flex flex-col gap-2.5">
           <Button type="submit" disabled={isProcessing}>
             {isProcessing ? <LoaderCircleIcon className="size-4 animate-spin" /> : null}
-            Continue
+            เข้าสู่ระบบ
           </Button>
         </div>
 
-        <p className="text-sm text-muted-foreground text-center">
+        {/* <p className="text-sm text-muted-foreground text-center">
           Don&apos;t have an account?{' '}
           <Link
             href="/signup"
@@ -215,7 +221,7 @@ export default function Page() {
           >
             Sign Up
           </Link>
-        </p>
+        </p> */}
       </form>
     </Form>
   );
