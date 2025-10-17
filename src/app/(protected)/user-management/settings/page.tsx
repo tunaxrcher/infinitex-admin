@@ -6,10 +6,10 @@ import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ControllerRenderProps, FieldErrors, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -18,9 +18,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -28,10 +28,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
+} from '@src/shared/components/ui/select';
 import { LoaderCircleIcon } from 'lucide-react';
-import { Switch } from 'src/shared/components/ui/switch';
-import { Textarea } from 'src/shared/components/ui/textarea';
+import { Switch } from '@src/shared/components/ui/switch';
+import { Textarea } from '@src/shared/components/ui/textarea';
 import { useSettings } from './components/settings-context';
 import TimezoneSelect from './components/timezone-select';
 import {

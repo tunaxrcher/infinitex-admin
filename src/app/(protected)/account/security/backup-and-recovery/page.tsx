@@ -8,12 +8,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
-import { useSettings } from 'src/shared/providers/settings-provider';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { PageNavbar } from 'src/shared/app/(protected)/account/page-navbar';
-import { AccountBackupAndRecoveryContent } from 'src/shared/app/(protected)/account/security/backup-and-recovery/content';
+} from '@src/shared/partials/common/toolbar';
+import { useSettings } from '@src/shared/providers/settings-provider';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
+import { AccountBackupAndRecoveryContent } from '@src/shared/app/(protected)/account/security/backup-and-recovery/content';
 
 export default function AccountBackupAndRecoveryPage() {
   const { settings } = useSettings();

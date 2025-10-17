@@ -17,11 +17,11 @@ import {
 } from '@tanstack/react-table';
 import { EllipsisVertical, Search, Settings2, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { useCopyToClipboard } from 'src/shared/hooks/use-copy-to-clipboard';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
@@ -30,27 +30,27 @@ import {
   CardTable,
   CardTitle,
   CardToolbar,
-} from 'src/shared/components/ui/card';
-import { DataGrid, useDataGrid } from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridColumnVisibility } from 'src/shared/components/ui/data-grid-column-visibility';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+} from '@src/shared/components/ui/card';
+import { DataGrid, useDataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridColumnVisibility } from '@src/shared/components/ui/data-grid-column-visibility';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
+} from '@src/shared/components/ui/data-grid-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/dropdown-menu';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IMembersProps {
   title: string;

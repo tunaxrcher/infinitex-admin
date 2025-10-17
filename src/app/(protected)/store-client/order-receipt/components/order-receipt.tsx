@@ -3,11 +3,11 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
 import { ListChecks } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
-import { Card } from 'src/shared/components/ui/card';
-import { Progress } from 'src/shared/components/ui/progress';
-import { Card4 } from 'src/shared/app/(protected)/store-client/components/common/card4';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
+import { Progress } from '@src/shared/components/ui/progress';
+import { Card4 } from '@src/shared/app/(protected)/store-client/components/common/card4';
 
 export function OrderReceipt() {
   return (

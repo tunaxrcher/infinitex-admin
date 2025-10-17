@@ -6,11 +6,11 @@ import {
   useFileUpload,
   type FileMetadata,
   type FileWithPreview,
-} from 'src/shared/hooks/use-file-upload';
-import { Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'src/shared/components/ui/table';
+} from '@src/shared/hooks/use-file-upload';
+import { Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@src/shared/components/ui/table';
 import {
   CloudUpload,
   Download,
@@ -25,9 +25,9 @@ import {
   Upload,
   VideoIcon,
 } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { cn } from 'src/shared/lib/utils';
-import { Card, CardContent,CardHeader,CardTitle } from 'src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { Card, CardContent,CardHeader,CardTitle } from '@src/shared/components/ui/card';
 import Link from 'next/link';
 
 interface FileUploadItem extends FileWithPreview {

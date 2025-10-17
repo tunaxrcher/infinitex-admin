@@ -7,11 +7,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { ControllerRenderProps, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
-import { getInitials } from 'src/shared/lib/helpers';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from 'src/shared/components/ui/avatar';
-import { Button } from 'src/shared/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { getInitials } from '@src/shared/lib/helpers';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardHeading,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -28,8 +28,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import {
   AccountProfileSchema,
   AccountProfileSchemaType,

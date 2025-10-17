@@ -1,11 +1,11 @@
 'use client';
 
 import { ShoppingCart, Star } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent } from 'src/shared/components/ui/card';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Sheet,
   SheetBody,
@@ -13,7 +13,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from 'src/shared/components/ui/sheet';
+} from '@src/shared/components/ui/sheet';
 
 const items = [
   {

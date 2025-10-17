@@ -3,18 +3,18 @@ import {
   Toolbar,
   ToolbarActions,
   ToolbarHeading,
-} from 'src/shared/layouts/demo1/components/toolbar';
+} from '@src/shared/layouts/demo1/components/toolbar';
 import { addDays, format } from 'date-fns';
 import { CalendarDays } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
-import { Button } from 'src/shared/components/ui/button';
-import { Calendar } from 'src/shared/components/ui/calendar';
+import { Button } from '@src/shared/components/ui/button';
+import { Calendar } from '@src/shared/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
-import { Container } from 'src/shared/components/common/container';
+} from '@src/shared/components/ui/popover';
+import { Container } from '@src/shared/components/common/container';
 import { Demo1LightSidebarContent } from './';
 
 export function Demo1LightSidebarPage() {

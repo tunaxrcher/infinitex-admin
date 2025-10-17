@@ -1,7 +1,7 @@
 'use client';
 
-import { NavbarMenu } from 'src/shared/partials/navbar/navbar-menu';
-import { MENU_SIDEBAR } from 'src/shared/config/menu.config';
+import { NavbarMenu } from '@src/shared/partials/navbar/navbar-menu';
+import { MENU_SIDEBAR } from '@src/shared/config/menu.config';
 
 const PageMenu = () => {
   const accountMenuConfig = MENU_SIDEBAR?.['2']?.children;

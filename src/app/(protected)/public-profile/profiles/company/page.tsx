@@ -1,9 +1,9 @@
 'use client';
 
 import { Fragment } from 'react';
-import { UserHero } from 'src/shared/partials/common/user-hero';
-import { DropdownMenu9 } from 'src/shared/partials/dropdown-menu/dropdown-menu-9';
-import { Navbar, NavbarActions } from 'src/shared/partials/navbar/navbar';
+import { UserHero } from '@src/shared/partials/common/user-hero';
+import { DropdownMenu9 } from '@src/shared/partials/dropdown-menu/dropdown-menu-9';
+import { Navbar, NavbarActions } from '@src/shared/partials/navbar/navbar';
 import {
   EllipsisVertical,
   Luggage,
@@ -12,11 +12,11 @@ import {
   MessagesSquare,
   Users,
 } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { PageMenu } from 'src/shared/app/(protected)/public-profile/page-menu';
-import { ProfileCompanyContent } from 'src/shared/app/(protected)/public-profile/profiles/company/content';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { PageMenu } from '@src/shared/app/(protected)/public-profile/page-menu';
+import { ProfileCompanyContent } from '@src/shared/app/(protected)/public-profile/profiles/company/content';
 
 export default function ProfileCompanyPage() {
   const image = (

@@ -1,9 +1,9 @@
 'use client';
 
 import { Fragment } from 'react';
-import { UserHero } from 'src/shared/partials/common/user-hero';
-import { DropdownMenu9 } from 'src/shared/partials/dropdown-menu/dropdown-menu-9';
-import { Navbar, NavbarActions } from 'src/shared/partials/navbar/navbar';
+import { UserHero } from '@src/shared/partials/common/user-hero';
+import { DropdownMenu9 } from '@src/shared/partials/dropdown-menu/dropdown-menu-9';
+import { Navbar, NavbarActions } from '@src/shared/partials/navbar/navbar';
 import {
   EllipsisVertical,
   Mail,
@@ -13,11 +13,11 @@ import {
   Users,
   Volleyball,
 } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { PageMenu } from 'src/shared/app/(protected)/public-profile/page-menu';
-import { ProfileCreatorContent } from 'src/shared/app/(protected)/public-profile/profiles/creator/content';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { PageMenu } from '@src/shared/app/(protected)/public-profile/page-menu';
+import { ProfileCreatorContent } from '@src/shared/app/(protected)/public-profile/profiles/creator/content';
 
 export default function ProfileCreatorPage() {
   const image = (

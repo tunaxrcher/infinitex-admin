@@ -1,17 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Checkbox } from 'src/shared/components/ui/checkbox';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
+} from '@src/shared/components/ui/select';
 
 export const Packaging = () => {
   const [packageName, setPackageName] = useState('Mike Anderson – Medium Box');

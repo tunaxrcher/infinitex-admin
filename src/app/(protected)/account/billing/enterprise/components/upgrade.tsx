@@ -2,12 +2,12 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
 import { ScrollText } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card } from 'src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
 
 const Upgrade = () => {
   return (

@@ -1,11 +1,11 @@
 'use client';
 
 import { ShoppingCart } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent } from 'src/shared/components/ui/card';
-import { useStoreClient } from 'src/shared/app/(protected)/store-client/components/context';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { useStoreClient } from '@src/shared/app/(protected)/store-client/components/context';
 
 export function Card1() {
   const { showCartSheet } = useStoreClient();

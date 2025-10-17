@@ -1,8 +1,8 @@
 'use client';
 
 import { Command, Search } from 'lucide-react';
-import { Input } from 'src/shared/components/ui/input';
-import { Kbd } from 'src/shared/components/ui/kbd';
+import { Input } from '@src/shared/components/ui/input';
+import { Kbd } from '@src/shared/components/ui/kbd';
 
 export function StoreAdminTopbar() {
   return (

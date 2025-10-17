@@ -1,6 +1,6 @@
 'use client';
 
-import { Help } from 'src/shared/partials/common/help';
+import { Help } from '@src/shared/partials/common/help';
 import { Device } from './components';
 
 export function AccountDeviceManagementContent() {

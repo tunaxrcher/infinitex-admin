@@ -1,7 +1,7 @@
 'use client';
 
-import { Faq } from 'src/shared/partials/common/faq';
-import { Help2 } from 'src/shared/partials/common/help2';
+import { Faq } from '@src/shared/partials/common/faq';
+import { Help2 } from '@src/shared/partials/common/help2';
 import { Members, PermissionsToggle } from './components';
 
 export function AccountPermissionsToggleContent() {

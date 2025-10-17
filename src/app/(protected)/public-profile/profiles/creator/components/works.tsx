@@ -1,6 +1,6 @@
 'use client';
 
-import { CardWork } from 'src/shared/partials/cards';
+import { CardWork } from '@src/shared/partials/cards';
 
 interface IWorksItem {
   title: string;

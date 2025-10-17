@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, MoveLeft, UserPen } from 'lucide-react';
-import { apiFetch } from 'src/shared/lib/api';
+import { apiFetch } from '@src/shared/lib/api';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,16 +13,16 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from 'src/shared/components/ui/breadcrumb';
-import { Button } from 'src/shared/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from 'src/shared/components/ui/tabs';
-import { Container } from 'src/shared/components/common/container';
+} from '@src/shared/components/ui/breadcrumb';
+import { Button } from '@src/shared/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import { Container } from '@src/shared/components/common/container';
 import {
   Toolbar,
   ToolbarActions,
   ToolbarHeading,
   ToolbarTitle,
-} from 'src/shared/components/common/toolbar';
+} from '@src/shared/components/common/toolbar';
 import { UserProvider } from './components/user-context';
 import UserHero from './components/user-hero';
 

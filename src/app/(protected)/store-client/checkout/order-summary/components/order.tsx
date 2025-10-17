@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 
 export interface IOrderItem {
   label: string;

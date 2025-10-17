@@ -1,21 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu3 } from 'src/shared/partials/dropdown-menu/dropdown-menu-3';
-import { DropdownMenu4 } from 'src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu3 } from '@src/shared/partials/dropdown-menu/dropdown-menu-3';
+import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
 import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Label } from 'src/shared/components/ui/label';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -23,7 +23,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/shared/components/ui/table';
+} from '@src/shared/components/ui/table';
 
 interface IMembersItem {
   avatar: string;

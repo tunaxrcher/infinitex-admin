@@ -1,7 +1,7 @@
 'use client';
 
-import { MenuConfig, MenuItem } from 'src/shared/config/types';
-import { Badge } from 'src/shared/components/ui/badge';
+import { MenuConfig, MenuItem } from '@src/shared/config/types';
+import { Badge } from '@src/shared/components/ui/badge';
 import {
   MegaMenuFooter,
   MegaMenuSubDefault,

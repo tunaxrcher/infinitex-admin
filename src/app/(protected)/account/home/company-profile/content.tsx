@@ -3,7 +3,7 @@
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from 'src/shared/partials/common/highlighted-posts';
+} from '@src/shared/partials/common/highlighted-posts';
 import { BookCopy, ChartNoAxesCombined, Compass } from 'lucide-react';
 import {
   AccountSettings,

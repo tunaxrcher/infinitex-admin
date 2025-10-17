@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 const items = [
   {

@@ -8,8 +8,8 @@ import {
   Truck,
   WalletCards,
 } from 'lucide-react';
-import { cn } from 'src/shared/lib/utils';
-import { Container } from 'src/shared/components/common/container';
+import { cn } from '@src/shared/lib/utils';
+import { Container } from '@src/shared/components/common/container';
 
 interface IStepsItem {
   title: string;

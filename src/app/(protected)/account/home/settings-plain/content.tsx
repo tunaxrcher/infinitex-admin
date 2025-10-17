@@ -1,6 +1,6 @@
 'use client';
 
-import { DeleteAccount } from 'src/shared/app/(protected)/account/home/settings-sidebar/components/delete-account';
+import { DeleteAccount } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/delete-account';
 import { BasicSettings, Password, FilesUpload } from './components';
 
 export function AccountSettingsPlainContent() {

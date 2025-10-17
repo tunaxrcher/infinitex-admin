@@ -12,7 +12,7 @@ import {
 import {
   IOptionsItems,
   Options,
-} from 'src/shared/app/(protected)/account/home/get-started/components/options';
+} from '@src/shared/app/(protected)/account/home/get-started/components/options';
 
 export function AccountSecurityGetStartedContent() {
   const items: IOptionsItems = [

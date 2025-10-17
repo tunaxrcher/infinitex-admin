@@ -1,16 +1,16 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IBackupSettingsItem {
   title: string;

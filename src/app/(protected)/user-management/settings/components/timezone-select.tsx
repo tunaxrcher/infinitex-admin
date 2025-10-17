@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { getTimeZones } from 'src/shared/i18n/timezones';
+import { getTimeZones } from '@src/shared/i18n/timezones';
 import { Check } from 'lucide-react';
-import { cn } from 'src/shared/lib/utils';
-import { Button, ButtonArrow } from 'src/shared/components/ui/button';
+import { cn } from '@src/shared/lib/utils';
+import { Button, ButtonArrow } from '@src/shared/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -12,13 +12,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from 'src/shared/components/ui/command';
+} from '@src/shared/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/popover';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 
 const TimezoneSelect = ({
   defaultValue = '',

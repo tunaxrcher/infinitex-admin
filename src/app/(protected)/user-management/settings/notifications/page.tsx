@@ -13,18 +13,18 @@ import {
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Checkbox } from 'src/shared/components/ui/checkbox';
+} from '@src/shared/components/ui/card';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
 import {
   Command,
   CommandCheck,
@@ -33,14 +33,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from 'src/shared/components/ui/command';
-import { Form, FormControl, FormField, FormItem } from 'src/shared/components/ui/form';
+} from '@src/shared/components/ui/command';
+import { Form, FormControl, FormField, FormItem } from '@src/shared/components/ui/form';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/popover';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -48,7 +48,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/shared/components/ui/table';
+} from '@src/shared/components/ui/table';
 import { useSettings } from '../components/settings-context';
 import {
   NotificationSettingsSchema,

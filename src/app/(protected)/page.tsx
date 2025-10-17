@@ -1,6 +1,6 @@
 'use client';
 
-import { useSettings } from 'src/shared/providers/settings-provider';
+import { useSettings } from '@src/shared/providers/settings-provider';
 import { Demo1LightSidebarPage } from './components/demo1';
 import { Demo2Page } from './components/demo2';
 import { Demo3Page } from './components/demo3';

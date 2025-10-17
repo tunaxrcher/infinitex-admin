@@ -12,23 +12,23 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { cn } from 'src/shared/lib/utils';
-import { useIsMobile } from 'src/shared/hooks/use-mobile';
-import { Button } from 'src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 import {
   Sheet,
   SheetBody,
   SheetContent,
   SheetHeader,
   SheetTrigger,
-} from 'src/shared/components/ui/sheet';
+} from '@src/shared/components/ui/sheet';
 import { SidebarMenuDashboard } from './sidebar-menu-dashboard';
 import { SidebarMenuDefault } from './sidebar-menu-default';
 

@@ -3,18 +3,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import Link from 'next/link';
-import { CardAuthor, CardAuthorRow } from 'src/shared/partials/cards';
+import { CardAuthor, CardAuthorRow } from '@src/shared/partials/cards';
 import { LayoutGrid, List, Search, Settings2 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Input } from 'src/shared/components/ui/input';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { ToggleGroup, ToggleGroupItem } from 'src/shared/components/ui/toggle-group';
+} from '@src/shared/components/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
 
 export interface IAuthorContentAvatar {
   className: string;

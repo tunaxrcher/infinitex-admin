@@ -1,30 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { AvatarInput } from 'src/shared/partials/common/avatar-input';
+import { AvatarInput } from '@src/shared/partials/common/avatar-input';
 import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
-import { cn } from 'src/shared/lib/utils';
-import { Button } from 'src/shared/components/ui/button';
-import { Calendar } from 'src/shared/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { DateInput, TimeField } from 'src/shared/components/ui/datefield';
-import { Input, InputAddon, InputGroup } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+import { cn } from '@src/shared/lib/utils';
+import { Button } from '@src/shared/components/ui/button';
+import { Calendar } from '@src/shared/components/ui/calendar';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { DateInput, TimeField } from '@src/shared/components/ui/datefield';
+import { Input, InputAddon, InputGroup } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/popover';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
 
 const BasicSettings = () => {
   const [date, setDate] = useState<Date | undefined>(new Date(1984, 0, 20));

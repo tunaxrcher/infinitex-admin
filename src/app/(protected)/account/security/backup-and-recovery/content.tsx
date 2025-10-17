@@ -1,10 +1,10 @@
 'use client';
 
-import { Faq } from 'src/shared/partials/common/faq';
+import { Faq } from '@src/shared/partials/common/faq';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from 'src/shared/partials/common/highlighted-posts';
+} from '@src/shared/partials/common/highlighted-posts';
 import { Book, Database } from 'lucide-react';
 import { Backup, BackupSettings } from './components';
 

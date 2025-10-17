@@ -3,13 +3,13 @@
 
 import Link from 'next/link';
 import { Calendar, ChevronDown } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 
 const ToolbarMenu = () => {
   const months = [

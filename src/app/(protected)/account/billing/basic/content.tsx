@@ -3,7 +3,7 @@
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from 'src/shared/partials/common/highlighted-posts';
+} from '@src/shared/partials/common/highlighted-posts';
 import { BadgePercent, Package2, ReceiptText } from 'lucide-react';
 import { Details, Invoicing, PaymentMethods, Plan } from './components';
 

@@ -1,11 +1,11 @@
 'use client';
 
 import { Fragment } from 'react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 
 interface IAuthSingleSingOnItem {
   logo: string;

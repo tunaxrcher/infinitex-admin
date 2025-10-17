@@ -1,8 +1,8 @@
 'use client';
 
-import { Faq } from 'src/shared/partials/common/faq';
-import { Help } from 'src/shared/partials/common/help';
-import { CurrentSessions } from 'src/shared/app/(protected)/account/security/current-sessions/components/current-sessions';
+import { Faq } from '@src/shared/partials/common/faq';
+import { Help } from '@src/shared/partials/common/help';
+import { CurrentSessions } from '@src/shared/app/(protected)/account/security/current-sessions/components/current-sessions';
 
 export function AccountCurrentSessionsContent() {
   return (

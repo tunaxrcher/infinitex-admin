@@ -1,14 +1,14 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Engage } from 'src/shared/partials/common/engage';
+import { Engage } from '@src/shared/partials/common/engage';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from 'src/shared/partials/common/highlighted-posts';
+} from '@src/shared/partials/common/highlighted-posts';
 import { BookUser, MessageCirclePlus, Users } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { InviteWithLink } from 'src/shared/app/(protected)/account/members/team-members/components/invite-with-link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { InviteWithLink } from '@src/shared/app/(protected)/account/members/team-members/components/invite-with-link';
 import { InvitePeople, Invites } from './components';
 
 export function AccountInviteAFriendContent() {

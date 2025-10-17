@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from 'src/shared/components/ui/card';
-import { ICommentsItems } from 'src/shared/app/(protected)/public-profile/profiles/feeds/components/post1';
-import { Comments } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/comments';
-import { Heading } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/heading';
-import { Likes } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/likes';
-import { Saves } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/saves';
-import { Tabs } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/tabs';
+import { Card } from '@src/shared/components/ui/card';
+import { ICommentsItems } from '@src/shared/app/(protected)/public-profile/profiles/feeds/components/post1';
+import { Comments } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/comments';
+import { Heading } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/heading';
+import { Likes } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/likes';
+import { Saves } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/saves';
+import { Tabs } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/tabs';
 
 const Post4 = () => {
   const [activeTab, setActiveTab] = useState('comments');

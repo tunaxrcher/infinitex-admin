@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { ChartLine, LucideIcon, Milk, Rocket, Zap } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 
 interface IOpenJobsItem {
   icon: LucideIcon;

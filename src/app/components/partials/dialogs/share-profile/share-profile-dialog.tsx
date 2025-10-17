@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 import {
   ShareProfileSettings,
   ShareProfileUsers,

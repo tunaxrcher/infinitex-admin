@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
-import { MENU_SIDEBAR, MENU_SIDEBAR_CUSTOM } from 'src/shared/config/menu.config';
-import { MenuConfig } from 'src/shared/config/types';
-import { cn } from 'src/shared/lib/utils';
-import { useMenu } from 'src/shared/hooks/use-menu';
+import { MENU_SIDEBAR, MENU_SIDEBAR_CUSTOM } from '@src/shared/config/menu.config';
+import { MenuConfig } from '@src/shared/config/types';
+import { cn } from '@src/shared/lib/utils';
+import { useMenu } from '@src/shared/hooks/use-menu';
 import {
   Menubar,
   MenubarContent,
@@ -16,7 +16,7 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from 'src/shared/components/ui/menubar';
+} from '@src/shared/components/ui/menubar';
 
 export function NavbarMenu() {
   const pathname = usePathname();

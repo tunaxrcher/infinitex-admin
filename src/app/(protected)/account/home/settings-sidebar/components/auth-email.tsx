@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
-import { Switch } from 'src/shared/components/ui/switch';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
 
 const AuthEmail = () => {
   const [emailInput, setEmailInput] = useState('jason@studio.io');

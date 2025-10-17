@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Card } from 'src/shared/components/ui/card';
-import { Comments } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/comments';
-import { Heading } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/heading';
-import { Likes } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/likes';
-import { Saves } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/saves';
-import { Tabs } from 'src/shared/app/(protected)/public-profile/profiles/feeds/post/tabs';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card } from '@src/shared/components/ui/card';
+import { Comments } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/comments';
+import { Heading } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/heading';
+import { Likes } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/likes';
+import { Saves } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/saves';
+import { Tabs } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/tabs';
 
 interface ICommentsItem {
   avatar: string;

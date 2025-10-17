@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import { IOptionsItems, Options } from './components';
 
 export function AccountGetStartedContent() {

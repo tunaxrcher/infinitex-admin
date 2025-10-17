@@ -1,9 +1,9 @@
 'use client';
 
 import { SquarePen } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from 'src/shared/components/ui/table';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
 
 interface IDetailsItem {
   status: string;

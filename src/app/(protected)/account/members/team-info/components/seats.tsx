@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 
 const Seats = () => {
   return (

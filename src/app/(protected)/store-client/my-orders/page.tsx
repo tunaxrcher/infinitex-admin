@@ -8,11 +8,11 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
+} from '@src/shared/partials/common/toolbar';
 import { BaggageClaim } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { MyOrdersContent } from 'src/shared/app/(protected)/store-client/my-orders/content';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { MyOrdersContent } from '@src/shared/app/(protected)/store-client/my-orders/content';
 
 export default function MyOrdersPage() {
   return (

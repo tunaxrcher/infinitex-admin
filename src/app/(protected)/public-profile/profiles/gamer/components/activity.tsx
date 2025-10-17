@@ -2,22 +2,22 @@
 
 import { Fragment, useId } from 'react';
 import Link from 'next/link';
-import { ActivitiesBloggingConference } from 'src/shared/partials/activities/blogging-conference';
-import { ActivitiesLogin } from 'src/shared/partials/activities/login';
-import { ActivitiesNewProduct } from 'src/shared/partials/activities/new-product';
-import { ActivitiesProductSpecific } from 'src/shared/partials/activities/product-specific';
-import { ActivitiesProductWebinar } from 'src/shared/partials/activities/product-webinar';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
+import { ActivitiesBloggingConference } from '@src/shared/partials/activities/blogging-conference';
+import { ActivitiesLogin } from '@src/shared/partials/activities/login';
+import { ActivitiesNewProduct } from '@src/shared/partials/activities/new-product';
+import { ActivitiesProductSpecific } from '@src/shared/partials/activities/product-specific';
+import { ActivitiesProductWebinar } from '@src/shared/partials/activities/product-webinar';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Label } from 'src/shared/components/ui/label';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
 
 const Activity = () => {
   const id = useId();

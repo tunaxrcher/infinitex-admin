@@ -2,23 +2,23 @@
 
 import { useState } from 'react';
 import { SquarePlus } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+} from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
+} from '@src/shared/components/ui/select';
 
 const InvitePeople = () => {
   const [invitepeopleInput, setInvitePeopleInput] = useState('jason@studio.io');

@@ -6,11 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill } from '@remixicon/react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import {
   Dialog,
   DialogBody,
@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -29,8 +29,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import { PaymentMethodFormValues, paymentMethodSchema } from './forms';
 
 interface IPaymentItem {

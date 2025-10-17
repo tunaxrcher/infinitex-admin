@@ -8,12 +8,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
+} from '@src/shared/partials/common/toolbar';
 import { Captions } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { OrderPlacedContent } from 'src/shared/app/(protected)/store-client/checkout/order-placed/content';
-import { Steps } from 'src/shared/app/(protected)/store-client/checkout/steps';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { OrderPlacedContent } from '@src/shared/app/(protected)/store-client/checkout/order-placed/content';
+import { Steps } from '@src/shared/app/(protected)/store-client/checkout/steps';
 
 export default function OrderPlacedPage() {
   return (

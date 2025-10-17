@@ -1,17 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
-import { DropdownMenu2 } from 'src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
 import {
   EllipsisVertical,
   LucideIcon,
   MessageSquareText,
   ShieldCheck,
 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Switch } from 'src/shared/components/ui/switch';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IAuthTwoFactorItem {
   icon: LucideIcon;

@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CardWork, CardWorkRow } from 'src/shared/partials/cards';
+import { CardWork, CardWorkRow } from '@src/shared/partials/cards';
 import { LayoutGrid, List } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from 'src/shared/components/ui/toggle-group';
-import { Offer } from 'src/shared/app/(protected)/public-profile/works/cards/offer';
-import { OfferRow } from 'src/shared/app/(protected)/public-profile/works/cards/offer-row';
+import { Button } from '@src/shared/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
+import { Offer } from '@src/shared/app/(protected)/public-profile/works/cards/offer';
+import { OfferRow } from '@src/shared/app/(protected)/public-profile/works/cards/offer-row';
 
 interface IWorksItem {
   title: string;

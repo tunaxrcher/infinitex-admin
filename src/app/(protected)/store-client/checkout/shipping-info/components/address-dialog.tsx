@@ -1,13 +1,13 @@
 "use client";
 
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody, DialogClose, DialogDescription } from 'src/shared/components/ui/dialog';
-import { Button } from 'src/shared/components/ui/button';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody, DialogClose, DialogDescription } from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema, AddressFormValues } from './forms';
-import { Input } from 'src/shared/components/ui/input';
+import { Input } from '@src/shared/components/ui/input';
 import CountryCombobox from './country-combobox';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from 'src/shared/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@src/shared/components/ui/form';
 import React, { useEffect } from 'react';
 
 interface AddressDialogProps {

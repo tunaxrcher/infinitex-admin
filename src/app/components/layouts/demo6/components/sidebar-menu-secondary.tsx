@@ -15,7 +15,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import { cn } from 'src/shared/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -24,7 +24,7 @@ import {
   AccordionMenuSub,
   AccordionMenuSubContent,
   AccordionMenuSubTrigger,
-} from 'src/shared/components/ui/accordion-menu';
+} from '@src/shared/components/ui/accordion-menu';
 
 interface Item {
   title: string;

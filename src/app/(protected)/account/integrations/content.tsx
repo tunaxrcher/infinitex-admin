@@ -1,10 +1,10 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Faq } from 'src/shared/partials/common/faq';
-import { Help2 } from 'src/shared/partials/common/help2';
-import { Starter } from 'src/shared/partials/common/starter';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Faq } from '@src/shared/partials/common/faq';
+import { Help2 } from '@src/shared/partials/common/help2';
+import { Starter } from '@src/shared/partials/common/starter';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Integrations } from './components';
 
 export function AccountIntegrationsContent() {

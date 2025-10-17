@@ -1,11 +1,11 @@
 'use client';
 
-import { Bestsellers } from 'src/shared/app/(protected)/store-admin/dashboard/components/bestsellers';
-import { Inventory } from 'src/shared/app/(protected)/store-admin/dashboard/components/inventory';
-import { InventorySummary } from 'src/shared/app/(protected)/store-admin/dashboard/components/inventory-summary';
-import { Orders } from 'src/shared/app/(protected)/store-admin/dashboard/components/orders';
-import { RecentOrders } from 'src/shared/app/(protected)/store-admin/dashboard/components/recent-orders';
-import { SalesActivity } from 'src/shared/app/(protected)/store-admin/dashboard/components/sales-activity';
+import { Bestsellers } from '@src/shared/app/(protected)/store-admin/dashboard/components/bestsellers';
+import { Inventory } from '@src/shared/app/(protected)/store-admin/dashboard/components/inventory';
+import { InventorySummary } from '@src/shared/app/(protected)/store-admin/dashboard/components/inventory-summary';
+import { Orders } from '@src/shared/app/(protected)/store-admin/dashboard/components/orders';
+import { RecentOrders } from '@src/shared/app/(protected)/store-admin/dashboard/components/recent-orders';
+import { SalesActivity } from '@src/shared/app/(protected)/store-admin/dashboard/components/sales-activity';
 
 export function DashboardContent() {
   return (

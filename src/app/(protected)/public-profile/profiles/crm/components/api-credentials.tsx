@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Copy, KeyRound } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Input, InputWrapper } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/card';
+import { Input, InputWrapper } from '@src/shared/components/ui/input';
 
 const ApiCredentials = () => {
   const [keyInput, setKeyInput] = useState('hwewe4654fdd5sdfh');

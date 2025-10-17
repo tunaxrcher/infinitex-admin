@@ -2,8 +2,8 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 export interface StarterProps {
   image: ReactNode;

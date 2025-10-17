@@ -1,6 +1,6 @@
 'use client';
 
-import { CommunityBadges } from 'src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
+import { CommunityBadges } from '@src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
 import {
   About,
   Assets,

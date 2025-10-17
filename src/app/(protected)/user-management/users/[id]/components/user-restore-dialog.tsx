@@ -6,16 +6,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { apiFetch } from 'src/shared/lib/api';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Button } from 'src/shared/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -23,10 +23,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import { LoaderCircleIcon } from 'lucide-react';
-import { User } from 'src/shared/app/models/user';
+import { User } from '@src/shared/app/models/user';
 
 // Validation schema for email confirmation
 const EmailConfirmationSchema = (userEmail: string) =>

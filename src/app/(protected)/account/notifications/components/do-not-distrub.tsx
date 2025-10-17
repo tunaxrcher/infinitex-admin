@@ -3,14 +3,14 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { Bell } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 
 interface IDoNotDistrubProps {
   title?: string;

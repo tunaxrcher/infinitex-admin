@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { ApexOptions } from 'apexcharts';
 import ApexChart from 'react-apexcharts';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Label } from 'src/shared/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
 
 // Hardcoded dummy data for the earnings chart
 const dummyChartData: number[] = [

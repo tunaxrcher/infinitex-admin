@@ -27,8 +27,8 @@ import {
   Wifi,
   X,
 } from 'lucide-react';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
@@ -36,26 +36,26 @@ import {
   CardHeading,
   CardTable,
   CardToolbar,
-} from 'src/shared/components/ui/card';
-import { Checkbox } from 'src/shared/components/ui/checkbox';
-import { DataGrid, useDataGrid } from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridColumnVisibility } from 'src/shared/components/ui/data-grid-column-visibility';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+} from '@src/shared/components/ui/card';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
+import { DataGrid, useDataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridColumnVisibility } from '@src/shared/components/ui/data-grid-column-visibility';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+} from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/popover';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface EventType {
   icon: ReactElement;

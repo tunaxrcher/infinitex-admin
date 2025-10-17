@@ -1,17 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu2 } from 'src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
 import { Download, EllipsisVertical } from 'lucide-react';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/shared/components/ui/table';
+} from '@src/shared/components/ui/table';
 
 interface IBillingInvoicingItem {
   number: string;

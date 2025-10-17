@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { CardIntegration } from 'src/shared/partials/cards';
-import { Switch } from 'src/shared/components/ui/switch';
+import { CardIntegration } from '@src/shared/partials/cards';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IIntegrationsItem {
   logo: string;

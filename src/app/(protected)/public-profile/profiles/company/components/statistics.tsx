@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent } from 'src/shared/components/ui/card';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 interface IStatisticsItem {
   number: string;

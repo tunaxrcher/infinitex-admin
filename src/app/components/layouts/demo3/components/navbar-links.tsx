@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { addDays, format } from 'date-fns';
 import { CalendarDays } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
-import { Button } from 'src/shared/components/ui/button';
-import { Calendar } from 'src/shared/components/ui/calendar';
+import { Button } from '@src/shared/components/ui/button';
+import { Calendar } from '@src/shared/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
+} from '@src/shared/components/ui/popover';
 
 export function NavbarLinks() {
   const [date, setDate] = useState<DateRange | undefined>({

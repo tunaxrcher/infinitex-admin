@@ -14,35 +14,35 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { Settings2 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
   CardHeader,
   CardTable,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 // Assuming these exist
-import { DataGrid } from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridColumnVisibility } from 'src/shared/components/ui/data-grid-column-visibility';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridColumnVisibility } from '@src/shared/components/ui/data-grid-column-visibility';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IData {
   id: string;

@@ -11,8 +11,8 @@ import {
 } from '@remixicon/react';
 import { Dribbble, LucideIcon, MapPinHouse } from 'lucide-react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface IProfileRow {
   icon: LucideIcon | RemixiconComponentType;

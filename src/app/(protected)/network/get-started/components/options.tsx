@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
-import { Card } from 'src/shared/components/ui/card';
+import { Card } from '@src/shared/components/ui/card';
 
 interface IOptionsSubItem {
   path: string;

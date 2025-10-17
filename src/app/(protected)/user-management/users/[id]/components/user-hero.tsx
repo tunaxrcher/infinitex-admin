@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 import { Check } from 'lucide-react';
-import { getInitials } from 'src/shared/lib/helpers';
-import { useCopyToClipboard } from 'src/shared/hooks/use-copy-to-clipboard';
-import { Avatar, AvatarFallback, AvatarImage } from 'src/shared/components/ui/avatar';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Skeleton } from 'src/shared/components/ui/skeleton';
+import { getInitials } from '@src/shared/lib/helpers';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from 'src/shared/components/ui/tooltip';
-import { User } from 'src/shared/app/models/user';
+} from '@src/shared/components/ui/tooltip';
+import { User } from '@src/shared/app/models/user';
 
 interface UserProfileProps {
   user: User;

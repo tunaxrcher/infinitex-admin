@@ -14,7 +14,7 @@ import {
   Mail,
   Volleyball,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface ISummaryItem {
   icon: LucideIcon | RemixiconComponentType;

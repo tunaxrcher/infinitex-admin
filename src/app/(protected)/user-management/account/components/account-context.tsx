@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, ReactNode, useContext } from 'react';
-import { User } from 'src/shared/app/models/user';
+import { User } from '@src/shared/app/models/user';
 
 interface AccountContextProps {
   user: User;

@@ -3,9 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Label } from '@radix-ui/react-label';
-import { Badge, BadgeDot } from 'src/shared/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Input } from 'src/shared/components/ui/input';
+import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
 
 const items = [
   {

@@ -1,4 +1,4 @@
-import { Container } from 'src/shared/components/common/container';
+import { Container } from '@src/shared/components/common/container';
 import { Demo5Content } from '.';
 
 export function Demo5Page() {

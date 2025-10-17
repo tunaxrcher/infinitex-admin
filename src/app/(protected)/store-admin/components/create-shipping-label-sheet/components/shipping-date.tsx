@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from 'src/shared/components/ui/button';
-import { Checkbox } from 'src/shared/components/ui/checkbox';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
+import { Button } from '@src/shared/components/ui/button';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 
 export const ShippingDate = () => {
   return (

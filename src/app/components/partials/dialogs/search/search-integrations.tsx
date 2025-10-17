@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarGroup } from 'src/shared/partials/common/avatar-group';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { AvatarGroup } from '@src/shared/partials/common/avatar-group';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   AccordionMenu,
   AccordionMenuGroup,
   AccordionMenuItem,
-} from 'src/shared/components/ui/accordion-menu';
-import { Button } from 'src/shared/components/ui/button';
+} from '@src/shared/components/ui/accordion-menu';
+import { Button } from '@src/shared/components/ui/button';
 import { SearchIntegrationsItem } from './types';
 
 export function SearchIntegrations({

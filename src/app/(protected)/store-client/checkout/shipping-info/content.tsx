@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { MoveLeft, MoveRight } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import { Info } from './components/info';
 import { Order } from './components/order';
 

@@ -6,9 +6,9 @@ import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Button } from 'src/shared/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
   DialogBody,
@@ -16,7 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -24,8 +24,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -33,9 +33,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
+} from '@src/shared/components/ui/select';
 import { LoaderCircleIcon } from 'lucide-react';
-import { UserRole } from 'src/shared/app/models/user';
+import { UserRole } from '@src/shared/app/models/user';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { UserAddSchema, UserAddSchemaType } from '../forms/user-add-schema';
 

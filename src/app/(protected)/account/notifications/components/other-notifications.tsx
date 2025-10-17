@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { CardNotification } from 'src/shared/partials/cards';
+import { CardNotification } from '@src/shared/partials/cards';
 import {
   CalendarClock,
   ClipboardCheck,
@@ -11,14 +11,14 @@ import {
   Tablet,
   Users,
 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Label } from 'src/shared/components/ui/label';
-import { Switch } from 'src/shared/components/ui/switch';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
 import {
   IChannelsItem,
   IChannelsItems,
-} from 'src/shared/app/(protected)/account/notifications/components/channels';
+} from '@src/shared/app/(protected)/account/notifications/components/channels';
 
 const OtherNotifications = () => {
   const items: IChannelsItems = [

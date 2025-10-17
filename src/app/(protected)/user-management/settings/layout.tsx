@@ -3,16 +3,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from 'src/shared/lib/api';
-import { Tabs, TabsList, TabsTrigger } from 'src/shared/components/ui/tabs';
-import { Container } from 'src/shared/components/common/container';
-import { ContentLoader } from 'src/shared/components/common/content-loader';
+import { apiFetch } from '@src/shared/lib/api';
+import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import { Container } from '@src/shared/components/common/container';
+import { ContentLoader } from '@src/shared/components/common/content-loader';
 import {
   Toolbar,
   ToolbarActions,
   ToolbarHeading,
   ToolbarTitle,
-} from 'src/shared/components/common/toolbar';
+} from '@src/shared/components/common/toolbar';
 import { SettingsProvider } from './components/settings-context';
 
 type NavRoutes = Record<

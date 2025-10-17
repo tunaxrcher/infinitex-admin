@@ -13,31 +13,31 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { ChevronRight, Plus, Search, X } from 'lucide-react';
-import { apiFetch } from 'src/shared/lib/api';
-import { formatDate, formatDateTime, getInitials } from 'src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from 'src/shared/components/ui/avatar';
-import { Badge, BadgeDot, BadgeProps } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardFooter, CardHeader, CardTable } from 'src/shared/components/ui/card';
+import { apiFetch } from '@src/shared/lib/api';
+import { formatDate, formatDateTime, getInitials } from '@src/shared/lib/helpers';
+import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import { Badge, BadgeDot, BadgeProps } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardFooter, CardHeader, CardTable } from '@src/shared/components/ui/card';
 import {
   DataGrid,
   DataGridApiFetchParams,
   DataGridApiResponse,
-} from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
-import { DataGridTable } from 'src/shared/components/ui/data-grid-table';
-import { Input } from 'src/shared/components/ui/input';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Skeleton } from 'src/shared/components/ui/skeleton';
-import { User, UserStatus } from 'src/shared/app/models/user';
+} from '@src/shared/components/ui/select';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { User, UserStatus } from '@src/shared/app/models/user';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { getUserStatusProps, UserStatusProps } from '../constants/status';
 import UserInviteDialog from './user-add-dialog';

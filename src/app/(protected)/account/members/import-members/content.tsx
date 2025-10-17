@@ -1,13 +1,13 @@
 'use client';
 
-import { Engage } from 'src/shared/partials/common/engage';
-import { Faq } from 'src/shared/partials/common/faq';
+import { Engage } from '@src/shared/partials/common/engage';
+import { Faq } from '@src/shared/partials/common/faq';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from 'src/shared/partials/common/highlighted-posts';
+} from '@src/shared/partials/common/highlighted-posts';
 import { LogOut, MousePointer, Users } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Import } from './components';
 
 export function AccountImportMembersContent() {

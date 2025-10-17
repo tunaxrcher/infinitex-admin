@@ -2,8 +2,8 @@
 
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { MENU_SIDEBAR } from 'src/shared/config/menu.config';
-import { useMenu } from 'src/shared/hooks/use-menu';
+import { MENU_SIDEBAR } from '@src/shared/config/menu.config';
+import { useMenu } from '@src/shared/hooks/use-menu';
 
 const Toolbar = ({ children }: { children: ReactNode }) => {
   return (

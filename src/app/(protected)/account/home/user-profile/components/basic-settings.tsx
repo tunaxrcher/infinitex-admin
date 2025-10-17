@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { Copy, SquarePen } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Label } from 'src/shared/components/ui/label';
-import { Switch } from 'src/shared/components/ui/switch';
-import { Table, TableBody, TableCell, TableRow } from 'src/shared/components/ui/table';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
+import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
 
 interface IBasicSettingsProps {
   title: string;

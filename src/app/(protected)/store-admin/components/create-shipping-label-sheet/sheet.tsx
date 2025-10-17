@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from 'src/shared/components/ui/button';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+import { Button } from '@src/shared/components/ui/button';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Sheet,
   SheetBody,
@@ -10,12 +10,12 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from 'src/shared/components/ui/sheet';
-import { Items } from 'src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/items';
-import { Order } from 'src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/order';
-import { Packaging } from 'src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/packaging';
-import { ShippingDate } from 'src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/shipping-date';
-import { Summary } from 'src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/summary';
+} from '@src/shared/components/ui/sheet';
+import { Items } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/items';
+import { Order } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/order';
+import { Packaging } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/packaging';
+import { ShippingDate } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/shipping-date';
+import { Summary } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/components/summary';
 
 export function StoreAdminCreateShippingLabelSheet({
   open,

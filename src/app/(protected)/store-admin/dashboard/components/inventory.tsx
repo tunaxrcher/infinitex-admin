@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge, BadgeDot } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface IInventoryItem {
   badgeColor:

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { CardNFT } from 'src/shared/partials/cards';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
+import { CardNFT } from '@src/shared/partials/cards';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 
 interface ITokens3dArtItem {
   image: string;

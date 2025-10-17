@@ -2,15 +2,15 @@
 
 import Link from 'next/link';
 import { CloudDownload, Download } from 'lucide-react';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/shared/components/ui/table';
+} from '@src/shared/components/ui/table';
 
 interface IInvoicingItem {
   number: string;

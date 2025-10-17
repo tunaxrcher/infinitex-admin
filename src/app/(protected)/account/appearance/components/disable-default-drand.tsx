@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 
 const DisableDefaultBrand = () => {
   return (

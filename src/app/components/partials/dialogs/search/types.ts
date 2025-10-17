@@ -1,4 +1,4 @@
-import { Avatars } from 'src/shared/partials/common/avatar-group';
+import { Avatars } from '@src/shared/partials/common/avatar-group';
 import { LucideIcon } from 'lucide-react';
 
 export interface SearchDocsItem {

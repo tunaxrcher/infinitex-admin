@@ -1,7 +1,7 @@
 'use client';
 
 import { Archive, Heart, MessageSquare } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 
 interface ITabsProps {
   postId: number;

@@ -7,11 +7,11 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
-import { useSettings } from 'src/shared/providers/settings-provider';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { NetworkVisitorsContent } from 'src/shared/app/(protected)/network/user-table/visitors/content';
+} from '@src/shared/partials/common/toolbar';
+import { useSettings } from '@src/shared/providers/settings-provider';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { NetworkVisitorsContent } from '@src/shared/app/(protected)/network/user-table/visitors/content';
 
 export default function NetworkVisitorsPage() {
   const { settings } = useSettings();

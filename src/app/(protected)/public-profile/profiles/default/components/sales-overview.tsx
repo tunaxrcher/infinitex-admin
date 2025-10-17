@@ -1,8 +1,8 @@
 'use client';
 
 import { SlidersVertical } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 const SalesOverview = () => {
   return (

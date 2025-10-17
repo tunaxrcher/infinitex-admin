@@ -8,7 +8,7 @@ import {
   RiYoutubeLine,
 } from '@remixicon/react';
 import { Dribbble, LucideIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface INetworkItem {
   logo: LucideIcon | RemixiconComponentType;

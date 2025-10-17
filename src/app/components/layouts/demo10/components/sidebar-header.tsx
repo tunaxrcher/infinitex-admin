@@ -3,18 +3,18 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SearchDialog } from 'src/shared/partials/dialogs/search/search-dialog';
+import { SearchDialog } from '@src/shared/partials/dialogs/search/search-dialog';
 import { ChevronsUpDown, Plus, Search } from 'lucide-react';
-import { MENU_ROOT } from 'src/shared/config/menu.config';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { cn } from 'src/shared/lib/utils';
-import { Button } from 'src/shared/components/ui/button';
+import { MENU_ROOT } from '@src/shared/config/menu.config';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 
 export function SidebarHeader() {
   const pathname = usePathname();

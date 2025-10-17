@@ -6,11 +6,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 import {
   IOrderItem,
   IOrderItems,
-} from 'src/shared/app/(protected)/store-client/checkout/order-summary/components/order';
+} from '@src/shared/app/(protected)/store-client/checkout/order-summary/components/order';
 
 export function Order() {
   const items: IOrderItems = [

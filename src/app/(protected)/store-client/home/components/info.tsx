@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
 import {
   BadgePercent,
   CreditCard,
@@ -9,7 +9,7 @@ import {
   MessagesSquare,
   Truck,
 } from 'lucide-react';
-import { Card, CardContent } from 'src/shared/components/ui/card';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 interface IInfoItem {
   title: string;

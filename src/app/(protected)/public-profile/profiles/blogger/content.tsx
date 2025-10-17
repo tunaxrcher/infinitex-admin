@@ -3,11 +3,11 @@
 import {
   IStatisticsItems,
   Statistics,
-} from 'src/shared/app/(protected)/public-profile/profiles/creator/components/statistics';
-import { Summary } from 'src/shared/app/(protected)/public-profile/profiles/creator/components/summary';
-import { CommunityBadges } from 'src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
-import { Tags } from 'src/shared/app/(protected)/public-profile/profiles/default/components/tags';
-import { UnlockPartnerships } from 'src/shared/app/(protected)/public-profile/profiles/default/components/unlock-partnerships';
+} from '@src/shared/app/(protected)/public-profile/profiles/creator/components/statistics';
+import { Summary } from '@src/shared/app/(protected)/public-profile/profiles/creator/components/summary';
+import { CommunityBadges } from '@src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
+import { Tags } from '@src/shared/app/(protected)/public-profile/profiles/default/components/tags';
+import { UnlockPartnerships } from '@src/shared/app/(protected)/public-profile/profiles/default/components/unlock-partnerships';
 import { Activity, Collaborate, Posts, Replies } from './components';
 
 export function ProfileBloggerContent() {

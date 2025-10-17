@@ -1,19 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu5 } from 'src/shared/partials/dropdown-menu/dropdown-menu-5';
-import { DropdownMenu6 } from 'src/shared/partials/dropdown-menu/dropdown-menu-6';
+import { DropdownMenu5 } from '@src/shared/partials/dropdown-menu/dropdown-menu-5';
+import { DropdownMenu6 } from '@src/shared/partials/dropdown-menu/dropdown-menu-6';
 import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from 'src/shared/components/ui/avatar';
-import { Button } from 'src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/shared/components/ui/table';
+} from '@src/shared/components/ui/table';
 
 interface ILoginSessionsItem {
   avatar: string;

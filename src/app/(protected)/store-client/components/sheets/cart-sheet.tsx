@@ -1,16 +1,16 @@
 import { ShoppingCart, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent } from 'src/shared/components/ui/card';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
+} from '@src/shared/components/ui/select';
 import {
   Sheet,
   SheetBody,
@@ -18,8 +18,8 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from 'src/shared/components/ui/sheet';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+} from '@src/shared/components/ui/sheet';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 const items = [
   {

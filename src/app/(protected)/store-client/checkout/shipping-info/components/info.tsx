@@ -5,10 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill } from '@remixicon/react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import {
   Dialog,
   DialogBody,
@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 import { AddressDialog } from './address-dialog';
 import { AddressFormValues, addressSchema } from './forms';
 

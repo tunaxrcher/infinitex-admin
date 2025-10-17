@@ -6,7 +6,7 @@ import {
   useFileUpload,
   type FileMetadata,
   type FileWithPreview,
-} from 'src/shared/hooks/use-file-upload';
+} from '@src/shared/hooks/use-file-upload';
 import {
   Alert,
   AlertContent,
@@ -14,10 +14,10 @@ import {
   AlertIcon,
   AlertTitle,
   AlertToolbar,
-} from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Progress } from 'src/shared/components/ui/progress';
+} from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Progress } from '@src/shared/components/ui/progress';
 import {
   FileArchiveIcon,
   FileSpreadsheetIcon,
@@ -30,9 +30,9 @@ import {
   VideoIcon,
   XIcon,
 } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { cn } from 'src/shared/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface FileUploadItem extends FileWithPreview {
   progress: number;

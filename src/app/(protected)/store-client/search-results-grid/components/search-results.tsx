@@ -2,20 +2,20 @@
 
 import { useState } from 'react';
 import { Funnel, LayoutGrid, List, Search as SearchIcon } from 'lucide-react';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Input } from 'src/shared/components/ui/input';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { ToggleGroup, ToggleGroupItem } from 'src/shared/components/ui/toggle-group';
-import { Card2 } from 'src/shared/app/(protected)/store-client/components/common/card2';
-import { Card3 } from 'src/shared/app/(protected)/store-client/components/common/card3';
-import { StoreClientFiltersSheet } from 'src/shared/app/(protected)/store-client/components/sheets/filters-sheet';
+} from '@src/shared/components/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
+import { Card2 } from '@src/shared/app/(protected)/store-client/components/common/card2';
+import { Card3 } from '@src/shared/app/(protected)/store-client/components/common/card3';
+import { StoreClientFiltersSheet } from '@src/shared/app/(protected)/store-client/components/sheets/filters-sheet';
 
 interface ISearchResultsGridContentItem {
   logo: string;

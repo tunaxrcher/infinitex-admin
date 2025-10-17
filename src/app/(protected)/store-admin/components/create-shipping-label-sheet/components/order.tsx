@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from 'src/shared/components/ui/card';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 const locations = [
   { address: '1234 Industrial Way, Dallas, TX 75201', time: '10:00 AM' },

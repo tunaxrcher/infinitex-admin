@@ -7,12 +7,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
-import { WelcomeMessageDialog } from 'src/shared/partials/dialogs/welcome-message-dialog';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { AccountGetStartedContent } from 'src/shared/app/(protected)/account/home/get-started/content';
-import { PageNavbar } from 'src/shared/app/(protected)/account/page-navbar';
+} from '@src/shared/partials/common/toolbar';
+import { WelcomeMessageDialog } from '@src/shared/partials/dialogs/welcome-message-dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { AccountGetStartedContent } from '@src/shared/app/(protected)/account/home/get-started/content';
+import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
 
 export default function AuthWelcomeMessagePage() {
   const [profileModalOpen, setProfileModalOpen] = useState(true);

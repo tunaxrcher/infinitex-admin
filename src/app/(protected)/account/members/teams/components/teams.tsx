@@ -3,8 +3,8 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Avatar, AvatarGroup } from 'src/shared/partials/common/avatar-group';
-import { Rating } from 'src/shared/partials/common/rating';
+import { Avatar, AvatarGroup } from '@src/shared/partials/common/avatar-group';
+import { Rating } from '@src/shared/partials/common/rating';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -17,7 +17,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { Search, Settings2, SquarePen, Trash2, X } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
@@ -25,20 +25,20 @@ import {
   CardHeading,
   CardTable,
   CardToolbar,
-} from 'src/shared/components/ui/card';
-import { DataGrid, useDataGrid } from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridColumnVisibility } from 'src/shared/components/ui/data-grid-column-visibility';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+} from '@src/shared/components/ui/card';
+import { DataGrid, useDataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridColumnVisibility } from '@src/shared/components/ui/data-grid-column-visibility';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IData {
   id: string;

@@ -15,7 +15,7 @@ import {
 } from '@tanstack/react-table';
 import { Copy, Settings2, SquarePen } from 'lucide-react';
 import { toast } from 'sonner';
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
@@ -23,20 +23,20 @@ import {
   CardTable,
   CardTitle,
   CardToolbar,
-} from 'src/shared/components/ui/card';
-import { DataGrid, useDataGrid } from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridColumnVisibility } from 'src/shared/components/ui/data-grid-column-visibility';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+} from '@src/shared/components/ui/card';
+import { DataGrid, useDataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridColumnVisibility } from '@src/shared/components/ui/data-grid-column-visibility';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
-import { Input } from 'src/shared/components/ui/input';
-import { Label } from 'src/shared/components/ui/label';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;

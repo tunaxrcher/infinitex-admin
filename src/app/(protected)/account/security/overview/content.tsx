@@ -4,10 +4,10 @@ import { Fragment } from 'react';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from 'src/shared/partials/common/highlighted-posts';
+} from '@src/shared/partials/common/highlighted-posts';
 import { ShieldCheck, ShieldOff, ShieldQuestion } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { FeaturesHighlight } from 'src/shared/app/(protected)/public-profile/profiles/creator/components/features-highlight';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { FeaturesHighlight } from '@src/shared/app/(protected)/public-profile/profiles/creator/components/features-highlight';
 import {
   Authentification,
   GeneralSettings,

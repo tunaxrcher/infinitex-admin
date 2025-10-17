@@ -1,12 +1,12 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { UserDropdownMenu } from 'src/shared/partials/topbar/user-dropdown-menu';
+import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
 import { Heart, Search, ShoppingCart, UserCircle } from 'lucide-react';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Input } from 'src/shared/components/ui/input';
-import { useStoreClient } from 'src/shared/app/(protected)/store-client/components/context';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { useStoreClient } from '@src/shared/app/(protected)/store-client/components/context';
 
 export function StoreClientTopbar() {
   const pathname = usePathname();

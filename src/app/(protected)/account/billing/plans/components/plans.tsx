@@ -2,11 +2,11 @@
 
 import { Fragment, useState } from 'react';
 import { Check } from 'lucide-react';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Label } from 'src/shared/components/ui/label';
-import { Switch } from 'src/shared/components/ui/switch';
-import { Table, TableBody, TableCell, TableRow } from 'src/shared/components/ui/table';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
+import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
 
 interface IPlanPrice {
   regular: string;

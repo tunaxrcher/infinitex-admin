@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from 'src/shared/components/ui/card';
-import { Info } from 'src/shared/app/(protected)/store-client/checkout/order-placed/components/info';
-import { Payment } from 'src/shared/app/(protected)/store-client/checkout/order-placed/components/payment';
-import { Order } from 'src/shared/app/(protected)/store-client/checkout/order-summary/components/order';
-import { Card4 } from 'src/shared/app/(protected)/store-client/components/common/card4';
+import { Card, CardContent, CardHeader } from '@src/shared/components/ui/card';
+import { Info } from '@src/shared/app/(protected)/store-client/checkout/order-placed/components/info';
+import { Payment } from '@src/shared/app/(protected)/store-client/checkout/order-placed/components/payment';
+import { Order } from '@src/shared/app/(protected)/store-client/checkout/order-summary/components/order';
+import { Card4 } from '@src/shared/app/(protected)/store-client/components/common/card4';
 
 export function OrderPlacedContent() {
   return (

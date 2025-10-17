@@ -2,15 +2,15 @@
 
 import { ReactNode, useId } from 'react';
 import Link from 'next/link';
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
 import { Mail } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { Checkbox } from 'src/shared/components/ui/checkbox';
-import { Label } from 'src/shared/components/ui/label';
-import { RadioGroup, RadioGroupItem } from 'src/shared/components/ui/radio-group';
-import { Switch } from 'src/shared/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
+import { Label } from '@src/shared/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@src/shared/components/ui/radio-group';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IAdvancedSettingsNotificationsItem {
   title: string;

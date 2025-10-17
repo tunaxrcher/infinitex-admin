@@ -1,4 +1,4 @@
-import { I18nExample } from 'src/shared/components/examples/i18n-example';
+import { I18nExample } from '@src/shared/components/examples/i18n-example';
 
 export default function I18nTestPage() {
   return (

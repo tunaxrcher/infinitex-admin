@@ -13,45 +13,45 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { Ellipsis, Plus, Search, X } from 'lucide-react';
-import { apiFetch } from 'src/shared/lib/api';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
   CardHeader,
   CardTable,
   CardToolbar,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 import {
   DataGrid,
   DataGridApiFetchParams,
   DataGridApiResponse,
-} from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+} from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
+} from '@src/shared/components/ui/data-grid-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
-import { Input } from 'src/shared/components/ui/input';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/dropdown-menu';
+import { Input } from '@src/shared/components/ui/input';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Skeleton } from 'src/shared/components/ui/skeleton';
-import { UserPermission, UserRole } from 'src/shared/app/models/user';
+} from '@src/shared/components/ui/select';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { UserPermission, UserRole } from '@src/shared/app/models/user';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import PermissionDeleteDialog from './permission-delete-dialog';
 import PermissionEditDialog from './permission-edit-dialog';

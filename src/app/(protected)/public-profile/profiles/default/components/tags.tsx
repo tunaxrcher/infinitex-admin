@@ -1,7 +1,7 @@
 'use client';
 
-import { Badge } from 'src/shared/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface ITagsItem {
   label: string;

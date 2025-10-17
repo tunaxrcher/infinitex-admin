@@ -2,11 +2,11 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
 import { LogOut, LucideIcon, ShieldCheck } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent } from 'src/shared/components/ui/card';
-import { Switch } from 'src/shared/components/ui/switch';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IQuickSettingsItem {
   icon: LucideIcon;

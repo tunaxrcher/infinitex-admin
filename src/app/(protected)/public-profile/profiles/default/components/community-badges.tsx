@@ -1,6 +1,6 @@
 'use client';
 
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
 import {
   MessagesSquare,
   Truck,
@@ -8,7 +8,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface ICommunityBadgesItem {
   stroke: string;

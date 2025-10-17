@@ -23,38 +23,38 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { useCopyToClipboard } from 'src/shared/hooks/use-copy-to-clipboard';
-import { Alert, AlertIcon, AlertTitle } from 'src/shared/components/ui/alert';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardFooter, CardHeader, CardTable } from 'src/shared/components/ui/card';
-import { DataGrid } from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardFooter, CardHeader, CardTable } from '@src/shared/components/ui/card';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from 'src/shared/components/ui/data-grid-table';
+} from '@src/shared/components/ui/data-grid-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
-import { Input } from 'src/shared/components/ui/input';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/dropdown-menu';
+import { Input } from '@src/shared/components/ui/input';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { StoreAdminCreateShippingLabelSheet } from 'src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/sheet';
-import { StoreAdminTrackShippingSheet } from 'src/shared/app/(protected)/store-admin/components/track-shipping-sheet';
+} from '@src/shared/components/ui/select';
+import { StoreAdminCreateShippingLabelSheet } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/sheet';
+import { StoreAdminTrackShippingSheet } from '@src/shared/app/(protected)/store-admin/components/track-shipping-sheet';
 
 interface IProductInfo {
   product: string;

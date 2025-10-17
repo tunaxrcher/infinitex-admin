@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from 'src/shared/components/ui/avatar';
-import { Button } from 'src/shared/components/ui/button';
-import { Card } from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/avatar';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
 
 export default function Item15() {
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Sheet,
   SheetBody,
@@ -8,7 +8,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from 'src/shared/components/ui/sheet';
+} from '@src/shared/components/ui/sheet';
 
 export function StoreAdminTrackShippingSheet({
   open,

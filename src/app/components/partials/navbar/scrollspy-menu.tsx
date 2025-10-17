@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from 'src/shared/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 
 export interface ScrollspyMenuItem {
   title: string;

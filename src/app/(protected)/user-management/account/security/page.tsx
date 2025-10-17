@@ -1,15 +1,15 @@
 'use client';
 
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { comingSoonToast } from 'src/shared/components/common/coming-soon-toast';
+} from '@src/shared/components/ui/card';
+import { comingSoonToast } from '@src/shared/components/common/coming-soon-toast';
 import { useAccount } from '../components/account-context';
 
 export default function Page() {

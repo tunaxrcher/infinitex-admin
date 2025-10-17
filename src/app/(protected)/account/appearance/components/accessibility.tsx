@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { CardNotification } from 'src/shared/partials/cards';
+import { CardNotification } from '@src/shared/partials/cards';
 import {
   ArrowRight,
   ArrowRightCircle,
@@ -9,15 +9,15 @@ import {
   LucideIcon,
   Monitor,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/shared/components/ui/select';
-import { Switch } from 'src/shared/components/ui/switch';
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface AccessibilityItem {
   icon: LucideIcon;

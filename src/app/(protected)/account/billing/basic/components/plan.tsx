@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent } from 'src/shared/components/ui/card';
-import { Slider } from 'src/shared/components/ui/slider';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Slider } from '@src/shared/components/ui/slider';
 
 interface IPlanItem {
   total: string;

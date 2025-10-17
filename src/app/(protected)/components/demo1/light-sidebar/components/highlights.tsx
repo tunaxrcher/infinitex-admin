@@ -1,4 +1,4 @@
-import { DropdownMenu4 } from 'src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
 import {
   RemixiconComponentType,
   RiBankLine,
@@ -13,9 +13,9 @@ import {
   EllipsisVertical,
   type LucideIcon,
 } from 'lucide-react';
-import { Badge, BadgeDot } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface IHighlightsRow {
   icon: LucideIcon | RemixiconComponentType;

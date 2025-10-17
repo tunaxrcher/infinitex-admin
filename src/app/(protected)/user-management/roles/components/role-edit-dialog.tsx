@@ -7,16 +7,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
-import { cn } from 'src/shared/lib/utils';
+import { apiFetch } from '@src/shared/lib/api';
+import { cn } from '@src/shared/lib/utils';
 import {
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
-} from 'src/shared/components/ui/alert';
-import { Badge, BadgeButton } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
+} from '@src/shared/components/ui/alert';
+import { Badge, BadgeButton } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Command,
   CommandCheck,
@@ -25,14 +25,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from 'src/shared/components/ui/command';
+} from '@src/shared/components/ui/command';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -40,17 +40,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from 'src/shared/components/ui/popover';
-import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+} from '@src/shared/components/ui/popover';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import { LoaderCircleIcon } from 'lucide-react';
-import { Textarea } from 'src/shared/components/ui/textarea';
-import { UserPermission, UserRole } from 'src/shared/app/models/user';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { UserPermission, UserRole } from '@src/shared/app/models/user';
 import { usePermissionSelectQuery } from '../../permissions/hooks/use-permission-select-query';
 import { RoleSchema, RoleSchemaType } from '../forms/role-schema';
 

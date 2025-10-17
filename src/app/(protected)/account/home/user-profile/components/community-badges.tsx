@@ -1,7 +1,7 @@
 'use client';
 
-import { HexagonBadge } from 'src/shared/partials/common/hexagon-badge';
-import { DropdownMenu2 } from 'src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
 import {
   CircleAlert,
   MessagesSquare,
@@ -10,8 +10,8 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface ICommunityBadgesItem {
   title: string;

@@ -5,16 +5,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
-import { Alert, AlertDescription } from 'src/shared/components/ui/alert';
-import { Button } from 'src/shared/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 import {
   CardDescription,
   CardHeader,
   CardHeading,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Dialog, DialogContent, DialogFooter } from 'src/shared/components/ui/dialog';
+} from '@src/shared/components/ui/card';
+import { Dialog, DialogContent, DialogFooter } from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -22,8 +22,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from 'src/shared/components/ui/form';
-import { Input } from 'src/shared/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import { LoaderCircleIcon } from 'lucide-react';
 import {
   AccountEmailSchema,

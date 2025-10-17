@@ -7,11 +7,11 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
-import { useSettings } from 'src/shared/providers/settings-provider';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { NetworkSocialContent } from 'src/shared/app/(protected)/network/user-cards/social/content';
+} from '@src/shared/partials/common/toolbar';
+import { useSettings } from '@src/shared/providers/settings-provider';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { NetworkSocialContent } from '@src/shared/app/(protected)/network/user-cards/social/content';
 
 export default function NetworkSocialPage() {
   const { settings } = useSettings();

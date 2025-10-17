@@ -2,9 +2,9 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Card, CardContent } from 'src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 interface ICard4Props {
   limit: number;

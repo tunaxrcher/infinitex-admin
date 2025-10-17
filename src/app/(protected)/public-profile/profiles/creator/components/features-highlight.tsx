@@ -3,8 +3,8 @@
 import { Fragment, ReactElement, ReactNode } from 'react';
 import Link from 'next/link';
 import { CircleCheck } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardFooter } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardFooter } from '@src/shared/components/ui/card';
 
 interface IFeaturesHighlightProps {
   image: ReactNode;

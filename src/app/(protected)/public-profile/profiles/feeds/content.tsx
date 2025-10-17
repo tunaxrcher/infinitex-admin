@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from 'src/shared/components/ui/button';
-import { Collaborate } from 'src/shared/app/(protected)/public-profile/profiles/blogger/components/collaborate';
+import { Button } from '@src/shared/components/ui/button';
+import { Collaborate } from '@src/shared/app/(protected)/public-profile/profiles/blogger/components/collaborate';
 import {
   IStatisticsItems,
   Statistics,
-} from 'src/shared/app/(protected)/public-profile/profiles/creator/components/statistics';
-import { Summary } from 'src/shared/app/(protected)/public-profile/profiles/creator/components/summary';
-import { Tags } from 'src/shared/app/(protected)/public-profile/profiles/default/components/tags';
+} from '@src/shared/app/(protected)/public-profile/profiles/creator/components/statistics';
+import { Summary } from '@src/shared/app/(protected)/public-profile/profiles/creator/components/summary';
+import { Tags } from '@src/shared/app/(protected)/public-profile/profiles/default/components/tags';
 import { Post1, Post2, Post3, Post4 } from './components';
 
 export function ProfileFeedsContent() {

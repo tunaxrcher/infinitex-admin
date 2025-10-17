@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { DropdownMenu4 } from 'src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
 import { ApexOptions } from 'apexcharts';
 import { EllipsisVertical } from 'lucide-react';
 import ApexChart from 'react-apexcharts';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
-import { ToggleGroup, ToggleGroupItem } from 'src/shared/components/ui/toggle-group';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
 
 interface IMyBalanceProps {
   className: string;

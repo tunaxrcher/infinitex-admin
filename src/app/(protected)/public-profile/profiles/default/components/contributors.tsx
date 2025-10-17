@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu3 } from 'src/shared/partials/dropdown-menu/dropdown-menu-3';
-import { DropdownMenu6 } from 'src/shared/partials/dropdown-menu/dropdown-menu-6';
+import { DropdownMenu3 } from '@src/shared/partials/dropdown-menu/dropdown-menu-3';
+import { DropdownMenu6 } from '@src/shared/partials/dropdown-menu/dropdown-menu-6';
 import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
+} from '@src/shared/components/ui/card';
 
 interface IContributorsItem {
   avatar: string;

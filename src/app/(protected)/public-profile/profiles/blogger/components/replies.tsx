@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface IRepliesItem {
   borderColor: string;

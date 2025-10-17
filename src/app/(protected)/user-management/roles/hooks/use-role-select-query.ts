@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { apiFetch } from 'src/shared/lib/api';
+import { apiFetch } from '@src/shared/lib/api';
 
 // Custom hook to use roles for selection
 export const useRoleSelectQuery = () => {

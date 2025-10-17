@@ -19,29 +19,29 @@ import {
   UserRound,
   X,
 } from 'lucide-react';
-import { apiFetch } from 'src/shared/lib/api';
-import { Badge } from 'src/shared/components/ui/badge';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardFooter, CardHeader, CardTable } from 'src/shared/components/ui/card';
+import { apiFetch } from '@src/shared/lib/api';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardFooter, CardHeader, CardTable } from '@src/shared/components/ui/card';
 import {
   DataGrid,
   DataGridApiFetchParams,
   DataGridApiResponse,
-} from 'src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from 'src/shared/components/ui/data-grid-column-header';
-import { DataGridPagination } from 'src/shared/components/ui/data-grid-pagination';
-import { DataGridTable } from 'src/shared/components/ui/data-grid-table';
+} from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'src/shared/components/ui/dropdown-menu';
-import { Input } from 'src/shared/components/ui/input';
-import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
-import { Skeleton } from 'src/shared/components/ui/skeleton';
-import { UserRole } from 'src/shared/app/models/user';
+} from '@src/shared/components/ui/dropdown-menu';
+import { Input } from '@src/shared/components/ui/input';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { UserRole } from '@src/shared/app/models/user';
 import RoleDefaultDialog from './role-default-dialog';
 import RoleDeleteDialog from './role-delete-dialog';
 import RoleEditDialog from './role-edit-dialog';

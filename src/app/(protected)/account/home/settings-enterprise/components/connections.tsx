@@ -1,19 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu4 } from 'src/shared/partials/dropdown-menu/dropdown-menu-4';
-import { DropdownMenu5 } from 'src/shared/partials/dropdown-menu/dropdown-menu-5';
+import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu5 } from '@src/shared/partials/dropdown-menu/dropdown-menu-5';
 import { Check, EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from 'src/shared/lib/helpers';
-import { Button } from 'src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from 'src/shared/components/ui/table';
+} from '@src/shared/components/ui/card';
+import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
 
 interface IConnection {
   avatar: string;

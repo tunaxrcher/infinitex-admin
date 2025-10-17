@@ -1,6 +1,6 @@
 'use client';
 
-import { Container } from 'src/shared/components/common/container';
+import { Container } from '@src/shared/components/common/container';
 import { NavbarLinks } from './navbar-links';
 import { NavbarMenu } from './navbar-menu';
 

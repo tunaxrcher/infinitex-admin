@@ -1,7 +1,7 @@
 'use client';
 
-import { DropdownMenu1 } from 'src/shared/partials/dropdown-menu/dropdown-menu-1';
-import { DropdownMenu2 } from 'src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { DropdownMenu1 } from '@src/shared/partials/dropdown-menu/dropdown-menu-1';
+import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
 import {
   Barcode,
   EllipsisVertical,
@@ -11,8 +11,8 @@ import {
   Tag,
   TicketPercent,
 } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface IRecentInvoicesItem {
   icon: LucideIcon;

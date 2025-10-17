@@ -1,7 +1,7 @@
 'use client';
 
 import { SquareSigma } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 const Assets = () => {
   return (

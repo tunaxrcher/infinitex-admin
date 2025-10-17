@@ -9,12 +9,12 @@ import { Dribbble } from 'lucide-react';
 import {
   INetworkItems,
   Network,
-} from 'src/shared/app/(protected)/public-profile/profiles/company/components/network';
+} from '@src/shared/app/(protected)/public-profile/profiles/company/components/network';
 import {
   IUsersItems,
   Users,
-} from 'src/shared/app/(protected)/public-profile/profiles/creator/components/users';
-import { CommunityBadges } from 'src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
+} from '@src/shared/app/(protected)/public-profile/profiles/creator/components/users';
+import { CommunityBadges } from '@src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
 import {
   About,
   Activity,

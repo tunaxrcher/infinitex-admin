@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from 'src/shared/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 
 const MegaMenuFooter = () => {
   return (

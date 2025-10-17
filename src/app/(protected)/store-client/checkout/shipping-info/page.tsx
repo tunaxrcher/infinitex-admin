@@ -8,12 +8,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from 'src/shared/partials/common/toolbar';
+} from '@src/shared/partials/common/toolbar';
 import { MapPinned } from 'lucide-react';
-import { Button } from 'src/shared/components/ui/button';
-import { Container } from 'src/shared/components/common/container';
-import { ShippingInfoContent } from 'src/shared/app/(protected)/store-client/checkout/shipping-info/content';
-import { Steps } from 'src/shared/app/(protected)/store-client/checkout/steps';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
+import { ShippingInfoContent } from '@src/shared/app/(protected)/store-client/checkout/shipping-info/content';
+import { Steps } from '@src/shared/app/(protected)/store-client/checkout/steps';
 
 export default function ShippingInfoPage() {
   return (
