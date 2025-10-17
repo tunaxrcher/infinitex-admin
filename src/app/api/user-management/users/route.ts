@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
-import { getClientIP } from '@/lib/api';
-import { prisma } from '@/lib/prisma';
-import { systemLog } from '@/services/system-log';
+import { getClientIP } from '@src/shared/lib/api';
+import { prisma } from '@src/shared/lib/prisma';
+import { systemLog } from '@src/shared/services/system-log';
 import {
   UserAddSchema,
   UserAddSchemaType,
-} from '@/app/(protected)/user-management/users/forms/user-add-schema';
-import authOptions from '@/app/api/auth/[...nextauth]/auth-options';
-import { UserStatus } from '@/app/models/user';
+} from '@src/shared/app/(protected)/user-management/users/forms/user-add-schema';
+import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+import { UserStatus } from '@src/shared/app/models/user';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

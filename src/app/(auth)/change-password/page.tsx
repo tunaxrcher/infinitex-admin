@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Check, Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { apiFetch } from '@/lib/api';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Form,
   FormControl,
@@ -15,8 +15,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import { LoaderCircleIcon } from 'lucide-react';
 import {
   ChangePasswordSchemaType,

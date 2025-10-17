@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { useDataGrid } from '@/components/ui/data-grid';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@src/shared/components/ui/button';
+import { useDataGrid } from '@src/shared/components/ui/data-grid';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@src/shared/components/ui/select';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 
 interface DataGridPaginationProps {
   sizes?: number[];

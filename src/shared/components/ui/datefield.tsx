@@ -1,7 +1,7 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { inputVariants } from '@/components/ui/input';
+import { cn } from '@src/shared/lib/utils';
+import { inputVariants } from '@src/shared/components/ui/input';
 import type { VariantProps } from 'class-variance-authority';
 import {
   composeRenderProps,

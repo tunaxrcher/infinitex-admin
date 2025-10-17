@@ -6,9 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowLeft, Check } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { apiFetch } from '@/lib/api';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Form,
   FormControl,
@@ -16,10 +16,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import { LoaderCircleIcon } from 'lucide-react';
-import { RecaptchaPopover } from '@/components/common/recaptcha-popover';
+import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
 
 export default function Page() {
   const [error, setError] = useState<string | null>(null);

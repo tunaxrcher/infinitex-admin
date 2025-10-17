@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 import { LoaderCircleIcon } from 'lucide-react';
 
 export function ContentLoader({ className }: { className?: string }) {

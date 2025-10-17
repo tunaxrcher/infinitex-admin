@@ -1,20 +1,20 @@
 import { ReactNode, Suspense } from 'react';
 import { Inter } from 'next/font/google';
-import { cn } from '@/lib/utils';
-import { SettingsProvider } from '@/providers/settings-provider';
-import { TooltipsProvider } from '@/providers/tooltips-provider';
-import { Toaster } from '@/components/ui/sonner';
+import { cn } from '@src/shared/lib/utils';
+import { SettingsProvider } from '@src/shared/providers/settings-provider';
+import { TooltipsProvider } from '@src/shared/providers/tooltips-provider';
+import { Toaster } from '@src/shared/components/ui/sonner';
 import { Metadata } from 'next';
-import { AuthProvider } from '@/providers/auth-provider';
-import { I18nProvider } from '@/providers/i18n-provider';
-import { ModulesProvider } from '@/providers/modules-provider';
-import { QueryProvider } from '@/providers/query-provider';
-import { ThemeProvider } from '@/providers/theme-provider';
+import { AuthProvider } from '@src/shared/providers/auth-provider';
+import { I18nProvider } from '@src/shared/providers/i18n-provider';
+// import { ModulesProvider } from '@src/shared/providers/modules-provider';
+import { QueryProvider } from '@src/shared/providers/query-provider';
+import { ThemeProvider } from '@src/shared/providers/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
-import '@/css/styles.css';
-import '@/components/keenicons/assets/styles.css';
+import '@src/shared/css/styles.css';
+import '@src/shared/components/keenicons/assets/styles.css';
 
 export const metadata: Metadata = {
   title: {
@@ -42,10 +42,10 @@ export default async function RootLayout({
               <ThemeProvider>
                 <I18nProvider>
                   <TooltipsProvider>
-                    <ModulesProvider>
+                    {/* <ModulesProvider> */}
                       <Suspense>{children}</Suspense>
                       <Toaster />
-                    </ModulesProvider>
+                    {/* </ModulesProvider> */}
                   </TooltipsProvider>
                 </I18nProvider>
               </ThemeProvider>

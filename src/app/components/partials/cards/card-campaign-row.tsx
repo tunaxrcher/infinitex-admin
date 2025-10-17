@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
 import { DropdownMenu3 } from '../dropdown-menu/dropdown-menu-3';
 import { ICampaignItem, ICampaignProps } from './card-campaign';
 

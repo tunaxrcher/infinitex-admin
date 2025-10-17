@@ -3,9 +3,9 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { LogOut, SquareDashedMousePointer } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent, CardFooter } from '@src/shared/components/ui/card';
 
 interface IIntegrationProps {
   logo: string;

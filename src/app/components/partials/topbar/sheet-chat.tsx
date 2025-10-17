@@ -11,16 +11,16 @@ import {
   Upload,
   Users,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { cn } from '@/lib/utils';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+} from '@src/shared/components/ui/avatar';
+import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,8 +30,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from '@src/shared/components/ui/dropdown-menu';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Sheet,
   SheetBody,
@@ -39,7 +39,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from '@src/shared/components/ui/sheet';
 import { AvatarGroup } from '../common/avatar-group';
 
 interface Message {

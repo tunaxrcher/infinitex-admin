@@ -18,14 +18,14 @@ import {
   AccordionMenuGroup,
   AccordionMenuItem,
   AccordionMenuLabel,
-} from '@/components/ui/accordion-menu';
-import { Button } from '@/components/ui/button';
+} from '@src/shared/components/ui/accordion-menu';
+import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 
 interface DropdownItem {
   title: string;

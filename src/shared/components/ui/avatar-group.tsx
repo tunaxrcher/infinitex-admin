@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { AnimatePresence, Easing, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 
 type AnimationVariantType = 'spring' | 'tween' | 'inertia' | 'decay' | 'keyframes';
 type AnimationType = 'default' | 'flip' | 'reveal';

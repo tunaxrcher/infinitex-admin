@@ -9,7 +9,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 
 const QueryProvider = ({ children }: { children: ReactNode }) => {
   const [queryClient] = useState(

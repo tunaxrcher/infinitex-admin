@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
-import { getClientIP } from '@/lib/api';
-import { isUnique } from '@/lib/db';
-import { prisma } from '@/lib/prisma';
-import { systemLog } from '@/services/system-log';
+import { getClientIP } from '@src/shared/lib/api';
+import { isUnique } from '@src/shared/lib/db';
+import { prisma } from '@src/shared/lib/prisma';
+import { systemLog } from '@src/shared/services/system-log';
 import {
   RoleSchema,
   RoleSchemaType,
-} from '@/app/(protected)/user-management/roles/forms/role-schema';
-import authOptions from '@/app/api/auth/[...nextauth]/auth-options';
-import { UserRolePermission } from '@/app/models/user';
+} from '@src/shared/app/(protected)/user-management/roles/forms/role-schema';
+import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+import { UserRolePermission } from '@src/shared/app/models/user';
 
 // GET: Fetch a specific role by ID, including permissions
 export async function GET(

@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SearchDialog } from '@/partials/dialogs/search/search-dialog';
-import { AppsDropdownMenu } from '@/partials/topbar/apps-dropdown-menu';
-import { ChatSheet } from '@/partials/topbar/chat-sheet';
-import { NotificationsSheet } from '@/partials/topbar/notifications-sheet';
-import { UserDropdownMenu } from '@/partials/topbar/user-dropdown-menu';
+import { SearchDialog } from '@src/shared/partials/dialogs/search/search-dialog';
+import { AppsDropdownMenu } from '@src/shared/partials/topbar/apps-dropdown-menu';
+import { ChatSheet } from '@src/shared/partials/topbar/chat-sheet';
+import { NotificationsSheet } from '@src/shared/partials/topbar/notifications-sheet';
+import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
 import {
   Bell,
   LayoutGrid,
@@ -16,20 +16,20 @@ import {
   Search,
   SquareChevronRight,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useScrollPosition } from '@/hooks/use-scroll-position';
-import { Button } from '@/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Sheet,
   SheetBody,
   SheetContent,
   SheetHeader,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Container } from '@/components/common/container';
-import { StoreClientTopbar } from '@/app/(protected)/store-client/components/common/topbar';
+} from '@src/shared/components/ui/sheet';
+import { Container } from '@src/shared/components/common/container';
+import { StoreClientTopbar } from '@src/shared/app/(protected)/store-client/components/common/topbar';
 import { Breadcrumb } from './breadcrumb';
 import { MegaMenu } from './mega-menu';
 import { MegaMenuMobile } from './mega-menu-mobile';

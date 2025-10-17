@@ -12,3 +12,6 @@ dist
 dist-ssr
 
 .next
+
+# env files
+.env*

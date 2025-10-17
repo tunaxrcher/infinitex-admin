@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation, useTypedTranslation } from '@/hooks/useTranslation';
-import { useLanguage } from '@/providers/i18n-provider';
-import { I18N_LANGUAGES } from '@/i18n/config';
-import { Button } from '@/components/ui/button';
+import { useTranslation, useTypedTranslation } from '@src/shared/hooks/useTranslation';
+import { useLanguage } from '@src/shared/providers/i18n-provider';
+import { I18N_LANGUAGES } from '@src/shared/i18n/config';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@src/shared/components/ui/card';
 
 export function I18nExample() {
   const { t, i18n } = useTranslation();

@@ -2,8 +2,8 @@
 
 import { type ReactNode } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { useSettings } from '@/providers/settings-provider';
+import { cn } from '@src/shared/lib/utils';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 const containerVariants = cva('w-full mx-auto px-4 lg:px-6', {
   variants: {

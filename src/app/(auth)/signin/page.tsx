@@ -8,9 +8,9 @@ import { RiErrorWarningFill } from '@remixicon/react';
 import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -18,10 +18,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
 import { LoaderCircleIcon } from 'lucide-react';
-import { Icons } from '@/components/common/icons';
+import { Icons } from '@src/shared/components/common/icons';
 import { getSigninSchema, SigninSchemaType } from '../forms/signin-schema';
 
 export default function Page() {

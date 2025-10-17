@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { verifyRecaptchaToken } from '@/lib/recaptcha';
-import { sendEmail } from '@/services/send-email';
+import prisma from '@src/shared/lib/prisma';
+import { verifyRecaptchaToken } from '@src/shared/lib/recaptcha';
+import { sendEmail } from '@src/shared/services/send-email';
 
 export async function POST(req: NextRequest) {
   try {

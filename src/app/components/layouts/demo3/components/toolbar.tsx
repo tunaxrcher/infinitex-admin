@@ -4,11 +4,11 @@ import { Fragment, ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
-import { MENU_SIDEBAR } from '@/config/menu.config';
-import { MenuItem } from '@/config/types';
-import { cn } from '@/lib/utils';
-import { useMenu } from '@/hooks/use-menu';
-import { Container } from '@/components/common/container';
+import { MENU_SIDEBAR } from '@src/shared/config/menu.config';
+import { MenuItem } from '@src/shared/config/types';
+import { cn } from '@src/shared/lib/utils';
+import { useMenu } from '@src/shared/hooks/use-menu';
+import { Container } from '@src/shared/components/common/container';
 
 export interface ToolbarHeadingProps {
   title?: string | ReactNode;

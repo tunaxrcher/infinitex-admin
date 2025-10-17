@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { cn } from '@src/shared/lib/utils';
+import { Button } from '@src/shared/components/ui/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Check, Copy } from 'lucide-react';
 import { Slot as SlotPrimitive } from 'radix-ui';

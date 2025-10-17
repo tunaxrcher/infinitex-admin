@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { ChevronFirst } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { cn } from '@/lib/utils';
-import { useSettings } from '@/providers/settings-provider';
-import { Button } from '@/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { useSettings } from '@src/shared/providers/settings-provider';
+import { Button } from '@src/shared/components/ui/button';
 
 export function SidebarHeader() {
   const { settings, storeOption } = useSettings();

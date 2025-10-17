@@ -9,9 +9,9 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@/components/ui/avatar';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+} from '@src/shared/components/ui/avatar';
+import { Card } from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
 
 interface ItemProps {
   userName: string;

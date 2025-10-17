@@ -1,11 +1,11 @@
 'use client';
 
-import { ChatSheet } from '@/partials/topbar/chat-sheet';
-import { NotificationsSheet } from '@/partials/topbar/notifications-sheet';
-import { UserDropdownMenu } from '@/partials/topbar/user-dropdown-menu';
+import { ChatSheet } from '@src/shared/partials/topbar/chat-sheet';
+import { NotificationsSheet } from '@src/shared/partials/topbar/notifications-sheet';
+import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
 import { MessageCircleMore, MessageSquareDot } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Button } from '@/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
 
 export function SidebarFooter() {
   return (

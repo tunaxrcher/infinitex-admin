@@ -5,14 +5,14 @@ import {
   ShareProfileUsers,
   ShareProfileViaEmail,
   ShareProfileViaLink,
-} from '@/partials/dialogs/share-profile';
+} from '@src/shared/partials/dialogs/share-profile';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@src/shared/components/ui/dialog';
 
 export function GiveAwardDialog({
   open,

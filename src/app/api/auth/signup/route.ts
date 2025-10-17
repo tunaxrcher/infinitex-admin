@@ -1,14 +1,14 @@
 // pages/api/auth/signup.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
-import prisma from '@/lib/prisma';
-import { verifyRecaptchaToken } from '@/lib/recaptcha';
-import { sendEmail } from '@/services/send-email';
+import prisma from '@src/shared/lib/prisma';
+import { verifyRecaptchaToken } from '@src/shared/lib/recaptcha';
+import { sendEmail } from '@src/shared/services/send-email';
 import {
   getSignupSchema,
   SignupSchemaType,
-} from '@/app/(auth)/forms/signup-schema';
-import { User, UserStatus } from '@/app/models/user';
+} from '@src/shared/app/(auth)/forms/signup-schema';
+import { User, UserStatus } from '@src/shared/app/models/user';
 
 // Helper function to generate a verification token and send the email.
 async function sendVerificationEmail(user: User) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { MenuConfig, MenuItem } from '@/config/types';
+import { MenuConfig, MenuItem } from '@src/shared/config/types';
 import { MegaMenuSubDefault, MegaMenuSubHighlighted } from './components';
 
 const MegaMenuSubAccount = ({ items }: { items: MenuConfig }) => {

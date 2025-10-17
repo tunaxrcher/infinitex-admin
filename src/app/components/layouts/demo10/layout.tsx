@@ -6,17 +6,17 @@ import { usePathname } from 'next/navigation';
 import { addDays, format } from 'date-fns';
 import { CalendarDays, Download } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
-import { useBodyClass } from '@/hooks/use-body-class';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useSettings } from '@/providers/settings-provider';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import { useBodyClass } from '@src/shared/hooks/use-body-class';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useSettings } from '@src/shared/providers/settings-provider';
+import { Button } from '@src/shared/components/ui/button';
+import { Calendar } from '@src/shared/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { StoreClientTopbar } from '@/app/(protected)/store-client/components/common/topbar';
+} from '@src/shared/components/ui/popover';
+import { StoreClientTopbar } from '@src/shared/app/(protected)/store-client/components/common/topbar';
 import { Footer } from './components/footer';
 import { Header } from './components/header';
 import { Sidebar } from './components/sidebar';

@@ -4,9 +4,9 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import Link from 'next/dist/client/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { apiFetch } from '@src/shared/lib/api';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 import { LoaderCircleIcon } from 'lucide-react';
 
 export default function Page() {

@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { Copy, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
 import { AvatarSingle } from '../common/avatar-single';
 import { INFT2Item, INFT2Props } from './card-ntf2';
 

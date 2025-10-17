@@ -1,14 +1,14 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { SearchDialog } from '@/partials/dialogs/search/search-dialog';
-import { ChatSheet } from '@/partials/topbar/chat-sheet';
-import { NotificationsSheet } from '@/partials/topbar/notifications-sheet';
-import { UserDropdownMenu } from '@/partials/topbar/user-dropdown-menu';
+import { SearchDialog } from '@src/shared/partials/dialogs/search/search-dialog';
+import { ChatSheet } from '@src/shared/partials/topbar/chat-sheet';
+import { NotificationsSheet } from '@src/shared/partials/topbar/notifications-sheet';
+import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
 import { MessageCircleMore, MessageSquareDot, Search } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Button } from '@/components/ui/button';
-import { StoreClientTopbar } from '@/app/(protected)/store-client/components/common/topbar';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { StoreClientTopbar } from '@src/shared/app/(protected)/store-client/components/common/topbar';
 
 export function HeaderTopbar() {
   const pathname = usePathname();

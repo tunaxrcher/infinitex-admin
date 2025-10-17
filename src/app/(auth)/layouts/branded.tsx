@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Card, CardContent } from '@/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 export function BrandedLayout({ children }: { children: ReactNode }) {
   return (

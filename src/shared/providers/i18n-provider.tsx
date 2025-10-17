@@ -3,17 +3,17 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { DirectionProvider as RadixDirectionProvider } from '@radix-ui/react-direction';
-import { I18N_LANGUAGES } from '@/i18n/config';
+import { I18N_LANGUAGES } from '@src/shared/i18n/config';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Import translation files
-import enTranslations from '@/i18n/messages/en.json';
-import arTranslations from '@/i18n/messages/ar.json';
-import esTranslations from '@/i18n/messages/es.json';
-import deTranslations from '@/i18n/messages/de.json';
-import chTranslations from '@/i18n/messages/ch.json';
+import enTranslations from '@src/shared/i18n/messages/en.json';
+import arTranslations from '@src/shared/i18n/messages/ar.json';
+import esTranslations from '@src/shared/i18n/messages/es.json';
+import deTranslations from '@src/shared/i18n/messages/de.json';
+import chTranslations from '@src/shared/i18n/messages/ch.json';
 
 interface I18nProviderProps {
   children: ReactNode;

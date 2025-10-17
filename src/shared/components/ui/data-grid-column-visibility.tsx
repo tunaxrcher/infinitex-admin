@@ -5,7 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 import { Table } from '@tanstack/react-table';
 
 function DataGridColumnVisibility<TData>({ table, trigger }: { table: Table<TData>; trigger: ReactNode }) {

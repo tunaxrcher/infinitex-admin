@@ -8,9 +8,9 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
+} from '@src/shared/components/ui/avatar';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Card } from '@src/shared/components/ui/card';
 
 export default function Item12() {
   return (

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, Variants } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 
 type RevealVariant =
   | 'fade'

@@ -11,11 +11,11 @@ import {
   User,
   Users,
 } from 'lucide-react';
-import { MENU_HELP, MENU_SIDEBAR } from '@/config/menu.config';
-import { MenuConfig } from '@/config/types';
-import { cn } from '@/lib/utils';
-import { useMenu } from '@/hooks/use-menu';
-import { Button } from '@/components/ui/button';
+import { MENU_HELP, MENU_SIDEBAR } from '@src/shared/config/menu.config';
+import { MenuConfig } from '@src/shared/config/types';
+import { cn } from '@src/shared/lib/utils';
+import { useMenu } from '@src/shared/hooks/use-menu';
+import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 
 export function SidebarMenu() {
   const pathname = usePathname();

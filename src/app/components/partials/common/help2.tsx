@@ -1,6 +1,6 @@
 'use client';
 
-import { toAbsoluteUrl } from '@/lib/helpers';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Engage } from './engage';
 
 export function Help2() {

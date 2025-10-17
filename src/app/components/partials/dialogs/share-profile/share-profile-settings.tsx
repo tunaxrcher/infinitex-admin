@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { LoaderPinwheel, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 
 export function ShareProfileSettings() {
   return (

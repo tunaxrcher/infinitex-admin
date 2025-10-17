@@ -1,13 +1,13 @@
 'use client';
 
 import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   AccordionMenu,
   AccordionMenuGroup,
   AccordionMenuItem,
-} from '@/components/ui/accordion-menu';
-import { Button } from '@/components/ui/button';
+} from '@src/shared/components/ui/accordion-menu';
+import { Button } from '@src/shared/components/ui/button';
 import { SearchDocsItem } from './types';
 
 export function SearchDocs({ items }: { items: SearchDocsItem[] }) {

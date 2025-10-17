@@ -10,8 +10,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { APP_SETTINGS } from '@/config/settings.config';
-import { Settings } from '@/config/types';
+import { APP_SETTINGS } from '@src/shared/config/settings.config';
+import { Settings } from '@src/shared/config/types';
 
 type Path = string;
 

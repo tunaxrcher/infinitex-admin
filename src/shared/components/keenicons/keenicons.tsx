@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 import { KeeniconsProps } from './types';
 
 // KeenIcon using forwardRef to pass the ref and spread props

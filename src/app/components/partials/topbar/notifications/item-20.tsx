@@ -8,8 +8,8 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+} from '@src/shared/components/ui/avatar';
+import { Button } from '@src/shared/components/ui/button';
 
 export default function Item20() {
   return (

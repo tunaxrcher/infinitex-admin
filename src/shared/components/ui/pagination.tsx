@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@src/shared/lib/utils';
 import { MoreHorizontal } from 'lucide-react';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (

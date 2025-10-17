@@ -3,9 +3,9 @@
 import * as Popover from '@radix-ui/react-popover';
 import { RiErrorWarningFill } from '@remixicon/react';
 import { toast } from 'sonner';
-import { useRecaptchaV2 } from '@/hooks/use-recaptcha-v2';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { useRecaptchaV2 } from '@src/shared/hooks/use-recaptcha-v2';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 
 interface RecaptchaPopoverProps {
   open: boolean;

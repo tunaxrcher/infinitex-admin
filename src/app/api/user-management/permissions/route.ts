@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { getClientIP } from '@/lib/api';
-import { isUnique } from '@/lib/db';
-import { prisma } from '@/lib/prisma';
-import { systemLog } from '@/services/system-log';
+import { getClientIP } from '@src/shared/lib/api';
+import { isUnique } from '@src/shared/lib/db';
+import { prisma } from '@src/shared/lib/prisma';
+import { systemLog } from '@src/shared/services/system-log';
 import {
   PermissionSchema,
   PermissionSchemaType,
-} from '@/app/(protected)/user-management/permissions/forms/permission-schema';
-import authOptions from '@/app/api/auth/[...nextauth]/auth-options';
+} from '@src/shared/app/(protected)/user-management/permissions/forms/permission-schema';
+import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
 
 // GET: Fetch all permissions
 export async function GET(request: Request) {

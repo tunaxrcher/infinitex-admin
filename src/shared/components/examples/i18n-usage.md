@@ -16,7 +16,7 @@ The application uses `react-i18next` for internationalization with the following
 ### Using the useTranslation Hook
 
 ```tsx
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from '@src/shared/hooks/useTranslation';
 
 function MyComponent() {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ function MyComponent() {
 ### Using Typed Translation Helpers
 
 ```tsx
-import { useTypedTranslation } from '@/hooks/useTranslation';
+import { useTypedTranslation } from '@src/shared/hooks/useTranslation';
 
 function MyComponent() {
   const { tButton, tLabel, tMessage } = useTypedTranslation();
@@ -73,7 +73,7 @@ return <p>{t('item', { count })}</p>;
 ### Using the Language Hook
 
 ```tsx
-import { useLanguage } from '@/providers/i18n-provider';
+import { useLanguage } from '@src/shared/providers/i18n-provider';
 
 function LanguageSwitcher() {
   const { language, changeLanguage } = useLanguage();

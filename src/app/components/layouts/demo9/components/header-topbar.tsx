@@ -1,16 +1,16 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { DropdownMenu2 } from '@/partials/dropdown-menu/dropdown-menu-2';
-import { ChatSheet } from '@/partials/topbar/chat-sheet';
-import { NotificationsSheet } from '@/partials/topbar/notifications-sheet';
-import { UserDropdownMenu } from '@/partials/topbar/user-dropdown-menu';
+import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { ChatSheet } from '@src/shared/partials/topbar/chat-sheet';
+import { NotificationsSheet } from '@src/shared/partials/topbar/notifications-sheet';
+import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
 import { ChevronDown, MessageCircleMore, MessageSquareDot } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { StoreClientTopbar } from '@/app/(protected)/store-client/components/common/topbar';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
+import { StoreClientTopbar } from '@src/shared/app/(protected)/store-client/components/common/topbar';
 
 export function HeaderTopbar() {
   const pathname = usePathname();

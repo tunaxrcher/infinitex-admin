@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@src/shared/components/ui/dropdown-menu';
 
 export function DropdownMenu3({ trigger }: { trigger: ReactNode }) {
   return (

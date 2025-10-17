@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarGroup } from '@/partials/common/avatar-group';
+import { AvatarGroup } from '@src/shared/partials/common/avatar-group';
 import {
   CalendarDays,
   Lock,
@@ -16,10 +16,10 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+} from '@src/shared/components/ui/avatar';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
 
 export default function Item7() {
   return (

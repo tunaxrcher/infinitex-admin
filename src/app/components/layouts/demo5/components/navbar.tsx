@@ -1,6 +1,6 @@
 'use client';
 
-import { Container } from '@/components/common/container';
+import { Container } from '@src/shared/components/common/container';
 import { NavbarMenu } from './navbar-menu';
 
 const Navbar = () => {

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@src/shared/components/ui/button';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesUpcomingContent = () => {
