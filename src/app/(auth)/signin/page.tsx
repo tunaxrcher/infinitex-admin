@@ -31,8 +31,8 @@ export default function Page() {
   const form = useForm<SigninSchemaType>({
     resolver: zodResolver(getSigninSchema()),
     defaultValues: {
-      email: 'demo@kt.com',
-      password: 'demo123',
+      email: 'admin@infinitex.com',
+      password: 'admin123',
       rememberMe: false,
     },
   });
@@ -53,7 +53,7 @@ export default function Page() {
         const errorData = JSON.parse(response.error);
         setError(errorData.message);
       } else {
-        router.push('/');
+        router.push('/demo1');
       }
     } catch (err) {
       setError(
