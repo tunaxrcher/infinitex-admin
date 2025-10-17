@@ -1,4 +1,4 @@
-import { MenuItem } from '@src/shared/config/types';
+import { MenuItem } from '@/config/types';
 
 type MenuConfig = MenuItem[];
 

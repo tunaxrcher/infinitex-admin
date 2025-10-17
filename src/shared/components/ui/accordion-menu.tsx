@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ChevronDown } from 'lucide-react';
 import { Accordion as AccordionPrimitive } from 'radix-ui';
-import { cn } from '@src/shared/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface AccordionMenuContextValue {
   matchPath: (href: string) => boolean;

@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@src/shared/lib/utils';
-import { Dialog, DialogContent, DialogTitle } from '@src/shared/components/ui/dialog';
+import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { type DialogProps } from '@radix-ui/react-dialog';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Check, LucideIcon, Search } from 'lucide-react';

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { CSSProperties, Fragment, ReactNode } from 'react';
-import { Checkbox } from '@src/shared/components/ui/checkbox';
-import { useDataGrid } from '@src/shared/components/ui/data-grid';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useDataGrid } from '@/components/ui/data-grid';
 import { Cell, Column, flexRender, Header, HeaderGroup, Row } from '@tanstack/react-table';
 import { cva } from 'class-variance-authority';
-import { cn } from '@src/shared/lib/utils';
+import { cn } from '@/lib/utils';
 
 const headerCellSpacingVariants = cva('', {
   variants: {

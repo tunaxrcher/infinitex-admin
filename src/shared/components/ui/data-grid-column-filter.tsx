@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { cn } from '@src/shared/lib/utils';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -10,9 +10,9 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@src/shared/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@src/shared/components/ui/popover';
-import { Separator } from '@src/shared/components/ui/separator';
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 import { Column } from '@tanstack/react-table';
 import { Check, CirclePlus } from 'lucide-react';
 

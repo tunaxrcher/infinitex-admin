@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@src/shared/lib/utils';
+import { cn } from '@/lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
 import { Circle } from 'lucide-react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';

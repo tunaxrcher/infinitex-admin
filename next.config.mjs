@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Base path for production deployment behind nginx proxy
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
-
-  // Asset prefix for static assets
-  assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH || '',
+  // For local development, basePath is '/'
+  // This file will be overwritten during deployment with the appropriate basePath
+  images: {},
+  output: 'standalone',
 };
 
 export default nextConfig;

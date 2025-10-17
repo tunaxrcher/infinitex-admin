@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
-import { cn } from '@src/shared/lib/utils';
-import { Button } from '@src/shared/components/ui/button';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Check, Copy } from 'lucide-react';
 import { Slot as SlotPrimitive } from 'radix-ui';
@@ -41,7 +41,7 @@ function Code({
   children,
   ...props
 }: CodeProps) {
-  const { copyToClipboard, isCopied } = useCopyToClipboard();
+  const { copy, copied } = useCopyToClipboard();
   const Comp = asChild ? SlotPrimitive.Slot : 'code';
   const textToCopy = copyText || (typeof children === 'string' ? children : '');
 
@@ -56,9 +56,9 @@ function Code({
           size="sm"
           variant="ghost"
           className="h-4 w-4 p-0 opacity-60 hover:opacity-100"
-          onClick={() => copyToClipboard(textToCopy)}
+          onClick={() => copy(textToCopy)}
         >
-          {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </Button>
       )}
     </span>

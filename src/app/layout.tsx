@@ -1,13 +1,20 @@
 import { ReactNode, Suspense } from 'react';
 import { Inter } from 'next/font/google';
-import { cn } from '@src/shared/lib/utils';
-import { TooltipProvider } from '@src/shared/components/ui/tooltip';
-import { Toaster } from '@src/shared/components/ui/sonner';
+import { cn } from '@/lib/utils';
+import { SettingsProvider } from '@/providers/settings-provider';
+import { TooltipsProvider } from '@/providers/tooltips-provider';
+import { Toaster } from '@/components/ui/sonner';
 import { Metadata } from 'next';
-import { ThemeProvider } from 'next-themes';
+import { AuthProvider } from '@/providers/auth-provider';
+import { I18nProvider } from '@/providers/i18n-provider';
+import { ModulesProvider } from '@/providers/modules-provider';
+import { QueryProvider } from '@/providers/query-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
 
-import '@src/shared/styles/globals.css';
 const inter = Inter({ subsets: ['latin'] });
+
+import '@/css/styles.css';
+import '@/components/keenicons/assets/styles.css';
 
 export const metadata: Metadata = {
   title: {
@@ -29,19 +36,22 @@ export default async function RootLayout({
           inter.className,
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          storageKey="nextjs-theme"
-          enableSystem
-          disableTransitionOnChange
-          enableColorScheme
-        >
-          <TooltipProvider delayDuration={0}>
-            <Suspense>{children}</Suspense>
-            <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>       
+        <QueryProvider>
+          <AuthProvider>
+            <SettingsProvider>
+              <ThemeProvider>
+                <I18nProvider>
+                  <TooltipsProvider>
+                    <ModulesProvider>
+                      <Suspense>{children}</Suspense>
+                      <Toaster />
+                    </ModulesProvider>
+                  </TooltipsProvider>
+                </I18nProvider>
+              </ThemeProvider>
+            </SettingsProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

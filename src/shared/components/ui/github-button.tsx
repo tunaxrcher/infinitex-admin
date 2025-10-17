@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Star } from 'lucide-react';
 import { motion, useInView, type SpringOptions, type UseInViewOptions } from 'motion/react';
-import { cn } from '@src/shared/lib/utils';
+import { cn } from '@/lib/utils';
 
 const githubButtonVariants = cva(
   'cursor-pointer relative overflow-hidden will-change-transform backface-visibility-hidden transform-gpu transition-transform duration-200 ease-out hover:scale-105 group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0',
