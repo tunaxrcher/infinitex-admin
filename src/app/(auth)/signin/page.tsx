@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Eye, EyeOff, LoaderCircleIcon } from 'lucide-react';
 import { signIn } from 'next-auth/react';
@@ -24,6 +24,9 @@ import { getSigninSchema, SigninSchemaType } from '../forms/signin-schema';
 
 export default function Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from') || '/demo1';
+  
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +56,8 @@ export default function Page() {
         const errorData = JSON.parse(response.error);
         setError(errorData.message);
       } else {
-        router.push('/demo1');
+        // Redirect กลับไปหน้าเดิมที่พยายามเข้า
+        router.push(from);
       }
     } catch (err) {
       setError(
