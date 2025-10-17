@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { SquareDashedBottomCode } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Button } from 'src/shared/components/ui/button';
+import { Card, CardContent } from 'src/shared/components/ui/card';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesPhotographyWorkshop = () => {

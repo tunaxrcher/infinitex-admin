@@ -8,8 +8,8 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@src/shared/components/ui/avatar';
-import { Card } from '@src/shared/components/ui/card';
+} from 'src/shared/components/ui/avatar';
+import { Card } from 'src/shared/components/ui/card';
 
 export default function Item19() {
   return (

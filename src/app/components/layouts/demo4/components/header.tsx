@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Button } from 'src/shared/components/ui/button';
 import {
   Sheet,
   SheetBody,
   SheetContent,
   SheetHeader,
   SheetTrigger,
-} from '@src/shared/components/ui/sheet';
-import { Container } from '@src/shared/components/common/container';
+} from 'src/shared/components/ui/sheet';
+import { Container } from 'src/shared/components/common/container';
 import { SidebarPrimary } from './sidebar-primary';
 import { SidebarSecondary } from './sidebar-secondary';
 

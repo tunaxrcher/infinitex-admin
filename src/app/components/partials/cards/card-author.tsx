@@ -2,15 +2,15 @@
 
 import Link from 'next/link';
 import { BadgeCheck } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Button } from 'src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from '@src/shared/components/ui/card';
-import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+} from 'src/shared/components/ui/card';
+import { ScrollArea, ScrollBar } from 'src/shared/components/ui/scroll-area';
 import { AvatarSingle } from '../common/avatar-single';
 
 interface IAvatar {

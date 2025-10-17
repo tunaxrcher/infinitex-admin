@@ -3,9 +3,9 @@
 import { JSX, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MENU_SIDEBAR } from '@src/shared/config/menu.config';
-import { MenuConfig, MenuItem } from '@src/shared/config/types';
-import { cn } from '@src/shared/lib/utils';
+import { MENU_SIDEBAR } from 'src/shared/config/menu.config';
+import { MenuConfig, MenuItem } from 'src/shared/config/types';
+import { cn } from 'src/shared/lib/utils';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -15,8 +15,8 @@ import {
   AccordionMenuSub,
   AccordionMenuSubContent,
   AccordionMenuSubTrigger,
-} from '@src/shared/components/ui/accordion-menu';
-import { Badge } from '@src/shared/components/ui/badge';
+} from 'src/shared/components/ui/accordion-menu';
+import { Badge } from 'src/shared/components/ui/badge';
 
 export function SidebarMenu() {
   const pathname = usePathname();

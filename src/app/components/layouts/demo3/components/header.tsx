@@ -1,6 +1,6 @@
 'use client';
 
-import { Container } from '@src/shared/components/common/container';
+import { Container } from 'src/shared/components/common/container';
 import { HeaderLogo } from './header-logo';
 import { HeaderTopbar } from './header-topbar';
 

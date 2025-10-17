@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@src/shared/lib/utils';
+import { cn } from 'src/shared/lib/utils';
 
 export function NavbarMenu() {
   const pathname = usePathname();

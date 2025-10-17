@@ -1,8 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { cn } from '@src/shared/lib/utils';
-import { useSettings } from '@src/shared/providers/settings-provider';
+import { cn } from 'src/shared/lib/utils';
+import { useSettings } from 'src/shared/providers/settings-provider';
 import { SidebarHeader } from './sidebar-header';
 import { SidebarMenu } from './sidebar-menu';
 

@@ -13,14 +13,14 @@ import {
   UserCircle,
   Users,
 } from 'lucide-react';
-import { cn } from '@src/shared/lib/utils';
-import { Button } from '@src/shared/components/ui/button';
+import { cn } from 'src/shared/lib/utils';
+import { Button } from 'src/shared/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@src/shared/components/ui/tooltip';
+} from 'src/shared/components/ui/tooltip';
 
 export interface Item {
   icon: React.ComponentType<{ className?: string }>;

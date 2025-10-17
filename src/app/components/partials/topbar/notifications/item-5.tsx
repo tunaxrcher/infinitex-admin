@@ -7,7 +7,7 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@src/shared/components/ui/avatar';
+} from 'src/shared/components/ui/avatar';
 
 interface Item5Props {
   userName: string;

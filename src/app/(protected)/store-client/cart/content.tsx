@@ -1,0 +1,19 @@
+'use client';
+
+import { useState } from 'react';  
+import { StoreClientCartSheet } from 'src/shared/app/(protected)/store-client/components/sheets/cart-sheet';
+import { SearchResults } from 'src/shared/app/(protected)/store-client/search-results-grid/components/search-results'; 
+
+export function CartContent() {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <>
+      <SearchResults mode="card" />
+      <StoreClientCartSheet
+        open={open}
+        onOpenChange={() => setOpen(false)}
+      />
+    </>
+  );
+}

@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
-import { MenuConfig } from '@src/shared/config/types';
-import { cn } from '@src/shared/lib/utils';
-import { useMenu } from '@src/shared/hooks/use-menu';
+import { MenuConfig } from 'src/shared/config/types';
+import { cn } from 'src/shared/lib/utils';
+import { useMenu } from 'src/shared/hooks/use-menu';
 import {
   Menubar,
   MenubarContent,
@@ -15,7 +15,7 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from '@src/shared/components/ui/menubar';
+} from 'src/shared/components/ui/menubar';
 
 const NavbarMenu = ({ items }: { items: MenuConfig }) => {
   const pathname = usePathname();

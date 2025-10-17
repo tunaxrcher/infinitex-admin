@@ -5,16 +5,16 @@ import { usePathname } from 'next/navigation';
 import { addDays, format } from 'date-fns';
 import { CalendarDays } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
-import { useBodyClass } from '@src/shared/hooks/use-body-class';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
-import { Calendar } from '@src/shared/components/ui/calendar';
+import { useBodyClass } from 'src/shared/hooks/use-body-class';
+import { useIsMobile } from 'src/shared/hooks/use-mobile';
+import { useSettings } from 'src/shared/providers/settings-provider';
+import { Button } from 'src/shared/components/ui/button';
+import { Calendar } from 'src/shared/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@src/shared/components/ui/popover';
+} from 'src/shared/components/ui/popover';
 import { Footer } from './components/footer';
 import { Header } from './components/header';
 import { Navbar } from './components/navbar';

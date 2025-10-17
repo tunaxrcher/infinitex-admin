@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import { Card } from '@src/shared/components/ui/card';
-import { Progress } from '@src/shared/components/ui/progress';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Badge } from 'src/shared/components/ui/badge';
+import { Button } from 'src/shared/components/ui/button';
+import { Card } from 'src/shared/components/ui/card';
+import { Progress } from 'src/shared/components/ui/progress';
 import { AvatarGroup } from '../common/avatar-group';
 import { DropdownMenu5 } from '../dropdown-menu/dropdown-menu-5';
 

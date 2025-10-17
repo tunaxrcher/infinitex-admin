@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Rocket } from 'lucide-react';
-import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Card, CardContent } from 'src/shared/components/ui/card';
 import { HexagonBadge } from '../common/hexagon-badge';
 
 interface IAddNewProps {

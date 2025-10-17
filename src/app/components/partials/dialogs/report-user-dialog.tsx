@@ -2,17 +2,17 @@
 
 import { useId, useState } from 'react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Button } from 'src/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@src/shared/components/ui/dialog';
-import { Label } from '@src/shared/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@src/shared/components/ui/radio-group';
+} from 'src/shared/components/ui/dialog';
+import { Label } from 'src/shared/components/ui/label';
+import { RadioGroup, RadioGroupItem } from 'src/shared/components/ui/radio-group';
 
 export function ReportUserDialog({
   open,

@@ -3,11 +3,11 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MenuConfig } from '@src/shared/config/types';
-import { cn } from '@src/shared/lib/utils';
-import { useMenu } from '@src/shared/hooks/use-menu';
-import { Badge } from '@src/shared/components/ui/badge';
-import { NavigationMenuLink } from '@src/shared/components/ui/navigation-menu';
+import { MenuConfig } from 'src/shared/config/types';
+import { cn } from 'src/shared/lib/utils';
+import { useMenu } from 'src/shared/hooks/use-menu';
+import { Badge } from 'src/shared/components/ui/badge';
+import { NavigationMenuLink } from 'src/shared/components/ui/navigation-menu';
 
 const MegaMenuSubHighlighted = (items: MenuConfig) => {
   const pathname = usePathname();

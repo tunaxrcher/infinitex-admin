@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode, useEffect } from 'react';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useSettings } from '@src/shared/providers/settings-provider';
+import { useIsMobile } from 'src/shared/hooks/use-mobile';
+import { useSettings } from 'src/shared/providers/settings-provider';
 import { Footer } from './components/footer';
 import { Header } from './components/header';
 import { Sidebar } from './components/sidebar';

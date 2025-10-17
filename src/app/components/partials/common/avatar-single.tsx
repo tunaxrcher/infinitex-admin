@@ -1,8 +1,8 @@
 'use client';
 
 import { LucideIcon } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { cn } from 'src/shared/lib/utils';
 
 interface AvatarSingleProps {
   image?: string;

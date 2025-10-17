@@ -4,8 +4,8 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Container } from '@src/shared/components/common/container';
+import { toAbsoluteUrl } from 'src/shared/lib/helpers';
+import { Container } from 'src/shared/components/common/container';
 
 export interface UserHeroInfo {
   email?: string;

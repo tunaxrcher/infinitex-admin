@@ -7,8 +7,8 @@ import {
   AvatarImage,
   AvatarIndicator,
   AvatarStatus,
-} from '@src/shared/components/ui/avatar';
-import { Button } from '@src/shared/components/ui/button';
+} from 'src/shared/components/ui/avatar';
+import { Button } from 'src/shared/components/ui/button';
 
 interface Item3Props {
   userName: string;

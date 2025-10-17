@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu4 } from 'src/shared/partials/dropdown-menu/dropdown-menu-4';
 import {
   Badge,
   Bolt,
@@ -15,7 +15,7 @@ import {
   UserRoundPen,
   UserRoundPlus,
 } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
+import { Button } from 'src/shared/components/ui/button';
 import {
   Dialog,
   DialogBody,
@@ -24,10 +24,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@src/shared/components/ui/dialog';
-import { Input } from '@src/shared/components/ui/input';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+} from 'src/shared/components/ui/dialog';
+import { Input } from 'src/shared/components/ui/input';
+import { ScrollArea } from 'src/shared/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/shared/components/ui/tabs';
 import {
   SearchDocs,
   SearchDocsItem,

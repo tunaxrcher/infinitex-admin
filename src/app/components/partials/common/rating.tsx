@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@src/shared/lib/utils';
+import { cn } from 'src/shared/lib/utils';
 
 interface RatingProps {
   className?: string;
