@@ -5,7 +5,7 @@ import { sendEmail } from '@src/shared/services/send-email';
 import {
   ChangePasswordApiSchemaType,
   getChangePasswordApiSchema,
-} from '@src/shared/app/(auth)/forms/change-password-schema';
+} from '@src/app/(auth)/forms/change-password-schema';
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProfileDialog } from '@src/shared/app/(protected)/public-profile/profiles/default/components/profile-dialog';
+import { ProfileDialog } from '@src/app/(protected)/public-profile/profiles/default/components/profile-dialog';
 
 export function ProfileModalContent() {
   const [profileModalOpen, setProfileModalOpen] = useState(true);

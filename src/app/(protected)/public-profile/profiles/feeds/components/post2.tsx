@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Card } from '@src/shared/components/ui/card';
-import { ICommentsItems } from '@src/shared/app/(protected)/public-profile/profiles/feeds/components/post1';
-import { Comments } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/comments';
-import { Heading } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/heading';
-import { Likes } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/likes';
-import { Saves } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/saves';
-import { Tabs } from '@src/shared/app/(protected)/public-profile/profiles/feeds/post/tabs';
+import { ICommentsItems } from '@src/app/(protected)/public-profile/profiles/feeds/components/post1';
+import { Comments } from '@src/app/(protected)/public-profile/profiles/feeds/post/comments';
+import { Heading } from '@src/app/(protected)/public-profile/profiles/feeds/post/heading';
+import { Likes } from '@src/app/(protected)/public-profile/profiles/feeds/post/likes';
+import { Saves } from '@src/app/(protected)/public-profile/profiles/feeds/post/saves';
+import { Tabs } from '@src/app/(protected)/public-profile/profiles/feeds/post/tabs';
 
 const Post2 = () => {
   const [activeTab, setActiveTab] = useState('saves');

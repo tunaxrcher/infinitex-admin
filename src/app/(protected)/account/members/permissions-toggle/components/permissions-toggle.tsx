@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import {
   BarChart3,
   CreditCard,

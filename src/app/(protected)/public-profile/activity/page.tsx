@@ -1,9 +1,9 @@
 'use client';
 
 import { Fragment } from 'react';
-import { UserHero } from '@src/shared/partials/common/user-hero';
-import { DropdownMenu9 } from '@src/shared/partials/dropdown-menu/dropdown-menu-9';
-import { Navbar, NavbarActions } from '@src/shared/partials/navbar/navbar';
+import { UserHero } from '@src/app/components/partials/common/user-hero';
+import { DropdownMenu9 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-9';
+import { Navbar, NavbarActions } from '@src/app/components/partials/navbar/navbar';
 import {
   EllipsisVertical,
   Mail,
@@ -15,8 +15,8 @@ import {
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { ProfileActivityContent } from '@src/shared/app/(protected)/public-profile/activity/content';
-import { PageMenu } from '@src/shared/app/(protected)/public-profile/page-menu';
+import { ProfileActivityContent } from '@src/app/(protected)/public-profile/activity/content';
+import { PageMenu } from '@src/app/(protected)/public-profile/page-menu';
 
 export default function ProfileActivityPage() {
   const image = (

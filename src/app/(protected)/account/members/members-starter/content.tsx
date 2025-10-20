@@ -1,9 +1,9 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Faq } from '@src/shared/partials/common/faq';
-import { Help2 } from '@src/shared/partials/common/help2';
-import { Starter } from '@src/shared/partials/common/starter';
+import { Faq } from '@src/app/components/partials/common/faq';
+import { Help2 } from '@src/app/components/partials/common/help2';
+import { Starter } from '@src/app/components/partials/common/starter';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export function AccountMembersStarterContent() {

@@ -10,7 +10,7 @@ import {
 import {
   IOrderItem,
   IOrderItems,
-} from '@src/shared/app/(protected)/store-client/checkout/order-summary/components/order';
+} from '@src/app/(protected)/store-client/checkout/order-summary/components/order';
 
 export function Order() {
   const items: IOrderItems = [

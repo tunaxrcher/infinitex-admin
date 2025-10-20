@@ -1,4 +1,4 @@
-import { UserStatus } from '@src/shared/app/models/user';
+import { UserStatus } from '@src/app/models/user';
 
 // Default status mapping
 export const UserStatusProps = {

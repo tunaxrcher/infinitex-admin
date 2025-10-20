@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
-import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
 import {
   EllipsisVertical,
   LucideIcon,

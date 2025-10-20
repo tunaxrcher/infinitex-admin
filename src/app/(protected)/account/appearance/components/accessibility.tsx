@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { CardNotification } from '@src/shared/partials/cards';
+import { CardNotification } from '@src/app/components/partials/cards';
 import {
   ArrowRight,
   ArrowRightCircle,

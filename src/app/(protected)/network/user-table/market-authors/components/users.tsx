@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Rating } from '@src/shared/partials/common/rating';
+import { Rating } from '@src/app/components/partials/common/rating';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { RiCheckboxCircleFill } from '@remixicon/react';
 import {

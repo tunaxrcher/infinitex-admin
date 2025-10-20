@@ -1,7 +1,7 @@
 'use client';
 
 import { Container } from '@src/shared/components/common/container';
-import { OrderReceiptContent } from '@src/shared/app/(protected)/store-client/order-receipt/content';
+import { OrderReceiptContent } from '@src/app/(protected)/store-client/order-receipt/content';
 
 export default function OrderReceiptPage() {
   return (

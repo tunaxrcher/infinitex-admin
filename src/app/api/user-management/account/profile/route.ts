@@ -4,8 +4,8 @@ import { getClientIP } from '@src/shared/lib/api';
 import { prisma } from '@src/shared/lib/prisma';
 import { deleteFromS3, uploadToS3 } from '@src/shared/lib/s3-upload';
 import { systemLog } from '@src/shared/services/system-log';
-import { AccountProfileSchema } from '@src/shared/app/(protected)/user-management/account/forms/account-profile-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+import { AccountProfileSchema } from '@src/app/(protected)/user-management/account/forms/account-profile-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 
 export async function POST(request: NextRequest) {
   try {

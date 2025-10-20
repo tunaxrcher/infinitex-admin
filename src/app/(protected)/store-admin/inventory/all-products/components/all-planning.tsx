@@ -53,8 +53,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
-import { StoreAdminCreateShippingLabelSheet } from '@src/shared/app/(protected)/store-admin/components/create-shipping-label-sheet/sheet';
-import { StoreAdminTrackShippingSheet } from '@src/shared/app/(protected)/store-admin/components/track-shipping-sheet';
+import { StoreAdminCreateShippingLabelSheet } from '@src/app/(protected)/store-admin/components/create-shipping-label-sheet/sheet';
+import { StoreAdminTrackShippingSheet } from '@src/app/(protected)/store-admin/components/track-shipping-sheet';
 
 interface IProductInfo {
   product: string;

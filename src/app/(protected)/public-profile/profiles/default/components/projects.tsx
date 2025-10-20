@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarGroup } from '@src/shared/partials/common/avatar-group';
-import { DropdownMenu1 } from '@src/shared/partials/dropdown-menu/dropdown-menu-1';
-import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { AvatarGroup } from '@src/app/components/partials/common/avatar-group';
+import { DropdownMenu1 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-1';
+import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
 import { EllipsisVertical } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {

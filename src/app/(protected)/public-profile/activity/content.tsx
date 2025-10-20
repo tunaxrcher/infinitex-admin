@@ -2,18 +2,18 @@
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
-import { ActivitiesAnniversary } from '@src/shared/partials/activities/anniversary';
-import { ActivitiesBloggingConference } from '@src/shared/partials/activities/blogging-conference';
-import { ActivitiesDesignerWelcome } from '@src/shared/partials/activities/designer-welcome';
-import { ActivitiesInterview } from '@src/shared/partials/activities/interview';
-import { ActivitiesFollowersMilestone } from '@src/shared/partials/activities/milestone';
-import { ActivitiesNewArticle } from '@src/shared/partials/activities/new-article';
-import { ActivitiesNewTeam } from '@src/shared/partials/activities/new-team';
-import { ActivitiesPhotographyWorkshop } from '@src/shared/partials/activities/photography-workshop';
-import { ActivitiesProductWebinar } from '@src/shared/partials/activities/product-webinar';
-import { ActivitiesProjectStatus } from '@src/shared/partials/activities/project-status';
-import { ActivitiesUpcomingContent } from '@src/shared/partials/activities/upcoming-content';
-import { ActivitiesVirtualTeam } from '@src/shared/partials/activities/virtual-team';
+import { ActivitiesAnniversary } from '@src/app/components/partials/activities/anniversary';
+import { ActivitiesBloggingConference } from '@src/app/components/partials/activities/blogging-conference';
+import { ActivitiesDesignerWelcome } from '@src/app/components/partials/activities/designer-welcome';
+import { ActivitiesInterview } from '@src/app/components/partials/activities/interview';
+import { ActivitiesFollowersMilestone } from '@src/app/components/partials/activities/milestone';
+import { ActivitiesNewArticle } from '@src/app/components/partials/activities/new-article';
+import { ActivitiesNewTeam } from '@src/app/components/partials/activities/new-team';
+import { ActivitiesPhotographyWorkshop } from '@src/app/components/partials/activities/photography-workshop';
+import { ActivitiesProductWebinar } from '@src/app/components/partials/activities/product-webinar';
+import { ActivitiesProjectStatus } from '@src/app/components/partials/activities/project-status';
+import { ActivitiesUpcomingContent } from '@src/app/components/partials/activities/upcoming-content';
+import { ActivitiesVirtualTeam } from '@src/app/components/partials/activities/virtual-team';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {

@@ -8,12 +8,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountInviteAFriendContent } from '@src/shared/app/(protected)/account/invite-a-friend/content';
-import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
+import { AccountInviteAFriendContent } from '@src/app/(protected)/account/invite-a-friend/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 
 export default function AccountInviteAFriendPage() {
   const { settings } = useSettings();

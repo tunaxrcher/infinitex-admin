@@ -1,6 +1,6 @@
 'use client';
 
-import { CardLocation } from '@src/shared/partials/cards';
+import { CardLocation } from '@src/app/components/partials/cards';
 import { MapPin } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';

@@ -26,7 +26,7 @@ import {
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
 import { LoaderCircleIcon } from 'lucide-react';
-import { User } from '@src/shared/app/models/user';
+import { User } from '@src/app/models/user';
 
 // Validation schema for email confirmation
 const EmailConfirmationSchema = (userEmail: string) =>

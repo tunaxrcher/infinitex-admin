@@ -8,8 +8,8 @@ import { systemLog } from '@src/shared/services/system-log';
 import {
   RoleSchema,
   RoleSchemaType,
-} from '@src/shared/app/(protected)/user-management/roles/forms/role-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+} from '@src/app/(protected)/user-management/roles/forms/role-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 
 // GET: Fetch all roles with permissions
 export async function GET(request: Request) {

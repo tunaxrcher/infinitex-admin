@@ -13,9 +13,9 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
-import { Card2 } from '@src/shared/app/(protected)/store-client/components/common/card2';
-import { Card3 } from '@src/shared/app/(protected)/store-client/components/common/card3';
-import { StoreClientFiltersSheet } from '@src/shared/app/(protected)/store-client/components/sheets/filters-sheet';
+import { Card2 } from '@src/app/(protected)/store-client/components/common/card2';
+import { Card3 } from '@src/app/(protected)/store-client/components/common/card3';
+import { StoreClientFiltersSheet } from '@src/app/(protected)/store-client/components/sheets/filters-sheet';
 
 interface ISearchResultsGridContentItem {
   logo: string;

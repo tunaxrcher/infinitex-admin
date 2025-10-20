@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu5 } from '@src/shared/partials/dropdown-menu/dropdown-menu-5';
-import { DropdownMenu6 } from '@src/shared/partials/dropdown-menu/dropdown-menu-6';
+import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
+import { DropdownMenu6 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-6';
 import { EllipsisVertical } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';

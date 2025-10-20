@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SearchDialog } from '@src/shared/partials/dialogs/search/search-dialog';
-import { AppsDropdownMenu } from '@src/shared/partials/topbar/apps-dropdown-menu';
-import { ChatSheet } from '@src/shared/partials/topbar/chat-sheet';
-import { NotificationsSheet } from '@src/shared/partials/topbar/notifications-sheet';
-import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
+import { SearchDialog } from '@src/app/components/partials/dialogs/search/search-dialog';
+import { AppsDropdownMenu } from '@src/app/components/partials/topbar/apps-dropdown-menu';
+import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
+import { NotificationsSheet } from '@src/app/components/partials/topbar/notifications-sheet';
+import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
 import {
   LayoutGrid,
   MessageCircleMore,
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
-import { StoreClientTopbar } from '@src/shared/app/(protected)/store-client/components/common/topbar';
+import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
 
 export function HeaderTopbar() {
   const pathname = usePathname();

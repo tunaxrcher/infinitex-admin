@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { OctagonAlert } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';

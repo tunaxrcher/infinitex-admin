@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { CardNotification } from '@src/shared/partials/cards';
+import { CardNotification } from '@src/app/components/partials/cards';
 import {
   CalendarClock,
   ClipboardCheck,
@@ -18,7 +18,7 @@ import { Switch } from '@src/shared/components/ui/switch';
 import {
   IChannelsItem,
   IChannelsItems,
-} from '@src/shared/app/(protected)/account/notifications/components/channels';
+} from '@src/app/(protected)/account/notifications/components/channels';
 
 const OtherNotifications = () => {
   const items: IChannelsItems = [

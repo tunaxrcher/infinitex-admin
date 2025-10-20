@@ -50,7 +50,7 @@ import {
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import { LoaderCircleIcon } from 'lucide-react';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { UserPermission, UserRole } from '@src/shared/app/models/user';
+import { UserPermission, UserRole } from '@src/app/models/user';
 import { usePermissionSelectQuery } from '../../permissions/hooks/use-permission-select-query';
 import { RoleSchema, RoleSchemaType } from '../forms/role-schema';
 

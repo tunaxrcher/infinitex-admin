@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CardTeam, CardTeamRow } from '@src/shared/partials/cards';
+import { CardTeam, CardTeamRow } from '@src/app/components/partials/cards';
 import {
   Brain,
   Ghost,

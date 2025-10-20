@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
-import { DropdownMenu6 } from '@src/shared/partials/dropdown-menu/dropdown-menu-6';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { DropdownMenu6 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-6';
 import {
   EllipsisVertical,
   LucideIcon,

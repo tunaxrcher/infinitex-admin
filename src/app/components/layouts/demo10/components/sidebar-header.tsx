@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SearchDialog } from '@src/shared/partials/dialogs/search/search-dialog';
+import { SearchDialog } from '@src/app/components/partials/dialogs/search/search-dialog';
 import { ChevronsUpDown, Plus, Search } from 'lucide-react';
 import { MENU_ROOT } from '@src/shared/config/menu.config';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';

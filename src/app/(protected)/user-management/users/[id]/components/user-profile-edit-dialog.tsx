@@ -39,7 +39,7 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { LoaderCircleIcon } from 'lucide-react';
-import { User, UserRole } from '@src/shared/app/models/user';
+import { User, UserRole } from '@src/app/models/user';
 import { useRoleSelectQuery } from '../../../roles/hooks/use-role-select-query';
 import { UserStatusProps } from '../../constants/status';
 import {

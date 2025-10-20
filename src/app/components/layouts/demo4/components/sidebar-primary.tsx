@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AppsDropdownMenu } from '@src/shared/partials/topbar/apps-dropdown-menu';
-import { ChatSheet } from '@src/shared/partials/topbar/chat-sheet';
-import { UserDropdownMenu } from '@src/shared/partials/topbar/user-dropdown-menu';
+import { AppsDropdownMenu } from '@src/app/components/partials/topbar/apps-dropdown-menu';
+import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
+import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
 import {
   BarChart3,
   Bell,

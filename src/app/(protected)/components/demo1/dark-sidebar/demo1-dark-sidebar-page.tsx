@@ -3,7 +3,7 @@ import {
   Toolbar,
   ToolbarActions,
   ToolbarHeading,
-} from '@src/shared/layouts/demo1/components/toolbar';
+} from '@src/app/components/layouts/demo1/components/toolbar';
 import { addDays, format } from 'date-fns';
 import { CalendarDays } from 'lucide-react';
 import { DateRange } from 'react-day-picker';

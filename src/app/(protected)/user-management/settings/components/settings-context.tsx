@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, ReactNode, useContext } from 'react';
-import { SystemSetting } from '@src/shared/app/models/system';
-import { UserRole } from '@src/shared/app/models/user';
+import { SystemSetting } from '@src/app/models/system';
+import { UserRole } from '@src/app/models/user';
 
 interface SystemSettingsContextProps {
   settings: SystemSetting;

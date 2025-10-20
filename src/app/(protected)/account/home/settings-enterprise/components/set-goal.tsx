@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { DropdownMenu5 } from '@src/shared/partials/dropdown-menu/dropdown-menu-5';
+import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
 import { EllipsisVertical } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';

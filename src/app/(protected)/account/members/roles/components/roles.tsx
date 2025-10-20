@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { CardAddNew, CardRole } from '@src/shared/partials/cards';
+import { CardAddNew, CardRole } from '@src/app/components/partials/cards';
 import {
   Eye,
   Fingerprint,

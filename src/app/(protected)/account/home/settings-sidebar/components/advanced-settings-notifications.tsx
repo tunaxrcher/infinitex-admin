@@ -2,7 +2,7 @@
 
 import { ReactNode, useId } from 'react';
 import Link from 'next/link';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { Mail } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';

@@ -1,7 +1,7 @@
 'use client';
 
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
-import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
 import {
   CircleAlert,
   MessagesSquare,

@@ -1,7 +1,7 @@
 'use client';
 
-import { Contributors } from '@src/shared/app/(protected)/public-profile/profiles/default/components/contributors';
-import { Tags } from '@src/shared/app/(protected)/public-profile/profiles/default/components/tags';
+import { Contributors } from '@src/app/(protected)/public-profile/profiles/default/components/contributors';
+import { Tags } from '@src/app/(protected)/public-profile/profiles/default/components/tags';
 import {
   Activity,
   ApiCredentials,

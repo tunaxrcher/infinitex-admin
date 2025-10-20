@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { User } from '@src/shared/app/models/user';
+import { User } from '@src/app/models/user';
 import UserDeleteDialog from './user-delete-dialog';
 import UserRestoreDialog from './user-restore-dialog';
 

@@ -2,8 +2,8 @@
 
 import { Fragment } from 'react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { CommunityBadges } from '@src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
-import { Tags } from '@src/shared/app/(protected)/public-profile/profiles/default/components/tags';
+import { CommunityBadges } from '@src/app/(protected)/public-profile/profiles/default/components/community-badges';
+import { Tags } from '@src/app/(protected)/public-profile/profiles/default/components/tags';
 import {
   Activities,
   FeaturesHighlight,

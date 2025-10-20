@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@src/shared/components/ui/card';
-import { Card4 } from '@src/shared/app/(protected)/store-client/components/common/card4';
+import { Card4 } from '@src/app/(protected)/store-client/components/common/card4';
 
 export function MyOrders() {
   return (

@@ -14,20 +14,20 @@ import {
 } from '@src/shared/components/ui/dialog';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import { Scrollspy } from '@src/shared/components/ui/scrollspy';
-import { AccountSettingsSidebar } from '@src/shared/app/(protected)/account/home/settings-sidebar/account-basic-sidebar';
-import { AdvancedSettingsAddress } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/advanced-settings-address';
-import { AdvancedSettingsAppearance } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/advanced-settings-appearance';
-import { AdvancedSettingsNotifications } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/advanced-settings-notifications';
-import { AdvancedSettingsPreferences } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/advanced-settings-preferences';
-import { AuthEmail } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/auth-email';
-import { AuthPassword } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/auth-password';
-import { AuthSingleSingOn } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/auth-single-sing-on';
-import { AuthSocialSignIn } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/auth-social-sign-in';
-import { AuthTwoFactor } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/auth-two-factor';
-import { BasicSettings } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/basic-settings';
-import { DeleteAccount } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/delete-account';
-import { ExternalServicesIntegrations } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/external-services-integrations';
-import { ExternalServicesManageApi } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/external-services-manage-api';
+import { AccountSettingsSidebar } from '@src/app/(protected)/account/home/settings-sidebar/account-basic-sidebar';
+import { AdvancedSettingsAddress } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-address';
+import { AdvancedSettingsAppearance } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-appearance';
+import { AdvancedSettingsNotifications } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-notifications';
+import { AdvancedSettingsPreferences } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-preferences';
+import { AuthEmail } from '@src/app/(protected)/account/home/settings-sidebar/components/auth-email';
+import { AuthPassword } from '@src/app/(protected)/account/home/settings-sidebar/components/auth-password';
+import { AuthSingleSingOn } from '@src/app/(protected)/account/home/settings-sidebar/components/auth-single-sing-on';
+import { AuthSocialSignIn } from '@src/app/(protected)/account/home/settings-sidebar/components/auth-social-sign-in';
+import { AuthTwoFactor } from '@src/app/(protected)/account/home/settings-sidebar/components/auth-two-factor';
+import { BasicSettings } from '@src/app/(protected)/account/home/settings-sidebar/components/basic-settings';
+import { DeleteAccount } from '@src/app/(protected)/account/home/settings-sidebar/components/delete-account';
+import { ExternalServicesIntegrations } from '@src/app/(protected)/account/home/settings-sidebar/components/external-services-integrations';
+import { ExternalServicesManageApi } from '@src/app/(protected)/account/home/settings-sidebar/components/external-services-manage-api';
 
 interface IModalProfileProps {
   open: boolean;

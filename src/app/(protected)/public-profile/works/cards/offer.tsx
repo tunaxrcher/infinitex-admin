@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment } from 'react';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { Rocket } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Card, CardContent } from '@src/shared/components/ui/card';

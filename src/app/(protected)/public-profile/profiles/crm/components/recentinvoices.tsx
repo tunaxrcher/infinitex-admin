@@ -1,7 +1,7 @@
 'use client';
 
-import { DropdownMenu1 } from '@src/shared/partials/dropdown-menu/dropdown-menu-1';
-import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { DropdownMenu1 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-1';
+import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
 import {
   Barcode,
   EllipsisVertical,

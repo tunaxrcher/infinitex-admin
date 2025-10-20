@@ -8,12 +8,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountUserProfileContent } from '@src/shared/app/(protected)/account/home/user-profile/content';
-import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
+import { AccountUserProfileContent } from '@src/app/(protected)/account/home/user-profile/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 
 export default function AccountUserProfilePage() {
   const { settings } = useSettings();

@@ -5,7 +5,7 @@ import {
   ShareProfileUsers,
   ShareProfileViaEmail,
   ShareProfileViaLink,
-} from '@src/shared/partials/dialogs/share-profile';
+} from '@src/app/components/partials/dialogs/share-profile';
 import {
   Dialog,
   DialogContent,

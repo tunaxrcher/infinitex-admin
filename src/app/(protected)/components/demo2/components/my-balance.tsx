@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
 import { ApexOptions } from 'apexcharts';
 import { EllipsisVertical } from 'lucide-react';
 import ApexChart from 'react-apexcharts';

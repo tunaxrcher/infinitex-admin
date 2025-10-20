@@ -6,7 +6,7 @@ import { Image as ImageIcon } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
-import { ICommentsItem } from '@src/shared/app/(protected)/public-profile/profiles/feeds/components/post1';
+import { ICommentsItem } from '@src/app/(protected)/public-profile/profiles/feeds/components/post1';
 
 interface ICommentsProps {
   items: ICommentsItem[];

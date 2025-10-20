@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { Card } from '@src/shared/components/ui/card';
 
 interface IProductInsightProps {

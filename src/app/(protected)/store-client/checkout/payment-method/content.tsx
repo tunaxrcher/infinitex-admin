@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { MoveLeft, SquareMousePointer } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
-import { Order } from '@src/shared/app/(protected)/store-client/checkout/shipping-info/components/order';
-import { Payment } from '@src/shared/app/(protected)/store-client/checkout/payment-method/components/payment';
+import { Order } from '@src/app/(protected)/store-client/checkout/shipping-info/components/order';
+import { Payment } from '@src/app/(protected)/store-client/checkout/payment-method/components/payment';
 
 export function PaymentMethodContent() {
   return (

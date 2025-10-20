@@ -8,10 +8,10 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { DashboardContent } from '@src/shared/app/(protected)/store-admin/dashboard/content';
+import { DashboardContent } from '@src/app/(protected)/store-admin/dashboard/content';
 
 export default function DashboardPage() {
   return (

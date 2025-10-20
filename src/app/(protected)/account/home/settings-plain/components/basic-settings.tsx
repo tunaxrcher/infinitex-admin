@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AvatarInput } from '@src/shared/partials/common/avatar-input';
+import { AvatarInput } from '@src/app/components/partials/common/avatar-input';
 import { format } from 'date-fns';
 import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
 import { cn } from '@src/shared/lib/utils';

@@ -1,15 +1,15 @@
 'use client';
 
-import { Engage } from '@src/shared/partials/common/engage';
-import { Faq } from '@src/shared/partials/common/faq';
+import { Engage } from '@src/app/components/partials/common/engage';
+import { Faq } from '@src/app/components/partials/common/faq';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from '@src/shared/partials/common/highlighted-posts';
+} from '@src/app/components/partials/common/highlighted-posts';
 import { Image, Link2, MousePointer, Smile } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Branding } from '@src/shared/app/(protected)/account/home/company-profile/components/branding';
-import { AdvancedSettingsAppearance } from '@src/shared/app/(protected)/account/home/settings-sidebar/components/advanced-settings-appearance';
+import { Branding } from '@src/app/(protected)/account/home/company-profile/components/branding';
+import { AdvancedSettingsAppearance } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-appearance';
 import { Accessibility, DisableDefaultBrand } from './components';
 
 export function AccountAppearanceContent() {

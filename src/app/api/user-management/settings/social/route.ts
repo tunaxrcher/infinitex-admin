@@ -3,8 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { getClientIP } from '@src/shared/lib/api';
 import { prisma } from '@src/shared/lib/prisma';
 import { systemLog } from '@src/shared/services/system-log';
-import { SocialSettingsSchema } from '@src/shared/app/(protected)/user-management/settings/forms/social-settings-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+import { SocialSettingsSchema } from '@src/app/(protected)/user-management/settings/forms/social-settings-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 
 export async function POST(request: NextRequest) {
   try {

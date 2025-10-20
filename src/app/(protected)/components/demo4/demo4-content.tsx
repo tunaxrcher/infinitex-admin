@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { CreateTeam } from '@src/shared/partials/common/create-team';
+import { CreateTeam } from '@src/app/components/partials/common/create-team';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { BlockList } from '../../account/security/privacy-settings/components/block-list';
 import { Highlights, Teams } from '../demo1';

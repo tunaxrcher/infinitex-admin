@@ -1,6 +1,6 @@
 'use client';
 
-import { Card1 } from '@src/shared/app/(protected)/store-client/components/common/card1';
+import { Card1 } from '@src/app/(protected)/store-client/components/common/card1';
 
 export function FeaturedProducts() {
   return (

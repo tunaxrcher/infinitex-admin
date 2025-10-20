@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment } from 'react';
-import { DropdownMenu2 } from '@src/shared/partials/dropdown-menu/dropdown-menu-2';
+import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
 import { ApexOptions } from 'apexcharts';
 import { EllipsisVertical } from 'lucide-react';
 import ApexChart from 'react-apexcharts';

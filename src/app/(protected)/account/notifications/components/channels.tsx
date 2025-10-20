@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { CardNotification } from '@src/shared/partials/cards';
+import { CardNotification } from '@src/app/components/partials/cards';
 import { LucideIcon, Mail, Monitor, Phone, Slack } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';

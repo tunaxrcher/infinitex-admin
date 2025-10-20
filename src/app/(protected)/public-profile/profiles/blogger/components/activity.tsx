@@ -2,12 +2,12 @@
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
-import { ActivitiesAnniversary } from '@src/shared/partials/activities/anniversary';
-import { ActivitiesBloggingConference } from '@src/shared/partials/activities/blogging-conference';
-import { ActivitiesInterview } from '@src/shared/partials/activities/interview';
-import { ActivitiesFollowersMilestone } from '@src/shared/partials/activities/milestone';
-import { ActivitiesNewArticle } from '@src/shared/partials/activities/new-article';
-import { ActivitiesUpcomingContent } from '@src/shared/partials/activities/upcoming-content';
+import { ActivitiesAnniversary } from '@src/app/components/partials/activities/anniversary';
+import { ActivitiesBloggingConference } from '@src/app/components/partials/activities/blogging-conference';
+import { ActivitiesInterview } from '@src/app/components/partials/activities/interview';
+import { ActivitiesFollowersMilestone } from '@src/app/components/partials/activities/milestone';
+import { ActivitiesNewArticle } from '@src/app/components/partials/activities/new-article';
+import { ActivitiesUpcomingContent } from '@src/app/components/partials/activities/upcoming-content';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {

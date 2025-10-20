@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { getClientIP } from '@src/shared/lib/api';
 import { prisma } from '@src/shared/lib/prisma';
 import { systemLog } from '@src/shared/services/system-log';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 
 export async function PATCH(
   request: NextRequest,

@@ -1,8 +1,8 @@
 'use client';
 
-import { DataImport } from '@src/shared/app/(protected)/account/home/company-profile/components/data-import';
-import { CalendarAccounts } from '@src/shared/app/(protected)/account/home/user-profile/components/calendar-accounts';
-import { TrustedDevices } from '@src/shared/app/(protected)/account/security/overview/components/trusted-devices';
+import { DataImport } from '@src/app/(protected)/account/home/company-profile/components/data-import';
+import { CalendarAccounts } from '@src/app/(protected)/account/home/user-profile/components/calendar-accounts';
+import { TrustedDevices } from '@src/app/(protected)/account/security/overview/components/trusted-devices';
 import {
   Account,
   AuthTwoFactor,

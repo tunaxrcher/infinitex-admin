@@ -1,6 +1,6 @@
 'use client';
 
-import { DropdownMenu7 } from '@src/shared/partials/dropdown-menu/dropdown-menu-7';
+import { DropdownMenu7 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-7';
 import { ApexOptions } from 'apexcharts';
 import { EllipsisVertical } from 'lucide-react';
 import ApexChart from 'react-apexcharts';

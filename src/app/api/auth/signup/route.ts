@@ -7,8 +7,8 @@ import { sendEmail } from '@src/shared/services/send-email';
 import {
   getSignupSchema,
   SignupSchemaType,
-} from '@src/shared/app/(auth)/forms/signup-schema';
-import { User, UserStatus } from '@src/shared/app/models/user';
+} from '@src/app/(auth)/forms/signup-schema';
+import { User, UserStatus } from '@src/app/models/user';
 
 // Helper function to generate a verification token and send the email.
 async function sendVerificationEmail(user: User) {

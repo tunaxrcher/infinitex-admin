@@ -8,8 +8,8 @@ import { systemLog } from '@src/shared/services/system-log';
 import {
   PermissionSchema,
   PermissionSchemaType,
-} from '@src/shared/app/(protected)/user-management/permissions/forms/permission-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
+} from '@src/app/(protected)/user-management/permissions/forms/permission-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 
 // GET: Fetch a specific permission by ID
 export async function GET(

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu9 } from '@src/shared/partials/dropdown-menu/dropdown-menu-9';
+import { DropdownMenu9 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-9';
 import { EllipsisVertical, Luggage, Mail, Users, X } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
@@ -13,12 +13,12 @@ import {
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { About } from '@src/shared/app/(protected)/public-profile/profiles/default/components/about';
-import { CommunityBadges } from '@src/shared/app/(protected)/public-profile/profiles/default/components/community-badges';
-import { Connections } from '@src/shared/app/(protected)/public-profile/profiles/default/components/connections';
-import { Contributions } from '@src/shared/app/(protected)/public-profile/profiles/default/components/contributions';
-import { Projects } from '@src/shared/app/(protected)/public-profile/profiles/default/components/projects';
-import { WorkExperience } from '@src/shared/app/(protected)/public-profile/profiles/default/components/work-experience';
+import { About } from '@src/app/(protected)/public-profile/profiles/default/components/about';
+import { CommunityBadges } from '@src/app/(protected)/public-profile/profiles/default/components/community-badges';
+import { Connections } from '@src/app/(protected)/public-profile/profiles/default/components/connections';
+import { Contributions } from '@src/app/(protected)/public-profile/profiles/default/components/contributions';
+import { Projects } from '@src/app/(protected)/public-profile/profiles/default/components/projects';
+import { WorkExperience } from '@src/app/(protected)/public-profile/profiles/default/components/work-experience';
 
 export function ProfileDialog({
   open,

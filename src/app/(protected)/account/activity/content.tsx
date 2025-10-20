@@ -1,9 +1,9 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Engage } from '@src/shared/partials/common/engage';
+import { Engage } from '@src/app/components/partials/common/engage';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { ProfileActivityContent } from '@src/shared/app/(protected)/public-profile/activity/content';
+import { ProfileActivityContent } from '@src/app/(protected)/public-profile/activity/content';
 
 export function AccountActivityContent() {
   return (

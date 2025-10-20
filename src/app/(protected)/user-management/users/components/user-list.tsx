@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { User, UserStatus } from '@src/shared/app/models/user';
+import { User, UserStatus } from '@src/app/models/user';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { getUserStatusProps, UserStatusProps } from '../constants/status';
 import UserInviteDialog from './user-add-dialog';

@@ -7,12 +7,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
-import { AccountDeactivatedDialog } from '@src/shared/partials/dialogs/account-deactivated-dialog';
+} from '@src/app/components/partials/common/toolbar';
+import { AccountDeactivatedDialog } from '@src/app/components/partials/dialogs/account-deactivated-dialog';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountGetStartedContent } from '@src/shared/app/(protected)/account/home/get-started/content';
-import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
+import { AccountGetStartedContent } from '@src/app/(protected)/account/home/get-started/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 
 export default function AuthAccountDeactivatedPage() {
   const [profileModalOpen, setProfileModalOpen] = useState(true);

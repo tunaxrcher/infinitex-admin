@@ -7,12 +7,12 @@ import {
   ToolbarActions,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
-import { AccountDeviceManagementContent } from '@src/shared/app/(protected)/account/security/device-management/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { AccountDeviceManagementContent } from '@src/app/(protected)/account/security/device-management/content';
 
 export default function AccountDeviceManagementPage() {
   const { settings } = useSettings();

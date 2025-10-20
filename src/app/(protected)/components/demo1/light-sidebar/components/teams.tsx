@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Avatar, AvatarGroup } from '@src/shared/partials/common/avatar-group';
-import { Rating } from '@src/shared/partials/common/rating';
+import { Avatar, AvatarGroup } from '@src/app/components/partials/common/avatar-group';
+import { Rating } from '@src/app/components/partials/common/rating';
 import {
   ColumnDef,
   getCoreRowModel,

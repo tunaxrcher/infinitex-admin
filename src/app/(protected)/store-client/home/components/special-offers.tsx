@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
-import { Card1 } from '@src/shared/app/(protected)/store-client/home/special-offers/card1';
-import { Card2 } from '@src/shared/app/(protected)/store-client/home/special-offers/card2';
+import { Card1 } from '@src/app/(protected)/store-client/home/special-offers/card1';
+import { Card2 } from '@src/app/(protected)/store-client/home/special-offers/card2';
 
 export function SpecialOffers() {
   return (

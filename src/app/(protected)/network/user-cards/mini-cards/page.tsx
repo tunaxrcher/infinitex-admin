@@ -7,11 +7,11 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { NetworkMiniCardsContent } from '@src/shared/app/(protected)/network/user-cards/mini-cards/content';
+import { NetworkMiniCardsContent } from '@src/app/(protected)/network/user-cards/mini-cards/content';
 
 export default function NetworkMiniCardsPage() {
   const { settings } = useSettings();

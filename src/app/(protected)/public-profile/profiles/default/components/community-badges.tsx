@@ -1,6 +1,6 @@
 'use client';
 
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import {
   MessagesSquare,
   Truck,

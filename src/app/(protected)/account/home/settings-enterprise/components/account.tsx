@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarInput } from '@src/shared/partials/common/avatar-input';
+import { AvatarInput } from '@src/app/components/partials/common/avatar-input';
 import { Copy, SquarePen } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';

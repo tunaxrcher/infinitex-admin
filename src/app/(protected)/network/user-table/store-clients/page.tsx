@@ -7,11 +7,11 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { NetworkStoreClientsContent } from '@src/shared/app/(protected)/network/user-table/store-clients/content';
+import { NetworkStoreClientsContent } from '@src/app/(protected)/network/user-table/store-clients/content';
 
 export default function NetworkStoreClientsPage() {
   const { settings } = useSettings();

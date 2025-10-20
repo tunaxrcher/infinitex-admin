@@ -8,9 +8,9 @@ import { systemLog } from '@src/shared/services/system-log';
 import {
   RoleSchema,
   RoleSchemaType,
-} from '@src/shared/app/(protected)/user-management/roles/forms/role-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
-import { UserRolePermission } from '@src/shared/app/models/user';
+} from '@src/app/(protected)/user-management/roles/forms/role-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
+import { UserRolePermission } from '@src/app/models/user';
 
 // GET: Fetch a specific role by ID, including permissions
 export async function GET(

@@ -1,4 +1,4 @@
-import { Faq } from '@src/shared/partials/common/faq';
+import { Faq } from '@src/app/components/partials/common/faq';
 import { TeamInfo } from '../../account/members/team-info/components/team-info';
 import { Teams } from '../demo1';
 import { Options } from './components';

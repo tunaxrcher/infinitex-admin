@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { CardTournament } from '@src/shared/partials/cards';
+import { CardTournament } from '@src/app/components/partials/cards';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';

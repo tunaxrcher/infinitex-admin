@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu3 } from '@src/shared/partials/dropdown-menu/dropdown-menu-3';
-import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu3 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-3';
+import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
 import { EllipsisVertical } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';

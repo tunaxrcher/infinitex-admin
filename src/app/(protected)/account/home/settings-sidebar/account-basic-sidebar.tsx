@@ -3,7 +3,7 @@
 import {
   ScrollspyMenu,
   ScrollspyMenuItems,
-} from '@src/shared/partials/navbar/scrollspy-menu';
+} from '@src/app/components/partials/navbar/scrollspy-menu';
 
 export function AccountSettingsSidebar() {
   const items: ScrollspyMenuItems = [

@@ -1,6 +1,6 @@
 'use client';
 
-import { Help } from '@src/shared/partials/common/help';
+import { Help } from '@src/app/components/partials/common/help';
 import { SecurityLog } from './components';
 
 export function AccountSecurityLogContent() {

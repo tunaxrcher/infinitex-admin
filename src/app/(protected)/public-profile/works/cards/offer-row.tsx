@@ -1,11 +1,11 @@
 'use client';
 
 import { Fragment } from 'react';
-import { HexagonBadge } from '@src/shared/partials/common/hexagon-badge';
+import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { Rocket } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Card, CardContent } from '@src/shared/components/ui/card';
-import { IOfferRowProps } from '@src/shared/app/(protected)/public-profile/works/cards/offer';
+import { IOfferRowProps } from '@src/app/(protected)/public-profile/works/cards/offer';
 
 const OfferRow = ({ size, iconSize, title, subTitle }: IOfferRowProps) => {
   return (

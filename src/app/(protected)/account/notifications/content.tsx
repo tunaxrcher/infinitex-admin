@@ -1,12 +1,12 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Engage } from '@src/shared/partials/common/engage';
-import { Faq } from '@src/shared/partials/common/faq';
+import { Engage } from '@src/app/components/partials/common/engage';
+import { Faq } from '@src/app/components/partials/common/faq';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
-} from '@src/shared/partials/common/highlighted-posts';
+} from '@src/app/components/partials/common/highlighted-posts';
 import { BellDot, BellRing, MessageSquareText } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Channels, DoNotDistrub, OtherNotifications } from './components';

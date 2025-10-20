@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { DropdownMenu4 } from '@src/shared/partials/dropdown-menu/dropdown-menu-4';
+import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
 import {
   Badge,
   Bolt,

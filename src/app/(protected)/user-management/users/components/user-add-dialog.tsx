@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { LoaderCircleIcon } from 'lucide-react';
-import { UserRole } from '@src/shared/app/models/user';
+import { UserRole } from '@src/app/models/user';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { UserAddSchema, UserAddSchemaType } from '../forms/user-add-schema';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarGroup, Avatars } from '@src/shared/partials/common/avatar-group';
+import { AvatarGroup, Avatars } from '@src/app/components/partials/common/avatar-group';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';

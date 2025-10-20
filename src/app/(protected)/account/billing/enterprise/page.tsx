@@ -6,12 +6,12 @@ import {
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
-} from '@src/shared/partials/common/toolbar';
+} from '@src/app/components/partials/common/toolbar';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountEnterpriseContent } from '@src/shared/app/(protected)/account/billing/enterprise/content';
-import { PageNavbar } from '@src/shared/app/(protected)/account/page-navbar';
+import { AccountEnterpriseContent } from '@src/app/(protected)/account/billing/enterprise/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 
 export default function AccountEnterprisePage() {
   const { settings } = useSettings();

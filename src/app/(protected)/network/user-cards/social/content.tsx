@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CardUserSocial, CardUserSocialRow } from '@src/shared/partials/cards';
+import { CardUserSocial, CardUserSocialRow } from '@src/app/components/partials/cards';
 import { LayoutGrid, List, Search, Settings2 } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';

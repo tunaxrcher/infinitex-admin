@@ -6,9 +6,9 @@ import { systemLog } from '@src/shared/services/system-log';
 import {
   UserProfileSchema,
   UserProfileSchemaType,
-} from '@src/shared/app/(protected)/user-management/users/[id]/forms/user-profile-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
-import { UserStatus } from '@src/shared/app/models/user';
+} from '@src/app/(protected)/user-management/users/[id]/forms/user-profile-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
+import { UserStatus } from '@src/app/models/user';
 
 // GET: Fetch a specific user by ID, including role
 export async function GET(

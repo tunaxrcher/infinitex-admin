@@ -7,9 +7,9 @@ import { systemLog } from '@src/shared/services/system-log';
 import {
   UserAddSchema,
   UserAddSchemaType,
-} from '@src/shared/app/(protected)/user-management/users/forms/user-add-schema';
-import authOptions from '@src/shared/app/api/auth/[...nextauth]/auth-options';
-import { UserStatus } from '@src/shared/app/models/user';
+} from '@src/app/(protected)/user-management/users/forms/user-add-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
+import { UserStatus } from '@src/app/models/user';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
