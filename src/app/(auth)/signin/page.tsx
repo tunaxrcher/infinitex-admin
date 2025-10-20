@@ -25,7 +25,7 @@ import { getSigninSchema, SigninSchemaType } from '../forms/signin-schema';
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get('from') || '/demo1';
+  const from = searchParams.get('from') || '/';
   
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
