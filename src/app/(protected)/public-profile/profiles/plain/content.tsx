@@ -5,7 +5,6 @@ import {
   RiTwitterXLine,
   RiYoutubeLine,
 } from '@remixicon/react';
-import { Dribbble, LoaderPinwheel, Mail } from 'lucide-react';
 import {
   INetworkItems,
   Network,
@@ -15,6 +14,7 @@ import {
   Statistics,
 } from '@src/app/(protected)/public-profile/profiles/company/components/statistics';
 import { Tags } from '@src/app/(protected)/public-profile/profiles/default/components/tags';
+import { Dribbble, LoaderPinwheel, Mail } from 'lucide-react';
 import { AboutMe, GettingStarted, OpenToWork } from './components';
 
 export function ProfilePlainContent() {

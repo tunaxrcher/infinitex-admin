@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { AvatarInput } from '@src/app/components/partials/common/avatar-input';
-import { format } from 'date-fns';
-import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
-import { cn } from '@src/shared/lib/utils';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { DateInput, TimeField } from '@src/shared/components/ui/datefield';
 import { Input, InputAddon, InputGroup } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
@@ -25,6 +27,9 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Switch } from '@src/shared/components/ui/switch';
+import { cn } from '@src/shared/lib/utils';
+import { format } from 'date-fns';
+import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
 
 interface IGeneralSettingsProps {
   title: string;

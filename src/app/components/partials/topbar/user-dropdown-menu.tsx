@@ -1,22 +1,5 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { I18N_LANGUAGES, Language } from '@src/shared/i18n/config';
-import {
-  BetweenHorizontalStart,
-  Coffee,
-  CreditCard,
-  FileText,
-  Globe,
-  Moon,
-  Settings,
-  Shield,
-  User,
-  UserCircle,
-  Users,
-} from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
-import { useTheme } from 'next-themes';
-import { useLanguage } from '@src/shared/providers/i18n-provider';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -32,6 +15,23 @@ import {
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
 import { Switch } from '@src/shared/components/ui/switch';
+import { I18N_LANGUAGES, Language } from '@src/shared/i18n/config';
+import { useLanguage } from '@src/shared/providers/i18n-provider';
+import {
+  BetweenHorizontalStart,
+  Coffee,
+  CreditCard,
+  FileText,
+  Globe,
+  Moon,
+  Settings,
+  Shield,
+  User,
+  UserCircle,
+  Users,
+} from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import { useTheme } from 'next-themes';
 
 export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
   const { data: session } = useSession();
@@ -163,7 +163,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             </DropdownMenuItem> */}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-{/* 
+        {/* 
         <DropdownMenuItem asChild>
           <Link
             href="https://devs.keenthemes.com"

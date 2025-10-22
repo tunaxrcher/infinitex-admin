@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
 import { Card1 } from '@src/app/(protected)/store-client/home/special-offers/card1';
 import { Card2 } from '@src/app/(protected)/store-client/home/special-offers/card2';
+import { Button } from '@src/shared/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 export function SpecialOffers() {
   return (
@@ -27,9 +27,9 @@ export function SpecialOffers() {
         <div className="lg:col-span-1">
           <div className="grid sm:grid-cols-2 gap-5 items-stretch">
             <Card2
-              logo='4.png'
-              title='Nike Dunk Low'
-              total='$110.00'
+              logo="4.png"
+              title="Nike Dunk Low"
+              total="$110.00"
               bgColor="bg-green-50 dark:bg-green-950/30"
               borderColor="border-green-200 dark:border-green-950"
             />

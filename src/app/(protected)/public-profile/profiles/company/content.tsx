@@ -5,11 +5,11 @@ import {
   RiTwitterXLine,
   RiYoutubeLine,
 } from '@remixicon/react';
-import { Dribbble, Mail } from 'lucide-react';
 import { Connections } from '@src/app/(protected)/public-profile/profiles/default/components/connections';
 import { Contributions } from '@src/app/(protected)/public-profile/profiles/default/components/contributions';
 import { Projects } from '@src/app/(protected)/public-profile/profiles/default/components/projects';
 import { Tags } from '@src/app/(protected)/public-profile/profiles/default/components/tags';
+import { Dribbble, Mail } from 'lucide-react';
 import {
   CompanyProfile,
   Highlights,

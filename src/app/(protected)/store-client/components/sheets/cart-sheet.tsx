@@ -1,4 +1,3 @@
-import { ShoppingCart, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -20,6 +19,7 @@ import {
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ShoppingCart, TrashIcon } from 'lucide-react';
 
 const items = [
   {
@@ -71,7 +71,9 @@ export function StoreClientCartSheet({
                   <div className="flex md:items-center gap-4">
                     <Card className="flex items-center justify-center bg-accent/50 h-[70px] w-[90px] shadow-none shrink-0">
                       <img
-                        src={toAbsoluteUrl(`/media/store/client/600x600/${item.logo}`)}
+                        src={toAbsoluteUrl(
+                          `/media/store/client/600x600/${item.logo}`,
+                        )}
                         className="h-[70px]"
                         alt="img"
                       />
@@ -119,7 +121,7 @@ export function StoreClientCartSheet({
                       </Select>
 
                       <Button size="sm" variant="outline" mode="icon">
-                        <TrashIcon/>
+                        <TrashIcon />
                       </Button>
                     </div>
 
@@ -155,5 +157,3 @@ export function StoreClientCartSheet({
     </Sheet>
   );
 }
-
-

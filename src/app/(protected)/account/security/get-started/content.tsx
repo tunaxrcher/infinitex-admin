@@ -1,6 +1,10 @@
 'use client';
 
 import {
+  IOptionsItems,
+  Options,
+} from '@src/app/(protected)/account/home/get-started/components/options';
+import {
   CloudCog,
   KeySquare,
   LayoutDashboard,
@@ -9,10 +13,6 @@ import {
   Settings,
   ShieldOff,
 } from 'lucide-react';
-import {
-  IOptionsItems,
-  Options,
-} from '@src/app/(protected)/account/home/get-started/components/options';
 
 export function AccountSecurityGetStartedContent() {
   const items: IOptionsItems = [

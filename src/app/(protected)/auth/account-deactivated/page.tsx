@@ -2,6 +2,8 @@
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
+import { AccountGetStartedContent } from '@src/app/(protected)/account/home/get-started/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 import {
   Toolbar,
   ToolbarDescription,
@@ -9,10 +11,8 @@ import {
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
 import { AccountDeactivatedDialog } from '@src/app/components/partials/dialogs/account-deactivated-dialog';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountGetStartedContent } from '@src/app/(protected)/account/home/get-started/content';
-import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { Button } from '@src/shared/components/ui/button';
 
 export default function AuthAccountDeactivatedPage() {
   const [profileModalOpen, setProfileModalOpen] = useState(true);

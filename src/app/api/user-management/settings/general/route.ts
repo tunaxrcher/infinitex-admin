@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { GeneralSettingsSchema } from '@src/app/(protected)/user-management/settings/forms/general-settings-schema';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 import { getClientIP } from '@src/shared/lib/api';
 import { prisma } from '@src/shared/lib/prisma';
 import { deleteFromS3, uploadToS3 } from '@src/shared/lib/s3-upload';
 import { systemLog } from '@src/shared/services/system-log';
-import { GeneralSettingsSchema } from '@src/app/(protected)/user-management/settings/forms/general-settings-schema';
-import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
+import { getServerSession } from 'next-auth/next';
 
 export async function POST(request: NextRequest) {
   try {

@@ -2,6 +2,8 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
+import { AccountIntegrationsContent } from '@src/app/(protected)/account/integrations/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 import {
   Toolbar,
   ToolbarActions,
@@ -9,11 +11,9 @@ import {
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountIntegrationsContent } from '@src/app/(protected)/account/integrations/content';
-import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { Button } from '@src/shared/components/ui/button';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 export default function AccountIntegrationsPage() {
   const { settings } = useSettings();

@@ -2,7 +2,12 @@
 
 import { ReactNode } from 'react';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Switch } from '@src/shared/components/ui/switch';
 
 interface IManageDataItem {

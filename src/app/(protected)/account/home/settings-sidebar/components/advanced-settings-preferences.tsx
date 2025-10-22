@@ -2,10 +2,18 @@
 
 import { useId } from 'react';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Label } from '@src/shared/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@src/shared/components/ui/radio-group';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@src/shared/components/ui/radio-group';
 import {
   Select,
   SelectContent,

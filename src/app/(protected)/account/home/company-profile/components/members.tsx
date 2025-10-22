@@ -3,8 +3,6 @@
 import Link from 'next/link';
 import { DropdownMenu3 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-3';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
-import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -24,6 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical } from 'lucide-react';
 
 interface IMembersItem {
   avatar: string;

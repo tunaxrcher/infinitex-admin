@@ -6,7 +6,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@src/shared/components/ui/accordion';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 
 export interface FaqItem {
   title: string;

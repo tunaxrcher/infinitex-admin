@@ -5,6 +5,7 @@ This guide explains how to use the internationalization (i18n) system in this Ne
 ## Overview
 
 The application uses `react-i18next` for internationalization with the following setup:
+
 - Translation files stored in `i18n/messages/`
 - Custom provider wrapping the app
 - TypeScript support with helper hooks
@@ -81,9 +82,7 @@ function LanguageSwitcher() {
   return (
     <div>
       <p>Current: {language.name}</p>
-      <button onClick={() => changeLanguage('es')}>
-        Switch to Spanish
-      </button>
+      <button onClick={() => changeLanguage('es')}>Switch to Spanish</button>
     </div>
   );
 }
@@ -125,6 +124,7 @@ Translation files should follow this structure:
 ## Available Languages
 
 The application supports the following languages:
+
 - English (en)
 - Arabic (ar) - RTL
 - Spanish (es)
@@ -134,15 +134,19 @@ The application supports the following languages:
 ## Helper Functions
 
 ### tButton(key: string)
+
 Translates button labels from `common.buttons.{key}`
 
 ### tLabel(key: string)
+
 Translates form labels from `common.labels.{key}`
 
 ### tMessage(key: string)
+
 Translates messages from `common.messages.{key}`
 
 ### tNav(key: string)
+
 Translates navigation items from `navigation.{key}`
 
 ## Best Practices
@@ -156,6 +160,7 @@ Translates navigation items from `navigation.{key}`
 ## RTL Support
 
 The application automatically handles RTL (Right-to-Left) languages like Arabic:
+
 - Document direction is set automatically
 - Radix UI components adapt to direction
 - Custom CSS can use `dir()` selectors for RTL-specific styles
@@ -163,6 +168,7 @@ The application automatically handles RTL (Right-to-Left) languages like Arabic:
 ## Debugging
 
 Use the debugging information available in the i18n example component:
+
 - Current language code
 - Text direction
 - Available languages

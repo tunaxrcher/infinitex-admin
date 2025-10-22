@@ -4,9 +4,6 @@
 import { JSX, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MENU_SIDEBAR_COMPACT } from '@src/shared/config/menu.config';
-import { MenuConfig, MenuItem } from '@src/shared/config/types';
-import { cn } from '@src/shared/lib/utils';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -17,6 +14,9 @@ import {
   AccordionMenuSubContent,
   AccordionMenuSubTrigger,
 } from '@src/shared/components/ui/accordion-menu';
+import { MENU_SIDEBAR_COMPACT } from '@src/shared/config/menu.config';
+import { MenuConfig, MenuItem } from '@src/shared/config/types';
+import { cn } from '@src/shared/lib/utils';
 
 export function SidebarMenuPrimary() {
   const pathname = usePathname();

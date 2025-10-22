@@ -2,8 +2,18 @@
 
 import { ReactElement } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@src/shared/components/ui/table';
 
 interface IAboutTable {
   status: string;

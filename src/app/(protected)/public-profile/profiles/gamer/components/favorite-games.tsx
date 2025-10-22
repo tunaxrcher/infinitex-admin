@@ -1,7 +1,12 @@
 'use client';
 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 interface IFavoriteGamesItem {
   image: string;

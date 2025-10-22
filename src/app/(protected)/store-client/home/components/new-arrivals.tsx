@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
 import { Card2 } from '@src/app/(protected)/store-client/components/common/card2';
+import { Button } from '@src/shared/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 export interface INewArrivalsItem {
   logo: string;

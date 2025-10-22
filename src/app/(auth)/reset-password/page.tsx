@@ -3,10 +3,7 @@
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, ArrowLeft, Check } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { apiFetch } from '@src/shared/lib/api';
+import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -18,8 +15,10 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { LoaderCircleIcon } from 'lucide-react';
-import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
+import { apiFetch } from '@src/shared/lib/api';
+import { AlertCircle, ArrowLeft, Check, LoaderCircleIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export default function Page() {
   const [error, setError] = useState<string | null>(null);
@@ -148,7 +147,9 @@ export default function Page() {
                 disabled={!!success || isProcessing}
                 className="w-full"
               >
-                {isProcessing ? <LoaderCircleIcon className="animate-spin" /> : null}
+                {isProcessing ? (
+                  <LoaderCircleIcon className="animate-spin" />
+                ) : null}
                 Submit
               </Button>
             }

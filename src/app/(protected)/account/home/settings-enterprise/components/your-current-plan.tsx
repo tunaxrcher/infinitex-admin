@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { DropdownMenu3 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-3';
-import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -12,6 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical } from 'lucide-react';
 
 interface IYourCurrentPlanItem {
   title: string;

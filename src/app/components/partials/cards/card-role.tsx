@@ -2,9 +2,9 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { EllipsisVertical } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
+import { EllipsisVertical } from 'lucide-react';
 import { HexagonBadge } from '../common/hexagon-badge';
 import { DropdownMenu5 } from '../dropdown-menu/dropdown-menu-5';
 

@@ -1,19 +1,17 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { I18nextProvider } from 'react-i18next';
 import { DirectionProvider as RadixDirectionProvider } from '@radix-ui/react-direction';
 import { I18N_LANGUAGES } from '@src/shared/i18n/config';
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-
+import arTranslations from '@src/shared/i18n/messages/ar.json';
+import chTranslations from '@src/shared/i18n/messages/ch.json';
+import deTranslations from '@src/shared/i18n/messages/de.json';
 // Import translation files
 import enTranslations from '@src/shared/i18n/messages/en.json';
-import arTranslations from '@src/shared/i18n/messages/ar.json';
 import esTranslations from '@src/shared/i18n/messages/es.json';
-import deTranslations from '@src/shared/i18n/messages/de.json';
-import chTranslations from '@src/shared/i18n/messages/ch.json';
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 interface I18nProviderProps {
   children: ReactNode;
@@ -84,14 +82,14 @@ function I18nProvider({ children }: I18nProviderProps) {
   }, []);
 
   // Get current language for direction
-  const currentLanguage = I18N_LANGUAGES.find((lang) => lang.code === (i18n.language || 'en')) || I18N_LANGUAGES[0];
+  const currentLanguage =
+    I18N_LANGUAGES.find((lang) => lang.code === (i18n.language || 'en')) ||
+    I18N_LANGUAGES[0];
 
   // Don't render until i18n is initialized
   if (!isI18nInitialized) {
     return (
-      <RadixDirectionProvider dir="ltr">
-        {children}
-      </RadixDirectionProvider>
+      <RadixDirectionProvider dir="ltr">{children}</RadixDirectionProvider>
     );
   }
 
@@ -105,7 +103,9 @@ function I18nProvider({ children }: I18nProviderProps) {
 }
 
 const useLanguage = () => {
-  const currentLanguage = I18N_LANGUAGES.find((lang) => lang.code === i18n.language) || I18N_LANGUAGES[0];
+  const currentLanguage =
+    I18N_LANGUAGES.find((lang) => lang.code === i18n.language) ||
+    I18N_LANGUAGES[0];
 
   const changeLanguage = (code: string) => {
     i18n.changeLanguage(code);

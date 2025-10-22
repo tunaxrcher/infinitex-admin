@@ -81,8 +81,8 @@
     }
   }
 
-   /* Target safari browser only */
-   @supports (-webkit-hyphens: none) {
+  /* Target safari browser only */
+  @supports (-webkit-hyphens: none) {
     .kt-scrollable,
     .kt-scrollable-hover {
       overflow: auto;

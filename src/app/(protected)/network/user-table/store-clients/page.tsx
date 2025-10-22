@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment } from 'react';
+import { NetworkStoreClientsContent } from '@src/app/(protected)/network/user-table/store-clients/content';
 import {
   Toolbar,
   ToolbarActions,
@@ -8,10 +9,9 @@ import {
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { NetworkStoreClientsContent } from '@src/app/(protected)/network/user-table/store-clients/content';
+import { Button } from '@src/shared/components/ui/button';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 export default function NetworkStoreClientsPage() {
   const { settings } = useSettings();

@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, Mails } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Card } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Heart, Mails } from 'lucide-react';
 
 interface IWorkProps {
   image: string;

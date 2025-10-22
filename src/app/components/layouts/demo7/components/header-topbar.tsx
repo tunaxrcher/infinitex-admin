@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
-import { ArrowUp, Crown } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
 import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
+import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
+import { Button } from '@src/shared/components/ui/button';
+import { ArrowUp, Crown } from 'lucide-react';
 
 const HeaderTopbar = () => {
   const pathname = usePathname();

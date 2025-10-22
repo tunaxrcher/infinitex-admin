@@ -3,19 +3,6 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Filter, Search, Settings2, X } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -45,6 +32,19 @@ import {
 } from '@src/shared/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Switch } from '@src/shared/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Filter, Search, Settings2, X } from 'lucide-react';
 
 interface IData {
   id: string;

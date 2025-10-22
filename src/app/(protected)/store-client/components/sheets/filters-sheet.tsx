@@ -2,7 +2,6 @@
 
 import { ReactNode, useState } from 'react';
 import { RiMoneyDollarCircleLine } from '@remixicon/react';
-import { Info, Star } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
@@ -17,12 +16,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
-import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@src/shared/components/ui/toggle-group';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
+import { Info, Star } from 'lucide-react';
 
 const items = [
   { label: 'Sneakers' },

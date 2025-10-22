@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
-import { getServerSession } from 'next-auth/next';
+import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
 import { getClientIP } from '@src/shared/lib/api';
 import { prisma } from '@src/shared/lib/prisma'; // Adjust the import based on your Prisma setup
 import { systemLog } from '@src/shared/services/system-log';
-import authOptions from '@src/app/api/auth/[...nextauth]/auth-options';
+import { getServerSession } from 'next-auth/next';
 
 export async function DELETE(request: NextRequest) {
   try {

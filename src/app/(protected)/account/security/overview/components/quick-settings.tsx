@@ -3,10 +3,10 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
-import { LogOut, LucideIcon, ShieldCheck } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Switch } from '@src/shared/components/ui/switch';
+import { LogOut, LucideIcon, ShieldCheck } from 'lucide-react';
 
 interface IQuickSettingsItem {
   icon: LucideIcon;

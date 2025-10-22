@@ -1,8 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { animate, motion, useInView, UseInViewOptions, useMotionValue } from 'motion/react';
 import { cn } from '@src/shared/lib/utils';
+import {
+  animate,
+  motion,
+  useInView,
+  UseInViewOptions,
+  useMotionValue,
+} from 'motion/react';
 
 interface CountingNumberProps {
   from?: number;

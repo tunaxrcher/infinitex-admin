@@ -3,12 +3,7 @@
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { X } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { apiFetch } from '@src/shared/lib/api';
-import { cn } from '@src/shared/lib/utils';
+import { UserPermission, UserRole } from '@src/app/models/user';
 import {
   Alert,
   AlertDescription,
@@ -48,9 +43,13 @@ import {
   PopoverTrigger,
 } from '@src/shared/components/ui/popover';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { LoaderCircleIcon } from 'lucide-react';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { UserPermission, UserRole } from '@src/app/models/user';
+import { apiFetch } from '@src/shared/lib/api';
+import { cn } from '@src/shared/lib/utils';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { LoaderCircleIcon, X } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { usePermissionSelectQuery } from '../../permissions/hooks/use-permission-select-query';
 import { RoleSchema, RoleSchemaType } from '../forms/role-schema';
 

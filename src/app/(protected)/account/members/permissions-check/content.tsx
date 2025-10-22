@@ -1,15 +1,15 @@
 'use client';
 
 import { Fragment } from 'react';
+import { Members } from '@src/app/(protected)/account/members/permissions-toggle/components/members';
 import { Engage } from '@src/app/components/partials/common/engage';
 import { Faq } from '@src/app/components/partials/common/faq';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
 } from '@src/app/components/partials/common/highlighted-posts';
-import { ShieldCheck, ToggleRight, UserCog } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Members } from '@src/app/(protected)/account/members/permissions-toggle/components/members';
+import { ShieldCheck, ToggleRight, UserCog } from 'lucide-react';
 import { PermissionsCheck } from './components';
 
 export function AccountPermissionsCheckContent() {

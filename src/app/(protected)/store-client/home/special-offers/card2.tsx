@@ -1,11 +1,11 @@
 'use client';
 
-import { ShoppingCart } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { useStoreClient } from '@src/app/(protected)/store-client/components/context';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
-import { useStoreClient } from '@src/app/(protected)/store-client/components/context';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ShoppingCart } from 'lucide-react';
 
 interface ICard2Props {
   bgColor: string;

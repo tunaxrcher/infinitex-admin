@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { CardTeam, CardTeamRow } from '@src/app/components/partials/cards';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@src/shared/components/ui/toggle-group';
 import {
   Brain,
   Ghost,
@@ -16,8 +21,6 @@ import {
   Star,
   Users,
 } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
 
 interface ITeamsItem {
   icon: LucideIcon;

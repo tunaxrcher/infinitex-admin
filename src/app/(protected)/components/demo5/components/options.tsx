@@ -1,14 +1,14 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
+import { Button } from '@src/shared/components/ui/button';
+import { Card } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   BadgeCheck,
   ChevronRight,
   LucideIcon,
   ShieldCheck,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
-import { Card } from '@src/shared/components/ui/card';
 
 interface IOptionsItem {
   title: string;

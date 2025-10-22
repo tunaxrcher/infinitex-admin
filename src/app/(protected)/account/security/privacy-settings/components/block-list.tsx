@@ -1,12 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { Trash2 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Trash2 } from 'lucide-react';
 
 interface IBlockListItem {
   avatar: string;

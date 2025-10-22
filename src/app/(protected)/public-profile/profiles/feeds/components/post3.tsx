@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText } from 'lucide-react';
-import { Card } from '@src/shared/components/ui/card';
 import { ICommentsItems } from '@src/app/(protected)/public-profile/profiles/feeds/components/post1';
 import { Comments } from '@src/app/(protected)/public-profile/profiles/feeds/post/comments';
 import { Heading } from '@src/app/(protected)/public-profile/profiles/feeds/post/heading';
 import { Likes } from '@src/app/(protected)/public-profile/profiles/feeds/post/likes';
 import { Saves } from '@src/app/(protected)/public-profile/profiles/feeds/post/saves';
 import { Tabs } from '@src/app/(protected)/public-profile/profiles/feeds/post/tabs';
+import { Card } from '@src/shared/components/ui/card';
+import { FileText } from 'lucide-react';
 
 const Post3 = () => {
   const [activeTab, setActiveTab] = useState('likes');

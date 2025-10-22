@@ -3,23 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
 import { SearchDialog } from '@src/app/components/partials/dialogs/search/search-dialog';
 import { AppsDropdownMenu } from '@src/app/components/partials/topbar/apps-dropdown-menu';
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
 import { NotificationsSheet } from '@src/app/components/partials/topbar/notifications-sheet';
 import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
-import {
-  Bell,
-  LayoutGrid,
-  Menu,
-  MessageCircleMore,
-  Search,
-  SquareChevronRight,
-} from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
+import { Container } from '@src/shared/components/common/container';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Sheet,
@@ -28,8 +18,18 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
-import { Container } from '@src/shared/components/common/container';
-import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import {
+  Bell,
+  LayoutGrid,
+  Menu,
+  MessageCircleMore,
+  Search,
+  SquareChevronRight,
+} from 'lucide-react';
 import { Breadcrumb } from './breadcrumb';
 import { MegaMenu } from './mega-menu';
 import { MegaMenuMobile } from './mega-menu-mobile';

@@ -1,13 +1,13 @@
 'use client';
 
 import { Fragment } from 'react';
+import { FeaturesHighlight } from '@src/app/(protected)/public-profile/profiles/creator/components/features-highlight';
 import {
   HighlightedPosts,
   HighlightedPostsItems,
 } from '@src/app/components/partials/common/highlighted-posts';
-import { ShieldCheck, ShieldOff, ShieldQuestion } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { FeaturesHighlight } from '@src/app/(protected)/public-profile/profiles/creator/components/features-highlight';
+import { ShieldCheck, ShieldOff, ShieldQuestion } from 'lucide-react';
 import {
   Authentification,
   GeneralSettings,

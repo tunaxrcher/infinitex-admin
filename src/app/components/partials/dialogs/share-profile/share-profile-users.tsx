@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Select,
   SelectContent,
@@ -9,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export function ShareProfileUsers() {
   const items = [

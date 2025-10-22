@@ -9,7 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@src/shared/components/ui/table';
 
 interface IAttributesItem {
   label: string;

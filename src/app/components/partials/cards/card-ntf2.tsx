@@ -1,8 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Copy, Settings } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -10,6 +8,8 @@ import {
   CardFooter,
   CardHeader,
 } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Copy, Settings } from 'lucide-react';
 import { AvatarSingle } from '../common/avatar-single';
 import { DropdownMenu4 } from '../dropdown-menu/dropdown-menu-4';
 import { IAvatar } from './card-author';

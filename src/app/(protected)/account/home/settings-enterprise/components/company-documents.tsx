@@ -1,16 +1,38 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+} from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@src/shared/components/ui/table';
 import {
   formatBytes,
   useFileUpload,
   type FileMetadata,
   type FileWithPreview,
 } from '@src/shared/hooks/use-file-upload';
-import { Alert, AlertContent, AlertDescription, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@src/shared/components/ui/table';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
 import {
   CloudUpload,
   Download,
@@ -25,10 +47,6 @@ import {
   Upload,
   VideoIcon,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import { Card, CardContent,CardHeader,CardTitle } from '@src/shared/components/ui/card';
-import Link from 'next/link';
 
 interface FileUploadItem extends FileWithPreview {
   progress: number;
@@ -99,7 +117,8 @@ export function CompanyDocuments({
     status: 'completed' as const,
   }));
 
-  const [uploadFiles, setUploadFiles] = useState<FileUploadItem[]>(defaultUploadFiles);
+  const [uploadFiles, setUploadFiles] =
+    useState<FileUploadItem[]>(defaultUploadFiles);
 
   const [
     { isDragging, errors },
@@ -123,7 +142,9 @@ export function CompanyDocuments({
       // Convert to upload items when files change, preserving existing status
       const newUploadFiles = newFiles.map((file) => {
         // Check if this file already exists in uploadFiles
-        const existingFile = uploadFiles.find((existing) => existing.id === file.id);
+        const existingFile = uploadFiles.find(
+          (existing) => existing.id === file.id,
+        );
 
         if (existingFile) {
           // Preserve existing file status and progress
@@ -164,7 +185,9 @@ export function CompanyDocuments({
               ...file,
               progress: 100,
               status: shouldFail ? ('error' as const) : ('completed' as const),
-              error: shouldFail ? 'Upload failed. Please try again.' : undefined,
+              error: shouldFail
+                ? 'Upload failed. Please try again.'
+                : undefined,
             };
           }
 
@@ -184,7 +207,14 @@ export function CompanyDocuments({
   const retryUpload = (fileId: string) => {
     setUploadFiles((prev) =>
       prev.map((file) =>
-        file.id === fileId ? { ...file, progress: 0, status: 'uploading' as const, error: undefined } : file,
+        file.id === fileId
+          ? {
+              ...file,
+              progress: 0,
+              status: 'uploading' as const,
+              error: undefined,
+            }
+          : file,
       ),
     );
   };
@@ -195,9 +225,12 @@ export function CompanyDocuments({
     if (type.startsWith('video/')) return <VideoIcon className="size-4" />;
     if (type.startsWith('audio/')) return <HeadphonesIcon className="size-4" />;
     if (type.includes('pdf')) return <FileTextIcon className="size-4" />;
-    if (type.includes('word') || type.includes('doc')) return <FileTextIcon className="size-4" />;
-    if (type.includes('excel') || type.includes('sheet')) return <FileSpreadsheetIcon className="size-4" />;
-    if (type.includes('zip') || type.includes('rar')) return <FileArchiveIcon className="size-4" />;
+    if (type.includes('word') || type.includes('doc'))
+      return <FileTextIcon className="size-4" />;
+    if (type.includes('excel') || type.includes('sheet'))
+      return <FileSpreadsheetIcon className="size-4" />;
+    if (type.includes('zip') || type.includes('rar'))
+      return <FileArchiveIcon className="size-4" />;
     return <FileTextIcon className="size-4" />;
   };
 
@@ -225,7 +258,9 @@ export function CompanyDocuments({
         <div
           className={cn(
             'relative rounded-lg border border-dashed p-6 text-center transition-colors',
-            isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-muted-foreground/50',
+            isDragging
+              ? 'border-primary bg-primary/5'
+              : 'border-muted-foreground/25 hover:border-muted-foreground/50',
           )}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
@@ -238,7 +273,9 @@ export function CompanyDocuments({
             <div
               className={cn(
                 'flex h-12 w-12 items-center justify-center rounded-full bg-muted transition-colors',
-                isDragging ? 'border-primary bg-primary/10' : 'border-muted-foreground/25',
+                isDragging
+                  ? 'border-primary bg-primary/10'
+                  : 'border-muted-foreground/25',
               )}
             >
               <Upload className="h-5 w-5 text-muted-foreground" />
@@ -256,7 +293,8 @@ export function CompanyDocuments({
                 </button>
               </p>
               <p className="text-xs text-muted-foreground">
-                Maximum file size: {formatBytes(maxSize)} • Maximum files: {maxFiles}
+                Maximum file size: {formatBytes(maxSize)} • Maximum files:{' '}
+                {maxFiles}
               </p>
             </div>
           </div>
@@ -266,7 +304,9 @@ export function CompanyDocuments({
         {uploadFiles.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">Files ({uploadFiles.length})</h3>
+              <h3 className="text-sm font-medium">
+                Files ({uploadFiles.length})
+              </h3>
               <div className="flex gap-2">
                 <Button onClick={openFileDialog} variant="outline" size="sm">
                   <CloudUpload />
@@ -280,115 +320,129 @@ export function CompanyDocuments({
             </div>
 
             <div className="kt-scrollable-x-auto rounded-lg border">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="text-xs">
-                      <TableHead className="h-9">Name</TableHead>
-                      <TableHead className="h-9">Type</TableHead>
-                      <TableHead className="h-9">Size</TableHead>
-                      <TableHead className="h-9 w-[100px] text-end">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {uploadFiles.map((fileItem) => (
-                      <TableRow key={fileItem.id}>
-                        <TableCell className="py-2 ps-1.5">
-                          <div className="flex items-center gap-1 truncate">
-                            <div
-                              className={cn(
-                                'size-8 shrink-0 relative flex items-center justify-center text-muted-foreground/80',
-                              )}
-                            >
-                              {fileItem.status === 'uploading' ? (
-                                <div className="relative">
-                                  {/* Circular progress background */}
-                                  <svg className="size-8 -rotate-90" viewBox="0 0 32 32">
-                                    <circle
-                                      cx="16"
-                                      cy="16"
-                                      r="14"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      className="text-muted-foreground/20"
-                                    />
-                                    {/* Progress circle */}
-                                    <circle
-                                      cx="16"
-                                      cy="16"
-                                      r="14"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      strokeDasharray={`${2 * Math.PI * 14}`}
-                                      strokeDashoffset={`${2 * Math.PI * 14 * (1 - fileItem.progress / 100)}`}
-                                      className="text-primary transition-all duration-300"
-                                      strokeLinecap="round"
-                                    />
-                                  </svg>
-                                  {/* File icon in center */}
-                                  <div className="absolute inset-0 flex items-center justify-center">
-                                    {getFileIcon(fileItem.file)}
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="not-[]:size-8 flex items-center justify-center">
+              <Table>
+                <TableHeader>
+                  <TableRow className="text-xs">
+                    <TableHead className="h-9">Name</TableHead>
+                    <TableHead className="h-9">Type</TableHead>
+                    <TableHead className="h-9">Size</TableHead>
+                    <TableHead className="h-9 w-[100px] text-end">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {uploadFiles.map((fileItem) => (
+                    <TableRow key={fileItem.id}>
+                      <TableCell className="py-2 ps-1.5">
+                        <div className="flex items-center gap-1 truncate">
+                          <div
+                            className={cn(
+                              'size-8 shrink-0 relative flex items-center justify-center text-muted-foreground/80',
+                            )}
+                          >
+                            {fileItem.status === 'uploading' ? (
+                              <div className="relative">
+                                {/* Circular progress background */}
+                                <svg
+                                  className="size-8 -rotate-90"
+                                  viewBox="0 0 32 32"
+                                >
+                                  <circle
+                                    cx="16"
+                                    cy="16"
+                                    r="14"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    className="text-muted-foreground/20"
+                                  />
+                                  {/* Progress circle */}
+                                  <circle
+                                    cx="16"
+                                    cy="16"
+                                    r="14"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeDasharray={`${2 * Math.PI * 14}`}
+                                    strokeDashoffset={`${2 * Math.PI * 14 * (1 - fileItem.progress / 100)}`}
+                                    className="text-primary transition-all duration-300"
+                                    strokeLinecap="round"
+                                  />
+                                </svg>
+                                {/* File icon in center */}
+                                <div className="absolute inset-0 flex items-center justify-center">
                                   {getFileIcon(fileItem.file)}
                                 </div>
-                              )}
-                            </div>
-                            <p className="flex items-center gap-1 truncate text-sm font-medium">
-                              {fileItem.file.name}
-                              {fileItem.status === 'error' && (
-                                <Badge variant="destructive" size="sm" appearance="light">
-                                  Error
-                                </Badge>
-                              )}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {getFileTypeLabel(fileItem.file)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="py-2 text-sm text-muted-foreground">
-                          {formatBytes(fileItem.file.size)}
-                        </TableCell>
-                        <TableCell className="py-2 pe-1">
-                          <div className="flex items-center gap-1">
-                            {fileItem.preview && (
-                              <Button variant="dim" size="icon" className="size-8" asChild>
-                                <Link href={fileItem.preview} target="_blank">
-                                  <Download className="size-3.5" />
-                                </Link>
-                              </Button>
-                            )}
-                            {fileItem.status === 'error' ? (
-                              <Button
-                                onClick={() => retryUpload(fileItem.id)}
-                                variant="dim"
-                                size="icon"
-                                className="size-8 text-destructive/80 hover:text-destructive"
-                              >
-                                <RefreshCwIcon className="size-3.5" />
-                              </Button>
+                              </div>
                             ) : (
-                              <Button
-                                onClick={() => removeUploadFile(fileItem.id)}
-                                variant="dim"
-                                size="icon"
-                                className="size-8"
-                              >
-                                <Trash2 className="size-3.5" />
-                              </Button>
+                              <div className="not-[]:size-8 flex items-center justify-center">
+                                {getFileIcon(fileItem.file)}
+                              </div>
                             )}
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                          <p className="flex items-center gap-1 truncate text-sm font-medium">
+                            {fileItem.file.name}
+                            {fileItem.status === 'error' && (
+                              <Badge
+                                variant="destructive"
+                                size="sm"
+                                appearance="light"
+                              >
+                                Error
+                              </Badge>
+                            )}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {getFileTypeLabel(fileItem.file)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 text-sm text-muted-foreground">
+                        {formatBytes(fileItem.file.size)}
+                      </TableCell>
+                      <TableCell className="py-2 pe-1">
+                        <div className="flex items-center gap-1">
+                          {fileItem.preview && (
+                            <Button
+                              variant="dim"
+                              size="icon"
+                              className="size-8"
+                              asChild
+                            >
+                              <Link href={fileItem.preview} target="_blank">
+                                <Download className="size-3.5" />
+                              </Link>
+                            </Button>
+                          )}
+                          {fileItem.status === 'error' ? (
+                            <Button
+                              onClick={() => retryUpload(fileItem.id)}
+                              variant="dim"
+                              size="icon"
+                              className="size-8 text-destructive/80 hover:text-destructive"
+                            >
+                              <RefreshCwIcon className="size-3.5" />
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => removeUploadFile(fileItem.id)}
+                              variant="dim"
+                              size="icon"
+                              className="size-8"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         )}

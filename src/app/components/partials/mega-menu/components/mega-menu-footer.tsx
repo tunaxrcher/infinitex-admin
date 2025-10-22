@@ -10,7 +10,10 @@ const MegaMenuFooter = () => {
           In development
         </div>
         <div className="text-sm fomt-medium text-secondary-foreground">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur in consequuntur animi laborum soluta dolorum itaque modi, doloremque accusantium dolorem. Aperiam maxime reiciendis cupiditate facilis optio veniam magnam nihil odio.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur in
+          consequuntur animi laborum soluta dolorum itaque modi, doloremque
+          accusantium dolorem. Aperiam maxime reiciendis cupiditate facilis
+          optio veniam magnam nihil odio.
         </div>
       </div>
       <Button variant="mono" asChild>

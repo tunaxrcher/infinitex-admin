@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { TooltipProvider } from '@src/shared/components/ui/tooltip';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 export function ThemeProvider({
   children,

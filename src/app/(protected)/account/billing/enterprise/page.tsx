@@ -1,5 +1,7 @@
 'use client';
 
+import { AccountEnterpriseContent } from '@src/app/(protected)/account/billing/enterprise/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 import {
   Toolbar,
   ToolbarActions,
@@ -7,11 +9,9 @@ import {
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountEnterpriseContent } from '@src/app/(protected)/account/billing/enterprise/content';
-import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { Button } from '@src/shared/components/ui/button';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 export default function AccountEnterprisePage() {
   const { settings } = useSettings();

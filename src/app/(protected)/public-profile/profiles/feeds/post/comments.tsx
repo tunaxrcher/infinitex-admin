@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Image as ImageIcon } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ICommentsItem } from '@src/app/(protected)/public-profile/profiles/feeds/components/post1';
 import { Button } from '@src/shared/components/ui/button';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
-import { ICommentsItem } from '@src/app/(protected)/public-profile/profiles/feeds/components/post1';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Image as ImageIcon } from 'lucide-react';
 
 interface ICommentsProps {
   items: ICommentsItem[];

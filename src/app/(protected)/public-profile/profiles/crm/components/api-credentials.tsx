@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Copy, KeyRound } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -12,6 +11,7 @@ import {
   CardTitle,
 } from '@src/shared/components/ui/card';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
+import { Copy, KeyRound } from 'lucide-react';
 
 const ApiCredentials = () => {
   const [keyInput, setKeyInput] = useState('hwewe4654fdd5sdfh');

@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { HTMLMotionProps, motion, type Transition } from 'motion/react';
 import { cn } from '@src/shared/lib/utils';
+import { HTMLMotionProps, motion, type Transition } from 'motion/react';
 
 type GradientBackgroundProps = HTMLMotionProps<'div'> & {
   transition?: Transition;
@@ -21,7 +21,15 @@ function GradientBackground({
         className,
       )}
       animate={{
-        backgroundPosition: ['0% 0%', '50% 50%', '100% 0%', '50% 100%', '0% 50%', '100% 100%', '0% 0%'],
+        backgroundPosition: [
+          '0% 0%',
+          '50% 50%',
+          '100% 0%',
+          '50% 100%',
+          '0% 50%',
+          '100% 100%',
+          '0% 0%',
+        ],
       }}
       whileTap={{
         scale: 0.98,

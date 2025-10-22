@@ -2,7 +2,12 @@
 
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Label } from '@src/shared/components/ui/label';
 

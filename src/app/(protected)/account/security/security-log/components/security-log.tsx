@@ -2,31 +2,6 @@
 'use client';
 
 import { ReactElement, useMemo, useState } from 'react';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  FileDown,
-  Filter,
-  KeyRound,
-  Lock,
-  NotepadText,
-  Search,
-  Settings2,
-  ShieldAlert,
-  ShieldCheck,
-  ShieldX,
-  TrafficCone,
-  Wifi,
-  X,
-} from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -56,6 +31,31 @@ import {
 } from '@src/shared/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Switch } from '@src/shared/components/ui/switch';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  FileDown,
+  Filter,
+  KeyRound,
+  Lock,
+  NotepadText,
+  Search,
+  Settings2,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldX,
+  TrafficCone,
+  Wifi,
+  X,
+} from 'lucide-react';
 
 interface EventType {
   icon: ReactElement;

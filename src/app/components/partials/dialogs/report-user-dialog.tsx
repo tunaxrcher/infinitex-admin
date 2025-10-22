@@ -2,7 +2,6 @@
 
 import { useId, useState } from 'react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -12,7 +11,11 @@ import {
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
 import { Label } from '@src/shared/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@src/shared/components/ui/radio-group';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@src/shared/components/ui/radio-group';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export function ReportUserDialog({
   open,

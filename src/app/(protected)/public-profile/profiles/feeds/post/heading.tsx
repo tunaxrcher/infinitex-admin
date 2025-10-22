@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
-import { EllipsisVertical, LucideIcon } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical, LucideIcon } from 'lucide-react';
 
 interface IHeadingProps {
   author: string;

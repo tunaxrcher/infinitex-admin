@@ -4,17 +4,22 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { DropdownMenu6 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-6';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { Switch } from '@src/shared/components/ui/switch';
 import {
   EllipsisVertical,
   LucideIcon,
   MessageSquareText,
   ShieldCheck,
 } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
-import { Input } from '@src/shared/components/ui/input';
-import { Label } from '@src/shared/components/ui/label';
-import { Switch } from '@src/shared/components/ui/switch';
 
 interface IAuthTwoFactorItem {
   icon: LucideIcon;

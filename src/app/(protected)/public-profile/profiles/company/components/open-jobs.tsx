@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { ChartLine, LucideIcon, Milk, Rocket, Zap } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
+import { ChartLine, LucideIcon, Milk, Rocket, Zap } from 'lucide-react';
 
 interface IOpenJobsItem {
   icon: LucideIcon;

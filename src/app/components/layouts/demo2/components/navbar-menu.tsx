@@ -2,11 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown } from 'lucide-react';
-import { MENU_SIDEBAR, MENU_SIDEBAR_CUSTOM } from '@src/shared/config/menu.config';
-import { MenuConfig } from '@src/shared/config/types';
-import { cn } from '@src/shared/lib/utils';
-import { useMenu } from '@src/shared/hooks/use-menu';
 import {
   Menubar,
   MenubarContent,
@@ -17,6 +12,14 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from '@src/shared/components/ui/menubar';
+import {
+  MENU_SIDEBAR,
+  MENU_SIDEBAR_CUSTOM,
+} from '@src/shared/config/menu.config';
+import { MenuConfig } from '@src/shared/config/types';
+import { useMenu } from '@src/shared/hooks/use-menu';
+import { cn } from '@src/shared/lib/utils';
+import { ChevronDown } from 'lucide-react';
 
 export function NavbarMenu() {
   const pathname = usePathname();

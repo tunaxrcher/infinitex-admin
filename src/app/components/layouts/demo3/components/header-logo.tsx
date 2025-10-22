@@ -3,10 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu } from 'lucide-react';
-import { MENU_ROOT } from '@src/shared/config/menu.config';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -21,6 +17,10 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
+import { MENU_ROOT } from '@src/shared/config/menu.config';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { ChevronDown, Menu } from 'lucide-react';
 import { SidebarMenu } from './sidebar-menu';
 
 export function HeaderLogo() {

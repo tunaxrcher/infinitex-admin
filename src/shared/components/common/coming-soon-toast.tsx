@@ -1,6 +1,6 @@
 import { RiErrorWarningFill } from '@remixicon/react';
-import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { toast } from 'sonner';
 
 export const comingSoonToast = () => {
   toast.custom(() => (

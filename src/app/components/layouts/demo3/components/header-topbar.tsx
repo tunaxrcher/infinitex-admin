@@ -2,20 +2,20 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
 import { SearchDialog } from '@src/app/components/partials/dialogs/search/search-dialog';
 import { AppsDropdownMenu } from '@src/app/components/partials/topbar/apps-dropdown-menu';
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
 import { NotificationsSheet } from '@src/app/components/partials/topbar/notifications-sheet';
 import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
+import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   LayoutGrid,
   MessageCircleMore,
   MessageSquareDot,
   Search,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
-import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
 
 export function HeaderTopbar() {
   const pathname = usePathname();

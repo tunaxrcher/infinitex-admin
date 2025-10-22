@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useMemo, useRef } from 'react';
-import { motion, useInView, UseInViewOptions } from 'motion/react';
 import { cn } from '@src/shared/lib/utils';
+import { motion, useInView, UseInViewOptions } from 'motion/react';
 
 interface ShimmeringTextProps {
   /** Text to display with shimmer effect */

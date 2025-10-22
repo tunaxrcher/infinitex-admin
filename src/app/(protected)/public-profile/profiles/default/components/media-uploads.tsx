@@ -2,11 +2,11 @@
 
 import { Fragment } from 'react';
 import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import { ApexOptions } from 'apexcharts';
 import { EllipsisVertical } from 'lucide-react';
 import ApexChart from 'react-apexcharts';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 
 const MediaUploads = () => {
   const data: number[] = [85, 65, 50, 70, 40, 45, 100, 55, 85, 60, 70, 90];

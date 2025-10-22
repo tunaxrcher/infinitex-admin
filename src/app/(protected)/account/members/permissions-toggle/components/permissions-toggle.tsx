@@ -2,6 +2,15 @@
 
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 import {
   BarChart3,
   CreditCard,
@@ -15,15 +24,6 @@ import {
   Store,
   Users,
 } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@src/shared/components/ui/card';
-import { Switch } from '@src/shared/components/ui/switch';
 
 interface IPermissionsToggleItem {
   icon: LucideIcon;

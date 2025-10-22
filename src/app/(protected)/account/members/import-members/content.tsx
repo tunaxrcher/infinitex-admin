@@ -6,8 +6,8 @@ import {
   HighlightedPosts,
   HighlightedPostsItems,
 } from '@src/app/components/partials/common/highlighted-posts';
-import { LogOut, MousePointer, Users } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { LogOut, MousePointer, Users } from 'lucide-react';
 import { Import } from './components';
 
 export function AccountImportMembersContent() {

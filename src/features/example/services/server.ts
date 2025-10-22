@@ -1,10 +1,10 @@
 // src/features/[...feature]/services/server.ts
-import 'server-only'
+import 'server-only';
 
 export const entityService = {
   createEntity(
     data: EntityCreateInput,
-    createdBy?: number
+    createdBy?: number,
   ): Promise<EntitySummary> {
     // Logic สำหรับตรวจสอบความซ้ำ, เข้ารหัส, สร้าง entity, log ผู้สร้าง
   },
@@ -12,4 +12,4 @@ export const entityService = {
   approveEntity(entityId: number, approvedBy: number): Promise<EntityFull> {
     // Logic สำหรับอนุมัติ entity, ตรวจสอบสถานะ, อัปเดตข้อมูล
   },
-}
+};

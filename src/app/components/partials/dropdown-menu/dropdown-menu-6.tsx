@@ -3,15 +3,6 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import {
-  Bell,
-  FileText,
-  Mail,
-  MessageSquare,
-  Pencil,
-  Send,
-  Trash2,
-} from 'lucide-react';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -20,6 +11,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
+import {
+  Bell,
+  FileText,
+  Mail,
+  MessageSquare,
+  Pencil,
+  Send,
+  Trash2,
+} from 'lucide-react';
 
 export function DropdownMenu6({ trigger }: { trigger: ReactNode }) {
   return (

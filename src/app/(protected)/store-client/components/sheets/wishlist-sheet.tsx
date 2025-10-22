@@ -1,4 +1,3 @@
-import { ShoppingCart, Star, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -13,6 +12,7 @@ import {
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ShoppingCart, Star, TrashIcon } from 'lucide-react';
 
 const items = [
   {
@@ -68,7 +68,9 @@ export function StoreClientWishlistSheet({
                 <CardContent className="p-2 pe-5 flex items-center justify-between gap-3.5">
                   <Card className="flex items-center justify-center bg-accent/50 h-[70px] w-[90px]">
                     <img
-                      src={toAbsoluteUrl(`/media/store/client/600x600/${item.logo}`)}
+                      src={toAbsoluteUrl(
+                        `/media/store/client/600x600/${item.logo}`,
+                      )}
                       className="size-15"
                       alt="img"
                     />

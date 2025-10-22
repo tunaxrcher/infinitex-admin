@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { cn } from '@src/shared/lib/utils';
-import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
-import { useSettings } from '@src/shared/providers/settings-provider';
 import { Container } from '@src/shared/components/common/container';
+import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
+import { cn } from '@src/shared/lib/utils';
+import { useSettings } from '@src/shared/providers/settings-provider';
 import { HeaderLogo } from './header-logo';
 import { HeaderTopbar } from './header-topbar';
 

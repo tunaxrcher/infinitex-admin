@@ -2,12 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { AudioLines, ShieldCheck, UserPen } from 'lucide-react';
-import { apiFetch } from '@src/shared/lib/api';
-import { getInitials } from '@src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
-import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
 import { Container } from '@src/shared/components/common/container';
 import { ContentLoader } from '@src/shared/components/common/content-loader';
 import {
@@ -16,6 +10,16 @@ import {
   ToolbarHeading,
   ToolbarTitle,
 } from '@src/shared/components/common/toolbar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
+import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import { apiFetch } from '@src/shared/lib/api';
+import { getInitials } from '@src/shared/lib/helpers';
+import { useQuery } from '@tanstack/react-query';
+import { AudioLines, ShieldCheck, UserPen } from 'lucide-react';
 import { AccountProvider } from './components/account-context';
 
 type NavRoutes = Record<

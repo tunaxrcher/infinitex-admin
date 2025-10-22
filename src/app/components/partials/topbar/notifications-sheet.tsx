@@ -2,7 +2,6 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Calendar, Settings, Settings2, Shield, Users } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -24,7 +23,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
+import { Calendar, Settings, Settings2, Shield, Users } from 'lucide-react';
 import Item1 from './notifications/item-1';
 import Item2 from './notifications/item-2';
 import Item3 from './notifications/item-3';
@@ -48,9 +53,7 @@ export function NotificationsSheet({ trigger }: { trigger: ReactNode }) {
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent className="p-0 gap-0 sm:w-[500px] sm:max-w-none inset-5 start-auto h-auto rounded-lg p-0 sm:max-w-none [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="mb-0">
-          <SheetTitle className="p-3">
-            Notifications
-          </SheetTitle>
+          <SheetTitle className="p-3">Notifications</SheetTitle>
         </SheetHeader>
         <SheetBody className="p-0">
           <ScrollArea className="h-[calc(100vh-10.5rem)]">

@@ -3,9 +3,9 @@
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
 import { NotificationsSheet } from '@src/app/components/partials/topbar/notifications-sheet';
 import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
-import { MessageCircleMore, MessageSquareDot } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { MessageCircleMore, MessageSquareDot } from 'lucide-react';
 
 export function SidebarFooter() {
   return (

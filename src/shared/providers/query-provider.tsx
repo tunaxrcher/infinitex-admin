@@ -3,13 +3,13 @@
 
 import { ReactNode, useState } from 'react';
 import { RiErrorWarningFill } from '@remixicon/react';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 
 const QueryProvider = ({ children }: { children: ReactNode }) => {
   const [queryClient] = useState(

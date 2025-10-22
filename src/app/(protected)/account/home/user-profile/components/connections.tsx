@@ -4,8 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
-import { Check, EllipsisVertical, Plus } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -14,7 +12,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@src/shared/components/ui/table';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Check, EllipsisVertical, Plus } from 'lucide-react';
 
 interface IConnectionsItem {
   avatar: string;

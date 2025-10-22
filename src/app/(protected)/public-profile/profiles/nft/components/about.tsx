@@ -2,7 +2,12 @@
 
 import { ReactElement } from 'react';
 import { Badge } from '@src/shared/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 
 interface IAboutItem {
   label: string;

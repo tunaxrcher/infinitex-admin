@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { Award, Coffee, Info, TrendingUp } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
 import { Switch } from '@src/shared/components/ui/switch';
+import { Award, Coffee, Info, TrendingUp } from 'lucide-react';
 import { GiveAwardDialog } from '../dialogs/give-award-dialog';
 import { ReportUserDialog } from '../dialogs/report-user-dialog';
 import { ShareProfileDialog } from '../dialogs/share-profile';

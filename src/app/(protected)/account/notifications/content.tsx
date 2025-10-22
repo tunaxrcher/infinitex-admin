@@ -7,8 +7,8 @@ import {
   HighlightedPosts,
   HighlightedPostsItems,
 } from '@src/app/components/partials/common/highlighted-posts';
-import { BellDot, BellRing, MessageSquareText } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { BellDot, BellRing, MessageSquareText } from 'lucide-react';
 import { Channels, DoNotDistrub, OtherNotifications } from './components';
 
 export function AccountNotificationsContent() {

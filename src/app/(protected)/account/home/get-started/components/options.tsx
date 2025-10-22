@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { DropdownMenu3 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-3';
-import { EllipsisVertical, LucideIcon } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
+import { EllipsisVertical, LucideIcon } from 'lucide-react';
 
 interface IOptionsItem {
   icon: LucideIcon;

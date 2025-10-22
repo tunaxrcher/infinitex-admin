@@ -3,10 +3,7 @@
 import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { apiFetch } from '@src/shared/lib/api';
+import { User, UserRole } from '@src/app/models/user';
 import {
   Alert,
   AlertDescription,
@@ -38,8 +35,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
+import { apiFetch } from '@src/shared/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoaderCircleIcon } from 'lucide-react';
-import { User, UserRole } from '@src/app/models/user';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { useRoleSelectQuery } from '../../../roles/hooks/use-role-select-query';
 import { UserStatusProps } from '../../constants/status';
 import {

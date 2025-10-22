@@ -2,11 +2,21 @@
 
 import Link from 'next/link';
 import { AvatarInput } from '@src/app/components/partials/common/avatar-input';
-import { SquarePen } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@src/shared/components/ui/table';
+import { SquarePen } from 'lucide-react';
 
 const PersonalInfo = () => {
   return (

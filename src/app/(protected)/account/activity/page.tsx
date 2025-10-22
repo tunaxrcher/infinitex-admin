@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { AccountActivityContent } from '@src/app/(protected)/account/activity/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 import {
   Toolbar,
   ToolbarActions,
@@ -8,11 +10,9 @@ import {
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountActivityContent } from '@src/app/(protected)/account/activity/content';
-import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { Button } from '@src/shared/components/ui/button';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 export default function AccountActivityPage() {
   const { settings } = useSettings();

@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { RiFacebookBoxLine, RiInstagramLine } from '@remixicon/react';
-import { Dribbble, EllipsisVertical, Mails, MapPin } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
+import { Dribbble, EllipsisVertical, Mails, MapPin } from 'lucide-react';
 import { AvatarSingle } from '../common/avatar-single';
 import { IUserSocialProps } from './card-user-social';
 

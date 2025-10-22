@@ -3,14 +3,12 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
-import { ControllerRenderProps, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { apiFetch } from '@src/shared/lib/api';
-import { getInitials } from '@src/shared/lib/helpers';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -30,12 +28,18 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
+import { apiFetch } from '@src/shared/lib/api';
+import { getInitials } from '@src/shared/lib/helpers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { LoaderCircleIcon } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import {
   AccountProfileSchema,
   AccountProfileSchemaType,
 } from '../forms/account-profile-schema';
 import { useAccount } from './account-context';
-import { LoaderCircleIcon } from 'lucide-react';
 
 export default function AccountDetails() {
   const queryClient = useQueryClient();

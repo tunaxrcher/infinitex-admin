@@ -14,7 +14,6 @@ import { ActivitiesProductWebinar } from '@src/app/components/partials/activitie
 import { ActivitiesProjectStatus } from '@src/app/components/partials/activities/project-status';
 import { ActivitiesUpcomingContent } from '@src/app/components/partials/activities/upcoming-content';
 import { ActivitiesVirtualTeam } from '@src/app/components/partials/activities/virtual-team';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -25,6 +24,7 @@ import {
 } from '@src/shared/components/ui/card';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export function ProfileActivityContent() {
   const [isSwitchOn, setIsSwitchOn] = useState(false);

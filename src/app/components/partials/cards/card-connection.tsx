@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { BadgeCheck, CircleCheck, Mail, Users } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/shared/components/ui/card';
+import { BadgeCheck, CircleCheck, Mail, Users } from 'lucide-react';
 import { AvatarGroup } from '../common/avatar-group';
 import { AvatarSingle } from '../common/avatar-single';
 

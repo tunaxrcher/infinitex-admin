@@ -1,9 +1,16 @@
 'use client';
 
 import { Fragment } from 'react';
+import { PageMenu } from '@src/app/(protected)/public-profile/page-menu';
 import { UserHero } from '@src/app/components/partials/common/user-hero';
 import { DropdownMenu9 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-9';
-import { Navbar, NavbarActions } from '@src/app/components/partials/navbar/navbar';
+import {
+  Navbar,
+  NavbarActions,
+} from '@src/app/components/partials/navbar/navbar';
+import { Container } from '@src/shared/components/common/container';
+import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   EllipsisVertical,
   Mail,
@@ -12,10 +19,6 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
-import { Container } from '@src/shared/components/common/container';
-import { PageMenu } from '@src/app/(protected)/public-profile/page-menu';
 import { Projects2 } from './components';
 
 export default function ProjectColumn3Page() {

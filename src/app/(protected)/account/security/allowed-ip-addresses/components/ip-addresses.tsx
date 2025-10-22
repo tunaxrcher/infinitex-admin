@@ -1,27 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  Filter,
-  Info,
-  Search,
-  Settings2,
-  SquarePen,
-  Trash2,
-  X,
-} from 'lucide-react';
-import { toast } from 'sonner';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -57,6 +36,27 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Filter,
+  Info,
+  Search,
+  Settings2,
+  SquarePen,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 interface IData {
   id: string;

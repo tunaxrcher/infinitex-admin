@@ -1,12 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarGroup, Avatars } from '@src/app/components/partials/common/avatar-group';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  AvatarGroup,
+  Avatars,
+} from '@src/app/components/partials/common/avatar-group';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Slider } from '@src/shared/components/ui/slider';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 interface ICompanyProfileItem {
   total: string;

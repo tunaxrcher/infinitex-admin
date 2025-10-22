@@ -5,7 +5,6 @@ import {
   RiTwitterXLine,
   RiYoutubeLine,
 } from '@remixicon/react';
-import { Dribbble } from 'lucide-react';
 import {
   INetworkItems,
   Network,
@@ -15,6 +14,7 @@ import {
   Users,
 } from '@src/app/(protected)/public-profile/profiles/creator/components/users';
 import { CommunityBadges } from '@src/app/(protected)/public-profile/profiles/default/components/community-badges';
+import { Dribbble } from 'lucide-react';
 import {
   About,
   Activity,

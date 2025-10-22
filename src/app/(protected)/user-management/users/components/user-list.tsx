@@ -2,23 +2,20 @@
 
 import { useMemo, useState } from 'react';
 import { redirect } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { User, UserStatus } from '@src/app/models/user';
 import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { ChevronRight, Plus, Search, X } from 'lucide-react';
-import { apiFetch } from '@src/shared/lib/api';
-import { formatDate, formatDateTime, getInitials } from '@src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Badge, BadgeDot, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardFooter, CardHeader, CardTable } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardFooter,
+  CardHeader,
+  CardTable,
+} from '@src/shared/components/ui/card';
 import {
   DataGrid,
   DataGridApiFetchParams,
@@ -37,7 +34,23 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { User, UserStatus } from '@src/app/models/user';
+import { apiFetch } from '@src/shared/lib/api';
+import {
+  formatDate,
+  formatDateTime,
+  getInitials,
+} from '@src/shared/lib/helpers';
+import { useQuery } from '@tanstack/react-query';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ChevronRight, Plus, Search, X } from 'lucide-react';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { getUserStatusProps, UserStatusProps } from '../constants/status';
 import UserInviteDialog from './user-add-dialog';

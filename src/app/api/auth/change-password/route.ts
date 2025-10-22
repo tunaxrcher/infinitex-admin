@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
-import prisma from '@src/shared/lib/prisma';
-import { sendEmail } from '@src/shared/services/send-email';
 import {
   ChangePasswordApiSchemaType,
   getChangePasswordApiSchema,
 } from '@src/app/(auth)/forms/change-password-schema';
+import prisma from '@src/shared/lib/prisma';
+import { sendEmail } from '@src/shared/services/send-email';
+import bcrypt from 'bcrypt';
 
 export async function POST(req: NextRequest) {
   try {

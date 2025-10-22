@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { BadgeCheck, MapPin } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { BadgeCheck, MapPin } from 'lucide-react';
 import { AvatarSingle } from '../common/avatar-single';
 import { IAuthorProps, IWork } from './card-author';
 

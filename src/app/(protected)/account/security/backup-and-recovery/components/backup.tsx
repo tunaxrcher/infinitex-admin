@@ -2,19 +2,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { File, Image as ImageIcon, Search, Settings2, X } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -37,6 +24,19 @@ import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Switch } from '@src/shared/components/ui/switch';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { File, Image as ImageIcon, Search, Settings2, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface IData {
   id: string;

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { CloudDownload, Download } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -19,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
+import { CloudDownload, Download } from 'lucide-react';
 
 interface IInvoicingItem {
   number: string;

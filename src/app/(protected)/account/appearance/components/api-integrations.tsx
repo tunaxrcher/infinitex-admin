@@ -2,18 +2,6 @@
 
 import { ReactNode, useMemo, useState } from 'react';
 import Link from 'next/link';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -43,6 +31,18 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Switch } from '@src/shared/components/ui/switch';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
 
 interface IData {
   id: string;

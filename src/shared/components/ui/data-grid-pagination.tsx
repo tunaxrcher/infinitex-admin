@@ -1,10 +1,16 @@
 import { ReactNode } from 'react';
 import { Button } from '@src/shared/components/ui/button';
 import { useDataGrid } from '@src/shared/components/ui/data-grid';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@src/shared/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@src/shared/components/ui/select';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { cn } from '@src/shared/lib/utils';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 interface DataGridPaginationProps {
   sizes?: number[];
@@ -55,8 +61,12 @@ function DataGridPagination(props: DataGridPaginationProps) {
   const paginationMoreLimit = mergedProps?.moreLimit || 5;
 
   // Determine the start and end of the pagination group
-  const currentGroupStart = Math.floor(pageIndex / paginationMoreLimit) * paginationMoreLimit;
-  const currentGroupEnd = Math.min(currentGroupStart + paginationMoreLimit, pageCount);
+  const currentGroupStart =
+    Math.floor(pageIndex / paginationMoreLimit) * paginationMoreLimit;
+  const currentGroupEnd = Math.min(
+    currentGroupStart + paginationMoreLimit,
+    pageCount,
+  );
 
   // Render page buttons based on the current group
   const renderPageButtons = () => {
@@ -161,7 +171,9 @@ function DataGridPagination(props: DataGridPaginationProps) {
           mergedProps?.infoSkeleton
         ) : (
           <>
-            <div className="text-sm text-muted-foreground text-nowrap order-2 sm:order-1">{paginationInfo}</div>
+            <div className="text-sm text-muted-foreground text-nowrap order-2 sm:order-1">
+              {paginationInfo}
+            </div>
             {pageCount > 1 && (
               <div className="flex items-center space-x-1 order-1 sm:order-2">
                 <Button

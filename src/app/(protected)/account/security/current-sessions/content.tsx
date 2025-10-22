@@ -1,8 +1,8 @@
 'use client';
 
+import { CurrentSessions } from '@src/app/(protected)/account/security/current-sessions/components/current-sessions';
 import { Faq } from '@src/app/components/partials/common/faq';
 import { Help } from '@src/app/components/partials/common/help';
-import { CurrentSessions } from '@src/app/(protected)/account/security/current-sessions/components/current-sessions';
 
 export function AccountCurrentSessionsContent() {
   return (

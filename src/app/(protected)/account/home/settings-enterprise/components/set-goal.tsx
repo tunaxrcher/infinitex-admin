@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
-import { EllipsisVertical } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Slider, SliderThumb } from '@src/shared/components/ui/slider';
+import { EllipsisVertical } from 'lucide-react';
 
 const SetGoal = () => {
   const [value, setValue] = useState([1]);

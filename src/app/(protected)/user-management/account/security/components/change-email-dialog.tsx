@@ -2,10 +2,6 @@
 
 import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { apiFetch } from '@src/shared/lib/api';
 import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -14,7 +10,11 @@ import {
   CardHeading,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { Dialog, DialogContent, DialogFooter } from '@src/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -24,7 +24,11 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
+import { apiFetch } from '@src/shared/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoaderCircleIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import {
   AccountEmailSchema,
   AccountEmailSchemaType,

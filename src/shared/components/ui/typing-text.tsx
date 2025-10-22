@@ -1,8 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, MotionProps, useInView, UseInViewOptions, Variants } from 'motion/react';
 import { cn } from '@src/shared/lib/utils';
+import {
+  motion,
+  MotionProps,
+  useInView,
+  UseInViewOptions,
+  Variants,
+} from 'motion/react';
 
 type AnimationVariant =
   | 'fadeIn'
@@ -80,7 +86,10 @@ export function TypingText({
   ...props
 }: TypingTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once, margin: inViewMargin as UseInViewOptions['margin'] });
+  const isInView = useInView(ref, {
+    once,
+    margin: inViewMargin as UseInViewOptions['margin'],
+  });
   const [hasAnimated, setHasAnimated] = useState(false);
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -127,7 +136,16 @@ export function TypingText({
         return () => clearTimeout(timeout);
       }
     }
-  }, [currentIndex, currentText, isTyping, speed, loop, texts, pauseDuration, onComplete]);
+  }, [
+    currentIndex,
+    currentText,
+    isTyping,
+    speed,
+    loop,
+    texts,
+    pauseDuration,
+    onComplete,
+  ]);
 
   // Animation variants for container (fadeIn by default, extendable)
   const finalVariants = {
@@ -157,7 +175,10 @@ export function TypingText({
           <motion.span
             variants={cursorVariants}
             animate="blinking"
-            className={cn('inline-block ms-1 font-normal text-foreground select-none w-px', cursorClassName)}
+            className={cn(
+              'inline-block ms-1 font-normal text-foreground select-none w-px',
+              cursorClassName,
+            )}
           >
             {cursor}
           </motion.span>

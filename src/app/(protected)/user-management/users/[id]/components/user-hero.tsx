@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Check } from 'lucide-react';
-import { getInitials } from '@src/shared/lib/helpers';
-import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import { User } from '@src/app/models/user';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 import {
@@ -13,7 +15,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
-import { User } from '@src/app/models/user';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { getInitials } from '@src/shared/lib/helpers';
+import { Check } from 'lucide-react';
 
 interface UserProfileProps {
   user: User;

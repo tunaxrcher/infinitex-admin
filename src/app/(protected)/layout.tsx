@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { ScreenLoader } from '@src/shared/components/common/screen-loader';
+import { useSession } from 'next-auth/react';
 import { Demo1Layout } from '../components/layouts/demo1/layout';
 
 export default function ProtectedLayout({

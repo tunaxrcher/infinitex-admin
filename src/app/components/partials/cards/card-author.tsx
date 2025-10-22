@@ -1,8 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { BadgeCheck } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -11,6 +9,8 @@ import {
   CardHeader,
 } from '@src/shared/components/ui/card';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { BadgeCheck } from 'lucide-react';
 import { AvatarSingle } from '../common/avatar-single';
 
 interface IAvatar {

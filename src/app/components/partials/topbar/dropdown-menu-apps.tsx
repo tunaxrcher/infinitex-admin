@@ -2,7 +2,6 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
 import { Switch } from '@src/shared/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 interface DropdownAppsItem {
   logo: string;

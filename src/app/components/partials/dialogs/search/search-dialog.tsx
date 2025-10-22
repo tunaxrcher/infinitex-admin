@@ -2,6 +2,24 @@
 
 import { ReactNode, useState } from 'react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@src/shared/components/ui/dialog';
+import { Input } from '@src/shared/components/ui/input';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
 import {
   Badge,
   Bolt,
@@ -15,19 +33,6 @@ import {
   UserRoundPen,
   UserRoundPlus,
 } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@src/shared/components/ui/dialog';
-import { Input } from '@src/shared/components/ui/input';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
 import {
   SearchDocs,
   SearchDocsItem,
@@ -79,7 +84,8 @@ export function SearchDialog({ trigger }: { trigger: ReactNode }) {
         { filename: '300-2.png', variant: 'size-6' },
         {
           fallback: '+3',
-          variant: 'text-white rounded-full size-6 ring-background bg-green-500',
+          variant:
+            'text-white rounded-full size-6 ring-background bg-green-500',
         },
       ],
     },
@@ -91,7 +97,6 @@ export function SearchDialog({ trigger }: { trigger: ReactNode }) {
         { filename: '300-14.png', variant: 'size-6' },
         { filename: '300-12.png', variant: 'size-6' },
         { filename: '300-9.png', variant: 'size-6' },
-
       ],
     },
   ];

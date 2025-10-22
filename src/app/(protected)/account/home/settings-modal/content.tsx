@@ -2,18 +2,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useViewport } from '@src/shared/hooks/use-viewport';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@src/shared/components/ui/dialog';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { Scrollspy } from '@src/shared/components/ui/scrollspy';
 import { AccountSettingsSidebar } from '@src/app/(protected)/account/home/settings-sidebar/account-basic-sidebar';
 import { AdvancedSettingsAddress } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-address';
 import { AdvancedSettingsAppearance } from '@src/app/(protected)/account/home/settings-sidebar/components/advanced-settings-appearance';
@@ -28,6 +16,18 @@ import { BasicSettings } from '@src/app/(protected)/account/home/settings-sideba
 import { DeleteAccount } from '@src/app/(protected)/account/home/settings-sidebar/components/delete-account';
 import { ExternalServicesIntegrations } from '@src/app/(protected)/account/home/settings-sidebar/components/external-services-integrations';
 import { ExternalServicesManageApi } from '@src/app/(protected)/account/home/settings-sidebar/components/external-services-manage-api';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@src/shared/components/ui/dialog';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
+import { Scrollspy } from '@src/shared/components/ui/scrollspy';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useViewport } from '@src/shared/hooks/use-viewport';
 
 interface IModalProfileProps {
   open: boolean;

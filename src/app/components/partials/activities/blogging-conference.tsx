@@ -2,10 +2,10 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Printer } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Printer } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 interface IBloggingConferenceProps {

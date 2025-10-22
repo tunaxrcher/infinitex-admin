@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
 import { Container } from '@src/shared/components/common/container';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
 import { Breadcrumb } from './breadcrumb';
 
 export function Content({ children }: { children: ReactNode }) {

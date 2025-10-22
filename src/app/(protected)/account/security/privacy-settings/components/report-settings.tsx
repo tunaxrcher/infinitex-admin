@@ -1,9 +1,17 @@
 'use client';
 
 import { useId } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Label } from '@src/shared/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@src/shared/components/ui/radio-group';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@src/shared/components/ui/radio-group';
 
 interface IReportSettingsItem {
   title: string;

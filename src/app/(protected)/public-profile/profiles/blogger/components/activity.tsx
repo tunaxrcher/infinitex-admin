@@ -8,7 +8,6 @@ import { ActivitiesInterview } from '@src/app/components/partials/activities/int
 import { ActivitiesFollowersMilestone } from '@src/app/components/partials/activities/milestone';
 import { ActivitiesNewArticle } from '@src/app/components/partials/activities/new-article';
 import { ActivitiesUpcomingContent } from '@src/app/components/partials/activities/upcoming-content';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -19,6 +18,7 @@ import {
 } from '@src/shared/components/ui/card';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 const Activity = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);

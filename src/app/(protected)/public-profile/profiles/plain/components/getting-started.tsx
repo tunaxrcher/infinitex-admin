@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Card, CardContent } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 const GettingStarted = () => {
   return (

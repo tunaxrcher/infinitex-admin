@@ -1,10 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { CalendarCog, Trash2 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { CalendarCog, Trash2 } from 'lucide-react';
 
 interface ICalendarAccountsItem {
   logo: string;

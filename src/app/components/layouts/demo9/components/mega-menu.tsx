@@ -3,11 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MegaMenuSubAccount } from '@src/app/components/partials/mega-menu/mega-menu-sub-account';
+import { MegaMenuSubApps } from '@src/app/components/partials/mega-menu/mega-menu-sub-apps';
 import { MegaMenuSubNetwork } from '@src/app/components/partials/mega-menu/mega-menu-sub-network';
 import { MegaMenuSubProfiles } from '@src/app/components/partials/mega-menu/mega-menu-sub-profiles';
-import { MENU_MEGA } from '@src/shared/config/menu.config';
-import { cn } from '@src/shared/lib/utils';
-import { useMenu } from '@src/shared/hooks/use-menu';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -16,7 +14,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@src/shared/components/ui/navigation-menu';
-import { MegaMenuSubApps } from '@src/app/components/partials/mega-menu/mega-menu-sub-apps';
+import { MENU_MEGA } from '@src/shared/config/menu.config';
+import { useMenu } from '@src/shared/hooks/use-menu';
+import { cn } from '@src/shared/lib/utils';
 
 export function MegaMenu() {
   const pathname = usePathname();

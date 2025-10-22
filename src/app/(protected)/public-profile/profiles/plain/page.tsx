@@ -1,9 +1,17 @@
 'use client';
 
 import { Fragment } from 'react';
+import { PageMenu } from '@src/app/(protected)/public-profile/page-menu';
+import { ProfilePlainContent } from '@src/app/(protected)/public-profile/profiles/plain/content';
 import { UserHero } from '@src/app/components/partials/common/user-hero';
 import { DropdownMenu9 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-9';
-import { Navbar, NavbarActions } from '@src/app/components/partials/navbar/navbar';
+import {
+  Navbar,
+  NavbarActions,
+} from '@src/app/components/partials/navbar/navbar';
+import { Container } from '@src/shared/components/common/container';
+import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   EllipsisVertical,
   Luggage,
@@ -12,11 +20,6 @@ import {
   MessagesSquare,
   Users,
 } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Button } from '@src/shared/components/ui/button';
-import { Container } from '@src/shared/components/common/container';
-import { PageMenu } from '@src/app/(protected)/public-profile/page-menu';
-import { ProfilePlainContent } from '@src/app/(protected)/public-profile/profiles/plain/content';
 
 export default function ProfilePlainPage() {
   const image = (

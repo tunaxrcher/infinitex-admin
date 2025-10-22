@@ -2,17 +2,17 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { AccountGetStartedContent } from '@src/app/(protected)/auth/get-started/content';
 import {
   Toolbar,
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
-import { AccountGetStartedContent } from '@src/app/(protected)/auth/get-started/content';
+import { Button } from '@src/shared/components/ui/button';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 export default function AccountGetStartedPage() {
   const { settings } = useSettings();

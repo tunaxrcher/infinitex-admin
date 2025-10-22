@@ -1,8 +1,12 @@
 'use client';
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { cn } from '@src/shared/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
 
 interface Avatar {
   path?: string;
@@ -30,7 +34,10 @@ function AvatarGroup({ size, group, more, className }: AvatarGroupProp) {
           <AvatarImage
             src={toAbsoluteUrl(each.path || `/media/avatars/${each.filename}`)}
             alt="image"
-            className={cn(' border-1 border-background hover:z-10',  each.variant)}
+            className={cn(
+              ' border-1 border-background hover:z-10',
+              each.variant,
+            )}
           />
         ) : null}
         {each.fallback ? (

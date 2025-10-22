@@ -3,15 +3,20 @@
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 import {
   EllipsisVertical,
   LucideIcon,
   MessageSquareText,
   ShieldCheck,
 } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
-import { Switch } from '@src/shared/components/ui/switch';
 
 interface IAuthTwoFactorItem {
   icon: LucideIcon;

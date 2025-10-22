@@ -3,9 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Sheet,
@@ -14,6 +11,9 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Menu } from 'lucide-react';
 import { MegaMenu } from './mega-menu';
 import { MegaMenuMobile } from './mega-menu-mobile';
 

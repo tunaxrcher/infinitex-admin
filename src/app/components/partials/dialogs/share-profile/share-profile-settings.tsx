@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { LoaderPinwheel, User } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
+import { LoaderPinwheel, User } from 'lucide-react';
 
 export function ShareProfileSettings() {
   return (

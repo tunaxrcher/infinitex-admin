@@ -3,18 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  ChevronDown,
-  Menu,
-  Settings,
-  Shield,
-  UserCircle,
-  Users,
-  type LucideIcon,
-} from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -29,6 +17,18 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import {
+  ChevronDown,
+  Menu,
+  Settings,
+  Shield,
+  UserCircle,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import { SidebarMenuDashboard } from './sidebar-menu-dashboard';
 import { SidebarMenuDefault } from './sidebar-menu-default';
 

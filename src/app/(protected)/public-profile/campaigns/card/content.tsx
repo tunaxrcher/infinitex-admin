@@ -2,10 +2,16 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CardCampaign, CardCampaignRow } from '@src/app/components/partials/cards';
-import { LayoutGrid, List, SquarePlus } from 'lucide-react';
+import {
+  CardCampaign,
+  CardCampaignRow,
+} from '@src/app/components/partials/cards';
 import { Button } from '@src/shared/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@src/shared/components/ui/toggle-group';
+import { LayoutGrid, List, SquarePlus } from 'lucide-react';
 
 export interface ICampaignsContentItem {
   logo: string;

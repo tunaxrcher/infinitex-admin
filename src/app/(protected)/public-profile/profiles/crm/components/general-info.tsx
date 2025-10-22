@@ -2,8 +2,18 @@
 
 import { ReactElement } from 'react';
 import { Badge } from '@src/shared/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
-import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@src/shared/components/ui/table';
 
 interface IGeneralInfoItem {
   label: string;

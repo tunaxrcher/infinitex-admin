@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Rocket } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
+import { Rocket } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesBlogAnniversary = () => {

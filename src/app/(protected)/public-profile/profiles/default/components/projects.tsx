@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { AvatarGroup } from '@src/app/components/partials/common/avatar-group';
 import { DropdownMenu1 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-1';
 import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
-import { EllipsisVertical } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -22,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
+import { EllipsisVertical } from 'lucide-react';
 
 interface IProjectsItem {
   name: string;

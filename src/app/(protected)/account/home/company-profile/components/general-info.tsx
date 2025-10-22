@@ -1,13 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { Copy, SquarePen } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
-import { Table, TableBody, TableCell, TableRow } from '@src/shared/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@src/shared/components/ui/table';
+import { Copy, SquarePen } from 'lucide-react';
 
 const GeneralInfo = () => {
   return (

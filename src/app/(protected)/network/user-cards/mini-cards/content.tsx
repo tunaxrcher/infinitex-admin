@@ -3,7 +3,6 @@
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { CardUserMini } from '@src/app/components/partials/cards';
-import { Search, Settings2 } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
 import {
@@ -13,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
+import { Search, Settings2 } from 'lucide-react';
 
 export interface IAvatar {
   className: string;

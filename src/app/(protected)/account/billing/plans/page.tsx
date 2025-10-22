@@ -1,16 +1,16 @@
 'use client';
 
 import { Fragment } from 'react';
+import { AccountPlansContent } from '@src/app/(protected)/account/billing/plans/content';
+import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
 import {
   Toolbar,
   ToolbarActions,
   ToolbarHeading,
 } from '@src/app/components/layouts/demo1/components/toolbar';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { AccountPlansContent } from '@src/app/(protected)/account/billing/plans/content';
-import { PageNavbar } from '@src/app/(protected)/account/page-navbar';
+import { Button } from '@src/shared/components/ui/button';
+import { useSettings } from '@src/shared/providers/settings-provider';
 
 export default function AccountPlansPage() {
   const { settings } = useSettings();

@@ -3,16 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown } from 'lucide-react';
-import { MENU_ROOT } from '@src/shared/config/menu.config';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
+import { MENU_ROOT } from '@src/shared/config/menu.config';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { ChevronDown } from 'lucide-react';
 
 export function HeaderLogo() {
   const pathname = usePathname();

@@ -1,7 +1,5 @@
 'use client';
 
-import { ShoppingCart, Star } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
@@ -14,6 +12,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ShoppingCart, Star } from 'lucide-react';
 
 const items = [
   {

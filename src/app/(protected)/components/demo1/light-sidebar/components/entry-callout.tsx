@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
 import { AvatarGroup } from '@src/app/components/partials/common/avatar-group';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 interface IEntryCalloutProps {
   className: string;

@@ -1,20 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Avatar, AvatarGroup } from '@src/app/components/partials/common/avatar-group';
-import { Rating } from '@src/app/components/partials/common/rating';
 import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Search, X } from 'lucide-react';
+  Avatar,
+  AvatarGroup,
+} from '@src/app/components/partials/common/avatar-group';
+import { Rating } from '@src/app/components/partials/common/rating';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -35,6 +26,18 @@ import {
 import { Input } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Search, X } from 'lucide-react';
 
 interface IData {
   id: number;

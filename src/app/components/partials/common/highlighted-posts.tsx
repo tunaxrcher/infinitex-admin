@@ -2,9 +2,9 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
-import { LucideIcon } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
+import { LucideIcon } from 'lucide-react';
 import { HexagonBadge } from './hexagon-badge';
 
 export interface HighlightedPostsItem {

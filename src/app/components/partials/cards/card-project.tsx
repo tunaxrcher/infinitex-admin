@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Card } from '@src/shared/components/ui/card';
 import { Progress } from '@src/shared/components/ui/progress';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { AvatarGroup } from '../common/avatar-group';
 
 interface IProjectProps {

@@ -4,9 +4,7 @@ import {
   ToolbarActions,
   ToolbarHeading,
 } from '@src/app/components/layouts/demo1/components/toolbar';
-import { addDays, format } from 'date-fns';
-import { CalendarDays } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
+import { Container } from '@src/shared/components/common/container';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
 import {
@@ -14,7 +12,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@src/shared/components/ui/popover';
-import { Container } from '@src/shared/components/common/container';
+import { addDays, format } from 'date-fns';
+import { CalendarDays } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 import { Demo1LightSidebarContent } from '../light-sidebar';
 
 const Demo1DarkSidebarPage = () => {

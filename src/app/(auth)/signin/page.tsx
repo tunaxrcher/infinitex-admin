@@ -1,13 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Eye, EyeOff, LoaderCircleIcon } from 'lucide-react';
-import { signIn } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
@@ -20,13 +17,16 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
+import { AlertCircle, Eye, EyeOff, LoaderCircleIcon } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
 import { getSigninSchema, SigninSchemaType } from '../forms/signin-schema';
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '/';
-  
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +89,7 @@ export default function Page() {
             ล็อกอิน เพื่อเข้าสู่ระบบ
           </h1>
         </div>
-{/* 
+        {/* 
         <Alert size="sm" close={false}>
           <AlertIcon>
             <RiErrorWarningFill className="text-primary" />
@@ -212,7 +212,9 @@ export default function Page() {
 
         <div className="flex flex-col gap-2.5">
           <Button type="submit" disabled={isProcessing}>
-            {isProcessing ? <LoaderCircleIcon className="size-4 animate-spin" /> : null}
+            {isProcessing ? (
+              <LoaderCircleIcon className="size-4 animate-spin" />
+            ) : null}
             เข้าสู่ระบบ
           </Button>
         </div>

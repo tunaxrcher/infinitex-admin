@@ -1,8 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Download } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Avatar,
   AvatarFallback,
@@ -11,6 +9,8 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Card } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Download } from 'lucide-react';
 
 export default function Item8() {
   return (

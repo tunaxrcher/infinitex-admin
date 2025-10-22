@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { SquarePlus } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -19,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
+import { SquarePlus } from 'lucide-react';
 
 const InvitePeople = () => {
   const [invitepeopleInput, setInvitePeopleInput] = useState('jason@studio.io');

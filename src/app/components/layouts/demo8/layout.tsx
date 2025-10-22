@@ -3,14 +3,14 @@
 import { ReactNode, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
 import { SearchDialog } from '@src/app/components/partials/dialogs/search/search-dialog';
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
-import { Download, MessageCircleMore, Search } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 import { useBodyClass } from '@src/shared/hooks/use-body-class';
 import { useIsMobile } from '@src/shared/hooks/use-mobile';
 import { useSettings } from '@src/shared/providers/settings-provider';
-import { Button } from '@src/shared/components/ui/button';
-import { StoreClientTopbar } from '@src/app/(protected)/store-client/components/common/topbar';
+import { Download, MessageCircleMore, Search } from 'lucide-react';
 import { Footer } from './components/footer';
 import { Header } from './components/header';
 import { Sidebar } from './components/sidebar';

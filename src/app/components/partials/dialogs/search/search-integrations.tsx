@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { AvatarGroup } from '@src/app/components/partials/common/avatar-group';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   AccordionMenu,
   AccordionMenuGroup,
   AccordionMenuItem,
 } from '@src/shared/components/ui/accordion-menu';
 import { Button } from '@src/shared/components/ui/button';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { SearchIntegrationsItem } from './types';
 
 export function SearchIntegrations({

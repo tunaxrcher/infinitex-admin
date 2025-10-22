@@ -1,8 +1,8 @@
-import { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
-import bcrypt from 'bcrypt'
-import { prisma } from './db'
+import bcrypt from 'bcrypt';
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import { prisma } from './db';
 
 export const authOptions: NextAuthOptions = {
   // Use JWT strategy (no adapter for custom auth)
@@ -38,8 +38,8 @@ export const authOptions: NextAuthOptions = {
           throw new Error(
             JSON.stringify({
               message: 'Please provide both email and password.',
-            })
-          )
+            }),
+          );
         }
 
         // Find admin by email with permissions
@@ -48,14 +48,14 @@ export const authOptions: NextAuthOptions = {
           include: {
             permissions: true,
           },
-        })
+        });
 
         if (!admin) {
           throw new Error(
             JSON.stringify({
               message: 'Invalid email or password.',
-            })
-          )
+            }),
+          );
         }
 
         // Check if admin is active
@@ -63,29 +63,29 @@ export const authOptions: NextAuthOptions = {
           throw new Error(
             JSON.stringify({
               message: 'Your account is not active. Please contact support.',
-            })
-          )
+            }),
+          );
         }
 
         // Verify password
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          admin.password
-        )
+          admin.password,
+        );
 
         if (!isPasswordValid) {
           throw new Error(
             JSON.stringify({
               message: 'Invalid email or password.',
-            })
-          )
+            }),
+          );
         }
 
         // Update last login time
         await prisma.admin.update({
           where: { id: admin.id },
           data: { lastLoginAt: new Date() },
-        })
+        });
 
         // Return admin object
         return {
@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
           roleId: admin.role,
           roleName: admin.role,
           status: admin.isActive ? 'ACTIVE' : 'INACTIVE',
-        }
+        };
       },
     }),
   ],
@@ -105,90 +105,90 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account, trigger, session }) {
       // Initial sign in
       if (user) {
-        token.id = user.id
-        token.email = user.email
-        token.name = user.name
-        token.avatar = user.avatar
-        token.roleId = user.roleId
-        token.roleName = user.roleName
-        token.status = user.status
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.avatar = user.avatar;
+        token.roleId = user.roleId;
+        token.roleName = user.roleName;
+        token.status = user.status;
       }
 
       // Handle account linking (OAuth)
       if (account?.provider === 'google') {
         const admin = await prisma.admin.findUnique({
           where: { email: token.email! },
-        })
+        });
 
         if (admin && admin.isActive) {
-          token.id = admin.id
-          token.roleId = admin.role
-          token.roleName = admin.role
-          token.name = `${admin.firstName} ${admin.lastName}`
+          token.id = admin.id;
+          token.roleId = admin.role;
+          token.roleName = admin.role;
+          token.name = `${admin.firstName} ${admin.lastName}`;
 
           // Update last login
           await prisma.admin.update({
             where: { id: admin.id },
             data: { lastLoginAt: new Date() },
-          })
+          });
         } else {
           // Don't allow Google login for non-admin users
-          throw new Error('Access denied')
+          throw new Error('Access denied');
         }
       }
 
       // Handle session update
       if (trigger === 'update' && session) {
-        token = { ...token, ...session }
+        token = { ...token, ...session };
       }
 
-      return token
+      return token;
     },
 
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.avatar = token.avatar as string | null
-        session.user.roleId = token.roleId as string | null
-        session.user.roleName = token.roleName as string | null
-        session.user.status = token.status as string
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.avatar = token.avatar as string | null;
+        session.user.roleId = token.roleId as string | null;
+        session.user.roleName = token.roleName as string | null;
+        session.user.status = token.status as string;
       }
 
-      return session
+      return session;
     },
 
     async signIn({ account, profile }) {
       // Allow credentials sign in
       if (account?.provider === 'credentials') {
-        return true
+        return true;
       }
 
       // Handle OAuth sign in (Google) - only for existing admins
       if (account?.provider === 'google' && profile?.email) {
         const existingAdmin = await prisma.admin.findUnique({
           where: { email: profile.email },
-        })
+        });
 
         // Only allow Google login for existing active admins
         if (existingAdmin && existingAdmin.isActive) {
-          return true
+          return true;
         }
 
         // Reject Google login for non-admins
-        return false
+        return false;
       }
 
-      return true
+      return true;
     },
 
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
-      if (url.startsWith('/')) return `${baseUrl}${url}`
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
 
@@ -197,4 +197,4 @@ export const authOptions: NextAuthOptions = {
 
   // Secret for JWT
   secret: process.env.NEXTAUTH_SECRET,
-}
+};

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Funnel, LayoutGrid, List, Search as SearchIcon } from 'lucide-react';
+import { Card2 } from '@src/app/(protected)/store-client/components/common/card2';
+import { Card3 } from '@src/app/(protected)/store-client/components/common/card3';
+import { StoreClientFiltersSheet } from '@src/app/(protected)/store-client/components/sheets/filters-sheet';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
@@ -12,10 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
-import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
-import { Card2 } from '@src/app/(protected)/store-client/components/common/card2';
-import { Card3 } from '@src/app/(protected)/store-client/components/common/card3';
-import { StoreClientFiltersSheet } from '@src/app/(protected)/store-client/components/sheets/filters-sheet';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@src/shared/components/ui/toggle-group';
+import { Funnel, LayoutGrid, List, Search as SearchIcon } from 'lucide-react';
 
 interface ISearchResultsGridContentItem {
   logo: string;

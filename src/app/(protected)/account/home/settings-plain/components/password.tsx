@@ -1,7 +1,12 @@
 'use client';
 
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 

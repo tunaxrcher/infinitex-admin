@@ -7,8 +7,8 @@ import {
   HighlightedPosts,
   HighlightedPostsItems,
 } from '@src/app/components/partials/common/highlighted-posts';
-import { BookUser, TableProperties, UsersRound } from 'lucide-react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { BookUser, TableProperties, UsersRound } from 'lucide-react';
 import { ConnectedProfiles, Members, Seats, TeamInfo } from './components';
 
 export function AccountTeamInfoContent() {

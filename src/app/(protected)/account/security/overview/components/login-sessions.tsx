@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
 import { DropdownMenu6 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-6';
-import { EllipsisVertical } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -22,6 +24,8 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical } from 'lucide-react';
 
 interface ILoginSessionsItem {
   avatar: string;

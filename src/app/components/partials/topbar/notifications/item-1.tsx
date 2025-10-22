@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Image as ImageIcon } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -12,6 +11,7 @@ import {
 } from '@src/shared/components/ui/avatar';
 import { Card } from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
+import { Image as ImageIcon } from 'lucide-react';
 
 interface ItemProps {
   userName: string;
@@ -82,9 +82,7 @@ export default function Item1({
           </div>
 
           <div className="relative sm:max-w-full w-full">
-            <ImageIcon
-              className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4"
-            />
+            <ImageIcon className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
             <Input
               type="text"
               placeholder="Reply"
