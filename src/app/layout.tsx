@@ -7,7 +7,7 @@ import { Toaster } from '@src/shared/components/ui/sonner';
 import { Metadata } from 'next';
 import { AuthProvider } from '@src/shared/providers/auth-provider';
 import { I18nProvider } from '@src/shared/providers/i18n-provider';
-// import { ModulesProvider } from '@src/shared/providers/modules-provider';
+import { ModulesProvider } from '@src/shared/providers/modules-provider';
 import { QueryProvider } from '@src/shared/providers/query-provider';
 import { ThemeProvider } from '@src/shared/providers/theme-provider';
 
@@ -47,10 +47,10 @@ export default async function RootLayout({
               <ThemeProvider>
                 <I18nProvider>
                   <TooltipsProvider>
-                    {/* <ModulesProvider> */}
+                    <ModulesProvider>
                       <Suspense>{children}</Suspense>
                       <Toaster />
-                    {/* </ModulesProvider> */}
+                    </ModulesProvider>
                   </TooltipsProvider>
                 </I18nProvider>
               </ThemeProvider>

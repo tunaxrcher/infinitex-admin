@@ -276,9 +276,9 @@ export const MENU_SIDEBAR: MenuConfig = [
       { title: 'Error 500', path: '/error/500' },
     ],
   },
-  { heading: 'Apps' },
+  { heading: 'แอพ' },
   {
-    title: 'User Management',
+    title: 'จัดการผู้ใช้งาน',
     icon: ShieldUser,
     children: [
       {
@@ -308,16 +308,16 @@ export const MENU_SIDEBAR: MenuConfig = [
     ],
   },
   {
-    title: 'Store - Client',
+    title: 'สินเชื่อ',
     icon: Users,
     children: [
       { title: 'Home', path: '/store-client/home' },
       {
-        title: 'Search Results - Grid',
+        title: 'รายการสินเชื่อ',
         path: '/store-client/search-results-grid',
       },
       {
-        title: 'Search Results - List',
+        title: 'รายการสินเชื่อ',
         path: '/store-client/search-results-list',
       },
       { title: 'Product Details', path: '/store-client/product-details' },
