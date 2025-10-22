@@ -43,8 +43,8 @@ export function Demo1LightSidebarPage() {
       <Container>
         <Toolbar>
           <ToolbarHeading
-            title="Dashboard"
-            description="Central Hub for Personal Customization"
+            title="พอร์ต"
+            description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur in consequuntur animi laborum soluta dolorum itaque modi."
           />
           <ToolbarActions>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
