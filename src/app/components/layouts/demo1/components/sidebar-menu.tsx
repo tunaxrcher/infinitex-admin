@@ -84,7 +84,7 @@ export function SidebarMenu() {
         >
           <Link
             href={item.path || '#'}
-            className="flex items-center justify-between grow gap-2"
+            className="flex items-center grow gap-2"
           >
             {item.icon && <item.icon data-slot="accordion-menu-icon" />}
             <span data-slot="accordion-menu-title">{item.title}</span>
@@ -218,6 +218,7 @@ export function SidebarMenu() {
         type="single"
         collapsible
         classNames={classNames}
+        defaultValue="/store-client"
       >
         {buildMenu(MENU_SIDEBAR)}
       </AccordionMenu>
