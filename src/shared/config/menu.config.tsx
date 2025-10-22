@@ -90,6 +90,7 @@ export const MENU_SIDEBAR: MenuConfig = [
         path: '', //'/user-management/settings',
       },
     ],
+    disabled: true
   },
   {
     title: 'สินเชื่อ',
@@ -119,9 +120,9 @@ export const MENU_SIDEBAR: MenuConfig = [
   { title: 'ใบสำคัญจ่าย', icon: Theater, disabled: true },
   { heading: 'ตั้งค่า' },
   { title: 'ตั้งค่า', icon: Theater, disabled: true },
-  { heading: 'Finx' },
-  { title: 'รายการสินเชื่อ', icon: Theater, disabled: true },
-  { title: 'รายงานสินเชื่อ', icon: Theater, disabled: true },
+  // { heading: 'Finx' },
+  // { title: 'รายการสินเชื่อ', icon: Theater, disabled: true },
+  // { title: 'รายงานสินเชื่อ', icon: Theater, disabled: true },
   // { title: 'AI Promt', icon: Theater, disabled: true },
 ];
 
