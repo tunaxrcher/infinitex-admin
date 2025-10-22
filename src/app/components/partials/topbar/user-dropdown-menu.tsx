@@ -74,14 +74,14 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             </div>
           </div>
           <Badge variant="primary" appearance="light" size="sm">
-            Pro
+            Active
           </Badge>
         </div>
 
         <DropdownMenuSeparator />
 
         {/* Menu Items */}
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link
             href="/public-profile/profiles/default"
             className="flex items-center gap-2"
@@ -89,7 +89,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             <UserCircle />
             Public Profile
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
           <Link
             href="/account/home/user-profile"
@@ -125,7 +125,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
                 My Profile
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <Link
                 href="/account/billing/basic"
                 className="flex items-center gap-2"
@@ -133,7 +133,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
                 <CreditCard />
                 Billing
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem asChild>
               <Link
                 href="/account/security/overview"
@@ -143,7 +143,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
                 Security
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <Link
                 href="/account/members/teams"
                 className="flex items-center gap-2"
@@ -151,8 +151,8 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
                 <Users />
                 Members & Roles
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            </DropdownMenuItem> */}
+            {/* <DropdownMenuItem asChild>
               <Link
                 href="/account/integrations"
                 className="flex items-center gap-2"
@@ -160,10 +160,10 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
                 <BetweenHorizontalStart />
                 Integrations
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-
+{/* 
         <DropdownMenuItem asChild>
           <Link
             href="https://devs.keenthemes.com"
@@ -172,10 +172,10 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             <FileText />
             Dev Forum
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         {/* Language Submenu with Radio Group */}
-        <DropdownMenuSub>
+        {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2 [&_[data-slot=dropdown-menu-sub-trigger-indicator]]:hidden hover:[&_[data-slot=badge]]:border-input data-[state=open]:[&_[data-slot=badge]]:border-input">
             <Globe />
             <span className="flex items-center justify-between gap-2 grow relative">
@@ -219,7 +219,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
               ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        </DropdownMenuSub> */}
 
         <DropdownMenuSeparator />
 
@@ -245,7 +245,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="w-full"
             onClick={() => signOut()}
           >
-            Logout
+            ออกจากระบบ
           </Button>
         </div>
       </DropdownMenuContent>

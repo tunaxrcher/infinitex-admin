@@ -56,7 +56,7 @@ import { type MenuConfig } from './types';
 
 export const MENU_SIDEBAR: MenuConfig = [
   {
-    title: 'Dashboards',
+    title: 'แดชบอร์ด',
     icon: LayoutGrid,
     children: [
       { title: 'Light Sidebar', path: '/' },
@@ -105,7 +105,15 @@ export const MENU_SIDEBAR: MenuConfig = [
       },
     ],
   },
-  { title: 'AI Promt', icon: Theater, disabled: true },
+  { heading: 'บัญชี' },
+  { title: 'ใบสำคัญรับ', icon: Theater, disabled: true },
+  { title: 'ใบสำคัญจ่าย', icon: Theater, disabled: true },
+  { heading: 'ตั้งค่า' },
+  { title: 'ตั้งค่า', icon: Theater, disabled: true },
+  { heading: 'Finx' },
+  { title: 'รายการสินเชื่อ', icon: Theater, disabled: true },
+  { title: 'รายงานสินเชื่อ', icon: Theater, disabled: true },
+  // { title: 'AI Promt', icon: Theater, disabled: true },
 ];
 
 export const MENU_SIDEBAR_CUSTOM: MenuConfig = [
@@ -163,7 +171,7 @@ export const MENU_SIDEBAR_CUSTOM: MenuConfig = [
 
 export const MENU_SIDEBAR_COMPACT: MenuConfig = [
   {
-    title: 'Dashboards',
+    title: 'แดชบอร์ด',
     icon: LayoutGrid,
     path: '/',
   },
