@@ -70,27 +70,27 @@ export const MENU_SIDEBAR: MenuConfig = [
     children: [
       {
         title: 'Users',
-        path: '/user-management/users',
+        path: '', //'/user-management/users',
       },
       {
         title: 'Roles',
-        path: '/user-management/roles',
+        path: '', //'/user-management/roles',
       },
       {
         title: 'Permissions',
-        path: '/user-management/permissions',
+        path: '', //'/user-management/permissions',
       },
       {
         title: 'Account',
-        path: '/user-management/account',
+        path: '', //'/user-management/account',
       },
       {
         title: 'Logs',
-        path: '/user-management/logs',
+        path: '', //'/user-management/logs',
       },
       {
         title: 'Settings',
-        path: '/user-management/settings',
+        path: '', //'/user-management/settings',
       },
     ],
   },
@@ -596,130 +596,130 @@ export const MENU_MEGA: MenuConfig = [
   {
     title: 'My Account',
     children: [
-      {
-        title: 'General Pages',
-        children: [
-          { title: 'Integrations', icon: Plug, path: '/account/integrations' },
-          {
-            title: 'Notifications',
-            icon: Bell,
-            path: '/account/notifications',
-          },
-          { title: 'API Keys', icon: Key, path: '/account/api-keys' },
-          { title: 'Appearance', icon: Eye, path: '/account/appearance' },
-          {
-            title: 'Invite a Friend',
-            icon: UserCheck,
-            path: '/account/invite-a-friend',
-          },
-          { title: 'Activity', icon: LifeBuoy, path: '/account/activity' },
-          { title: 'Brand', icon: CheckCircle, disabled: true },
-          { title: 'Get Paid', icon: Euro, disabled: true },
-        ],
-      },
-      {
-        title: 'Other pages',
-        children: [
-          {
-            title: 'Account Home',
-            children: [
-              { title: 'Get Started', path: '/account/home/get-started' },
-              { title: 'User Profile', path: '/account/home/user-profile' },
-              {
-                title: 'Company Profile',
-                path: '/account/home/company-profile',
-              },
-              { title: 'With Sidebar', path: '/account/home/settings-sidebar' },
-              {
-                title: 'Enterprise',
-                path: '/account/home/settings-enterprise',
-              },
-              { title: 'Plain', path: '/account/home/settings-plain' },
-              { title: 'Modal', path: '/account/home/settings-modal' },
-            ],
-          },
-          {
-            title: 'Billing',
-            children: [
-              { title: 'Basic Billing', path: '/account/billing/basic' },
-              { title: 'Enterprise', path: '/account/billing/enterprise' },
-              { title: 'Plans', path: '/account/billing/plans' },
-              { title: 'Billing History', path: '/account/billing/history' },
-              { title: 'Tax Info', disabled: true },
-              { title: 'Invoices', disabled: true },
-              { title: 'Gateaways', disabled: true },
-            ],
-          },
-          {
-            title: 'Security',
-            children: [
-              { title: 'Get Started', path: '/account/security/get-started' },
-              {
-                title: 'Security Overview',
-                path: '/account/security/overview',
-              },
-              {
-                title: 'IP Addresses',
-                path: '/account/security/allowed-ip-addresses',
-              },
-              {
-                title: 'Privacy Settings',
-                path: '/account/security/privacy-settings',
-              },
-              {
-                title: 'Device Management',
-                path: '/account/security/device-management',
-              },
-              {
-                title: 'Backup & Recovery',
-                path: '/account/security/backup-and-recovery',
-              },
-              {
-                title: 'Current Sessions',
-                path: '/account/security/current-sessions',
-              },
-              { title: 'Security Log', path: '/account/security/security-log' },
-            ],
-          },
-          {
-            title: 'Members & Roles',
-            children: [
-              { title: 'Teams Starter', path: '/account/members/team-starter' },
-              { title: 'Teams', path: '/account/members/teams' },
-              { title: 'Team Info', path: '/account/members/team-info' },
-              {
-                title: 'Members Starter',
-                path: '/account/members/members-starter',
-              },
-              { title: 'Team Members', path: '/account/members/team-members' },
-              {
-                title: 'Import Members',
-                path: '/account/members/import-members',
-              },
-              { title: 'Roles', path: '/account/members/roles' },
-              {
-                title: 'Permissions - Toggler',
-                path: '/account/members/permissions-toggle',
-              },
-              {
-                title: 'Permissions - Check',
-                path: '/account/members/permissions-check',
-              },
-            ],
-          },
-          {
-            title: 'Other Pages',
-            children: [
-              { title: 'Integrations', path: '/account/integrations' },
-              { title: 'Notifications', path: '/account/notifications' },
-              { title: 'API Keys', path: '/account/api-keys' },
-              { title: 'Appearance', path: '/account/appearance' },
-              { title: 'Invite a Friend', path: '/account/invite-a-friend' },
-              { title: 'Activity', path: '/account/activity' },
-            ],
-          },
-        ],
-      },
+      // {
+      //   title: 'General Pages',
+      //   children: [
+      //     { title: 'Integrations', icon: Plug, path: '/account/integrations' },
+      //     {
+      //       title: 'Notifications',
+      //       icon: Bell,
+      //       path: '/account/notifications',
+      //     },
+      //     { title: 'API Keys', icon: Key, path: '/account/api-keys' },
+      //     { title: 'Appearance', icon: Eye, path: '/account/appearance' },
+      //     {
+      //       title: 'Invite a Friend',
+      //       icon: UserCheck,
+      //       path: '/account/invite-a-friend',
+      //     },
+      //     { title: 'Activity', icon: LifeBuoy, path: '/account/activity' },
+      //     { title: 'Brand', icon: CheckCircle, disabled: true },
+      //     { title: 'Get Paid', icon: Euro, disabled: true },
+      //   ],
+      // },
+      // {
+      //   title: 'Other pages',
+      //   children: [
+      //     {
+      //       title: 'Account Home',
+      //       children: [
+      //         { title: 'Get Started', path: '/account/home/get-started' },
+      //         { title: 'User Profile', path: '/account/home/user-profile' },
+      //         {
+      //           title: 'Company Profile',
+      //           path: '/account/home/company-profile',
+      //         },
+      //         { title: 'With Sidebar', path: '/account/home/settings-sidebar' },
+      //         {
+      //           title: 'Enterprise',
+      //           path: '/account/home/settings-enterprise',
+      //         },
+      //         { title: 'Plain', path: '/account/home/settings-plain' },
+      //         { title: 'Modal', path: '/account/home/settings-modal' },
+      //       ],
+      //     },
+      //     {
+      //       title: 'Billing',
+      //       children: [
+      //         { title: 'Basic Billing', path: '/account/billing/basic' },
+      //         { title: 'Enterprise', path: '/account/billing/enterprise' },
+      //         { title: 'Plans', path: '/account/billing/plans' },
+      //         { title: 'Billing History', path: '/account/billing/history' },
+      //         { title: 'Tax Info', disabled: true },
+      //         { title: 'Invoices', disabled: true },
+      //         { title: 'Gateaways', disabled: true },
+      //       ],
+      //     },
+      //     {
+      //       title: 'Security',
+      //       children: [
+      //         { title: 'Get Started', path: '/account/security/get-started' },
+      //         {
+      //           title: 'Security Overview',
+      //           path: '/account/security/overview',
+      //         },
+      //         {
+      //           title: 'IP Addresses',
+      //           path: '/account/security/allowed-ip-addresses',
+      //         },
+      //         {
+      //           title: 'Privacy Settings',
+      //           path: '/account/security/privacy-settings',
+      //         },
+      //         {
+      //           title: 'Device Management',
+      //           path: '/account/security/device-management',
+      //         },
+      //         {
+      //           title: 'Backup & Recovery',
+      //           path: '/account/security/backup-and-recovery',
+      //         },
+      //         {
+      //           title: 'Current Sessions',
+      //           path: '/account/security/current-sessions',
+      //         },
+      //         { title: 'Security Log', path: '/account/security/security-log' },
+      //       ],
+      //     },
+      //     {
+      //       title: 'Members & Roles',
+      //       children: [
+      //         { title: 'Teams Starter', path: '/account/members/team-starter' },
+      //         { title: 'Teams', path: '/account/members/teams' },
+      //         { title: 'Team Info', path: '/account/members/team-info' },
+      //         {
+      //           title: 'Members Starter',
+      //           path: '/account/members/members-starter',
+      //         },
+      //         { title: 'Team Members', path: '/account/members/team-members' },
+      //         {
+      //           title: 'Import Members',
+      //           path: '/account/members/import-members',
+      //         },
+      //         { title: 'Roles', path: '/account/members/roles' },
+      //         {
+      //           title: 'Permissions - Toggler',
+      //           path: '/account/members/permissions-toggle',
+      //         },
+      //         {
+      //           title: 'Permissions - Check',
+      //           path: '/account/members/permissions-check',
+      //         },
+      //       ],
+      //     },
+      //     {
+      //       title: 'Other Pages',
+      //       children: [
+      //         { title: 'Integrations', path: '/account/integrations' },
+      //         { title: 'Notifications', path: '/account/notifications' },
+      //         { title: 'API Keys', path: '/account/api-keys' },
+      //         { title: 'Appearance', path: '/account/appearance' },
+      //         { title: 'Invite a Friend', path: '/account/invite-a-friend' },
+      //         { title: 'Activity', path: '/account/activity' },
+      //       ],
+      //     },
+      //   ],
+      // },
     ],
   },
   {
@@ -771,86 +771,86 @@ export const MENU_MEGA: MenuConfig = [
     ],
   },
   {
-    title: 'Apps',
+    title: 'สินเชื่อ',
     children: [
-      {
-        title: 'Store - Client',
-        children: [
-          {
-            children: [
-              { title: 'Home', path: '/store-client/home' },
-              {
-                title: 'Search Results - Grid',
-                path: '/store-client/search-results-grid',
-              },
-              {
-                title: 'Search Results - List',
-                path: '/store-client/search-results-list',
-              },
-              {
-                title: 'Product Details',
-                path: '/store-client/product-details',
-              },
-              { title: 'Wishlist', path: '/store-client/wishlist' },
-              { title: 'My Orders', path: '/store-client/my-orders' },
-            ],
-          },
-          {
-            children: [
-              {
-                title: 'Checkout - Order Summary',
-                path: '/store-client/checkout/order-summary',
-              },
-              {
-                title: 'Checkout - Shipping Info',
-                path: '/store-client/checkout/shipping-info',
-              },
-              {
-                title: 'Checkout - Payment Method',
-                path: '/store-client/checkout/payment-method',
-              },
-              {
-                title: 'Checkout - Order Placed',
-                path: '/store-client/checkout/order-placed',
-              },
-              { title: 'Order Receipt', path: '/store-client/order-receipt' },
-            ],
-          },
-        ],
-      },
-      {
-        title: 'User Management',
-        children: [
-          {
-            children: [
-              {
-                title: 'Users',
-                path: '/user-management/users',
-              },
-              {
-                title: 'Roles',
-                path: '/user-management/roles',
-              },
-              {
-                title: 'Permissions',
-                path: '/user-management/permissions',
-              },
-              {
-                title: 'Account',
-                path: '/user-management/account',
-              },
-              {
-                title: 'Logs',
-                path: '/user-management/logs',
-              },
-              {
-                title: 'Settings',
-                path: '/user-management/settings',
-              },
-            ],
-          },
-        ],
-      },
+      // {
+      //   title: 'In development',
+      //   children: [
+      //     {
+      //       children: [
+      //         { title: 'Home', path: '/store-client/home' },
+      //         {
+      //           title: 'Search Results - Grid',
+      //           path: '/store-client/search-results-grid',
+      //         },
+      //         {
+      //           title: 'Search Results - List',
+      //           path: '/store-client/search-results-list',
+      //         },
+      //         {
+      //           title: 'Product Details',
+      //           path: '/store-client/product-details',
+      //         },
+      //         { title: 'Wishlist', path: '/store-client/wishlist' },
+      //         { title: 'My Orders', path: '/store-client/my-orders' },
+      //       ],
+      //     },
+      //     {
+      //       children: [
+      //         {
+      //           title: 'Checkout - Order Summary',
+      //           path: '/store-client/checkout/order-summary',
+      //         },
+      //         {
+      //           title: 'Checkout - Shipping Info',
+      //           path: '/store-client/checkout/shipping-info',
+      //         },
+      //         {
+      //           title: 'Checkout - Payment Method',
+      //           path: '/store-client/checkout/payment-method',
+      //         },
+      //         {
+      //           title: 'Checkout - Order Placed',
+      //           path: '/store-client/checkout/order-placed',
+      //         },
+      //         { title: 'Order Receipt', path: '/store-client/order-receipt' },
+      //       ],
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: 'User Management',
+      //   children: [
+      //     {
+      //       children: [
+      //         {
+      //           title: 'Users',
+      //           path: '/user-management/users',
+      //         },
+      //         {
+      //           title: 'Roles',
+      //           path: '/user-management/roles',
+      //         },
+      //         {
+      //           title: 'Permissions',
+      //           path: '/user-management/permissions',
+      //         },
+      //         {
+      //           title: 'Account',
+      //           path: '/user-management/account',
+      //         },
+      //         {
+      //           title: 'Logs',
+      //           path: '/user-management/logs',
+      //         },
+      //         {
+      //           title: 'Settings',
+      //           path: '/user-management/settings',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
     ],
   },
 ];
