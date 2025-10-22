@@ -58,10 +58,7 @@ export const MENU_SIDEBAR: MenuConfig = [
   {
     title: 'แดชบอร์ด',
     icon: LayoutGrid,
-    children: [
-      { title: 'Light Sidebar', path: '/' },
-      { title: 'Dark Sidebar', path: '/dark-sidebar' },
-    ],
+    path: '/dashboard',
   },
   { heading: 'แอพ' },
   {
@@ -98,10 +95,22 @@ export const MENU_SIDEBAR: MenuConfig = [
     title: 'สินเชื่อ',
     icon: Users,
     children: [
-      { title: 'Home', path: '/store-client/home' },
+      { title: 'Home', path: '/' },
       {
-        title: 'รายการสินเชื่อ',
+        title: 'รายการสินเชื่อ/เปิดสินเชื่อ',
         path: '/store-client/search-results-list',
+      },
+      {
+        title: 'รายงานสินเชื่อ',
+        path: '/test1',
+      },
+      {
+        title: 'รายงานรายรับ/รายจ่าย',
+        path: '/test2',
+      },
+      {
+        title: 'Maps',
+        path: '/test2',
       },
     ],
   },
