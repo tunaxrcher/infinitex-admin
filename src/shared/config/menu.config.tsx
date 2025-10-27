@@ -99,7 +99,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       { title: 'Home', path: '/' },
       {
         title: 'รายการสินเชื่อ/เปิดสินเชื่อ',
-        path: '/store-client/search-results-list',
+        path: '/store-inventory/product-list',
       },
       {
         title: 'รายงานสินเชื่อ',
