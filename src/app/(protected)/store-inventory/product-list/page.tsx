@@ -15,9 +15,9 @@ export default function ProductList() {
       <div className="container-fluid space-y-5 lg:space-y-9">
         <div className="flex items-center flex-wrap dap-2.5 justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xl font-bold text-foreground">Product List</h1>
+            <h1 className="text-xl font-bold text-foreground">รายการสินเชื่อ</h1>
             <span className="text-sm text-muted-foreground">
-              1424 products found. 83% are active.
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -31,7 +31,7 @@ export default function ProductList() {
               onClick={() => setIsCreateProductOpen(true)}
             >
               <PlusIcon className="h-4 w-4" />
-              Add Product
+              เพิ่มสินเชื่อ
             </Button>
           </div>
         </div>
