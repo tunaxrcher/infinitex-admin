@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SquarePen, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { SquarePen, TrendingUp, TrendingDown } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
@@ -14,7 +13,6 @@ import {
   CardTitle,
   CardToolbar,
 } from '@src/shared/components/ui/card';
-import { Rating } from '@src/shared/components/ui/rating';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Sheet,
@@ -32,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
 import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-group';
 
 export function ProductDetailsAnalyticsSheet({
@@ -41,74 +40,76 @@ export function ProductDetailsAnalyticsSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  // Chart data for Recharts
-  const salesPriceData = [
-    { value: 30 },
-    { value: 38 },
-    { value: 35 },
-    { value: 42 },
-    { value: 40 },
-    { value: 45 },
-    { value: 55 },
+  // Chart data for Payment History (งวดที่ชำระ)
+  const paymentHistoryData = [
+    { value: 220000 },
+    { value: 220000 },
+    { value: 220000 },
+    { value: 220000 },
+    { value: 220000 },
+    { value: 220000 },
+    { value: 220000 },
   ];
 
-  const salesData = [
-    { value: 28 },
-    { value: 50 },
-    { value: 36 },
-    { value: 42 },
-    { value: 38 },
-    { value: 45 },
-    { value: 50 },
+  // Chart data for Outstanding Balance (ยอดคงเหลือ)
+  const outstandingBalanceData = [
+    { value: 2640000 },
+    { value: 2420000 },
+    { value: 2200000 },
+    { value: 1980000 },
+    { value: 1760000 },
+    { value: 1540000 },
+    { value: 1320000 },
   ];
 
-  // Variants table
-  const subscriptions = [
+  // Payment schedule table (ตารางการชำระเงิน)
+  const paymentSchedule = [
     {
-      size: '40',
-      color: 'White',
-      price: '$96.00',
-      available: 'Yes',
-      onHand: '24',
+      installment: '1',
+      dueDate: '25 พ.ย. 2568',
+      amount: '฿220,000',
+      status: 'ชำระแล้ว',
+      paidAmount: '฿220,000',
     },
     {
-      size: '39',
-      color: 'White',
-      price: '$96.00',
-      available: 'Yes',
-      onHand: '18',
+      installment: '2',
+      dueDate: '25 ธ.ค. 2568',
+      amount: '฿220,000',
+      status: 'ชำระแล้ว',
+      paidAmount: '฿220,000',
     },
     {
-      size: '42',
-      color: 'Black',
-      price: '$96.00',
-      available: 'Yes',
-      onHand: '12',
+      installment: '3',
+      dueDate: '25 ม.ค. 2569',
+      amount: '฿220,000',
+      status: 'รอชำระ',
+      paidAmount: '-',
     },
     {
-      size: '41',
-      color: 'White',
-      price: '$96.00',
-      available: 'No',
-      onHand: '30',
+      installment: '4',
+      dueDate: '25 ก.พ. 2569',
+      amount: '฿220,000',
+      status: 'รอชำระ',
+      paidAmount: '-',
     },
     {
-      size: '44',
-      color: 'Red',
-      price: '$96.00',
-      available: 'Yes',
-      onHand: '27',
+      installment: '5',
+      dueDate: '25 มี.ค. 2569',
+      amount: '฿220,000',
+      status: 'รอชำระ',
+      paidAmount: '-',
     },
     {
-      size: '43',
-      color: 'Black',
-      price: '$96.00',
-      available: 'No',
-      onHand: '15',
+      installment: '6',
+      dueDate: '25 เม.ย. 2569',
+      amount: '฿220,000',
+      status: 'รอชำระ',
+      paidAmount: '-',
     },
   ];
 
-  const [selectedImage, setSelectedImage] = useState('3');
+  const [selectedImage, setSelectedImage] = useState('title-deed-example1');
+  const [activeTab, setActiveTab] = useState('details');
 
   // Prevent auto-focus when sheet opens
   useEffect(() => {
@@ -124,7 +125,7 @@ export function ProductDetailsAnalyticsSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="gap-0 lg:w-[1080px] sm:max-w-none inset-5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="border-b py-3.5 px-5 border-border">
-          <SheetTitle tabIndex={0} className="focus:outline-none font-medium">Product Details & Analytics</SheetTitle>
+          <SheetTitle tabIndex={0} className="focus:outline-none font-medium">รายละเอียดและวิเคราะห์สินเชื่อ</SheetTitle>
         </SheetHeader>
 
         <SheetBody className="p-0 grow">
@@ -132,68 +133,123 @@ export function ProductDetailsAnalyticsSheet({
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="lg:text-[22px] font-semibold text-foreground leading-none">
-                  Cloud Shift Lightweight Runner
+                  งานไถ่
                 </span>
                 <Badge size="sm" variant="success" appearance="light">
-                  Live
+                  ยังไม่ถึงกำหนด
                 </Badge>
               </div>
               <div className="flex items-center flex-wrap gap-1.5 text-2sm">
-                <span className="font-normal text-muted-foreground">SKU</span>
-                <span className="font-medium text-foreground/80">WM-8421</span>
+                <span className="font-normal text-muted-foreground">เลขที่สินเชื่อ</span>
+                <span className="font-medium text-foreground/80">LOA000309</span>
                 <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
                 <span className="font-normal text-muted-foreground">
-                  Created
+                  วันที่ขอสินเชื่อ
                 </span>
                 <span className="font-medium text-foreground/80">
-                  16 Jan, 2025
+                  25 ต.ค. 2568
                 </span>
                 <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
                 <span className="font-normal text-muted-foreground">
-                  Last Updated
+                  อัปเดตล่าสุด
                 </span>
                 <span className="font-medium text-foreground/80">
-                  2 days ago
+                  2 วันที่แล้ว
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
-              <Button variant="ghost">Customer View</Button>
-              <Button variant="outline">Remove</Button>
-              <Button variant="mono">Edit Product</Button>
+              <Button variant="ghost">พิมพ์เอกสาร</Button>
+              <Button variant="outline">ลบ</Button>
+              <Button variant="mono">แก้ไขข้อมูล</Button>
             </div>
           </div>
-          <ScrollArea
-            className="flex flex-col h-[calc(100dvh-15.8rem)] mx-1.5"
-            viewportClassName="[&>div]:h-full [&>div>div]:h-full"
-          >
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
+            <div className="border-b border-border px-5">
+              <TabsList className="h-auto p-0 bg-transparent border-b-0 border-border rounded-none w-full">
+                <div className="flex items-center gap-1 min-w-max">
+                  <TabsTrigger
+                    value="details"
+                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
+                  >
+                    รายละเอียดสินเชื่อ
+                    {activeTab === 'details' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="contract"
+                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
+                  >
+                    หนังสือสัญญากู้เงิน
+                    {activeTab === 'contract' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="schedule"
+                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
+                  >
+                    ตารางผ่อนชำระ
+                    {activeTab === 'schedule' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="payment"
+                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
+                  >
+                    ชำระสินเชื่อ
+                    {activeTab === 'payment' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="cancel"
+                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
+                  >
+                    ยกเลิกสินเชื่อ
+                    {activeTab === 'cancel' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                    )}
+                  </TabsTrigger>
+                </div>
+              </TabsList>
+            </div>
+
+            <TabsContent value="details" className="mt-0 flex-1">
+              <ScrollArea
+                className="flex flex-col h-[calc(100dvh-21.5rem)] mx-1.5"
+                viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+              >
             <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
               <div className="grow lg:border-e border-border lg:pe-5 space-y-5 py-5">
-                {/* Inventory */}
+                {/* Loan Summary */}
                 <Card className="rounded-md">
                   <CardHeader className="min-h-[34px] bg-accent/50">
-                    <CardTitle className="text-2sm">Inventory</CardTitle>
+                    <CardTitle className="text-2sm">สรุปสินเชื่อ</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-start flex-wrap lg:gap-10 gap-5">
                       {[
-                        { label: 'Status', value: 'In Stock' },
-                        { label: 'In Stock', value: '1263' },
-                        { label: 'Delta', value: '+289' },
-                        { label: 'Velocity', value: '0.24 items/day' },
-                        { label: 'Updated By', value: 'Jason Taytum' },
+                        { label: 'สถานะ', value: 'ยังไม่ถึงกำหนด' },
+                        { label: 'วงเงิน', value: '฿2,200,000' },
+                        { label: 'ยอดคงเหลือ', value: '฿2,640,000' },
+                        { label: 'งวดที่ชำระ', value: '0/12' },
+                        { label: 'อัปเดตโดย', value: 'สมชาย ใจดี' },
                       ].map((item) => (
                         <div key={item.label} className="flex flex-col gap-1.5">
                           <span className="text-2sm font-normal text-secondary-foreground">
                             {item.label}
                           </span>
                           <span className="text-2sm font-medium text-foreground">
-                            {item.label === 'Status' ? (
+                            {item.label === 'สถานะ' ? (
                               <Badge variant="success" appearance="light">
                                 {item.value}
                               </Badge>
-                            ) : item.label === 'Delta' ? (
-                              <Badge variant="success" appearance="light">
+                            ) : item.label === 'งวดที่ชำระ' ? (
+                              <Badge variant="info" appearance="light">
                                 {item.value}
                               </Badge>
                             ) : (
@@ -209,20 +265,20 @@ export function ProductDetailsAnalyticsSheet({
                 {/* Analytics */}
                 <Card className="rounded-md">
                   <CardHeader className="min-h-[34px] bg-accent/50">
-                    <CardTitle className="text-2sm">Analytics</CardTitle>
+                    <CardTitle className="text-2sm">การวิเคราะห์</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
                     <div className="space-y-1">
                       <div className="text-2sm font-normal text-secondary-foreground">
-                        Salesprice
+                        ประวัติการชำระ
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-lg font-semibold text-foreground">
-                          $96.23
+                          ฿220,000
                         </span>
                         <Badge size="xs" variant="success" appearance="light">
                           <TrendingUp />
-                          3.5%
+                          ตรงเวลา
                         </Badge>
                       </div>
 
@@ -231,7 +287,7 @@ export function ProductDetailsAnalyticsSheet({
                         <div className="h-[100px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
-                              data={salesPriceData}
+                              data={paymentHistoryData}
                               margin={{
                                 top: 5,
                                 right: 5,
@@ -241,7 +297,7 @@ export function ProductDetailsAnalyticsSheet({
                             >
                               <defs>
                                 <linearGradient
-                                  id="salesPriceGradient"
+                                  id="paymentHistoryGradient"
                                   x1="0"
                                   y1="0"
                                   x2="0"
@@ -249,19 +305,19 @@ export function ProductDetailsAnalyticsSheet({
                                 >
                                   <stop
                                     offset="0%"
-                                    stopColor="#4921EA"
+                                    stopColor="#16a34a"
                                     stopOpacity={0.15}
                                   />
                                   <stop
                                     offset="100%"
-                                    stopColor="#4921EA"
+                                    stopColor="#16a34a"
                                     stopOpacity={0.02}
                                   />
                                 </linearGradient>
                               </defs>
                               <Tooltip
                                 cursor={{
-                                  stroke: '#4921EA',
+                                  stroke: '#16a34a',
                                   strokeWidth: 1,
                                   strokeDasharray: '2 2',
                                 }}
@@ -271,7 +327,7 @@ export function ProductDetailsAnalyticsSheet({
                                     return (
                                       <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
                                         <p className="text-sm font-semibold text-foreground">
-                                          ${value}
+                                          ฿{value.toLocaleString()}
                                         </p>
                                       </div>
                                     );
@@ -282,13 +338,13 @@ export function ProductDetailsAnalyticsSheet({
                               <Area
                                 type="monotone"
                                 dataKey="value"
-                                stroke="#4921EA"
-                                fill="url(#salesPriceGradient)"
+                                stroke="#16a34a"
+                                fill="url(#paymentHistoryGradient)"
                                 strokeWidth={1}
                                 dot={false}
                                 activeDot={{
                                   r: 4,
-                                  fill: '#4921EA',
+                                  fill: '#16a34a',
                                   stroke: 'white',
                                   strokeWidth: 2,
                                 }}
@@ -301,18 +357,18 @@ export function ProductDetailsAnalyticsSheet({
 
                     <div className="space-y-1">
                       <div className="text-2sm font-normal text-secondary-foreground">
-                        Sales
+                        ยอดคงเหลือ
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-lg font-semibold text-foreground">
-                          6346
+                          ฿2,640,000
                         </span>
-                        <Badge size="xs" variant="success" appearance="light">
-                          <TrendingUp />
-                          18%
+                        <Badge size="xs" variant="destructive" appearance="light">
+                          <TrendingDown />
+                          -16.7%
                         </Badge>
                         <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
-                          $43,784,02
+                          0/12 งวด
                         </span>
                       </div>
 
@@ -321,7 +377,7 @@ export function ProductDetailsAnalyticsSheet({
                         <div className="h-[100px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
-                              data={salesData}
+                              data={outstandingBalanceData}
                               margin={{
                                 top: 5,
                                 right: 5,
@@ -331,7 +387,7 @@ export function ProductDetailsAnalyticsSheet({
                             >
                               <defs>
                                 <linearGradient
-                                  id="salesGradient"
+                                  id="outstandingBalanceGradient"
                                   x1="0"
                                   y1="0"
                                   x2="0"
@@ -361,7 +417,7 @@ export function ProductDetailsAnalyticsSheet({
                                     return (
                                       <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
                                         <p className="text-sm font-semibold text-foreground">
-                                          {value}
+                                          ฿{value.toLocaleString()}
                                         </p>
                                       </div>
                                     );
@@ -373,7 +429,7 @@ export function ProductDetailsAnalyticsSheet({
                                 type="monotone"
                                 dataKey="value"
                                 stroke="#4921EA"
-                                fill="url(#salesGradient)"
+                                fill="url(#outstandingBalanceGradient)"
                                 strokeWidth={1}
                                 dot={false}
                                 activeDot={{
@@ -391,13 +447,13 @@ export function ProductDetailsAnalyticsSheet({
                   </CardContent>
                 </Card>
 
-                {/* Variants table */}
+                {/* Payment Schedule table */}
                 <Card className="rounded-md">
                   <CardHeader className="min-h-[34px] bg-accent/50">
-                    <CardTitle className="text-2sm">Analytics</CardTitle>
+                    <CardTitle className="text-2sm">ตารางการชำระเงิน</CardTitle>
                     <CardToolbar>
                       <Button mode="link" className="text-primary">
-                        Manage Variants
+                        จัดการการชำระ
                       </Button>
                     </CardToolbar>
                   </CardHeader>
@@ -406,45 +462,51 @@ export function ProductDetailsAnalyticsSheet({
                     <Table className="overflow-x-auto">
                       <TableHeader>
                         <TableRow className="text-secondary-foreground font-normal text-2sm">
-                          <TableHead className="w-[100px] h-8.5 border-e border-border ps-5">
-                            Size
+                          <TableHead className="w-[80px] h-8.5 border-e border-border ps-5">
+                            งวดที่
+                          </TableHead>
+                          <TableHead className="w-[120px] h-8.5 border-e border-border">
+                            วันครบกำหนด
+                          </TableHead>
+                          <TableHead className="w-[120px] h-8.5 border-e border-border">
+                            ยอดที่ต้องชำระ
                           </TableHead>
                           <TableHead className="w-[100px] h-8.5 border-e border-border">
-                            Color
+                            สถานะ
                           </TableHead>
-                          <TableHead className="w-[100px] h-8.5 border-e border-border">
-                            Price
-                          </TableHead>
-                          <TableHead className="w-[100px] h-8.5 border-e border-border">
-                            Available
-                          </TableHead>
-                          <TableHead className="w-[100px] h-8.5 border-e border-border">
-                            On Hand
+                          <TableHead className="w-[120px] h-8.5 border-e border-border">
+                            ยอดที่ชำระ
                           </TableHead>
                           <TableHead className="w-[50px] h-8.5"></TableHead>
                         </TableRow>
                       </TableHeader>
 
                       <TableBody>
-                        {subscriptions.map((sub, index) => (
+                        {paymentSchedule.map((payment, index) => (
                           <TableRow
-                            key={sub.size}
+                            key={payment.installment}
                             className={`text-secondary-foreground font-normal text-2sm ${index % 2 === 0 ? 'bg-accent/50' : ''}`}
                           >
                             <TableCell className="py-1 border-e border-border ps-5">
-                              EU {sub.size}
+                              งวดที่ {payment.installment}
                             </TableCell>
                             <TableCell className="py-1 border-e border-border">
-                              {sub.color}
+                              {payment.dueDate}
                             </TableCell>
                             <TableCell className="py-1 border-e border-border">
-                              {sub.price}
+                              {payment.amount}
                             </TableCell>
                             <TableCell className="py-1 border-e border-border">
-                              {sub.available}
+                              <Badge 
+                                variant={payment.status === 'ชำระแล้ว' ? 'success' : 'warning'} 
+                                appearance="light"
+                                size="sm"
+                              >
+                                {payment.status}
+                              </Badge>
                             </TableCell>
                             <TableCell className="py-1 border-e border-border">
-                              {sub.onHand}
+                              {payment.paidAmount}
                             </TableCell>
                             <TableCell className="text-center py-1">
                               <Button variant="ghost" mode="icon" size="sm">
@@ -464,15 +526,15 @@ export function ProductDetailsAnalyticsSheet({
                   <Card className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 mb-5">
                     <img
                       src={toAbsoluteUrl(
-                        `/media/store/client/1200x1200/${selectedImage}.png`,
+                        `/images/${selectedImage}.jpg`,
                       )}
-                      className="h-[250px] shrink-0"
-                      alt="Main product image"
+                      className="h-[250px] shrink-0 object-cover w-full rounded-md"
+                      alt="รูปหลักประกัน/โฉนด"
                     />
                   </Card>
 
                   <ToggleGroup
-                    className="grid grid-cols-5 gap-4"
+                    className="grid grid-cols-2 gap-4"
                     type="single"
                     value={selectedImage}
                     onValueChange={(newValue) => {
@@ -482,45 +544,27 @@ export function ProductDetailsAnalyticsSheet({
                     {[
                       {
                         id: '1',
-                        value: '3',
-                        image: '3.png',
-                        alt: 'Thumbnail 1',
+                        value: 'title-deed-example1',
+                        image: 'title-deed-example1.jpg',
+                        alt: 'โฉนด 1',
                       },
                       {
                         id: '2',
-                        value: '18',
-                        image: '18.png',
-                        alt: 'Thumbnail 2',
-                      },
-                      {
-                        id: '3',
-                        value: '19',
-                        image: '19.png',
-                        alt: 'Thumbnail 3',
-                      },
-                      {
-                        id: '4',
-                        value: '20',
-                        image: '20.png',
-                        alt: 'Thumbnail 4',
-                      },
-                      {
-                        id: '5',
-                        value: '21',
-                        image: '21.png',
-                        alt: 'Thumbnail 5',
+                        value: 'title-deed-example2',
+                        image: 'title-deed-example2.jpg',
+                        alt: 'โฉนด 2',
                       },
                     ].map((item) => (
                       <ToggleGroupItem
                         key={item.id}
                         value={item.value}
-                        className="rounded-md border border-border shrink-0 h-[50px] p-0 bg-accent/50 hover:bg-accent/50 data-[state=on]:border-zinc-950 dark:data-[state=on]:border-zinc-50"
+                        className="rounded-md border border-border shrink-0 h-[80px] p-0 bg-accent/50 hover:bg-accent/50 data-[state=on]:border-zinc-950 dark:data-[state=on]:border-zinc-50"
                       >
                         <img
                           src={toAbsoluteUrl(
-                            `/media/store/client/1200x1200/${item.image}`,
+                            `/images/${item.image}`,
                           )}
-                          className="h-[50px] w-[50px] object-cover rounded-md"
+                          className="h-[80px] w-full object-cover rounded-md"
                           alt={item.alt}
                         />
                       </ToggleGroupItem>
@@ -528,77 +572,118 @@ export function ProductDetailsAnalyticsSheet({
                   </ToggleGroup>
                 </div>
                 <p className="text-2sm font-normal text-secondary-foreground leading-5 mb-5">
-                  Lightweight and stylish, these sneakers offer all-day comfort
-                  with breathable mesh..
+                  สินเชื่อเพื่อธุรกิจโดยใช้ที่ดินเป็นหลักประกัน อนุมัติรวดเร็ว อัตราดอกเบี้ยคงที่ มีความยืดหยุ่นในการชำระ
                 </p>
 
                 <div className="space-y-3">
                   <div className="flex items-center lg:gap-13 gap-5">
-                    <div className="text-2sm text-secondary-foreground font-normal min-w-[60px]">
-                      Category
+                    <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                      ประเภทสินเชื่อ
                     </div>
                     <div className="text-2sm text-secondary-foreground font-medium">
-                      Sneakers
+                      เงินสด
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-13 gap-5">
-                    <div className="text-2sm text-secondary-foreground font-normal min-w-[60px]">
-                      Fit
+                    <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                      ระยะเวลา
                     </div>
                     <div className="text-2sm text-secondary-foreground font-medium">
-                      True to size
+                      1 ปี (12 งวด)
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-13 gap-5">
-                    <div className="text-2sm text-secondary-foreground font-normal min-w-[60px]">
-                      Colors
+                    <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                      อัตราดอกเบี้ย
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-4.5 h-4.5 rounded-xs bg-background border border-border-input"></div>
-                      <div className="w-4 h-4 rounded-xs bg-foreground"></div>
-                      <div className="w-4 h-4 rounded-xs bg-destructive"></div>
+                      <Badge variant="primary" appearance="light">
+                        120% ต่อปี
+                      </Badge>
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-13 gap-5">
-                    <div className="text-2sm text-secondary-foreground font-normal min-w-[60px]">
-                      Sizes
+                    <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                      ความเสี่ยง
                     </div>
                     <div className="flex items-center gap-3.5">
-                      <span className="text-2sm text-secondary-foreground font-medium">
-                        EU: 39-45
-                      </span>
-                      <span className="text-2sm text-secondary-foreground font-medium">
-                        US: 6-12
-                      </span>
-                      <span className="text-2sm text-secondary-foreground font-medium">
-                        UK: 5.5-11.5
-                      </span>
+                      <Badge variant="warning" appearance="outline">
+                        ความเสี่ยงปานกลาง
+                      </Badge>
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-13 gap-5">
-                    <div className="text-2sm text-secondary-foreground font-normal min-w-[60px]">
-                      Rating
+                    <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                      สถานที่
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Rating rating={4} size="sm" />
-                      <Link
-                        href="#"
-                        className="hover:text-primary text-xs font-medium text-primary"
-                      >
-                        834 reviews
-                      </Link>
+                    <div className="text-2sm text-secondary-foreground font-medium">
+                      test (0-0-80 ไร่)
+                    </div>
+                  </div>
+                  <div className="flex items-center lg:gap-13 gap-5">
+                    <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                      โฉนด
+                    </div>
+                    <div className="text-2sm text-secondary-foreground font-medium">
+                      น.ส.3ก เลขที่ 0000000
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="contract" className="mt-0 flex-1">
+              <ScrollArea
+                className="flex flex-col h-[calc(100dvh-21.5rem)] mx-1.5"
+                viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+              >
+                <div className="flex items-center justify-center h-full px-3.5 py-10">
+                  <p className="text-muted-foreground text-sm">เนื้อหาหนังสือสัญญากู้เงิน (ยังไม่ได้พัฒนา)</p>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="schedule" className="mt-0 flex-1">
+              <ScrollArea
+                className="flex flex-col h-[calc(100dvh-21.5rem)] mx-1.5"
+                viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+              >
+                <div className="flex items-center justify-center h-full px-3.5 py-10">
+                  <p className="text-muted-foreground text-sm">เนื้อหาตารางผ่อนชำระ (ยังไม่ได้พัฒนา)</p>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="payment" className="mt-0 flex-1">
+              <ScrollArea
+                className="flex flex-col h-[calc(100dvh-21.5rem)] mx-1.5"
+                viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+              >
+                <div className="flex items-center justify-center h-full px-3.5 py-10">
+                  <p className="text-muted-foreground text-sm">เนื้อหาชำระสินเชื่อ (ยังไม่ได้พัฒนา)</p>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="cancel" className="mt-0 flex-1">
+              <ScrollArea
+                className="flex flex-col h-[calc(100dvh-21.5rem)] mx-1.5"
+                viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+              >
+                <div className="flex items-center justify-center h-full px-3.5 py-10">
+                  <p className="text-muted-foreground text-sm">เนื้อหายกเลิกสินเชื่อ (ยังไม่ได้พัฒนา)</p>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         </SheetBody>
 
         <SheetFooter className="flex-row border-t pb-4 p-5 border-border gap-2.5 lg:gap-0">
-          <Button variant="ghost">Customer View</Button>
-          <Button variant="outline">Remove</Button>
-          <Button variant="mono">Edit Product</Button>
+          <Button variant="ghost">พิมพ์เอกสาร</Button>
+          <Button variant="outline">ลบ</Button>
+          <Button variant="mono">แก้ไขข้อมูล</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
