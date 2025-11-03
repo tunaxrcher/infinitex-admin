@@ -18,13 +18,11 @@ import {
   Info,
   Search,
   Settings,
-  Star,
   Trash,
   X,
   Layers,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -53,12 +51,6 @@ import {
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@src/shared/components/ui/tooltip';
 import { ProductFormSheet } from '../components/product-form-sheet';
 import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
 import { ManageVariantsSheet } from '../components/manage-variants';
@@ -70,20 +62,31 @@ interface IColumnFilterProps<TData, TValue> {
 
 export interface IData {
   id: string;
-  productInfo: {
-    image: string;
-    title: string;
-    label: string;
-    tooltip: string;
-  };
-  category: string;
-  price: string;
+  loanNumber: string;
+  customerName: string;
+  placeName: string;
+  area: string;
+  titleDeedNumber: string;
+  titleDeedType: string;
+  requestDate: string;
+  creditLimit: number;
+  paymentDay: number;
   status: {
     label: string;
     variant: string;
   };
-  created: string;
-  updated: string;
+  overdueDays: number;
+  outstandingBalance: number;
+  paidAmount: number;
+  remainingAmount: number;
+  installmentAmount: number;
+  creditRisk: string;
+  loanType: string;
+  duration: string;
+  paidInstallments: number;
+  totalInstallments: number;
+  interestRate: number;
+  details: string;
 }
 
 interface ProductListProps {
@@ -95,428 +98,703 @@ interface ProductListProps {
 const mockData: IData[] = [
   {
     id: '1',
-    productInfo: {
-      image: '11.png',
-      title: 'Nike Air Max 270 React Engineered',
-      label: 'WM-8421',
-      tooltip: 'Air Max 270 React Engineered',
-    },
-    category: 'Sneakers',
-    price: '$83.00',
+    loanNumber: 'LOA000309',
+    customerName: 'งานไถ่',
+    placeName: 'test',
+    area: '0-0-80',
+    titleDeedNumber: '0000000',
+    titleDeedType: 'น.ส.3ก',
+    requestDate: '25 ต.ค. 2568',
+    creditLimit: 2200000,
+    paymentDay: 25,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '18 Aug, 2025',
-    updated: '18 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 0,
+    remainingAmount: 2640000,
+    installmentAmount: 220000,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 0,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '2',
-    productInfo: {
-      image: '1.png',
-      title: 'Trail Runner Z2',
-      label: 'UC-3990',
-      tooltip: '',
-    },
-    category: 'Outdoor',
-    price: '$110.00',
+    loanNumber: 'LOA000310',
+    customerName: 'สมชาย ใจดี',
+    placeName: 'บ้านสวนผล',
+    area: '1-2-50',
+    titleDeedNumber: '1234567',
+    titleDeedType: 'โฉนด',
+    requestDate: '20 ต.ค. 2568',
+    creditLimit: 1500000,
+    paymentDay: 15,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '17 Aug, 2025',
-    updated: '17 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 250000,
+    remainingAmount: 1550000,
+    installmentAmount: 125000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '2 ปี',
+    paidInstallments: 2,
+    totalInstallments: 24,
+    interestRate: 96,
+    details: '',
   },
   {
     id: '3',
-    productInfo: {
-      image: '2.png',
-      title: 'Nike Urban Flex Knit Low-Top Sneaker',
-      label: 'KB-8820',
-      tooltip: 'Urban Flex Knit Low Sneakers',
-    },
-    category: 'Runners',
-    price: '$76.50',
+    loanNumber: 'LOA000311',
+    customerName: 'วิไล สุขใจ',
+    placeName: 'สวนยางพารา',
+    area: '2-3-25',
+    titleDeedNumber: '2345678',
+    titleDeedType: 'น.ส.3',
+    requestDate: '18 ต.ค. 2568',
+    creditLimit: 3500000,
+    paymentDay: 10,
     status: {
-      label: 'Draft',
+      label: 'รออนุมัติ',
       variant: 'warning',
     },
-    created: '15 Aug, 2025',
-    updated: '15 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 0,
+    remainingAmount: 4200000,
+    installmentAmount: 350000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 0,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '4',
-    productInfo: {
-      image: '15.png',
-      title: 'Blaze Street Classic',
-      label: 'LS-1033',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$69.99',
+    loanNumber: 'LOA000312',
+    customerName: 'ประเสริฐ มั่งมี',
+    placeName: 'โรงงานผลิตภัณฑ์',
+    area: '5-0-0',
+    titleDeedNumber: '3456789',
+    titleDeedType: 'โฉนด',
+    requestDate: '15 ต.ค. 2568',
+    creditLimit: 5000000,
+    paymentDay: 5,
     status: {
-      label: 'Must Act',
+      label: 'เกินกำหนดชำระ',
       variant: 'destructive',
     },
-    created: '14 Aug, 2025',
-    updated: '14 Aug, 2025',
+    overdueDays: 15,
+    outstandingBalance: 416667,
+    paidAmount: 833334,
+    remainingAmount: 5166666,
+    installmentAmount: 416667,
+    creditRisk: 'ความเสี่ยงสูง',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 2,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: 'ค้างชำระเกิน 15 วัน',
   },
   {
     id: '5',
-    productInfo: {
-      image: '13.png',
-      title: 'Adidas Terra Trekking Max Pro Hiking Boot',
-      label: 'WC-5510',
-      tooltip: 'Terra Trekking Max Pro Boots',
-    },
-    category: 'Outdoor',
-    price: '$129.00',
+    loanNumber: 'LOA000313',
+    customerName: 'มานะ ขยัน',
+    placeName: 'ไร่อ้อย',
+    area: '3-1-75',
+    titleDeedNumber: '4567890',
+    titleDeedType: 'น.ส.3ก',
+    requestDate: '12 ต.ค. 2568',
+    creditLimit: 2800000,
+    paymentDay: 30,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '13 Aug, 2025',
-    updated: '13 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 466667,
+    remainingAmount: 2870000,
+    installmentAmount: 233333,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 2,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: '',
   },
   {
     id: '6',
-    productInfo: {
-      image: '7.png',
-      title: 'Lite Runner Evo',
-      label: 'GH-7312',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$59.00',
+    loanNumber: 'LOA000314',
+    customerName: 'สมหญิง เจริญ',
+    placeName: 'ที่ดินเปล่า',
+    area: '0-3-45',
+    titleDeedNumber: '5678901',
+    titleDeedType: 'น.ส.3',
+    requestDate: '10 ต.ค. 2568',
+    creditLimit: 800000,
+    paymentDay: 20,
     status: {
-      label: 'Archived',
+      label: 'ปิดบัญชี',
       variant: 'info',
     },
-    created: '12 Aug, 2025',
-    updated: '12 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 960000,
+    remainingAmount: 0,
+    installmentAmount: 80000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 12,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: 'ชำระครบแล้ว',
   },
   {
     id: '7',
-    productInfo: {
-      image: '10.png',
-      title: 'Puma Classic Street Wear 2.0 Running Shoe',
-      label: 'UH-2300',
-      tooltip: 'Classic Street Wear 2.0 Collection',
-    },
-    category: 'Runners',
-    price: '$72.00',
+    loanNumber: 'LOA000315',
+    customerName: 'พิชัย สุขสันต์',
+    placeName: 'สวนทุเรียน',
+    area: '4-2-30',
+    titleDeedNumber: '6789012',
+    titleDeedType: 'โฉนด',
+    requestDate: '8 ต.ค. 2568',
+    creditLimit: 4200000,
+    paymentDay: 25,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '11 Aug, 2025',
-    updated: '11 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 700000,
+    remainingAmount: 4340000,
+    installmentAmount: 350000,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '2 ปี',
+    paidInstallments: 2,
+    totalInstallments: 24,
+    interestRate: 96,
+    details: '',
   },
   {
     id: '8',
-    productInfo: {
-      image: '3.png',
-      title: 'Salomon Enduro All-Terrain High-Performance Trail Shoe',
-      label: 'MS-8702',
-      tooltip: 'Enduro All-Terrain High Sneakers',
-    },
-    category: 'Sneakers',
-    price: '$119.50',
+    loanNumber: 'LOA000316',
+    customerName: 'นิภา รุ่งเรือง',
+    placeName: 'บ้านพักตากอากาศ',
+    area: '0-2-75',
+    titleDeedNumber: '7890123',
+    titleDeedType: 'น.ส.3ก',
+    requestDate: '5 ต.ค. 2568',
+    creditLimit: 1200000,
+    paymentDay: 15,
     status: {
-      label: 'Archived',
+      label: 'ปิดบัญชี',
       variant: 'info',
     },
-    created: '10 Aug, 2025',
-    updated: '10 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 1440000,
+    remainingAmount: 0,
+    installmentAmount: 100000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 12,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: 'ชำระครบแล้ว',
   },
   {
     id: '9',
-    productInfo: {
-      image: '8.png',
-      title: 'FlexRun Urban Core',
-      label: 'BS-6112',
-      tooltip: '',
-    },
-    category: 'Outdoor',
-    price: '$98.75',
+    loanNumber: 'LOA000317',
+    customerName: 'ธนา มั่งคั่ง',
+    placeName: 'โกดังสินค้า',
+    area: '1-0-50',
+    titleDeedNumber: '8901234',
+    titleDeedType: 'โฉนด',
+    requestDate: '2 ต.ค. 2568',
+    creditLimit: 3000000,
+    paymentDay: 10,
     status: {
-      label: 'Draft',
+      label: 'รออนุมัติ',
       variant: 'warning',
     },
-    created: '9 Aug, 2025',
-    updated: '9 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 0,
+    remainingAmount: 3600000,
+    installmentAmount: 300000,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 0,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '10',
-    productInfo: {
-      image: '5.png',
-      title: 'Aero Walk Lite',
-      label: 'HC-9031',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$45.00',
+    loanNumber: 'LOA000318',
+    customerName: 'อรุณ ใจสู้',
+    placeName: 'ไร่มันสำปะหลัง',
+    area: '6-0-25',
+    titleDeedNumber: '9012345',
+    titleDeedType: 'น.ส.3',
+    requestDate: '30 ก.ย. 2568',
+    creditLimit: 1800000,
+    paymentDay: 5,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '8 Aug, 2025',
-    updated: '8 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 300000,
+    remainingAmount: 1860000,
+    installmentAmount: 150000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 2,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: '',
   },
   {
     id: '11',
-    productInfo: {
-      image: '12.png',
-      title: 'Pro Runner Elite',
-      label: 'PR-2024',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$95.00',
+    loanNumber: 'LOA000319',
+    customerName: 'วาสนา พัฒนา',
+    placeName: 'ร้านค้า',
+    area: '0-1-20',
+    titleDeedNumber: '0123456',
+    titleDeedType: 'โฉนด',
+    requestDate: '28 ก.ย. 2568',
+    creditLimit: 950000,
+    paymentDay: 20,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '7 Aug, 2025',
-    updated: '7 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 158333,
+    remainingAmount: 982667,
+    installmentAmount: 79167,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '12',
-    productInfo: {
-      image: '14.png',
-      title: 'Comfort Plus Max',
-      label: 'CP-4567',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$67.50',
+    loanNumber: 'LOA000320',
+    customerName: 'สุรชัย วงศ์ดี',
+    placeName: 'สวนผลไม้',
+    area: '2-1-0',
+    titleDeedNumber: '1234560',
+    titleDeedType: 'น.ส.3ก',
+    requestDate: '25 ก.ย. 2568',
+    creditLimit: 1650000,
+    paymentDay: 30,
     status: {
-      label: 'Draft',
+      label: 'รออนุมัติ',
       variant: 'warning',
     },
-    created: '6 Aug, 2025',
-    updated: '6 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 0,
+    remainingAmount: 1980000,
+    installmentAmount: 137500,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 0,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '13',
-    productInfo: {
-      image: '16.png',
-      title: 'Speed Demon X',
-      label: 'SD-7890',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$88.00',
+    loanNumber: 'LOA000321',
+    customerName: 'กมลา ศรีสุข',
+    placeName: 'บ้านเดี่ยว',
+    area: '0-2-15',
+    titleDeedNumber: '2345601',
+    titleDeedType: 'โฉนด',
+    requestDate: '22 ก.ย. 2568',
+    creditLimit: 2100000,
+    paymentDay: 15,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '5 Aug, 2025',
-    updated: '5 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 350000,
+    remainingAmount: 2170000,
+    installmentAmount: 175000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 2,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: '',
   },
   {
     id: '14',
-    productInfo: {
-      image: '17.png',
-      title: 'Casual Street Pro',
-      label: 'CS-3456',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$54.99',
+    loanNumber: 'LOA000322',
+    customerName: 'บุญส่ง เฟื่องฟู',
+    placeName: 'โรงเรือน',
+    area: '0-0-50',
+    titleDeedNumber: '3456012',
+    titleDeedType: 'น.ส.3',
+    requestDate: '20 ก.ย. 2568',
+    creditLimit: 650000,
+    paymentDay: 10,
     status: {
-      label: 'Archived',
+      label: 'ปิดบัญชี',
       variant: 'info',
     },
-    created: '4 Aug, 2025',
-    updated: '4 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 780000,
+    remainingAmount: 0,
+    installmentAmount: 54167,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 12,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: 'ชำระครบแล้ว',
   },
   {
     id: '15',
-    productInfo: {
-      image: '11.png',
-      title: 'Mountain Trek Elite',
-      label: 'MT-9012',
-      tooltip: '',
-    },
-    category: 'Outdoor',
-    price: '$135.00',
+    loanNumber: 'LOA000323',
+    customerName: 'ชัยวัฒน์ มั่งมี',
+    placeName: 'โรงงาน',
+    area: '8-0-0',
+    titleDeedNumber: '4560123',
+    titleDeedType: 'โฉนด',
+    requestDate: '18 ก.ย. 2568',
+    creditLimit: 6500000,
+    paymentDay: 5,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '3 Aug, 2025',
-    updated: '3 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 1300000,
+    remainingAmount: 6720000,
+    installmentAmount: 541667,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 2,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: '',
   },
   {
     id: '16',
-    productInfo: {
-      image: '1.png',
-      title: 'Urban Flex Pro',
-      label: 'UF-6789',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$72.50',
+    loanNumber: 'LOA000324',
+    customerName: 'ปราณี ศรีทอง',
+    placeName: 'คอนโด',
+    area: '0-0-35',
+    titleDeedNumber: '5601234',
+    titleDeedType: 'โฉนด',
+    requestDate: '15 ก.ย. 2568',
+    creditLimit: 750000,
+    paymentDay: 25,
     status: {
-      label: 'Draft',
+      label: 'รออนุมัติ',
       variant: 'warning',
     },
-    created: '2 Aug, 2025',
-    updated: '2 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 0,
+    remainingAmount: 900000,
+    installmentAmount: 62500,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 0,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '17',
-    productInfo: {
-      image: '2.png',
-      title: 'Lightweight Runner',
-      label: 'LR-2345',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$49.99',
+    loanNumber: 'LOA000325',
+    customerName: 'สมพร รุ่งโรจน์',
+    placeName: 'ที่ดินว่าง',
+    area: '1-3-10',
+    titleDeedNumber: '6012345',
+    titleDeedType: 'น.ส.3ก',
+    requestDate: '12 ก.ย. 2568',
+    creditLimit: 1350000,
+    paymentDay: 20,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '1 Aug, 2025',
-    updated: '1 Aug, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 225000,
+    remainingAmount: 1395000,
+    installmentAmount: 112500,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '18',
-    productInfo: {
-      image: '3.png',
-      title: 'Premium Comfort Max',
-      label: 'PC-5678',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$89.00',
+    loanNumber: 'LOA000326',
+    customerName: 'นิรันดร์ วิริยะ',
+    placeName: 'สวนปาล์มน้ำมัน',
+    area: '7-2-40',
+    titleDeedNumber: '0123457',
+    titleDeedType: 'โฉนด',
+    requestDate: '10 ก.ย. 2568',
+    creditLimit: 5500000,
+    paymentDay: 5,
     status: {
-      label: 'Must Act',
+      label: 'เกินกำหนดชำระ',
       variant: 'destructive',
     },
-    created: '31 Jul, 2025',
-    updated: '31 Jul, 2025',
+    overdueDays: 8,
+    outstandingBalance: 458333,
+    paidAmount: 916666,
+    remainingAmount: 5683334,
+    installmentAmount: 458333,
+    creditRisk: 'ความเสี่ยงสูง',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 2,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: 'ค้างชำระ 8 วัน',
   },
   {
     id: '19',
-    productInfo: {
-      image: '5.png',
-      title: 'Sport Performance Pro',
-      label: 'SP-8901',
-      tooltip: '',
-    },
-    category: 'Outdoor',
-    price: '$112.50',
+    loanNumber: 'LOA000327',
+    customerName: 'รัตนา บุญมา',
+    placeName: 'โฮมสเตย์',
+    area: '0-3-60',
+    titleDeedNumber: '1234568',
+    titleDeedType: 'น.ส.3',
+    requestDate: '8 ก.ย. 2568',
+    creditLimit: 1850000,
+    paymentDay: 15,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '30 Jul, 2025',
-    updated: '30 Jul, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 308333,
+    remainingAmount: 1913667,
+    installmentAmount: 154167,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '20',
-    productInfo: {
-      image: '7.png',
-      title: 'Classic Retro Style',
-      label: 'CR-1234',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$63.75',
+    loanNumber: 'LOA000328',
+    customerName: 'ชาติชาย สุขสม',
+    placeName: 'โรงนา',
+    area: '4-0-75',
+    titleDeedNumber: '2345670',
+    titleDeedType: 'โฉนด',
+    requestDate: '5 ก.ย. 2568',
+    creditLimit: 2450000,
+    paymentDay: 10,
     status: {
-      label: 'Archived',
+      label: 'ปิดบัญชี',
       variant: 'info',
     },
-    created: '29 Jul, 2025',
-    updated: '29 Jul, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 2940000,
+    remainingAmount: 0,
+    installmentAmount: 204167,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 12,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: 'ชำระครบแล้ว',
   },
   {
     id: '21',
-    productInfo: {
-      image: '8.png',
-      title: 'Adventure Explorer',
-      label: 'AE-4567',
-      tooltip: '',
-    },
-    category: 'Outdoor',
-    price: '$98.00',
+    loanNumber: 'LOA000329',
+    customerName: 'สุภาพ เกิดผล',
+    placeName: 'ไร่สับปะรด',
+    area: '3-2-20',
+    titleDeedNumber: '3456701',
+    titleDeedType: 'น.ส.3ก',
+    requestDate: '3 ก.ย. 2568',
+    creditLimit: 2750000,
+    paymentDay: 30,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '28 Jul, 2025',
-    updated: '28 Jul, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 458333,
+    remainingAmount: 2841667,
+    installmentAmount: 229167,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '22',
-    productInfo: {
-      image: '10.png',
-      title: 'Modern Street Elite',
-      label: 'MS-7890',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$76.25',
+    loanNumber: 'LOA000330',
+    customerName: 'อนงค์ แก้วมา',
+    placeName: 'หอพัก',
+    area: '0-2-0',
+    titleDeedNumber: '4567012',
+    titleDeedType: 'โฉนด',
+    requestDate: '1 ก.ย. 2568',
+    creditLimit: 3200000,
+    paymentDay: 25,
     status: {
-      label: 'Draft',
+      label: 'รออนุมัติ',
       variant: 'warning',
     },
-    created: '27 Jul, 2025',
-    updated: '27 Jul, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 0,
+    remainingAmount: 3456000,
+    installmentAmount: 266667,
+    creditRisk: 'ความเสี่ยงปานกลาง',
+    loanType: 'เงินสด',
+    duration: '1.5 ปี',
+    paidInstallments: 0,
+    totalInstallments: 18,
+    interestRate: 108,
+    details: '',
   },
   {
     id: '23',
-    productInfo: {
-      image: '11.png',
-      title: 'Eco Friendly Runner',
-      label: 'EF-2345',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$82.50',
+    loanNumber: 'LOA000331',
+    customerName: 'พิทักษ์ ชัยชนะ',
+    placeName: 'สวนยาง',
+    area: '5-1-30',
+    titleDeedNumber: '5670123',
+    titleDeedType: 'โฉนด',
+    requestDate: '28 ส.ค. 2568',
+    creditLimit: 3850000,
+    paymentDay: 20,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '26 Jul, 2025',
-    updated: '26 Jul, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 641667,
+    remainingAmount: 3981333,
+    installmentAmount: 320833,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '24',
-    productInfo: {
-      image: '13.png',
-      title: 'Luxury Comfort Pro',
-      label: 'LC-5678',
-      tooltip: '',
-    },
-    category: 'Sneakers',
-    price: '$145.00',
+    loanNumber: 'LOA000332',
+    customerName: 'จิราพร สวัสดิ์',
+    placeName: 'รีสอร์ท',
+    area: '2-0-50',
+    titleDeedNumber: '6701234',
+    titleDeedType: 'โฉนด',
+    requestDate: '25 ส.ค. 2568',
+    creditLimit: 7200000,
+    paymentDay: 15,
     status: {
-      label: 'Live',
+      label: 'ยังไม่ถึงกำหนด',
       variant: 'success',
     },
-    created: '25 Jul, 2025',
-    updated: '25 Jul, 2025',
+    overdueDays: 0,
+    outstandingBalance: 0,
+    paidAmount: 1200000,
+    remainingAmount: 7440000,
+    installmentAmount: 600000,
+    creditRisk: 'ความเสี่ยงต่ำ',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: '',
   },
   {
     id: '25',
-    productInfo: {
-      image: '15.png',
-      title: 'Tech Smart Runner',
-      label: 'TS-8901',
-      tooltip: '',
-    },
-    category: 'Runners',
-    price: '$91.99',
+    loanNumber: 'LOA000333',
+    customerName: 'สุทิน มหาชัย',
+    placeName: 'ไร่มะพร้าว',
+    area: '6-3-15',
+    titleDeedNumber: '7012345',
+    titleDeedType: 'น.ส.3',
+    requestDate: '22 ส.ค. 2568',
+    creditLimit: 4100000,
+    paymentDay: 5,
     status: {
-      label: 'Must Act',
+      label: 'เกินกำหนดชำระ',
       variant: 'destructive',
     },
-    created: '24 Jul, 2025',
-    updated: '24 Jul, 2025',
+    overdueDays: 20,
+    outstandingBalance: 341667,
+    paidAmount: 683334,
+    remainingAmount: 4242666,
+    installmentAmount: 341667,
+    creditRisk: 'ความเสี่ยงสูง',
+    loanType: 'เงินสด',
+    duration: '1 ปี',
+    paidInstallments: 2,
+    totalInstallments: 12,
+    interestRate: 120,
+    details: 'ค้างชำระเกิน 20 วัน',
   },
 ];
 
@@ -538,7 +816,7 @@ export function ProductListTable({
   });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'created', desc: true },
+    { id: 'requestDate', desc: true },
   ]);
   const [selectedLastMoved] = useState<string[]>([]);
 
@@ -616,84 +894,129 @@ export function ProductListTable({
         },
       },
       {
-        id: 'productInfo',
-        accessorFn: (row) => row.productInfo,
+        id: 'loanNumber',
+        accessorFn: (row) => row.loanNumber,
         header: ({ column }) => (
           <DataGridColumnHeader
-            title="Product Info"
+            title="เลขที่สินเชื่อ"
             filter={<ColumnInputFilter column={column} />}
             column={column}
           />
         ),
         cell: (info) => {
-          const productInfo = info.row.getValue('productInfo') as {
-            image: string;
-            title: string;
-            label: string;
-            tooltip: string;
-          };
-
           return (
-            <div className="flex items-center gap-2.5">
-              <Card className="flex items-center justify-center rounded-md bg-accent/50 h-[40px] w-[50px] shadow-none shrink-0">
-                <img
-                  src={toAbsoluteUrl(
-                    `/media/store/client/1200x1200/${productInfo.image}`,
-                  )}
-                  className="cursor-pointer h-[40px]"
-                  alt="image"
-                />
-              </Card>
-              <div className="flex flex-col gap-1">
-                {productInfo.title.length > 20 ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span
-                          className="text-sm font-medium text-foreground leading-3.5 truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors"
-                          onClick={() => setIsProductDetailsOpen(true)}
-                        >
-                          {productInfo.title}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{productInfo.title}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <span
-                    className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
-                    onClick={() => setIsProductDetailsOpen(true)}
-                  >
-                    {productInfo.title}
-                  </span>
-                )}
-                <span className="text-xs text-muted-foreground uppercase">
-                  sku:{' '}
-                  <span className="text-xs font-medium text-secondary-foreground">
-                    {productInfo.label}
-                  </span>
-                </span>
-              </div>
+            <div className="flex flex-col gap-1">
+              <span
+                className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
+                onClick={() => setIsProductDetailsOpen(true)}
+              >
+                {info.row.original.loanNumber}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {info.row.original.customerName}
+              </span>
             </div>
           );
         },
         enableSorting: true,
-        size: 260,
+        size: 150,
         meta: {
           cellClassName: '',
         },
       },
       {
-        id: 'category',
-        accessorFn: (row) => row.category,
+        id: 'placeName',
+        accessorFn: (row) => row.placeName,
         header: ({ column }) => (
-          <DataGridColumnHeader title="Category" column={column} />
+          <DataGridColumnHeader title="สถานที่" column={column} />
         ),
         cell: (info) => {
           return (
-            <div>{info.row.original.category}</div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm">{info.row.original.placeName}</span>
+              <span className="text-xs text-muted-foreground">
+                {info.row.original.area} ไร่
+              </span>
+            </div>
+          );
+        },
+        enableSorting: true,
+        size: 130,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'titleDeed',
+        accessorFn: (row) => row.titleDeedType,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="โฉนด" column={column} />
+        ),
+        cell: (info) => {
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm">{info.row.original.titleDeedType}</span>
+              <span className="text-xs text-muted-foreground">
+                {info.row.original.titleDeedNumber}
+              </span>
+            </div>
+          );
+        },
+        enableSorting: true,
+        size: 120,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'creditLimit',
+        accessorFn: (row) => row.creditLimit,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="วงเงิน" column={column} />
+        ),
+        cell: (info) => {
+          return (
+            <div className="text-right font-medium">
+              ฿{info.row.original.creditLimit.toLocaleString()}
+            </div>
+          );
+        },
+        enableSorting: true,
+        size: 120,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'remainingAmount',
+        accessorFn: (row) => row.remainingAmount,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="คงเหลือ" column={column} />
+        ),
+        cell: (info) => {
+          return (
+            <div className="text-right font-medium">
+              ฿{info.row.original.remainingAmount.toLocaleString()}
+            </div>
+          );
+        },
+        enableSorting: true,
+        size: 120,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'installmentAmount',
+        accessorFn: (row) => row.installmentAmount,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="งวดละ" column={column} />
+        ),
+        cell: (info) => {
+          return (
+            <div className="text-right">
+              ฿{info.row.original.installmentAmount.toLocaleString()}
+            </div>
           );
         },
         enableSorting: true,
@@ -703,13 +1026,19 @@ export function ProductListTable({
         },
       },
       {
-        id: 'price',
-        accessorFn: (row) => row.price,
+        id: 'paymentProgress',
+        accessorFn: (row) => row.paidInstallments,
         header: ({ column }) => (
-          <DataGridColumnHeader title="Price" column={column} />
+          <DataGridColumnHeader title="งวด" column={column} />
         ),
         cell: (info) => {
-          return <div className="text-center">{info.row.original.price}</div>;
+          const paid = info.row.original.paidInstallments;
+          const total = info.row.original.totalInstallments;
+          return (
+            <div className="text-sm">
+              {paid}/{total}
+            </div>
+          );
         },
         enableSorting: true,
         size: 80,
@@ -721,7 +1050,7 @@ export function ProductListTable({
         id: 'status',
         accessorFn: (row) => row.status,
         header: ({ column }) => (
-          <DataGridColumnHeader title="Status" column={column} />
+          <DataGridColumnHeader title="สถานะ" column={column} />
         ),
         cell: (info) => {
           const status = info.row.original.status;
@@ -737,44 +1066,48 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 90,
+        size: 130,
         meta: {
           cellClassName: '',
         },
       },
       {
-        id: 'rating',
-        accessorFn: () => {},
+        id: 'creditRisk',
+        accessorFn: (row) => row.creditRisk,
         header: ({ column }) => (
-          <DataGridColumnHeader title="Rating" column={column} />
+          <DataGridColumnHeader title="เครดิต" column={column} />
         ),
-        cell: () => {
+        cell: (info) => {
+          const risk = info.row.original.creditRisk;
+          let variant: 'info' | 'success' | 'warning' | 'destructive' = 'info';
+          if (risk === 'ความเสี่ยงต่ำ') variant = 'success';
+          else if (risk === 'ความเสี่ยงปานกลาง') variant = 'warning';
+          else if (risk === 'ความเสี่ยงสูง') variant = 'destructive';
+          
           return (
             <Badge
-              size="sm"
-              variant="warning"
+              variant={variant}
               appearance="outline"
               className="rounded-full"
             >
-              <Star className="text-[#FEC524]" fill="#FEC524" />
-              5.0
+              {risk}
             </Badge>
           );
         },
         enableSorting: true,
-        size: 85,
+        size: 140,
         meta: {
-          cellClassName: 'text-center',
+          cellClassName: '',
         },
       },
       {
-        id: 'created',
-        accessorFn: (row) => row.created,
+        id: 'requestDate',
+        accessorFn: (row) => row.requestDate,
         header: ({ column }) => (
-          <DataGridColumnHeader title="Created" column={column} />
+          <DataGridColumnHeader title="วันที่ขอ" column={column} />
         ),
         cell: (info) => {
-          return info.row.original.created;
+          return info.row.original.requestDate;
         },
         enableSorting: true,
         size: 120,
@@ -783,16 +1116,16 @@ export function ProductListTable({
         },
       },
       {
-        id: 'updated',
-        accessorFn: (row) => row.updated,
+        id: 'interestRate',
+        accessorFn: (row) => row.interestRate,
         header: ({ column }) => (
-          <DataGridColumnHeader title="Updated" column={column} />
+          <DataGridColumnHeader title="ดอกเบี้ย" column={column} />
         ),
         cell: (info) => {
-          return info.row.original.updated;
+          return <div className="text-center">{info.row.original.interestRate}%</div>;
         },
         enableSorting: true,
-        size: 120,
+        size: 90,
         meta: {
           cellClassName: '',
         },
@@ -813,19 +1146,19 @@ export function ProductListTable({
                 <DropdownMenuContent align="end" side="bottom">
                   <DropdownMenuItem onClick={() => handleEditProduct(row.original)}>
                     <Settings className="size-4" />
-                    Edit Product
+                    แก้ไขข้อมูล
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleManageVariants(row.original)}>
                     <Layers className="size-4" />
-                    Manage Variants
+                    รายละเอียดการชำระ
                   </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
                       <Info className="size-4" />
-                      View Details
+                      ข้อมูลเต็ม
                     </DropdownMenuItem>
                   <DropdownMenuItem variant="destructive">
                     <Trash className="size-4" />
-                    Delete
+                    ลบ
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -845,21 +1178,22 @@ export function ProductListTable({
     // Apply tab filter based on tabs array ids
     if (activeTab === 'all') {
       result = result; // No filter, show all data
-    } else if (activeTab === 'live') {
-      result = result.filter((item) => item.status.label === 'Live');
-    } else if (activeTab === 'draft') {
-      result = result.filter((item) => item.status.label === 'Draft');
-    } else if (activeTab === 'archived') {
-      result = result.filter((item) => item.status.label === 'Archived');
-    } else if (activeTab === 'actionNeeded') {
-      result = result.filter((item) => item.created > '2023-01-01');
+    } else if (activeTab === 'active') {
+      result = result.filter((item) => item.status.label === 'ยังไม่ถึงกำหนด');
+    } else if (activeTab === 'pending') {
+      result = result.filter((item) => item.status.label === 'รออนุมัติ');
+    } else if (activeTab === 'overdue') {
+      result = result.filter((item) => item.status.label === 'เกินกำหนดชำระ');
+    } else if (activeTab === 'closed') {
+      result = result.filter((item) => item.status.label === 'ปิดบัญชี');
     }
 
-    // Apply search filter - only search in product title
+    // Apply search filter - search in loan number and customer name
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter((item) =>
-        item.productInfo.title.toLowerCase().includes(query),
+        item.loanNumber.toLowerCase().includes(query) ||
+        item.customerName.toLowerCase().includes(query)
       );
     }
 
@@ -891,11 +1225,6 @@ export function ProductListTable({
       );
     }
   }, [rowSelection]);
-
-  // Reset pagination when filters change
-  useEffect(() => {
-    table.setPageIndex(0);
-  }, [searchQuery, selectedLastMoved, activeTab]);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -938,11 +1267,11 @@ export function ProductListTable({
   });
 
   const tabs = [
-    { id: 'all', label: 'All', badge: 1424 },
-    { id: 'live', label: 'Live', badge: 1267 },
-    { id: 'draft', label: 'Draft', badge: 63 },
-    { id: 'archived', label: 'Archived', badge: 185 },
-    { id: 'actionNeeded', label: 'Action Needed', badge: 49 },
+    { id: 'all', label: 'ทั้งหมด', badge: data.length },
+    { id: 'active', label: 'ยังไม่ถึงกำหนด', badge: data.filter(item => item.status.label === 'ยังไม่ถึงกำหนด').length },
+    { id: 'pending', label: 'รออนุมัติ', badge: data.filter(item => item.status.label === 'รออนุมัติ').length },
+    { id: 'overdue', label: 'เกินกำหนดชำระ', badge: data.filter(item => item.status.label === 'เกินกำหนดชำระ').length },
+    { id: 'closed', label: 'ปิดบัญชี', badge: data.filter(item => item.status.label === 'ปิดบัญชี').length },
   ];
 
   const handleTabChange = (tabId: string) => {
