@@ -812,7 +812,7 @@ export function ProductListTable({
   });
 
   // Fetch data from API
-  const { data: apiResponse, isLoading } = useGetLoanList({
+  const { data: apiResponse, isLoading, error, isError } = useGetLoanList({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     search: searchQuery || undefined,
@@ -824,39 +824,69 @@ export function ProductListTable({
 
   const deleteLoan = useDeleteLoan();
 
-  // Use API data if available, otherwise use mock data
-  const data = propsMockData || (apiResponse?.data ? apiResponse.data.map((loan: any) => ({
-    id: loan.id,
-    loanNumber: loan.loanNumber,
-    customerName: loan.customer?.profile?.firstName + ' ' + (loan.customer?.profile?.lastName || ''),
-    placeName: loan.application?.propertyLocation || '-',
-    area: loan.application?.propertyArea || '-',
-    titleDeedNumber: loan.titleDeedNumber || '-',
-    titleDeedType: '-', // TODO: Add to schema
-    requestDate: new Date(loan.contractDate).toLocaleDateString('th-TH'),
-    creditLimit: Number(loan.principalAmount),
-    paymentDay: new Date(loan.nextPaymentDate).getDate(),
-    status: {
-      label: loan.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
-             loan.status === 'COMPLETED' ? 'ปิดบัญชี' :
-             loan.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ',
-      variant: loan.status === 'ACTIVE' ? 'success' :
-               loan.status === 'COMPLETED' ? 'info' :
-               loan.status === 'DEFAULTED' ? 'destructive' : 'warning',
-    },
-    overdueDays: 0, // TODO: Calculate
-    outstandingBalance: 0,
-    paidAmount: Number(loan.principalAmount) - Number(loan.remainingBalance),
-    remainingAmount: Number(loan.remainingBalance),
-    installmentAmount: Number(loan.monthlyPayment),
-    creditRisk: 'ความเสี่ยงต่ำ', // TODO: Calculate
-    loanType: 'เงินสด',
-    duration: `${loan.termMonths / 12} ปี`,
-    paidInstallments: loan.currentInstallment,
-    totalInstallments: loan.totalInstallments,
-    interestRate: Number(loan.interestRate),
-    details: '',
-  })) : mockData);
+  // Log API response for debugging
+  useEffect(() => {
+    console.log('API Response:', apiResponse);
+    console.log('Is Loading:', isLoading);
+    console.log('Is Error:', isError);
+    if (error) console.error('API Error:', error);
+  }, [apiResponse, isLoading, isError, error]);
+
+  // Transform API data to match IData interface
+  const apiData = useMemo(() => {
+    if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
+      console.log('No API data, using mock data');
+      return mockData;
+    }
+
+    console.log('Transforming API data:', apiResponse.data.length, 'loans');
+    
+    return apiResponse.data.map((loan: any) => {
+      const customerFirstName = loan.customer?.profile?.firstName || '';
+      const customerLastName = loan.customer?.profile?.lastName || '';
+      const fullName = `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
+
+      return {
+        id: loan.id,
+        loanNumber: loan.loanNumber,
+        customerName: fullName,
+        placeName: loan.application?.propertyLocation || '-',
+        area: loan.application?.propertyArea || '-',
+        titleDeedNumber: loan.titleDeedNumber || '-',
+        titleDeedType: '-',
+        requestDate: new Date(loan.contractDate).toLocaleDateString('th-TH', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        }),
+        creditLimit: Number(loan.principalAmount),
+        paymentDay: new Date(loan.nextPaymentDate).getDate(),
+        status: {
+          label: loan.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
+                 loan.status === 'COMPLETED' ? 'ปิดบัญชี' :
+                 loan.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ',
+          variant: loan.status === 'ACTIVE' ? 'success' :
+                   loan.status === 'COMPLETED' ? 'info' :
+                   loan.status === 'DEFAULTED' ? 'destructive' : 'warning',
+        },
+        overdueDays: 0,
+        outstandingBalance: 0,
+        paidAmount: Number(loan.principalAmount) - Number(loan.remainingBalance),
+        remainingAmount: Number(loan.remainingBalance),
+        installmentAmount: Number(loan.monthlyPayment),
+        creditRisk: 'ความเสี่ยงต่ำ',
+        loanType: 'เงินสด',
+        duration: `${loan.termMonths / 12} ปี`,
+        paidInstallments: loan.currentInstallment,
+        totalInstallments: loan.totalInstallments,
+        interestRate: Number(loan.interestRate),
+        details: '',
+      };
+    });
+  }, [apiResponse]);
+
+  // Use mock data as fallback if API fails
+  const data = propsMockData || (isError ? mockData : apiData);
 
   // Search input state
   const [inputValue, setInputValue] = useState('');
@@ -1282,9 +1312,6 @@ export function ProductListTable({
         pageSize: 10,
       },
     },
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
   });
 
   const tabs = [

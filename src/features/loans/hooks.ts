@@ -16,8 +16,10 @@ export const useGetLoanList = (filters: LoanFiltersSchema) => {
     queryKey: loanKeys.list(filters),
     queryFn: () => loanApi.getList(filters),
     placeholderData: (previousData) => previousData,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // 30 seconds - ถือว่าข้อมูล fresh นาน 30 วินาที
+    gcTime: 5 * 60 * 1000, // 5 minutes - เก็บ cache ไว้ 5 นาที
+    refetchOnWindowFocus: false, // ไม่ refetch เมื่อกลับมาที่หน้าต่าง
+    retry: 1, // ลองใหม่แค่ 1 ครั้งถ้า error
   });
 };
 
