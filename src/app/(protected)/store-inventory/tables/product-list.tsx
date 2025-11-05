@@ -21,6 +21,7 @@ import {
   Trash,
   X,
   Layers,
+  Check,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
@@ -54,8 +55,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components
 import { ProductFormSheet } from '../components/product-form-sheet';
 import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
 import { ManageVariantsSheet } from '../components/manage-variants';
+import { RejectLoanDialog } from '../components/reject-loan-dialog';
 import { cn } from '@src/shared/lib/utils';
-import { useGetLoanList, useDeleteLoan } from '@src/features/loans/hooks';
+import { useGetLoanList, useDeleteLoan, useApproveLoan, useRejectLoan } from '@src/features/loans/hooks';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -823,6 +825,12 @@ export function ProductListTable({
   });
 
   const deleteLoan = useDeleteLoan();
+  const approveLoan = useApproveLoan();
+  const rejectLoan = useRejectLoan();
+
+  // Reject dialog state
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
+  const [rejectingLoanId, setRejectingLoanId] = useState<string | undefined>();
 
   // Log API response for debugging
   useEffect(() => {
@@ -851,6 +859,30 @@ export function ProductListTable({
       const customerLastName = profile?.lastName as string || '';
       const fullName = `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
 
+      // กำหนดสถานะตาม application.status และ loan.status
+      const appStatus = application?.status as string;
+      let statusLabel = 'รออนุมัติ';
+      let statusVariant = 'warning';
+
+      if (appStatus === 'REJECTED' || loanData.status === 'CANCELLED') {
+        statusLabel = 'ยกเลิกแล้ว';
+        statusVariant = 'destructive';
+      } else if (appStatus === 'APPROVED') {
+        if (loanData.status === 'ACTIVE') {
+          statusLabel = 'ยังไม่ถึงกำหนด';
+          statusVariant = 'success';
+        } else if (loanData.status === 'COMPLETED') {
+          statusLabel = 'ปิดบัญชี';
+          statusVariant = 'info';
+        } else if (loanData.status === 'DEFAULTED') {
+          statusLabel = 'เกินกำหนดชำระ';
+          statusVariant = 'destructive';
+        }
+      } else if (['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(appStatus)) {
+        statusLabel = 'รออนุมัติ';
+        statusVariant = 'warning';
+      }
+
       return {
         id: loanData.id as string,
         loanNumber: loanData.loanNumber as string,
@@ -867,12 +899,8 @@ export function ProductListTable({
         creditLimit: Number(loanData.principalAmount),
         paymentDay: new Date(loanData.nextPaymentDate as string).getDate(),
         status: {
-          label: loanData.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
-                 loanData.status === 'COMPLETED' ? 'ปิดบัญชี' :
-                 loanData.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ',
-          variant: loanData.status === 'ACTIVE' ? 'success' :
-                   loanData.status === 'COMPLETED' ? 'info' :
-                   loanData.status === 'DEFAULTED' ? 'destructive' : 'warning',
+          label: statusLabel,
+          variant: statusVariant,
         },
         overdueDays: 0,
         outstandingBalance: 0,
@@ -953,6 +981,33 @@ export function ProductListTable({
     setTimeout(() => {
       setIsEditProductOpen(true);
     }, 100); // Delay เล็กน้อยเพื่อให้ modal ปิดก่อน
+  };
+
+  // Handle approve loan
+  const handleApproveLoan = (loanId: string) => {
+    if (confirm('คุณต้องการอนุมัติสินเชื่อนี้ใช่หรือไม่?')) {
+      approveLoan.mutate(loanId);
+    }
+  };
+
+  // Handle reject loan
+  const handleRejectLoan = (loanId: string) => {
+    setRejectingLoanId(loanId);
+    setIsRejectDialogOpen(true);
+  };
+
+  const handleConfirmReject = (reviewNotes: string) => {
+    if (rejectingLoanId) {
+      rejectLoan.mutate(
+        { id: rejectingLoanId, reviewNotes },
+        {
+          onSuccess: () => {
+            setIsRejectDialogOpen(false);
+            setRejectingLoanId(undefined);
+          },
+        }
+      );
+    }
   };
 
   const ColumnInputFilter = <TData, TValue>({
@@ -1202,29 +1257,55 @@ export function ProductListTable({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="bottom">
-                  <DropdownMenuItem onClick={() => handleEditProduct(row.original)}>
-                    <Settings className="size-4" />
-                    แก้ไขข้อมูล
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleManageVariants(row.original)}>
-                    <Layers className="size-4" />
-                    รายละเอียดการชำระ
-                  </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
-                      <Info className="size-4" />
-                      ข้อมูลเต็ม
-                    </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    variant="destructive"
-                    onClick={() => {
-                      if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?')) {
-                        deleteLoan.mutate(row.original.id);
-                      }
-                    }}
-                  >
-                    <Trash className="size-4" />
-                    ลบ
-                  </DropdownMenuItem>
+                  {/* เฉพาะสินเชื่อรออนุมัติ - แสดงปุ่มอนุมัติ/ยกเลิก */}
+                  {row.original.status.label === 'รออนุมัติ' ? (
+                    <>
+                      <DropdownMenuItem 
+                        onClick={() => handleApproveLoan(row.original.id)}
+                        className="text-green-600 focus:text-green-600"
+                      >
+                        <Check className="size-4" />
+                        อนุมัติสินเชื่อ
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        variant="destructive"
+                        onClick={() => handleRejectLoan(row.original.id)}
+                      >
+                        <X className="size-4" />
+                        ยกเลิกสินเชื่อ
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
+                        <Info className="size-4" />
+                        ข้อมูลเต็ม
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuItem onClick={() => handleEditProduct(row.original)}>
+                        <Settings className="size-4" />
+                        แก้ไขข้อมูล
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleManageVariants(row.original)}>
+                        <Layers className="size-4" />
+                        รายละเอียดการชำระ
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
+                        <Info className="size-4" />
+                        ข้อมูลเต็ม
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        variant="destructive"
+                        onClick={() => {
+                          if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?')) {
+                            deleteLoan.mutate(row.original.id);
+                          }
+                        }}
+                      >
+                        <Trash className="size-4" />
+                        ลบ
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -1494,6 +1575,14 @@ export function ProductListTable({
       <ManageVariantsSheet
         open={isManageVariantsOpen}
         onOpenChange={setIsManageVariantsOpen}
+      />
+
+      {/* Reject Loan Dialog */}
+      <RejectLoanDialog
+        open={isRejectDialogOpen}
+        onOpenChange={setIsRejectDialogOpen}
+        onConfirm={handleConfirmReject}
+        isLoading={rejectLoan.isPending}
       />
     </div>
   );

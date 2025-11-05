@@ -84,3 +84,36 @@ export const useDeleteLoan = () => {
   });
 };
 
+export const useApproveLoan = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => loanApi.approve(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
+      queryClient.invalidateQueries({ queryKey: loanKeys.detail(id) });
+      queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
+      toast.success('อนุมัติสินเชื่อสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+
+export const useRejectLoan = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reviewNotes }: { id: string; reviewNotes: string }) => 
+      loanApi.reject(id, reviewNotes),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
+      queryClient.invalidateQueries({ queryKey: loanKeys.detail(variables.id) });
+      queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
+      toast.success('ยกเลิกสินเชื่อสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+

@@ -160,28 +160,28 @@ export const loanService = {
         });
       }
 
-      // Step 3: สร้าง LoanApplication
+      // Step 3: สร้าง LoanApplication (สถานะรออนุมัติ)
       const application = await tx.loanApplication.create({
         data: {
           loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'APPROVED',
+          status: 'SUBMITTED', // เริ่มต้นเป็น SUBMITTED (รออนุมัติ)
           currentStep: 4,
           requestedAmount: loanAmount,
           approvedAmount: loanAmount,
           landNumber: data.landNumber,
-          ownerName: data.ownerName || data.customerName,
+          ownerName: data.ownerName || fullName,
           propertyLocation: data.placeName,
           propertyArea: data.landArea,
           customerId: customer.id,
         },
       });
 
-      // Step 4: สร้าง Loan
+      // Step 4: สร้าง Loan (สถานะรออนุมัติ)
       const newLoan = await tx.loan.create({
         data: {
           loanNumber,
           loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'ACTIVE',
+          status: 'ACTIVE', // เริ่มเป็น ACTIVE ไปก่อน จะใช้ application.status เป็นตัวกำหนดว่ารออนุมัติ
           principalAmount: loanAmount,
           interestRate: interestRate,
           termMonths,
@@ -317,6 +317,81 @@ export const loanService = {
       }
 
       return updatedLoan;
+    });
+  },
+
+  async approve(id: string) {
+    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
+    const existing = await this.getById(id);
+    if (!existing) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ (DRAFT, SUBMITTED, UNDER_REVIEW)
+    const currentStatus = existing.application?.status;
+    if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(currentStatus)) {
+      throw new Error('สินเชื่อนี้ไม่สามารถอนุมัติได้');
+    }
+
+    return prisma.$transaction(async (tx) => {
+      // อัพเดท LoanApplication
+      await tx.loanApplication.update({
+        where: { id: existing.applicationId },
+        data: {
+          status: 'APPROVED',
+          reviewedAt: new Date(),
+          // reviewedBy: adminId, // TODO: เพิ่ม admin authentication
+        },
+      });
+
+      // อัพเดท Loan status เป็น ACTIVE
+      await tx.loan.update({
+        where: { id },
+        data: {
+          status: 'ACTIVE',
+          updatedAt: new Date(),
+        },
+      });
+
+      return { success: true };
+    });
+  },
+
+  async reject(id: string, reviewNotes: string) {
+    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
+    const existing = await this.getById(id);
+    if (!existing) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ
+    const currentStatus = existing.application?.status;
+    if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(currentStatus)) {
+      throw new Error('สินเชื่อนี้ไม่สามารถยกเลิกได้');
+    }
+
+    return prisma.$transaction(async (tx) => {
+      // อัพเดท LoanApplication
+      await tx.loanApplication.update({
+        where: { id: existing.applicationId },
+        data: {
+          status: 'REJECTED',
+          reviewedAt: new Date(),
+          reviewNotes: reviewNotes,
+          // reviewedBy: adminId, // TODO: เพิ่ม admin authentication
+        },
+      });
+
+      // อัพเดท Loan status เป็น CANCELLED
+      await tx.loan.update({
+        where: { id },
+        data: {
+          status: 'CANCELLED',
+          updatedAt: new Date(),
+        },
+      });
+
+      return { success: true };
     });
   },
 

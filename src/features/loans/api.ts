@@ -69,5 +69,31 @@ export const loanApi = {
     }
     return response.json();
   },
+
+  approve: async (id: string) => {
+    const response = await apiFetch(`/api/loans/${id}/approve`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  reject: async (id: string, reviewNotes: string) => {
+    const response = await apiFetch(`/api/loans/${id}/reject`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reviewNotes }),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
 };
 
