@@ -23,6 +23,7 @@ export type LoanFiltersSchema = z.infer<typeof loanFiltersSchema>;
 export const loanCreateSchema = z.object({
   // ข้อมูลพื้นฐาน
   customerName: z.string().min(1, 'กรุณากรอกชื่อลูกค้า'),
+  ownerName: z.string().optional(), // ชื่อเจ้าของที่ดิน (จากโฉนด)
   placeName: z.string().optional(),
   landNumber: z.string().min(1, 'กรุณากรอกเลขที่ดิน'),
   landArea: z.string().optional(),

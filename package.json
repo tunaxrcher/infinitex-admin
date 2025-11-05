@@ -54,6 +54,7 @@
     "react-day-picker": "^9.7.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.59.0",
+    "react-hot-toast": "^2.5.2",
     "react-i18next": "^15.5.3",
     "react-is": "^19.1.0",
     "react-leaflet": "^5.0.0",

@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
-import { useCreateLoan, useUpdateLoan } from '@src/features/loans/hooks';
+import { useCreateLoan, useUpdateLoan, useGetLoanById } from '@src/features/loans/hooks';
 import {
   Card,
   CardContent,
@@ -47,8 +47,12 @@ export function ProductFormSheet({
   const createLoan = useCreateLoan();
   const updateLoan = useUpdateLoan();
 
+  // Fetch loan data when in edit mode
+  const { data: loanData } = useGetLoanById(loanId || '');
+
   // Form state - Section 1: ข้อมูลพื้นฐาน
   const [customerName, setCustomerName] = useState('');
+  const [ownerName, setOwnerName] = useState('');
   const [placeName, setPlaceName] = useState('');
   const [landNumber, setLandNumber] = useState('');
   const [landArea, setLandArea] = useState('');
@@ -151,6 +155,7 @@ export function ProductFormSheet({
     try {
       const loanData = {
         customerName,
+        ownerName,
         placeName,
         landNumber,
         landArea,
@@ -189,6 +194,7 @@ export function ProductFormSheet({
   // Reset form
   const resetForm = () => {
     setCustomerName('');
+    setOwnerName('');
     setPlaceName('');
     setLandNumber('');
     setLandArea('');
@@ -210,6 +216,40 @@ export function ProductFormSheet({
     setNote('');
     setUploadedFiles([]);
   };
+
+  // Load data when in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && loanData?.data && open) {
+      const loan = loanData.data;
+      
+      // Section 1: ข้อมูลพื้นฐาน
+      setCustomerName(loan.application?.ownerName || '');
+      setOwnerName(loan.application?.ownerName || '');
+      setPlaceName(loan.application?.propertyLocation || '');
+      setLandNumber(loan.titleDeedNumber || '');
+      setLandArea(loan.application?.propertyArea || '');
+      setLoanAmount(Number(loan.principalAmount));
+      setLoanStartDate(new Date(loan.contractDate).toISOString().split('T')[0]);
+      setLoanDueDate(new Date(loan.expiryDate).toISOString().split('T')[0]);
+
+      // Section 2: ข้อมูลลูกค้า
+      const firstName = loan.customer?.profile?.firstName || '';
+      const lastName = loan.customer?.profile?.lastName || '';
+      setFullName(`${firstName} ${lastName}`.trim());
+      setPhoneNumber(loan.customer?.phoneNumber || '');
+      setIdCard(loan.customer?.profile?.idCardNumber || '');
+      setEmail(loan.customer?.profile?.email || '');
+      if (loan.customer?.profile?.dateOfBirth) {
+        setBirthDate(new Date(loan.customer.profile.dateOfBirth).toISOString().split('T')[0]);
+      }
+      setAddress(loan.customer?.profile?.address || '');
+
+      // Section 3: การคำนวณ
+      setLoanYears(loan.termMonths / 12);
+      setInterestRate(Number(loan.interestRate));
+      // Note: operation fees ไม่ได้เก็บใน schema ตอนนี้
+    }
+  }, [mode, loanData, open]);
 
   // Reset form when closing
   useEffect(() => {
@@ -258,7 +298,7 @@ export function ProductFormSheet({
                   </CardHeader>
                   <CardContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-2 md:col-span-2">
+                      <div className="flex flex-col gap-2">
                         <Label className="text-xs">
                           ชื่อลูกค้า <span className="text-destructive">*</span>
                         </Label>
@@ -270,10 +310,17 @@ export function ProductFormSheet({
                         />
                       </div>
 
-              
+                      <div className="flex flex-col gap-2">
+                        <Label className="text-xs">ชื่อเจ้าของที่ดิน (ตามโฉนด)</Label>
+                        <Input
+                          placeholder="กรอกชื่อเจ้าของที่ดิน"
+                          value={ownerName}
+                          onChange={(e) => setOwnerName(e.target.value)}
+                        />
+                      </div>
 
-                      <div className="flex flex-col gap-2 md:col-span-2">
-                      <Label className="text-xs">ชื่อสถานที่</Label>
+                      <div className="flex flex-col gap-2">
+                        <Label className="text-xs">ชื่อสถานที่</Label>
                         <Input
                           placeholder="กรอกชื่อสถานที่"
                           value={placeName}

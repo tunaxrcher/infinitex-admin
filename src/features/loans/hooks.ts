@@ -1,6 +1,6 @@
 // src/features/loans/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
 
 import { loanApi } from './api';
 import { type LoanFiltersSchema, type LoanCreateSchema, type LoanUpdateSchema } from './validations';

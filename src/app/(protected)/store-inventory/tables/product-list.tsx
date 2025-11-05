@@ -902,6 +902,7 @@ export function ProductListTable({
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
   const [isManageVariantsOpen, setIsManageVariantsOpen] = useState(false);
+  const [selectedLoanId, setSelectedLoanId] = useState<string | undefined>();
 
   // Auto-open sheet based on displaySheet prop
   useEffect(() => {
@@ -924,8 +925,8 @@ export function ProductListTable({
   }, [displaySheet]);
 
   const handleEditProduct = (product: IData) => {
-    // You can add logic here to handle the selected product data
     console.log('Editing product:', product);
+    setSelectedLoanId(product.id);
     setIsEditProductOpen(true);
   };
 
@@ -1464,6 +1465,7 @@ export function ProductListTable({
         mode="edit"
         open={isEditProductOpen}
         onOpenChange={setIsEditProductOpen}
+        loanId={selectedLoanId}
       />
 
       {/* Create Product Modal */}
