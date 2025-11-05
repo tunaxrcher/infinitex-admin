@@ -937,9 +937,14 @@ export function ProductListTable({
   };
 
   const handleViewDetails = (product: IData) => {
-    // You can add logic here to handle the selected product data
     console.log('Viewing details for product:', product);
+    setSelectedLoanId(product.id);
     setIsProductDetailsOpen(true);
+  };
+
+  const handleEditFromDetails = () => {
+    setIsProductDetailsOpen(false);
+    setIsEditProductOpen(true);
   };
 
   const ColumnInputFilter = <TData, TValue>({
@@ -1458,6 +1463,8 @@ export function ProductListTable({
       <ProductDetailsAnalyticsSheet
         open={isProductDetailsOpen}
         onOpenChange={setIsProductDetailsOpen}
+        loanId={selectedLoanId}
+        onEdit={handleEditFromDetails}
       />
 
       {/* Edit Product Modal */}

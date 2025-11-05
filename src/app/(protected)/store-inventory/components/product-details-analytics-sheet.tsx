@@ -6,6 +6,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
+import { useGetLoanById } from '@src/features/loans/hooks';
 import {
   Card,
   CardContent,
@@ -36,10 +37,17 @@ import { ToggleGroup, ToggleGroupItem } from '@src/shared/components/ui/toggle-g
 export function ProductDetailsAnalyticsSheet({
   open,
   onOpenChange,
+  loanId,
+  onEdit,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  loanId?: string;
+  onEdit?: () => void;
 }) {
+  // Fetch loan data from API
+  const { data: loanResponse, isLoading } = useGetLoanById(loanId || '');
+  const loan = loanResponse?.data;
   // Chart data for Payment History (งวดที่ชำระ)
   const paymentHistoryData = [
     { value: 220000 },
@@ -133,35 +141,58 @@ export function ProductDetailsAnalyticsSheet({
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="lg:text-[22px] font-semibold text-foreground leading-none">
-                  งานไถ่
+                  {isLoading ? 'กำลังโหลด...' : loan ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim() || 'ไม่ระบุ' : 'ไม่ระบุ'}
                 </span>
-                <Badge size="sm" variant="success" appearance="light">
-                  ยังไม่ถึงกำหนด
+                <Badge 
+                  size="sm" 
+                  variant={
+                    loan?.status === 'ACTIVE' ? 'success' :
+                    loan?.status === 'COMPLETED' ? 'info' :
+                    loan?.status === 'DEFAULTED' ? 'destructive' : 'warning'
+                  } 
+                  appearance="light"
+                >
+                  {loan?.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
+                   loan?.status === 'COMPLETED' ? 'ปิดบัญชี' :
+                   loan?.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ'}
                 </Badge>
               </div>
               <div className="flex items-center flex-wrap gap-1.5 text-2sm">
                 <span className="font-normal text-muted-foreground">เลขที่สินเชื่อ</span>
-                <span className="font-medium text-foreground/80">LOA000309</span>
+                <span className="font-medium text-foreground/80">{loan?.loanNumber || '-'}</span>
                 <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
                 <span className="font-normal text-muted-foreground">
-                  วันที่ขอสินเชื่อ
+                  วันที่ออกสินเชื่อ
                 </span>
                 <span className="font-medium text-foreground/80">
-                  25 ต.ค. 2568
+                  {loan?.contractDate ? new Date(loan.contractDate).toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  }) : '-'}
                 </span>
                 <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
                 <span className="font-normal text-muted-foreground">
                   อัปเดตล่าสุด
                 </span>
                 <span className="font-medium text-foreground/80">
-                  2 วันที่แล้ว
+                  {loan?.updatedAt ? new Date(loan.updatedAt).toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  }) : '-'}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
               <Button variant="ghost">พิมพ์เอกสาร</Button>
               <Button variant="outline">ลบ</Button>
-              <Button variant="mono">แก้ไขข้อมูล</Button>
+              <Button variant="mono" onClick={() => {
+                onOpenChange(false);
+                onEdit?.();
+              }}>
+                แก้ไขข้อมูล
+              </Button>
             </div>
           </div>
 
@@ -232,32 +263,59 @@ export function ProductDetailsAnalyticsSheet({
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-start flex-wrap lg:gap-10 gap-5">
-                      {[
-                        { label: 'สถานะ', value: 'ยังไม่ถึงกำหนด' },
-                        { label: 'วงเงิน', value: '฿2,200,000' },
-                        { label: 'ยอดคงเหลือ', value: '฿2,640,000' },
-                        { label: 'งวดที่ชำระ', value: '0/12' },
-                        { label: 'อัปเดตโดย', value: 'สมชาย ใจดี' },
-                      ].map((item) => (
-                        <div key={item.label} className="flex flex-col gap-1.5">
-                          <span className="text-2sm font-normal text-secondary-foreground">
-                            {item.label}
-                          </span>
-                          <span className="text-2sm font-medium text-foreground">
-                            {item.label === 'สถานะ' ? (
-                              <Badge variant="success" appearance="light">
-                                {item.value}
-                              </Badge>
-                            ) : item.label === 'งวดที่ชำระ' ? (
-                              <Badge variant="info" appearance="light">
-                                {item.value}
-                              </Badge>
-                            ) : (
-                              item.value
-                            )}
-                          </span>
-                        </div>
-                      ))}
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-2sm font-normal text-secondary-foreground">
+                          สถานะ
+                        </span>
+                        <span className="text-2sm font-medium text-foreground">
+                          <Badge 
+                            variant={
+                              loan?.status === 'ACTIVE' ? 'success' :
+                              loan?.status === 'COMPLETED' ? 'info' :
+                              loan?.status === 'DEFAULTED' ? 'destructive' : 'warning'
+                            } 
+                            appearance="light"
+                          >
+                            {loan?.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
+                             loan?.status === 'COMPLETED' ? 'ปิดบัญชี' :
+                             loan?.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ'}
+                          </Badge>
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-2sm font-normal text-secondary-foreground">
+                          วงเงิน
+                        </span>
+                        <span className="text-2sm font-medium text-foreground">
+                          ฿{loan ? Number(loan.principalAmount).toLocaleString() : '0'}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-2sm font-normal text-secondary-foreground">
+                          ยอดคงเหลือ
+                        </span>
+                        <span className="text-2sm font-medium text-foreground">
+                          ฿{loan ? Number(loan.remainingBalance).toLocaleString() : '0'}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-2sm font-normal text-secondary-foreground">
+                          งวดที่ชำระ
+                        </span>
+                        <span className="text-2sm font-medium text-foreground">
+                          <Badge variant="info" appearance="light">
+                            {loan ? `${loan.currentInstallment}/${loan.totalInstallments}` : '0/0'}
+                          </Badge>
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-2sm font-normal text-secondary-foreground">
+                          ดอกเบี้ย
+                        </span>
+                        <span className="text-2sm font-medium text-foreground">
+                          {loan ? Number(loan.interestRate).toFixed(2) : '0'}%
+                        </span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -581,7 +639,7 @@ export function ProductDetailsAnalyticsSheet({
                       ประเภทสินเชื่อ
                     </div>
                     <div className="text-2sm text-secondary-foreground font-medium">
-                      เงินสด
+                      {loan?.loanType === 'HOUSE_LAND_MORTGAGE' ? 'จำนองบ้านและที่ดิน' : 'เงินสด'}
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-13 gap-5">
@@ -589,7 +647,7 @@ export function ProductDetailsAnalyticsSheet({
                       ระยะเวลา
                     </div>
                     <div className="text-2sm text-secondary-foreground font-medium">
-                      1 ปี (12 งวด)
+                      {loan ? `${loan.termMonths / 12} ปี (${loan.termMonths} งวด)` : '-'}
                     </div>
                   </div>
                   <div className="flex items-center lg:gap-13 gap-5">
