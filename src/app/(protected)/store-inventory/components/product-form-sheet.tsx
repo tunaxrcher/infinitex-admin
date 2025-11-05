@@ -416,20 +416,7 @@ export function ProductFormSheet({
                   </CardHeader>
                   <CardContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-2">
-                        <Label className="text-xs">
-                          ชื่อ-นามสกุล{' '}
-                          <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          placeholder="กรอกชื่อ-นามสกุล"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          required
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 md:col-span-2">
                         <Label className="text-xs">
                           เบอร์ติดต่อ{' '}
                           <span className="text-destructive">*</span>
@@ -506,10 +493,34 @@ export function ProductFormSheet({
                             </Command>
                           </PopoverContent>
                         </Popover>
-                 
+                        <div className="text-xs text-muted-foreground mt-1 md:col-span-2">
+                          💡 เคล็ดลับ: พิมพ์เบอร์โทรเพื่อค้นหาลูกค้าที่มีอยู่ หรือเพิ่มลูกค้าใหม่
+                        </div>
                       </div>
 
-                      <div className="flex flex-col gap-2">
+                      {/* แสดง input อื่นๆ เฉพาะเมื่อใส่เบอร์โทรแล้ว */}
+                      {phoneNumber ? (
+                        <>
+                          <div className="flex flex-col gap-2 md:col-span-2">
+                            <div className="text-xs text-green-600 bg-green-50 dark:bg-green-950/20 p-2 rounded border border-green-200 dark:border-green-800">
+                              ✓ เบอร์โทร: <span className="font-medium">{phoneNumber}</span> - กรอกข้อมูลลูกค้าด้านล่าง
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <Label className="text-xs">
+                              ชื่อ-นามสกุล{' '}
+                              <span className="text-destructive">*</span>
+                            </Label>
+                            <Input
+                              placeholder="กรอกชื่อ-นามสกุล"
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              required
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-2">
                         <Label className="text-xs">
                           เลขบัตรประชาชน{' '}
                           <span className="text-destructive">*</span>
@@ -559,15 +570,26 @@ export function ProductFormSheet({
                       </Select>
                     </div>
 
-                      <div className="flex flex-col gap-2 md:col-span-2">
-                        <Label className="text-xs">ที่อยู่</Label>
-                        <Textarea
-                          placeholder="กรอกที่อยู่ทั้งหมด"
-                          value={address}
-                          onChange={(e) => setAddress(e.target.value)}
-                          className="min-h-[80px]"
-                        />
-                      </div>
+                          <div className="flex flex-col gap-2 md:col-span-2">
+                            <Label className="text-xs">ที่อยู่</Label>
+                            <Textarea
+                              placeholder="กรอกที่อยู่ทั้งหมด"
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                              className="min-h-[80px]"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col gap-2 md:col-span-2 py-8 text-center">
+                          <div className="text-sm text-muted-foreground">
+                            กรุณาเลือกเบอร์ติดต่อลูกค้าก่อน
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            ระบบจะแสดงฟิลด์ข้อมูลลูกค้าอื่นๆ หลังจากเลือกเบอร์โทร
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
