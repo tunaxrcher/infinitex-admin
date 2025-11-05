@@ -905,21 +905,35 @@ export function ProductListTable({
         ),
         cell: (info) => {
           return (
-            <div className="flex flex-col gap-1">
-              <span
-                className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
-                onClick={() => setIsProductDetailsOpen(true)}
-              >
-                {info.row.original.loanNumber}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {info.row.original.customerName}
-              </span>
-            </div>
+            <span
+              className="text-sm font-medium text-foreground cursor-pointer hover:text-primary transition-colors"
+              onClick={() => setIsProductDetailsOpen(true)}
+            >
+              {info.row.original.loanNumber}
+            </span>
           );
         },
         enableSorting: true,
-        size: 150,
+        size: 130,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'customerName',
+        accessorFn: (row) => row.customerName,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="ชื่อลูกค้า" column={column} />
+        ),
+        cell: (info) => {
+          return (
+            <span className="text-sm">
+              {info.row.original.customerName}
+            </span>
+          );
+        },
+        enableSorting: true,
+        size: 130,
         meta: {
           cellClassName: '',
         },
@@ -932,16 +946,28 @@ export function ProductListTable({
         ),
         cell: (info) => {
           return (
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm">{info.row.original.placeName}</span>
-              <span className="text-xs text-muted-foreground">
-                {info.row.original.area} ไร่
-              </span>
-            </div>
+            <span className="text-sm">{info.row.original.placeName}</span>
           );
         },
         enableSorting: true,
-        size: 130,
+        size: 120,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'area',
+        accessorFn: (row) => row.area,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="เนื้อที่" column={column} />
+        ),
+        cell: (info) => {
+          return (
+            <span className="text-sm">{info.row.original.area} ไร่</span>
+          );
+        },
+        enableSorting: true,
+        size: 100,
         meta: {
           cellClassName: '',
         },
@@ -983,65 +1009,6 @@ export function ProductListTable({
         },
         enableSorting: true,
         size: 120,
-        meta: {
-          cellClassName: '',
-        },
-      },
-      {
-        id: 'remainingAmount',
-        accessorFn: (row) => row.remainingAmount,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="คงเหลือ" column={column} />
-        ),
-        cell: (info) => {
-          return (
-            <div className="text-right font-medium">
-              ฿{info.row.original.remainingAmount.toLocaleString()}
-            </div>
-          );
-        },
-        enableSorting: true,
-        size: 120,
-        meta: {
-          cellClassName: '',
-        },
-      },
-      {
-        id: 'installmentAmount',
-        accessorFn: (row) => row.installmentAmount,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="งวดละ" column={column} />
-        ),
-        cell: (info) => {
-          return (
-            <div className="text-right">
-              ฿{info.row.original.installmentAmount.toLocaleString()}
-            </div>
-          );
-        },
-        enableSorting: true,
-        size: 110,
-        meta: {
-          cellClassName: '',
-        },
-      },
-      {
-        id: 'paymentProgress',
-        accessorFn: (row) => row.paidInstallments,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="งวด" column={column} />
-        ),
-        cell: (info) => {
-          const paid = info.row.original.paidInstallments;
-          const total = info.row.original.totalInstallments;
-          return (
-            <div className="text-sm">
-              {paid}/{total}
-            </div>
-          );
-        },
-        enableSorting: true,
-        size: 80,
         meta: {
           cellClassName: '',
         },
