@@ -841,45 +841,50 @@ export function ProductListTable({
 
     console.log('Transforming API data:', apiResponse.data.length, 'loans');
     
-    return apiResponse.data.map((loan: any) => {
-      const customerFirstName = loan.customer?.profile?.firstName || '';
-      const customerLastName = loan.customer?.profile?.lastName || '';
+    return apiResponse.data.map((loan: unknown) => {
+      const loanData = loan as Record<string, unknown>;
+      const customer = loanData.customer as Record<string, unknown> | undefined;
+      const profile = customer?.profile as Record<string, unknown> | undefined;
+      const application = loanData.application as Record<string, unknown> | undefined;
+      
+      const customerFirstName = profile?.firstName as string || '';
+      const customerLastName = profile?.lastName as string || '';
       const fullName = `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
 
       return {
-        id: loan.id,
-        loanNumber: loan.loanNumber,
+        id: loanData.id as string,
+        loanNumber: loanData.loanNumber as string,
         customerName: fullName,
-        placeName: loan.application?.propertyLocation || '-',
-        area: loan.application?.propertyArea || '-',
-        titleDeedNumber: loan.titleDeedNumber || '-',
+        placeName: application?.propertyLocation as string || '-',
+        area: application?.propertyArea as string || '-',
+        titleDeedNumber: loanData.titleDeedNumber as string || '-',
         titleDeedType: '-',
-        requestDate: new Date(loan.contractDate).toLocaleDateString('th-TH', {
+        requestDate: new Date(loanData.contractDate as string).toLocaleDateString('th-TH', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
         }),
-        creditLimit: Number(loan.principalAmount),
-        paymentDay: new Date(loan.nextPaymentDate).getDate(),
+        creditLimit: Number(loanData.principalAmount),
+        paymentDay: new Date(loanData.nextPaymentDate as string).getDate(),
         status: {
-          label: loan.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
-                 loan.status === 'COMPLETED' ? 'ปิดบัญชี' :
-                 loan.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ',
-          variant: loan.status === 'ACTIVE' ? 'success' :
-                   loan.status === 'COMPLETED' ? 'info' :
-                   loan.status === 'DEFAULTED' ? 'destructive' : 'warning',
+          label: loanData.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
+                 loanData.status === 'COMPLETED' ? 'ปิดบัญชี' :
+                 loanData.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ',
+          variant: loanData.status === 'ACTIVE' ? 'success' :
+                   loanData.status === 'COMPLETED' ? 'info' :
+                   loanData.status === 'DEFAULTED' ? 'destructive' : 'warning',
         },
         overdueDays: 0,
         outstandingBalance: 0,
-        paidAmount: Number(loan.principalAmount) - Number(loan.remainingBalance),
-        remainingAmount: Number(loan.remainingBalance),
-        installmentAmount: Number(loan.monthlyPayment),
+        paidAmount: Number(loanData.principalAmount) - Number(loanData.remainingBalance),
+        remainingAmount: Number(loanData.remainingBalance),
+        installmentAmount: Number(loanData.monthlyPayment),
         creditRisk: 'ความเสี่ยงต่ำ',
         loanType: 'เงินสด',
-        duration: `${loan.termMonths / 12} ปี`,
-        paidInstallments: loan.currentInstallment,
-        totalInstallments: loan.totalInstallments,
-        interestRate: Number(loan.interestRate),
+        duration: `${Number(loanData.termMonths) / 12} ปี`,
+        paidInstallments: loanData.currentInstallment as number,
+        totalInstallments: loanData.totalInstallments as number,
+        interestRate: Number(loanData.interestRate),
         details: '',
       };
     });
@@ -943,8 +948,11 @@ export function ProductListTable({
   };
 
   const handleEditFromDetails = () => {
+    console.log('Opening edit form with loan ID:', selectedLoanId);
     setIsProductDetailsOpen(false);
-    setIsEditProductOpen(true);
+    setTimeout(() => {
+      setIsEditProductOpen(true);
+    }, 100); // Delay เล็กน้อยเพื่อให้ modal ปิดก่อน
   };
 
   const ColumnInputFilter = <TData, TValue>({
@@ -1322,10 +1330,10 @@ export function ProductListTable({
 
   const tabs = [
     { id: 'all', label: 'ทั้งหมด', badge: data.length },
-    { id: 'active', label: 'ยังไม่ถึงกำหนด', badge: data.filter(item => item.status.label === 'ยังไม่ถึงกำหนด').length },
-    { id: 'pending', label: 'รออนุมัติ', badge: data.filter(item => item.status.label === 'รออนุมัติ').length },
-    { id: 'overdue', label: 'เกินกำหนดชำระ', badge: data.filter(item => item.status.label === 'เกินกำหนดชำระ').length },
-    { id: 'closed', label: 'ปิดบัญชี', badge: data.filter(item => item.status.label === 'ปิดบัญชี').length },
+    { id: 'active', label: 'ยังไม่ถึงกำหนด', badge: data.filter((item: IData) => item.status.label === 'ยังไม่ถึงกำหนด').length },
+    { id: 'pending', label: 'รออนุมัติ', badge: data.filter((item: IData) => item.status.label === 'รออนุมัติ').length },
+    { id: 'overdue', label: 'เกินกำหนดชำระ', badge: data.filter((item: IData) => item.status.label === 'เกินกำหนดชำระ').length },
+    { id: 'closed', label: 'ปิดบัญชี', badge: data.filter((item: IData) => item.status.label === 'ปิดบัญชี').length },
   ];
 
   const handleTabChange = (tabId: string) => {

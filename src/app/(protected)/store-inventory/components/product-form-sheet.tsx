@@ -64,7 +64,15 @@ export function ProductFormSheet({
   const updateLoan = useUpdateLoan();
 
   // Fetch loan data when in edit mode
-  const { data: loanData } = useGetLoanById(loanId || '');
+  const { data: loanData, isLoading: isLoadingLoan } = useGetLoanById(loanId || '');
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Edit Mode:', mode);
+    console.log('Loan ID:', loanId);
+    console.log('Loan Data:', loanData);
+    console.log('Is Loading Loan:', isLoadingLoan);
+  }, [mode, loanId, loanData, isLoadingLoan]);
 
   // Customer search
   const [customerSearchQuery, setCustomerSearchQuery] = useState('');
@@ -249,8 +257,10 @@ export function ProductFormSheet({
 
   // Load data when in edit mode
   useEffect(() => {
-    if (mode === 'edit' && loanData?.data && open) {
+    if (mode === 'edit' && loanData?.data && open && loanId) {
       const loan = loanData.data;
+      
+      console.log('Loading loan data into form:', loan);
       
       // Section 1: ข้อมูลพื้นฐาน
       setPlaceName(loan.application?.propertyLocation || '');
@@ -277,7 +287,7 @@ export function ProductFormSheet({
       setInterestRate(Number(loan.interestRate));
       // Note: operation fees ไม่ได้เก็บใน schema ตอนนี้
     }
-  }, [mode, loanData, open]);
+  }, [mode, loanData, open, loanId]);
 
   // Reset form when closing
   useEffect(() => {
@@ -306,17 +316,28 @@ export function ProductFormSheet({
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 ยกเลิก
               </Button>
-              <Button variant="mono" onClick={handleSubmit} disabled={createLoan.isPending || updateLoan.isPending}>
-                {createLoan.isPending || updateLoan.isPending ? 'กำลังบันทึก...' : (isNewMode ? 'บันทึก' : 'บันทึกการแก้ไข')}
+              <Button variant="mono" onClick={handleSubmit} disabled={createLoan.isPending || updateLoan.isPending || (mode === 'edit' && isLoadingLoan)}>
+                {createLoan.isPending || updateLoan.isPending ? 'กำลังบันทึก...' : 
+                 (mode === 'edit' && isLoadingLoan) ? 'กำลังโหลดข้อมูล...' :
+                 (isNewMode ? 'บันทึก' : 'บันทึกการแก้ไข')}
               </Button>
             </div>
           </div>
 
-          {/* Scroll */}
-          <ScrollArea
-            className="flex flex-col h-[calc(100dvh-15.2rem)] mx-1.5"
-            viewportClassName="[&>div]:h-full [&>div>div]:h-full"
-          >
+          {/* Loading state for edit mode */}
+          {mode === 'edit' && isLoadingLoan ? (
+            <div className="flex items-center justify-center h-[calc(100dvh-15.2rem)]">
+              <div className="text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+                <p className="mt-2 text-sm text-muted-foreground">กำลังโหลดข้อมูลสินเชื่อ...</p>
+              </div>
+            </div>
+          ) : (
+            /* Scroll */
+            <ScrollArea
+              className="flex flex-col h-[calc(100dvh-15.2rem)] mx-1.5"
+              viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+            >
             <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
               <div className="grow lg:border-e border-border lg:pe-5 space-y-5 py-5">
                 {/* Section 1: ข้อมูลพื้นฐาน */}
@@ -944,6 +965,7 @@ export function ProductFormSheet({
               </div>
             </div>
           </ScrollArea>
+          )}
         </SheetBody>
 
         <SheetFooter className="flex-row border-t justify-between items-center p-5 border-border gap-2">

@@ -36,7 +36,10 @@ export const useCreateLoan = () => {
   return useMutation({
     mutationFn: (data: LoanCreateSchema) => loanApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: loanKeys.list() });
+      // Invalidate all loan list queries (all filters)
+      queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
       toast.success('สร้างสินเชื่อสำเร็จ');
     },
     onError: (error: Error) => {
@@ -51,8 +54,11 @@ export const useUpdateLoan = () => {
     mutationFn: ({ id, data }: { id: string; data: LoanUpdateSchema }) => 
       loanApi.update(id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: loanKeys.list() });
+      // Invalidate all loan list queries
+      queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
       queryClient.invalidateQueries({ queryKey: loanKeys.detail(variables.id) });
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
       toast.success('แก้ไขสินเชื่อสำเร็จ');
     },
     onError: (error: Error) => {
