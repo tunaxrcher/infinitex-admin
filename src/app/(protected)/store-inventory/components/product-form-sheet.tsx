@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
+import { useCreateLoan, useUpdateLoan } from '@src/features/loans/hooks';
 import {
   Card,
   CardContent,
@@ -33,12 +34,18 @@ export function ProductFormSheet({
   mode,
   open,
   onOpenChange,
+  loanId,
 }: {
   mode: 'new' | 'edit';
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  loanId?: string;
 }) {
   const isNewMode = mode === 'new';
+
+  // Mutations
+  const createLoan = useCreateLoan();
+  const updateLoan = useUpdateLoan();
 
   // Form state - Section 1: ข้อมูลพื้นฐาน
   const [customerName, setCustomerName] = useState('');
@@ -55,7 +62,7 @@ export function ProductFormSheet({
   const [idCard, setIdCard] = useState('');
   const [email, setEmail] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [gender, setGender] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | 'other' | ''>('');
   const [address, setAddress] = useState('');
 
   // Form state - Section 3: การคำนวณ
@@ -139,6 +146,78 @@ export function ProductFormSheet({
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Handle form submission
+  const handleSubmit = async () => {
+    try {
+      const loanData = {
+        customerName,
+        placeName,
+        landNumber,
+        landArea,
+        loanAmount,
+        loanStartDate,
+        loanDueDate,
+        fullName,
+        phoneNumber,
+        idCard,
+        email,
+        birthDate,
+        gender: gender || undefined,
+        address,
+        loanYears,
+        interestRate,
+        operationFee,
+        transferFee,
+        otherFee,
+        note,
+      };
+
+      if (isNewMode) {
+        await createLoan.mutateAsync(loanData);
+      } else if (loanId) {
+        await updateLoan.mutateAsync({ id: loanId, data: loanData });
+      }
+
+      // Reset form and close
+      resetForm();
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error saving loan:', error);
+    }
+  };
+
+  // Reset form
+  const resetForm = () => {
+    setCustomerName('');
+    setPlaceName('');
+    setLandNumber('');
+    setLandArea('');
+    setLoanAmount(0);
+    setLoanStartDate('');
+    setLoanDueDate('');
+    setFullName('');
+    setPhoneNumber('');
+    setIdCard('');
+    setEmail('');
+    setBirthDate('');
+    setGender('');
+    setAddress('');
+    setLoanYears(4);
+    setInterestRate(1);
+    setOperationFee(0);
+    setTransferFee(0);
+    setOtherFee(0);
+    setNote('');
+    setUploadedFiles([]);
+  };
+
+  // Reset form when closing
+  useEffect(() => {
+    if (!open) {
+      resetForm();
+    }
+  }, [open]);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="gap-0 lg:w-[1080px] sm:max-w-none inset-5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
@@ -159,8 +238,8 @@ export function ProductFormSheet({
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 ยกเลิก
               </Button>
-              <Button variant="mono">
-                {isNewMode ? 'บันทึก' : 'บันทึกการแก้ไข'}
+              <Button variant="mono" onClick={handleSubmit} disabled={createLoan.isPending || updateLoan.isPending}>
+                {createLoan.isPending || updateLoan.isPending ? 'กำลังบันทึก...' : (isNewMode ? 'บันทึก' : 'บันทึกการแก้ไข')}
               </Button>
             </div>
           </div>
@@ -350,19 +429,19 @@ export function ProductFormSheet({
                         />
                       </div>
 
-                      <div className="flex flex-col gap-2">
-                        <Label className="text-xs">เพศ</Label>
-                        <Select value={gender} onValueChange={setGender}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="เลือกเพศ" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="male">ชาย</SelectItem>
-                            <SelectItem value="female">หญิง</SelectItem>
-                            <SelectItem value="other">ไม่ระบุ</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-xs">เพศ</Label>
+                      <Select value={gender} onValueChange={(value) => setGender(value as 'male' | 'female' | 'other')}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="เลือกเพศ" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="male">ชาย</SelectItem>
+                          <SelectItem value="female">หญิง</SelectItem>
+                          <SelectItem value="other">ไม่ระบุ</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
                       <div className="flex flex-col gap-2 md:col-span-2">
                         <Label className="text-xs">ที่อยู่</Label>
@@ -737,8 +816,8 @@ export function ProductFormSheet({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               ยกเลิก
             </Button>
-            <Button variant="mono">
-              {isNewMode ? 'บันทึก' : 'บันทึกการแก้ไข'}
+            <Button variant="mono" onClick={handleSubmit} disabled={createLoan.isPending || updateLoan.isPending}>
+              {createLoan.isPending || updateLoan.isPending ? 'กำลังบันทึก...' : (isNewMode ? 'บันทึก' : 'บันทึกการแก้ไข')}
             </Button>
           </div>
         </SheetFooter>

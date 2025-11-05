@@ -55,6 +55,7 @@ import { ProductFormSheet } from '../components/product-form-sheet';
 import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
 import { ManageVariantsSheet } from '../components/manage-variants';
 import { cn } from '@src/shared/lib/utils';
+import { useGetLoanList, useDeleteLoan } from '@src/features/loans/hooks';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -803,17 +804,63 @@ export function ProductListTable({
   onRowClick,
   displaySheet,
 }: ProductListProps) {
-  const data = propsMockData || mockData;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-
-  // Search input state
-  const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  // Fetch data from API
+  const { data: apiResponse, isLoading } = useGetLoanList({
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    search: searchQuery || undefined,
+    status: activeTab === 'all' ? undefined : 
+            activeTab === 'active' ? 'ACTIVE' :
+            activeTab === 'closed' ? 'COMPLETED' :
+            activeTab === 'overdue' ? 'DEFAULTED' : undefined,
+  });
+
+  const deleteLoan = useDeleteLoan();
+
+  // Use API data if available, otherwise use mock data
+  const data = propsMockData || (apiResponse?.data ? apiResponse.data.map((loan: any) => ({
+    id: loan.id,
+    loanNumber: loan.loanNumber,
+    customerName: loan.customer?.profile?.firstName + ' ' + (loan.customer?.profile?.lastName || ''),
+    placeName: loan.application?.propertyLocation || '-',
+    area: loan.application?.propertyArea || '-',
+    titleDeedNumber: loan.titleDeedNumber || '-',
+    titleDeedType: '-', // TODO: Add to schema
+    requestDate: new Date(loan.contractDate).toLocaleDateString('th-TH'),
+    creditLimit: Number(loan.principalAmount),
+    paymentDay: new Date(loan.nextPaymentDate).getDate(),
+    status: {
+      label: loan.status === 'ACTIVE' ? 'ยังไม่ถึงกำหนด' :
+             loan.status === 'COMPLETED' ? 'ปิดบัญชี' :
+             loan.status === 'DEFAULTED' ? 'เกินกำหนดชำระ' : 'รออนุมัติ',
+      variant: loan.status === 'ACTIVE' ? 'success' :
+               loan.status === 'COMPLETED' ? 'info' :
+               loan.status === 'DEFAULTED' ? 'destructive' : 'warning',
+    },
+    overdueDays: 0, // TODO: Calculate
+    outstandingBalance: 0,
+    paidAmount: Number(loan.principalAmount) - Number(loan.remainingBalance),
+    remainingAmount: Number(loan.remainingBalance),
+    installmentAmount: Number(loan.monthlyPayment),
+    creditRisk: 'ความเสี่ยงต่ำ', // TODO: Calculate
+    loanType: 'เงินสด',
+    duration: `${loan.termMonths / 12} ปี`,
+    paidInstallments: loan.currentInstallment,
+    totalInstallments: loan.totalInstallments,
+    interestRate: Number(loan.interestRate),
+    details: '',
+  })) : mockData);
+
+  // Search input state
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'requestDate', desc: true },
@@ -1123,7 +1170,14 @@ export function ProductListTable({
                       <Info className="size-4" />
                       ข้อมูลเต็ม
                     </DropdownMenuItem>
-                  <DropdownMenuItem variant="destructive">
+                  <DropdownMenuItem 
+                    variant="destructive"
+                    onClick={() => {
+                      if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?')) {
+                        deleteLoan.mutate(row.original.id);
+                      }
+                    }}
+                  >
                     <Trash className="size-4" />
                     ลบ
                   </DropdownMenuItem>
