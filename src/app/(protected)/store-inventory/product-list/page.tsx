@@ -15,13 +15,14 @@ export default function ProductList() {
       <div className="container-fluid space-y-5 lg:space-y-9">
         <div className="flex items-center flex-wrap dap-2.5 justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xl font-bold text-foreground">รายการสินเชื่อ</h1>
+            <h1 className="text-xl font-bold text-foreground">
+              รายการสินเชื่อ
+            </h1>
             <span className="text-sm text-muted-foreground">
               รายการสินเชื่อทั้งหมดใน InfiniteX และสถานะต่าง ๆ
             </span>
           </div>
           <div className="flex items-center gap-3">
-       
             <Button
               variant="mono"
               className="gap-2"

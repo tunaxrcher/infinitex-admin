@@ -1,12 +1,16 @@
 'use client';
 
-import { CalendarClock, SquareDashedBottomCode } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
+import { AvatarGroup } from '@src/shared/components/ui/avatar-group';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
 import { Progress } from '@src/shared/components/ui/progress';
-import { AvatarGroup } from '@src/shared/components/ui/avatar-group';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import { CalendarClock, SquareDashedBottomCode } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesProductWebinar = () => {
@@ -22,10 +26,7 @@ const ActivitiesProductWebinar = () => {
       </div>
       <Card className="shadow-none p-4">
         <div className="flex flex-wrap gap-2.5">
-          <SquareDashedBottomCode
-            size={20}
-            className="text-violet-500"
-          />
+          <SquareDashedBottomCode size={20} className="text-violet-500" />
           <div className="flex flex-col gap-5 grow">
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex flex-col gap-0.5">
@@ -45,7 +46,9 @@ const ActivitiesProductWebinar = () => {
                 <span className="text-2sm font-normal text-muted-foreground/80">
                   Code:
                 </span>
-                <span className="text-2sm text-primary medium">#leaderdev-1</span>
+                <span className="text-2sm text-primary medium">
+                  #leaderdev-1
+                </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-2sm font-normal text-muted-foreground/80">

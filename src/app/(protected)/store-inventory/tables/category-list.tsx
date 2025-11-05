@@ -1,22 +1,8 @@
 'use client';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useMemo, useState, useEffect } from 'react';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Eye, Info, Search, SquarePen, Trash, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { toast } from 'sonner';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -38,6 +24,20 @@ import {
 } from '@src/shared/components/ui/data-grid-table';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Eye, Info, Search, SquarePen, Trash, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { CategoryDetailsEditSheet } from '../components/category-details-edit-sheet';
 import { CategoryFormSheet } from '../components/category-form-sheet';
 
@@ -65,13 +65,17 @@ export interface IData {
 
 interface CategoryListProps {
   mockData?: IData[];
-  displaySheet  ?: "categoryDetails" | "createCategory" | "editCategory";
+  displaySheet?: 'categoryDetails' | 'createCategory' | 'editCategory';
 }
 
 const mockData: IData[] = [
   {
     id: '1',
-    productInfo: { image: 'running-shoes.svg', title: 'Running Shoes', label: 'WM-8421' },
+    productInfo: {
+      image: 'running-shoes.svg',
+      title: 'Running Shoes',
+      label: 'WM-8421',
+    },
     productsQty: '120',
     totalEarnings: '$2,583.00',
     status: { label: 'Active', variant: 'success' },
@@ -79,7 +83,11 @@ const mockData: IData[] = [
   },
   {
     id: '2',
-    productInfo: { image: 'flip-flops.svg', title: 'Flip-flops', label: 'UC-3990' },
+    productInfo: {
+      image: 'flip-flops.svg',
+      title: 'Flip-flops',
+      label: 'UC-3990',
+    },
     productsQty: '245',
     totalEarnings: '$10,110.00',
     status: { label: 'Active', variant: 'success' },
@@ -87,7 +95,11 @@ const mockData: IData[] = [
   },
   {
     id: '3',
-    productInfo: { image: 'slip-on-shoe.svg', title: 'Slip-on-shoe', label: 'KB-8820' },
+    productInfo: {
+      image: 'slip-on-shoe.svg',
+      title: 'Slip-on-shoe',
+      label: 'KB-8820',
+    },
     productsQty: '560',
     totalEarnings: '$59,476.50',
     status: { label: 'Inactive', variant: 'destructive' },
@@ -95,7 +107,11 @@ const mockData: IData[] = [
   },
   {
     id: '4',
-    productInfo: { image: 'sport-sneaker.svg', title: 'Sport Sneakers', label: 'LS-1033' },
+    productInfo: {
+      image: 'sport-sneaker.svg',
+      title: 'Sport Sneakers',
+      label: 'LS-1033',
+    },
     productsQty: '98',
     totalEarnings: '$102,369.99',
     status: { label: 'Active', variant: 'success' },
@@ -103,7 +119,11 @@ const mockData: IData[] = [
   },
   {
     id: '5',
-    productInfo: { image: 'ski-boots.svg', title: 'Ski Boots', label: 'WC-5510' },
+    productInfo: {
+      image: 'ski-boots.svg',
+      title: 'Ski Boots',
+      label: 'WC-5510',
+    },
     productsQty: '33',
     totalEarnings: '$929.00',
     status: { label: 'Active', variant: 'success' },
@@ -539,10 +559,7 @@ export function CategoryListTable({
         id: 'productInfo',
         accessorFn: (row) => row.productInfo,
         header: ({ column }) => (
-          <DataGridColumnHeader
-            title="Category"
-            column={column}
-          />
+          <DataGridColumnHeader title="Category" column={column} />
         ),
         cell: (info) => {
           const productInfo = info.row.getValue(
@@ -748,38 +765,38 @@ export function CategoryListTable({
           cellBorder: true,
         }}
       >
-      <Card>
-        <CardHeader className="py-3.5">
-          <CardToolbar className="flex items-center gap-2">
-            <InputWrapper className="w-full lg:w-[200px]">
-              <Search/>
-              <Input
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <Button
-                  variant="dim"
-                  size="sm"
-                  className="-me-3.5"
-                  onClick={() => setSearchQuery('')}
-                >
-                  {searchQuery && <X/>}
-                </Button>
-              )}
-            </InputWrapper>
-          </CardToolbar>
-        </CardHeader>
-        <CardTable>
-          <ScrollArea>
-            <DataGridTable />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </CardTable>
-        <CardFooter>
-          <DataGridPagination />
-        </CardFooter>
+        <Card>
+          <CardHeader className="py-3.5">
+            <CardToolbar className="flex items-center gap-2">
+              <InputWrapper className="w-full lg:w-[200px]">
+                <Search />
+                <Input
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <Button
+                    variant="dim"
+                    size="sm"
+                    className="-me-3.5"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    {searchQuery && <X />}
+                  </Button>
+                )}
+              </InputWrapper>
+            </CardToolbar>
+          </CardHeader>
+          <CardTable>
+            <ScrollArea>
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </CardTable>
+          <CardFooter>
+            <DataGridPagination />
+          </CardFooter>
         </Card>
       </DataGrid>
 
@@ -798,7 +815,7 @@ export function CategoryListTable({
 
       {/* Create Category Sheet */}
       <CategoryFormSheet
-        mode="new"  
+        mode="new"
         open={isCreateCategoryOpen}
         onOpenChange={setIsCreateCategoryOpen}
       />

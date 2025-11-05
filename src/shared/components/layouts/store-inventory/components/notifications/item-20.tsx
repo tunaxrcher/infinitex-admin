@@ -1,4 +1,3 @@
-import { CircleCheck } from 'lucide-react';
 import Link from 'next/link';
 import {
   Avatar,
@@ -8,6 +7,7 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
+import { CircleCheck } from 'lucide-react';
 
 export default function Item20() {
   return (
@@ -23,7 +23,10 @@ export default function Item20() {
       <div className="flex flex-col gap-2.5 grow">
         <div className="flex flex-col gap-1 mb-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Gabriel Bennett
             </Link>
             <span className="text-secondary-foreground">

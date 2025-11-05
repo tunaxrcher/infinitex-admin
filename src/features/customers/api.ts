@@ -25,4 +25,3 @@ export const customerApi = {
     return response.json();
   },
 };
-

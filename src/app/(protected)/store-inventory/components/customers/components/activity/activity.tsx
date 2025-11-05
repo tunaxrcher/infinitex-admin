@@ -1,11 +1,11 @@
 'use client';
 
 import { ActivitiesInterview } from './interview';
-import { ActivitiesProductWebinar } from './product-webinar';
-import { ActivitiesPhotographyWorkshop } from './photography-workshop';
 import { ActivitiesNewArticle } from './new-article';
-import { ActivitiesUpcomingContent } from './upcoming-content';
+import { ActivitiesPhotographyWorkshop } from './photography-workshop';
+import { ActivitiesProductWebinar } from './product-webinar';
 import { ActivitiesProjectStatus } from './project-status';
+import { ActivitiesUpcomingContent } from './upcoming-content';
 
 export function ActivityPage() {
   return (

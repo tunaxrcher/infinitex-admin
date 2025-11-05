@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@src/shared/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Star } from 'lucide-react';
-import { cn } from '@src/shared/lib/utils';
 
 const ratingVariants = cva('flex items-center', {
   variants: {

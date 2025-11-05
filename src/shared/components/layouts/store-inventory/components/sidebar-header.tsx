@@ -1,8 +1,8 @@
-import { ChevronFirst } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@src/shared/components/ui/button';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { cn } from '@src/shared/lib/utils';
-import { Button } from '@src/shared/components/ui/button';
+import { ChevronFirst } from 'lucide-react';
 import { useLayout } from './context';
 
 export function SidebarHeader() {

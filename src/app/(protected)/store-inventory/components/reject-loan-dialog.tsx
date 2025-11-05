@@ -67,11 +67,7 @@ export function RejectLoanDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
             ยกเลิก
           </Button>
           <Button
@@ -86,4 +82,3 @@ export function RejectLoanDialog({
     </Dialog>
   );
 }
-

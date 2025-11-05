@@ -2,6 +2,20 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
+import { Card, CardTable } from '@src/shared/components/ui/card';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Column,
@@ -13,28 +27,8 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import Link from 'next/link';
-import { toast } from 'sonner';
-
-import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
-import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
-import {
-  Card,
-  CardTable,
-} from '@src/shared/components/ui/card';
-import { DataGrid } from '@src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
-import {
-  DataGridTable,
-} from '@src/shared/components/ui/data-grid-table';
-import { Input } from '@src/shared/components/ui/input';
-import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@src/shared/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -60,7 +54,7 @@ export interface IData {
   supplier: {
     logo: string;
     name: string;
-  }; 
+  };
 }
 
 interface ProductInfoSheetProps {
@@ -89,7 +83,7 @@ const mockData: IData[] = [
     supplier: {
       name: 'SwiftStock',
       logo: 'clusterhq.svg',
-    }
+    },
   },
   {
     id: '2',
@@ -111,7 +105,7 @@ const mockData: IData[] = [
     supplier: {
       name: 'SwiftStock',
       logo: 'quickbooks.svg',
-    }
+    },
   },
   {
     id: '3',
@@ -133,8 +127,8 @@ const mockData: IData[] = [
     supplier: {
       name: 'VeloSource',
       logo: 'equacoin.svg',
-    }
-  }, 
+    },
+  },
   {
     id: '4',
     productInfo: {
@@ -156,27 +150,24 @@ const mockData: IData[] = [
       name: 'NexaSource',
       logo: 'coinhodler.svg',
     },
-  },  
+  },
 ];
 
 const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
   // Always use local mockData for now
-  const data = mockData; 
+  const data = mockData;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [, setSorting] = useState<SortingState>([]);
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setSelectedProduct] = useState<IData | undefined>(
-    undefined,
-  );
+  const [, setSelectedProduct] = useState<IData | undefined>(undefined);
 
   const handleProductClick = (product: IData) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
-
 
   const ColumnInputFilter = <TData, TValue>({
     column,
@@ -226,7 +217,7 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
                 productInfo.title.includes('...') ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                    <Link
+                      <Link
                         href="#"
                         onClick={() => handleProductClick(info.row.original)}
                         className="text-sm font-medium text-foreground hover:text-primary leading-3.5 text-left"
@@ -293,7 +284,7 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
           return info.row.original.price;
         },
         enableSorting: true,
-        size: 90, 
+        size: 90,
       },
       {
         id: 'trends',
@@ -311,7 +302,7 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
           );
         },
         enableSorting: true,
-        size: 90, 
+        size: 90,
       },
       {
         id: 'stock',
@@ -368,7 +359,9 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
           return (
             <div className="flex items-center gap-1.5">
               <img
-                src={toAbsoluteUrl(`/media/brand-logos/${info.row.original.supplier.logo}`)}
+                src={toAbsoluteUrl(
+                  `/media/brand-logos/${info.row.original.supplier.logo}`,
+                )}
                 className="h-6 rounded-full"
                 alt="image"
               />
@@ -385,7 +378,7 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
         },
       },
     ],
-    []
+    [],
   );
 
   useEffect(() => {
@@ -417,8 +410,8 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
 
   const table = useReactTable({
     data: data,
-    columns, 
-    columnResizeMode: 'onChange', 
+    columns,
+    columnResizeMode: 'onChange',
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -434,8 +427,14 @@ const ProductInfoSheet = ({ onClose }: ProductInfoSheetProps) => {
   };
 
   return (
-    <div onClick={handleBackgroundClick} className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-hidden">
+    <div
+      onClick={handleBackgroundClick}
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-hidden"
+      >
         <DataGrid
           table={table}
           recordCount={data.length}

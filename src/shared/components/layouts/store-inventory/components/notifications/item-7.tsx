@@ -1,12 +1,3 @@
-import { AvatarGroup } from '../avatar-group';
-import {
-  CalendarDays,
-  Lock,
-  MapPin,
-  NotepadText,
-  Timer,
-  Users,
-} from 'lucide-react';
 import Link from 'next/link';
 import {
   Avatar,
@@ -18,6 +9,15 @@ import {
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
+import {
+  CalendarDays,
+  Lock,
+  MapPin,
+  NotepadText,
+  Timer,
+  Users,
+} from 'lucide-react';
+import { AvatarGroup } from '../avatar-group';
 
 export default function Item7() {
   return (
@@ -33,7 +33,10 @@ export default function Item7() {
       <div className="flex flex-col gap-3.5 grow">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Nova Hawthorne
             </Link>
             <span className="text-secondary-foreground">

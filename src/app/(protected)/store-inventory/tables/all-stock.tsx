@@ -1,35 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { addDays, format, isWithinInterval, parse } from 'date-fns';
-import {
-  ChevronDown,
-  EllipsisVertical,
-  Info,
-  Layers,
-  LogIn,
-  LogOut,
-  Pencil,
-  Search,
-  Settings,
-  Trash,
-  X,
-} from 'lucide-react';
-import { DateRange } from 'react-day-picker';
 import Link from 'next/link';
-import { toast } from 'sonner';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -82,6 +54,34 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { addDays, format, isWithinInterval, parse } from 'date-fns';
+import {
+  ChevronDown,
+  EllipsisVertical,
+  Info,
+  Layers,
+  LogIn,
+  LogOut,
+  Pencil,
+  Search,
+  Settings,
+  Trash,
+  X,
+} from 'lucide-react';
+import { DateRange } from 'react-day-picker';
+import { toast } from 'sonner';
 import { PerProductStockSheet } from '../components/per-product-stock-sheet';
 
 interface IColumnFilterProps<TData, TValue> {
@@ -887,9 +887,7 @@ const AllStockTable = ({ mockData: propsMockData }: AllStockProps) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setSelectedProduct] = useState<IData | undefined>(
-    undefined,
-  );
+  const [, setSelectedProduct] = useState<IData | undefined>(undefined);
 
   const handleSupplierChange = (
     isChecked: boolean,
@@ -1024,7 +1022,7 @@ const AllStockTable = ({ mockData: propsMockData }: AllStockProps) => {
                 productInfo.title.includes('...') ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                    <Link
+                      <Link
                         href="#"
                         onClick={() => handleProductClick(info.row.original)}
                         className="text-sm font-medium text-foreground hover:text-primary leading-3.5 text-left"
@@ -1549,10 +1547,7 @@ const AllStockTable = ({ mockData: propsMockData }: AllStockProps) => {
       </Card>
 
       {/* Per Product Stock Modal */}
-      <PerProductStockSheet
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
+      <PerProductStockSheet open={isModalOpen} onOpenChange={setIsModalOpen} />
     </DataGrid>
   );
 };

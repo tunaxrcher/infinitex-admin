@@ -1,9 +1,6 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { Star, TrendingUp } from 'lucide-react';
-import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -41,6 +38,9 @@ import {
   TableRow,
 } from '@src/shared/components/ui/table';
 import { Textarea } from '@src/shared/components/ui/textarea';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Star, TrendingUp } from 'lucide-react';
+import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function CategoryDetailsEditSheet({
   open,
@@ -122,7 +122,7 @@ export function CategoryDetailsEditSheet({
   const id = useId();
   const [checked, setChecked] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<string>(
-    toAbsoluteUrl('/media/store/client/icons/light/running-shoes.svg')
+    toAbsoluteUrl('/media/store/client/icons/light/running-shoes.svg'),
   );
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -457,8 +457,11 @@ export function CategoryDetailsEditSheet({
                                       className="cursor-pointer h-[40px] object-cover rounded"
                                       alt="image"
                                       onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.src = toAbsoluteUrl('/media/store/client/placeholder.png');
+                                        const target =
+                                          e.target as HTMLImageElement;
+                                        target.src = toAbsoluteUrl(
+                                          '/media/store/client/placeholder.png',
+                                        );
                                       }}
                                     />
                                   </Card>
@@ -497,12 +500,16 @@ export function CategoryDetailsEditSheet({
                       {iconFileName ? (
                         <>
                           <img
-                            src={toAbsoluteUrl(`/media/store/client/icons/light/${iconFileName}`)}
+                            src={toAbsoluteUrl(
+                              `/media/store/client/icons/light/${iconFileName}`,
+                            )}
                             className="cursor-pointer h-[200px] object-contain dark:hidden"
                             alt="image"
                           />
                           <img
-                            src={toAbsoluteUrl(`/media/store/client/icons/dark/${iconFileName}`)}
+                            src={toAbsoluteUrl(
+                              `/media/store/client/icons/dark/${iconFileName}`,
+                            )}
                             className="cursor-pointer h-[200px] object-contain light:hidden"
                             alt="image"
                           />
@@ -522,7 +529,10 @@ export function CategoryDetailsEditSheet({
                       className="hidden"
                       id="category-image-upload"
                     />
-                    <label htmlFor="category-image-upload" className="absolute bottom-3 right-3">
+                    <label
+                      htmlFor="category-image-upload"
+                      className="absolute bottom-3 right-3"
+                    >
                       <Button size="sm" variant="outline" asChild>
                         <span>Change</span>
                       </Button>

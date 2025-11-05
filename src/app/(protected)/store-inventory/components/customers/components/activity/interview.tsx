@@ -1,8 +1,8 @@
 'use client';
 
-import { LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
+import { LogIn } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesInterview = () => {
@@ -12,9 +12,7 @@ const ActivitiesInterview = () => {
         <div className="text-sm text-foreground font-normal">
           I had the privilege of interviewing an industry expert for an{' '}
           <Button mode="link" asChild>
-            <Link href="#">
-              upcoming blog post
-            </Link>
+            <Link href="#">upcoming blog post</Link>
           </Button>
         </div>
         <span className="text-xs text-muted-foreground/80 font-normal">

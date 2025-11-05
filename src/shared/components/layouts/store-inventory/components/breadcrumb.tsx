@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@src/shared/lib/utils';
+import { ChevronRight } from 'lucide-react';
 import { MENU_SIDEBAR } from '../config/app.config';
 import { MenuItem } from '../config/types';
-import { ChevronRight } from 'lucide-react';
-import { cn } from '@src/shared/lib/utils';
 import { useMenu } from '../hooks/use-menu';
-import { usePathname } from 'next/navigation';
 
 export function Breadcrumb() {
   const pathname = usePathname();

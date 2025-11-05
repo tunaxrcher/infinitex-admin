@@ -25,10 +25,12 @@ export function TimelineItem({
       )}
       <div className="flex items-center justify-center rounded-md bg-background border border-border size-10 shrink-0">
         <div className="flex items-center justify-center bg-accent/70 rounded-md size-[34px]">
-          <Icon size={18} className={className || ""} />
+          <Icon size={18} className={className || ''} />
         </div>
-      </div> 
-      <div className={`ps-2.5 ${!removeSpace ? 'mb-5 pt-0.5' : ''} text-base grow`}>
+      </div>
+      <div
+        className={`ps-2.5 ${!removeSpace ? 'mb-5 pt-0.5' : ''} text-base grow`}
+      >
         {children}
       </div>
     </div>

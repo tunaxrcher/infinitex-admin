@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Avatar,
   AvatarFallback,
@@ -8,6 +7,7 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export default function Item16() {
   return (
@@ -23,7 +23,10 @@ export default function Item16() {
       <div className="flex flex-col gap-3 grow">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Ethan Parker
             </Link>
             <span className="text-secondary-foreground">

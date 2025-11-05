@@ -1,6 +1,6 @@
 // src/features/loans/repositories/loanRepository.ts
-import { prisma } from '@src/shared/lib/db';
 import { Prisma } from '@prisma/client';
+import { prisma } from '@src/shared/lib/db';
 
 export class LoanRepository {
   async findMany(options: {
@@ -75,4 +75,3 @@ export class LoanRepository {
 }
 
 export const loanRepository = new LoanRepository();
-

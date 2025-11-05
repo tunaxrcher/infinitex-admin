@@ -24,4 +24,3 @@ export const useGetCustomerById = (id: string) => {
     enabled: !!id,
   });
 };
-

@@ -1,6 +1,10 @@
 // src/features/loans/api.ts
 import { apiFetch } from '@src/shared/lib/api';
-import { type LoanFiltersSchema, type LoanCreateSchema, type LoanUpdateSchema } from './validations';
+import {
+  type LoanCreateSchema,
+  type LoanFiltersSchema,
+  type LoanUpdateSchema,
+} from './validations';
 
 export const loanApi = {
   getList: async (filters: LoanFiltersSchema) => {
@@ -96,4 +100,3 @@ export const loanApi = {
     return response.json();
   },
 };
-

@@ -1,13 +1,19 @@
 'use client';
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { FilePlus, FileMinus, Globe, Globe2 } from "lucide-react"; 
-import { RiMapPinLine } from "@remixicon/react"; 
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useState } from "react";
+import { useState } from 'react';
+import { RiMapPinLine } from '@remixicon/react';
+import { FileMinus, FilePlus, Globe, Globe2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
 export function TaxSettings() {
   const [taxCalculation, setTaxCalculation] = useState('inclusive');
@@ -17,26 +23,30 @@ export function TaxSettings() {
       id: 'inclusive',
       name: 'Inclusive',
       description: 'Tax is included in the displayed price',
-      icon: <FilePlus className="size-5 text-foreground/70" />
+      icon: <FilePlus className="size-5 text-foreground/70" />,
     },
     {
       id: 'exclusive',
       name: 'Exclusive',
       description: 'Tax is added during checkout',
-      icon: <FileMinus className="size-5 text-foreground/70" />
-    }
+      icon: <FileMinus className="size-5 text-foreground/70" />,
+    },
   ];
 
   return (
-    <Card className="bg-accent/70 rounded-md shadow-none h-full flex flex-col"> 
-      <CardContent className="p-0 flex flex-col h-full"> 
-        <h3 className="text-sm font-medium text-foreground py-2.5 ps-2">Tax Settings</h3>
+    <Card className="bg-accent/70 rounded-md shadow-none h-full flex flex-col">
+      <CardContent className="p-0 flex flex-col h-full">
+        <h3 className="text-sm font-medium text-foreground py-2.5 ps-2">
+          Tax Settings
+        </h3>
         <div className="bg-background rounded-md m-1 mt-0 border border-input py-6 px-3.5 space-y-5 h-full">
           {/* Tax Rates */}
           <div className="flex items-start gap-5">
             <div className="flex flex-col gap-0.5 basis-1/3">
               <Label className="text-2sm font-medium shrink-0">Tax Rates</Label>
-              <span className="text-xs font-normal text-muted-foreground">Improves search with AI understanding</span>
+              <span className="text-xs font-normal text-muted-foreground">
+                Improves search with AI understanding
+              </span>
             </div>
             <div className="basis-2/3">
               <Select defaultValue="1" indicatorPosition="right">
@@ -64,7 +74,7 @@ export function TaxSettings() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-            </div> 
+            </div>
           </div>
 
           <Separator />
@@ -72,19 +82,32 @@ export function TaxSettings() {
           {/* Tax Calculation */}
           <div className="flex items-start gap-5">
             <div className="flex flex-col gap-0.5 basis-1/3">
-              <Label className="text-2sm font-medium shrink-0">Tax Calculation</Label>
-              <span className="text-xs font-normal text-muted-foreground">Tax is included in the displayed price</span>
+              <Label className="text-2sm font-medium shrink-0">
+                Tax Calculation
+              </Label>
+              <span className="text-xs font-normal text-muted-foreground">
+                Tax is included in the displayed price
+              </span>
             </div>
             <div className="basis-2/3">
-              <RadioGroup className="gap-1" value={taxCalculation} onValueChange={setTaxCalculation}>
+              <RadioGroup
+                className="gap-1"
+                value={taxCalculation}
+                onValueChange={setTaxCalculation}
+              >
                 {taxOptions.map((option) => (
-                  <Card 
-                    key={option.id} 
+                  <Card
+                    key={option.id}
                     className={`py-3 px-5 border-none shadow-none cursor-pointer ${
-                      option.id === 'inclusive' ? 'rounded-b-none' : 
-                      option.id === 'exclusive' ? 'rounded-t-none' : 'rounded-lg'
+                      option.id === 'inclusive'
+                        ? 'rounded-b-none'
+                        : option.id === 'exclusive'
+                          ? 'rounded-t-none'
+                          : 'rounded-lg'
                     } ${
-                      taxCalculation === option.id ? 'bg-secondary' : 'bg-accent/50'
+                      taxCalculation === option.id
+                        ? 'bg-secondary'
+                        : 'bg-accent/50'
                     }`}
                     onClick={() => setTaxCalculation(option.id)}
                   >

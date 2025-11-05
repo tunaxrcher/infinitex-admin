@@ -1,18 +1,26 @@
-import { Search } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@src/shared/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@src/shared/components/ui/popover';
 import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { Search } from 'lucide-react';
 
 export function SearchBar() {
   const isMobile = useIsMobile();
-  
+
   if (isMobile) {
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="ghost" shape="circle" className="size-9 hover:bg-primary/10 hover:[&_svg]:text-primary">
+          <Button
+            variant="ghost"
+            shape="circle"
+            className="size-9 hover:bg-primary/10 hover:[&_svg]:text-primary"
+          >
             <Search className="size-4.5!" />
           </Button>
         </PopoverTrigger>
@@ -32,7 +40,7 @@ export function SearchBar() {
       </Popover>
     );
   }
-  
+
   return (
     <div className="relative lg:w-[280px]">
       <Search className="size-4 text-muted-foreground absolute top-1/2 -translate-y-1/2 start-2" />

@@ -1,6 +1,10 @@
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { cn } from '@src/shared/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
 
 interface Avatar {
   path?: string;

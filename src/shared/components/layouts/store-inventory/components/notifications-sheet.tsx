@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { Calendar, Settings, Settings2, Shield, Users } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -22,7 +21,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
+import { Calendar, Settings, Settings2, Shield, Users } from 'lucide-react';
 import Item1 from './notifications/item-1';
 import Item2 from './notifications/item-2';
 import Item3 from './notifications/item-3';

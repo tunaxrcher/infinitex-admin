@@ -2,28 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  EllipsisVertical,
-  Filter,
-  Info,
-  Search,
-  Settings,
-  Trash,
-  X,
-  Layers,
-  Check,
-} from 'lucide-react';
-import { toast } from 'sonner';
+  useApproveLoan,
+  useDeleteLoan,
+  useGetLoanList,
+  useRejectLoan,
+} from '@src/features/loans/hooks';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -51,14 +34,46 @@ import {
 } from '@src/shared/components/ui/dropdown-menu';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
-import { ProductFormSheet } from '../components/product-form-sheet';
-import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
-import { ManageVariantsSheet } from '../components/manage-variants';
-import { RejectLoanDialog } from '../components/reject-loan-dialog';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 import { cn } from '@src/shared/lib/utils';
-import { useGetLoanList, useDeleteLoan, useApproveLoan, useRejectLoan } from '@src/features/loans/hooks';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@src/shared/components/ui/tooltip';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Check,
+  EllipsisVertical,
+  Filter,
+  Info,
+  Layers,
+  Search,
+  Settings,
+  Trash,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { ManageVariantsSheet } from '../components/manage-variants';
+import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
+import { ProductFormSheet } from '../components/product-form-sheet';
+import { RejectLoanDialog } from '../components/reject-loan-dialog';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -95,7 +110,11 @@ export interface IData {
 
 interface ProductListProps {
   onRowClick?: (productId: string) => void;
-  displaySheet?: "productDetails" | "createProduct" | "editProduct" | "manageVariants";
+  displaySheet?:
+    | 'productDetails'
+    | 'createProduct'
+    | 'editProduct'
+    | 'manageVariants';
 }
 
 export function ProductListTable({
@@ -110,14 +129,25 @@ export function ProductListTable({
   });
 
   // Fetch data from API
-  const { data: apiResponse, isLoading, error, isError } = useGetLoanList({
+  const {
+    data: apiResponse,
+    isLoading,
+    error,
+    isError,
+  } = useGetLoanList({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     search: searchQuery || undefined,
-    status: activeTab === 'all' ? undefined : 
-            activeTab === 'active' ? 'ACTIVE' :
-            activeTab === 'closed' ? 'COMPLETED' :
-            activeTab === 'overdue' ? 'DEFAULTED' : undefined,
+    status:
+      activeTab === 'all'
+        ? undefined
+        : activeTab === 'active'
+          ? 'ACTIVE'
+          : activeTab === 'closed'
+            ? 'COMPLETED'
+            : activeTab === 'overdue'
+              ? 'DEFAULTED'
+              : undefined,
   });
 
   const deleteLoan = useDeleteLoan();
@@ -144,16 +174,19 @@ export function ProductListTable({
     }
 
     console.log('Transforming API data:', apiResponse.data.length, 'loans');
-    
+
     return apiResponse.data.map((loan: unknown) => {
       const loanData = loan as Record<string, unknown>;
       const customer = loanData.customer as Record<string, unknown> | undefined;
       const profile = customer?.profile as Record<string, unknown> | undefined;
-      const application = loanData.application as Record<string, unknown> | undefined;
-      
-      const customerFirstName = profile?.firstName as string || '';
-      const customerLastName = profile?.lastName as string || '';
-      const fullName = `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
+      const application = loanData.application as
+        | Record<string, unknown>
+        | undefined;
+
+      const customerFirstName = (profile?.firstName as string) || '';
+      const customerLastName = (profile?.lastName as string) || '';
+      const fullName =
+        `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
 
       // กำหนดสถานะตาม application.status และ loan.status
       const appStatus = application?.status as string;
@@ -183,11 +216,13 @@ export function ProductListTable({
         id: loanData.id as string,
         loanNumber: loanData.loanNumber as string,
         customerName: fullName,
-        placeName: application?.propertyLocation as string || '-',
-        area: application?.propertyArea as string || '-',
-        titleDeedNumber: loanData.titleDeedNumber as string || '-',
+        placeName: (application?.propertyLocation as string) || '-',
+        area: (application?.propertyArea as string) || '-',
+        titleDeedNumber: (loanData.titleDeedNumber as string) || '-',
         titleDeedType: '-',
-        requestDate: new Date(loanData.contractDate as string).toLocaleDateString('th-TH', {
+        requestDate: new Date(
+          loanData.contractDate as string,
+        ).toLocaleDateString('th-TH', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
@@ -200,7 +235,8 @@ export function ProductListTable({
         },
         overdueDays: 0,
         outstandingBalance: 0,
-        paidAmount: Number(loanData.principalAmount) - Number(loanData.remainingBalance),
+        paidAmount:
+          Number(loanData.principalAmount) - Number(loanData.remainingBalance),
         remainingAmount: Number(loanData.remainingBalance),
         installmentAmount: Number(loanData.monthlyPayment),
         creditRisk: 'ความเสี่ยงต่ำ',
@@ -301,7 +337,7 @@ export function ProductListTable({
             setIsRejectDialogOpen(false);
             setRejectingLoanId(undefined);
           },
-        }
+        },
       );
     }
   };
@@ -355,7 +391,7 @@ export function ProductListTable({
           //   </span>
           // );
 
-            return (
+          return (
             <div className="flex items-center gap-2.5">
               <Card className="flex items-center justify-center rounded-md bg-accent/50 h-[40px] w-[50px] shadow-none shrink-0">
                 <img
@@ -413,9 +449,7 @@ export function ProductListTable({
         ),
         cell: (info) => {
           return (
-            <span className="text-sm">
-              {info.row.original.customerName}
-            </span>
+            <span className="text-sm">{info.row.original.customerName}</span>
           );
         },
         enableSorting: true,
@@ -431,9 +465,7 @@ export function ProductListTable({
           <DataGridColumnHeader title="เนื้อที่" column={column} />
         ),
         cell: (info) => {
-          return (
-            <span className="text-sm">{info.row.original.area} ไร่</span>
-          );
+          return <span className="text-sm">{info.row.original.area} ไร่</span>;
         },
         enableSorting: true,
         size: 140,
@@ -519,7 +551,7 @@ export function ProductListTable({
           if (risk === 'ความเสี่ยงต่ำ') variant = 'success';
           else if (risk === 'ความเสี่ยงปานกลาง') variant = 'warning';
           else if (risk === 'ความเสี่ยงสูง') variant = 'destructive';
-          
+
           return (
             <Badge
               variant={variant}
@@ -558,7 +590,9 @@ export function ProductListTable({
           <DataGridColumnHeader title="ดอกเบี้ย" column={column} />
         ),
         cell: (info) => {
-          return <div className="text-center">{info.row.original.interestRate}%</div>;
+          return (
+            <div className="text-center">{info.row.original.interestRate}%</div>
+          );
         },
         enableSorting: true,
         size: 80,
@@ -572,29 +606,27 @@ export function ProductListTable({
         enableSorting: false,
         cell: ({ row }) => {
           const isPending = row.original.status.label === 'รออนุมัติ';
-          
+
           return (
             <div className="flex items-center justify-center gap-1">
               {isPending ? (
                 /* สำหรับสินเชื่อรออนุมัติ - แสดงปุ่มโดยตรง */
                 <>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     className=" hover:text-green-700 hover:bg-green-50 "
                     onClick={() => handleApproveLoan(row.original.id)}
                   >
                     <Check className="size-3.5" /> อนุมัติ
-                    
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     className=" hover:text-red-700 hover:bg-red-50 "
                     onClick={() => handleRejectLoan(row.original.id)}
                   >
                     <X className="size-3.5" />
-                    
                   </Button>
                 </>
               ) : (
@@ -606,19 +638,25 @@ export function ProductListTable({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" side="bottom">
-                    <DropdownMenuItem onClick={() => handleEditProduct(row.original)}>
+                    <DropdownMenuItem
+                      onClick={() => handleEditProduct(row.original)}
+                    >
                       <Settings className="size-4" />
                       แก้ไขข้อมูล
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleManageVariants(row.original)}>
+                    <DropdownMenuItem
+                      onClick={() => handleManageVariants(row.original)}
+                    >
                       <Layers className="size-4" />
                       รายละเอียดการชำระ
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
+                    <DropdownMenuItem
+                      onClick={() => handleViewDetails(row.original)}
+                    >
                       <Info className="size-4" />
                       ข้อมูลเต็ม
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       variant="destructive"
                       onClick={() => {
                         if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?')) {
@@ -661,9 +699,10 @@ export function ProductListTable({
     // Apply search filter - search in loan number and customer name
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter((item) =>
-        item.loanNumber.toLowerCase().includes(query) ||
-        item.customerName.toLowerCase().includes(query)
+      result = result.filter(
+        (item) =>
+          item.loanNumber.toLowerCase().includes(query) ||
+          item.customerName.toLowerCase().includes(query),
       );
     }
 
@@ -735,10 +774,31 @@ export function ProductListTable({
 
   const tabs = [
     { id: 'all', label: 'ทั้งหมด', badge: data.length },
-    { id: 'active', label: 'ยังไม่ถึงกำหนด', badge: data.filter((item: IData) => item.status.label === 'ยังไม่ถึงกำหนด').length },
-    { id: 'pending', label: 'รออนุมัติ', badge: data.filter((item: IData) => item.status.label === 'รออนุมัติ').length },
-    { id: 'overdue', label: 'เกินกำหนดชำระ', badge: data.filter((item: IData) => item.status.label === 'เกินกำหนดชำระ').length },
-    { id: 'closed', label: 'ปิดบัญชี', badge: data.filter((item: IData) => item.status.label === 'ปิดบัญชี').length },
+    {
+      id: 'active',
+      label: 'ยังไม่ถึงกำหนด',
+      badge: data.filter(
+        (item: IData) => item.status.label === 'ยังไม่ถึงกำหนด',
+      ).length,
+    },
+    {
+      id: 'pending',
+      label: 'รออนุมัติ',
+      badge: data.filter((item: IData) => item.status.label === 'รออนุมัติ')
+        .length,
+    },
+    {
+      id: 'overdue',
+      label: 'เกินกำหนดชำระ',
+      badge: data.filter((item: IData) => item.status.label === 'เกินกำหนดชำระ')
+        .length,
+    },
+    {
+      id: 'closed',
+      label: 'ปิดบัญชี',
+      badge: data.filter((item: IData) => item.status.label === 'ปิดบัญชี')
+        .length,
+    },
   ];
 
   const handleTabChange = (tabId: string) => {
@@ -773,9 +833,9 @@ export function ProductListTable({
                     key={tab.id}
                     value={tab.id}
                     className={cn(
-                      "relative text-foreground px-2 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none", 
-                      activeTab === tab.id ? 'font-medium' : 'font-normal')
-                    }
+                      'relative text-foreground px-2 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none',
+                      activeTab === tab.id ? 'font-medium' : 'font-normal',
+                    )}
                   >
                     <div className="flex items-center gap-2">
                       {tab.label}
@@ -783,7 +843,10 @@ export function ProductListTable({
                         size="sm"
                         variant={activeTab === tab.id ? 'primary' : 'outline'}
                         appearance="outline"
-                        className={cn("rounded-full", activeTab === tab.id ? '' : 'bg-muted/60')}
+                        className={cn(
+                          'rounded-full',
+                          activeTab === tab.id ? '' : 'bg-muted/60',
+                        )}
                       >
                         {tab.badge}
                       </Badge>
@@ -890,7 +953,7 @@ export function ProductListTable({
 
       {/* Create Product Modal */}
       <ProductFormSheet
-        mode="new"  
+        mode="new"
         open={isCreateProductOpen}
         onOpenChange={setIsCreateProductOpen}
       />

@@ -24,7 +24,10 @@ export default function Item10() {
       <div className="flex flex-col gap-3 grow">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Nova Hawthorne
             </Link>
             <span className="text-secondary-foreground">

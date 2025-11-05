@@ -19,15 +19,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
-  CircleX,
-  CloudUpload,
-  GripVertical,
-  ImageIcon,
-  TriangleAlert,
-  XIcon,
-} from 'lucide-react';
-import { cn } from '@src/shared/lib/utils';
-import {
   Alert,
   AlertContent,
   AlertDescription,
@@ -38,6 +29,15 @@ import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Progress } from '@src/shared/components/ui/progress';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import {
+  CircleX,
+  CloudUpload,
+  GripVertical,
+  ImageIcon,
+  TriangleAlert,
+  XIcon,
+} from 'lucide-react';
 
 interface ImageFile {
   id: string;
@@ -136,40 +136,42 @@ function SortableImageItem({
   );
 }
 
-export function ProductFormImageUpload({ 
+export function ProductFormImageUpload({
   mode,
-  maxFiles = 5, 
-  maxSize = 5 * 1024 * 1024, // 5MB 
-  accept = 'image/*', 
-  className, 
-  onImagesChange, 
-  onUploadComplete 
+  maxFiles = 5,
+  maxSize = 5 * 1024 * 1024, // 5MB
+  accept = 'image/*',
+  className,
+  onImagesChange,
+  onUploadComplete,
 }: ImageUploadProps & { mode: 'new' | 'edit' }) {
   const isEditMode = mode === 'edit';
-  
+
   const [allImages, setAllImages] = useState<SortableImage[]>(
-    isEditMode ? [
-      {
-        id: 'default-1',
-        src: toAbsoluteUrl('/media/store/client/1200x1200/3.png'),
-        alt: 'Product view 1',
-      },
-      {
-        id: 'default-2',
-        src: toAbsoluteUrl('/media/store/client/1200x1200/20.png'),
-        alt: 'Product view 2',
-      },
-      {
-        id: 'default-3',
-        src: toAbsoluteUrl('/media/store/client/1200x1200/21.png'),
-        alt: 'Product view 3',
-      },
-      {
-        id: 'default-4',
-        src: toAbsoluteUrl('/media/store/client/1200x1200/19.png'),
-        alt: 'Product view 4',
-      },
-    ] : []
+    isEditMode
+      ? [
+          {
+            id: 'default-1',
+            src: toAbsoluteUrl('/media/store/client/1200x1200/3.png'),
+            alt: 'Product view 1',
+          },
+          {
+            id: 'default-2',
+            src: toAbsoluteUrl('/media/store/client/1200x1200/20.png'),
+            alt: 'Product view 2',
+          },
+          {
+            id: 'default-3',
+            src: toAbsoluteUrl('/media/store/client/1200x1200/21.png'),
+            alt: 'Product view 3',
+          },
+          {
+            id: 'default-4',
+            src: toAbsoluteUrl('/media/store/client/1200x1200/19.png'),
+            alt: 'Product view 4',
+          },
+        ]
+      : [],
   );
   const [isDragging, setIsDragging] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -202,18 +204,21 @@ export function ProductFormImageUpload({
     };
   }, [activeId]);
 
-  const validateFile = useCallback((file: File, currentImagesCount: number): string | null => {
-    if (!file.type.startsWith('image/')) {
-      return 'File must be an image';
-    }
-    if (file.size > maxSize) {
-      return `File size must be less than ${(maxSize / 1024 / 1024).toFixed(1)}MB`;
-    }
-    if (currentImagesCount >= maxFiles) {
-      return `Maximum ${maxFiles} files allowed`;
-    }
-    return null;
-  }, [maxSize, maxFiles]);
+  const validateFile = useCallback(
+    (file: File, currentImagesCount: number): string | null => {
+      if (!file.type.startsWith('image/')) {
+        return 'File must be an image';
+      }
+      if (file.size > maxSize) {
+        return `File size must be less than ${(maxSize / 1024 / 1024).toFixed(1)}MB`;
+      }
+      if (currentImagesCount >= maxFiles) {
+        return `Maximum ${maxFiles} files allowed`;
+      }
+      return null;
+    },
+    [maxSize, maxFiles],
+  );
 
   const addImages = useCallback(
     (files: FileList | File[]) => {
@@ -245,10 +250,10 @@ export function ProductFormImageUpload({
 
         if (newImages.length > 0) {
           const updatedImages = [...prevImages, ...newImages];
-          
+
           // Notify parent component with only the uploaded images
-          const uploadedImages = updatedImages.filter((item): item is ImageFile => 
-            !item.id.startsWith('default-')
+          const uploadedImages = updatedImages.filter(
+            (item): item is ImageFile => !item.id.startsWith('default-'),
           );
           onImagesChange?.(uploadedImages);
 
@@ -282,8 +287,8 @@ export function ProductFormImageUpload({
           );
 
           // Check if all uploads are complete
-          const uploadedImages = updatedImages.filter((item): item is ImageFile => 
-            !item.id.startsWith('default-')
+          const uploadedImages = updatedImages.filter(
+            (item): item is ImageFile => !item.id.startsWith('default-'),
           );
           if (uploadedImages.every((img) => img.status === 'completed')) {
             onUploadComplete?.(uploadedImages);
@@ -447,55 +452,57 @@ export function ProductFormImageUpload({
         </DndContext>
 
         {/* Upload Progress Cards */}
-        {allImages.some(item => !item.id.startsWith('default-')) && (
+        {allImages.some((item) => !item.id.startsWith('default-')) && (
           <div className="mt-6 space-y-3">
             {allImages
-              .filter((item): item is ImageFile => !item.id.startsWith('default-'))
+              .filter(
+                (item): item is ImageFile => !item.id.startsWith('default-'),
+              )
               .map((imageFile) => (
-              <Card
-                key={imageFile.id}
-                className="bg-accent/20 shadow-none rounded-md"
-              >
-                <CardContent className="flex items-center gap-2 p-3">
-                  <div className="flex items-center justify-center size-[32px] rounded-md border border-border shrink-0">
-                    <ImageIcon className="size-4 text-muted-foreground" />
-                  </div>
-                  <div className="flex flex-col gap-1.5 w-full">
-                    <div className="flex items-center justify-between gap-2.5 -mt-2 w-full">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-xs text-foreground font-medium leading-none">
-                          {imageFile.file.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground font-normal leading-none">
-                          {formatBytes(imageFile.file.size)}
-                        </span>
-                        {imageFile.status === 'uploading' && (
-                          <p className="text-xs text-muted-foreground">
-                            Uploading... {Math.round(imageFile.progress)}%
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        onClick={() => removeImage(imageFile.id)}
-                        variant="ghost"
-                        size="icon"
-                        className="size-6"
-                      >
-                        <CircleX className="size-3.5" />
-                      </Button>
+                <Card
+                  key={imageFile.id}
+                  className="bg-accent/20 shadow-none rounded-md"
+                >
+                  <CardContent className="flex items-center gap-2 p-3">
+                    <div className="flex items-center justify-center size-[32px] rounded-md border border-border shrink-0">
+                      <ImageIcon className="size-4 text-muted-foreground" />
                     </div>
+                    <div className="flex flex-col gap-1.5 w-full">
+                      <div className="flex items-center justify-between gap-2.5 -mt-2 w-full">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-xs text-foreground font-medium leading-none">
+                            {imageFile.file.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground font-normal leading-none">
+                            {formatBytes(imageFile.file.size)}
+                          </span>
+                          {imageFile.status === 'uploading' && (
+                            <p className="text-xs text-muted-foreground">
+                              Uploading... {Math.round(imageFile.progress)}%
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          onClick={() => removeImage(imageFile.id)}
+                          variant="ghost"
+                          size="icon"
+                          className="size-6"
+                        >
+                          <CircleX className="size-3.5" />
+                        </Button>
+                      </div>
 
-                    <Progress
-                      value={imageFile.progress}
-                      className={cn(
-                        'h-1 transition-all duration-300',
-                        '[&>div]:bg-zinc-950',
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      <Progress
+                        value={imageFile.progress}
+                        className={cn(
+                          'h-1 transition-all duration-300',
+                          '[&>div]:bg-zinc-950',
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         )}
       </div>
@@ -528,7 +535,7 @@ export function ProductFormImageUpload({
           </Button>
         </CardContent>
       </Card>
-      
+
       {/* Error Messages */}
       {errors.length > 0 && (
         <Alert variant="destructive" appearance="light" className="mt-5">

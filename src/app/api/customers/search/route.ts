@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
       data: customers,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+    const errorMessage =
+      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
     console.error('[API Error] GET /api/customers/search:', error);
     return NextResponse.json(
       {
@@ -40,8 +41,7 @@ export async function GET(request: NextRequest) {
         message: errorMessage,
         errors: error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

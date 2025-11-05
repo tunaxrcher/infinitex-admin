@@ -4,7 +4,7 @@ import { loanService } from '@src/features/loans/services/server';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -16,7 +16,8 @@ export async function POST(
     });
   } catch (error) {
     const { id } = await params;
-    const errorMessage = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+    const errorMessage =
+      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
     console.error(`[API Error] POST /api/loans/${id}/approve:`, error);
     return NextResponse.json(
       {
@@ -24,8 +25,7 @@ export async function POST(
         message: errorMessage,
         errors: error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

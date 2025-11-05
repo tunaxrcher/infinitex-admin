@@ -1,4 +1,3 @@
-import { Heart, Mail } from 'lucide-react';
 import Link from 'next/link';
 import {
   Avatar,
@@ -9,6 +8,7 @@ import {
 } from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Card } from '@src/shared/components/ui/card';
+import { Heart, Mail } from 'lucide-react';
 
 export default function Item12() {
   return (
@@ -24,7 +24,10 @@ export default function Item12() {
       <div className="flex flex-col gap-3.5">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Selene Silverleaf
             </Link>
             <span className="text-secondary-foreground">

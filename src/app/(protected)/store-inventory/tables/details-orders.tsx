@@ -1,6 +1,31 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardFooter, CardTable } from '@src/shared/components/ui/card';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@src/shared/components/ui/dropdown-menu';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   ColumnDef,
   ExpandedState,
@@ -12,39 +37,21 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { EllipsisVertical, Info, SquareMinus, SquarePlus, Trash } from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
-import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import {
-  Card,
-  CardFooter,
-  CardTable,
-} from '@src/shared/components/ui/card';
-import { DataGrid } from '@src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
-import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
-import {
-  DataGridTable,
-} from '@src/shared/components/ui/data-grid-table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@src/shared/components/ui/dropdown-menu';
-import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
-import { CreateShippingLabelSheet } from '../components/create-shipping-label-sheet';
-import { TrackShippingSheet } from '../components/track-shipping-sheet';
-import { ProductInfoSheet } from '../components/product-info-sheet';
-import { OrderDetailsSheet } from '../components/order-details-sheet';
 import type { VariantProps } from 'class-variance-authority';
-import { Settings, Pencil } from 'lucide-react';
-import { DropdownMenuLabel, DropdownMenuSeparator } from '@src/shared/components/ui/dropdown-menu';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@src/shared/components/ui/tooltip';
+import {
+  EllipsisVertical,
+  Info,
+  Pencil,
+  Settings,
+  SquareMinus,
+  SquarePlus,
+  Trash,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { CreateShippingLabelSheet } from '../components/create-shipping-label-sheet';
+import { OrderDetailsSheet } from '../components/order-details-sheet';
+import { ProductInfoSheet } from '../components/product-info-sheet';
+import { TrackShippingSheet } from '../components/track-shipping-sheet';
 
 // ---- DATA TYPE ----
 export interface OrderItemData {
@@ -100,7 +107,8 @@ const orderItemsMockData: OrderItemData[] = [
       image: '11.png',
       title: 'Air Max 270 React Eng...',
       label: 'WM-8421',
-      tooltip: 'Air Max 270 React Engineered - Premium sneakers with advanced cushioning technology',
+      tooltip:
+        'Air Max 270 React Engineered - Premium sneakers with advanced cushioning technology',
     },
     category: 'Sneakers',
     price: '$83.00',
@@ -122,7 +130,8 @@ const orderItemsMockData: OrderItemData[] = [
       image: '10.png',
       title: 'Trail Runner Z2',
       label: 'UC-3990',
-      tooltip: 'Trail Runner Z2 - High-performance outdoor running shoes with superior grip',
+      tooltip:
+        'Trail Runner Z2 - High-performance outdoor running shoes with superior grip',
     },
     category: 'Outdoor',
     price: '$110.00',
@@ -144,7 +153,8 @@ const orderItemsMockData: OrderItemData[] = [
       image: '9.png',
       title: 'Urban Flex Knit Low...',
       label: 'KB-8820',
-      tooltip: 'Urban Flex Knit Low - Comfortable urban running shoes with flexible knit upper',
+      tooltip:
+        'Urban Flex Knit Low - Comfortable urban running shoes with flexible knit upper',
     },
     category: 'Runners',
     price: '$76.50',
@@ -166,7 +176,8 @@ const orderItemsMockData: OrderItemData[] = [
       image: '8.png',
       title: 'Blaze Street Classic',
       label: 'LS-1033',
-      tooltip: 'Blaze Street Classic - Timeless street style sneakers with modern comfort',
+      tooltip:
+        'Blaze Street Classic - Timeless street style sneakers with modern comfort',
     },
     category: 'Sneakers',
     price: '$69.99',
@@ -587,9 +598,11 @@ const mockData: DetailsOrdersData[] = [
   },
 ];
 
-
 // ---- MAIN TABLE COMPONENT ----
-export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = false }: DetailsOrdersProps & { displayProducts?: boolean }) {
+export function DetailsOrdersTable({
+  mockData: propsMockData,
+  displayProducts = false,
+}: DetailsOrdersProps & { displayProducts?: boolean }) {
   const rawData = propsMockData || mockData;
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -632,7 +645,11 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
           <DataGridColumnHeader title="OrderID" column={column} />
         ),
         cell: (info) => (
-          <Link href="#" className="text-2sm text-primary font-normal" onClick={() => setOrderDetailsSheetOpen(true)}>
+          <Link
+            href="#"
+            className="text-2sm text-primary font-normal"
+            onClick={() => setOrderDetailsSheetOpen(true)}
+          >
             {info.row.original.order}
           </Link>
         ),
@@ -683,7 +700,7 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
           <DataGridColumnHeader title="Items" column={column} />
         ),
         cell: (info) => (
-          <div 
+          <div
             className="cursor-pointer hover:text-primary transition-colors"
             onClick={() => info.row.getToggleExpandedHandler()()}
           >
@@ -700,13 +717,19 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
           <DataGridColumnHeader title="Carrier" column={column} />
         ),
         cell: (info) => (
-          <Button variant="outline" size="sm" onClick={() => setTrackShippingSheetOpen(true)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setTrackShippingSheetOpen(true)}
+          >
             <img
-              src={toAbsoluteUrl(`/media/brand-logos/${info.row.original.carrier.logo}`)}
+              src={toAbsoluteUrl(
+                `/media/brand-logos/${info.row.original.carrier.logo}`,
+              )}
               className="h-3.5 rounded-full"
               alt={info.row.original.carrier.name}
             />
-            
+
             {info.row.original.carrier.name}
           </Button>
         ),
@@ -719,39 +742,45 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
           <DataGridColumnHeader title="Actions" column={column} />
         ),
         enableSorting: false,
-        cell: ({row}) => (
+        cell: ({ row }) => (
           <div className="flex grow justify-center items-center gap-1.5">
             <Button
-                className="size-6 text-muted-foreground"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  row.getToggleExpandedHandler()();
-                }}
-                variant="ghost" 
-                mode="icon" 
-                size="sm"
+              className="size-6 text-muted-foreground"
+              onClick={(e) => {
+                e.stopPropagation();
+                row.getToggleExpandedHandler()();
+              }}
+              variant="ghost"
+              mode="icon"
+              size="sm"
             >
               {row.getIsExpanded() ? <SquareMinus /> : <SquarePlus />}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" mode="icon" size="sm" >
+                <Button variant="ghost" mode="icon" size="sm">
                   <EllipsisVertical />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom">
                 <DropdownMenuLabel>Order Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setOrderDetailsSheetOpen(true)}>
+                <DropdownMenuItem
+                  onClick={() => setOrderDetailsSheetOpen(true)}
+                >
                   <Info />
                   View Details
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTrackShippingSheetOpen(true)}>
+                <DropdownMenuItem
+                  onClick={() => setTrackShippingSheetOpen(true)}
+                >
                   <Pencil />
                   Track Shipping
                 </DropdownMenuItem>
                 {displayProducts && (
-                  <DropdownMenuItem onClick={() => setProductInfoSheetOpen(true)}>
+                  <DropdownMenuItem
+                    onClick={() => setProductInfoSheetOpen(true)}
+                  >
                     <SquarePlus />
                     View Products
                   </DropdownMenuItem>
@@ -770,9 +799,9 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
           </div>
         ),
         size: 80,
-          meta: {
-           expandedContent: (row) => <OrderListTable rowData={row} />,
-         },
+        meta: {
+          expandedContent: (row) => <OrderListTable rowData={row} />,
+        },
       },
     ],
     [displayProducts],
@@ -804,7 +833,7 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
     }
   }, [rowSelection]);
 
-  const table = useReactTable({ 
+  const table = useReactTable({
     data: filteredData,
     columns,
     state: {
@@ -851,9 +880,7 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
       {productInfoSheetOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="rounded-lg p-6 w-full mx-4 overflow-y-auto bg-[#FAFAFA]">
-            <ProductInfoSheet
-              mockData={[]}
-            />
+            <ProductInfoSheet mockData={[]} />
           </div>
         </div>
       )}
@@ -870,7 +897,6 @@ export function DetailsOrdersTable({ mockData: propsMockData, displayProducts = 
       )}
 
       <Card>
-
         <CardTable>
           <ScrollArea>
             <DataGridTable />
@@ -925,9 +951,7 @@ function OrderListTable({}: OrderListTableProps) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span
-                          className="text-sm font-medium text-foreground leading-3.5 truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors"
-                        >
+                        <span className="text-sm font-medium text-foreground leading-3.5 truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors">
                           {productInfo.title}
                         </span>
                       </TooltipTrigger>
@@ -937,9 +961,7 @@ function OrderListTable({}: OrderListTableProps) {
                     </Tooltip>
                   </TooltipProvider>
                 ) : (
-                  <span
-                    className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
-                  >
+                  <span className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors">
                     {productInfo.title}
                   </span>
                 )}
@@ -1083,4 +1105,3 @@ function OrderListTable({}: OrderListTableProps) {
     </div>
   );
 }
-

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Image as ImageIcon } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -21,16 +21,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Image as ImageIcon, X } from 'lucide-react';
 
 function CategoryImageUpload({ mode }: { mode: 'new' | 'edit' }) {
   const isNewMode = mode === 'new';
   const isEditMode = mode === 'edit';
 
   const [selectedImage, setSelectedImage] = useState<string | null>(
-    isEditMode ? toAbsoluteUrl('/media/store/client/icons/light/running-shoes.svg') : null
+    isEditMode
+      ? toAbsoluteUrl('/media/store/client/icons/light/running-shoes.svg')
+      : null,
   );
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,12 +61,16 @@ function CategoryImageUpload({ mode }: { mode: 'new' | 'edit' }) {
               {iconFileName ? (
                 <>
                   <img
-                    src={toAbsoluteUrl(`/media/store/client/icons/light/${iconFileName}`)}
+                    src={toAbsoluteUrl(
+                      `/media/store/client/icons/light/${iconFileName}`,
+                    )}
                     className="cursor-pointer h-[140px] object-contain dark:hidden"
                     alt="light-icon"
                   />
                   <img
-                    src={toAbsoluteUrl(`/media/store/client/icons/dark/${iconFileName}`)}
+                    src={toAbsoluteUrl(
+                      `/media/store/client/icons/dark/${iconFileName}`,
+                    )}
                     className="cursor-pointer h-[140px] object-contain light:hidden"
                     alt="dark-icon"
                   />
@@ -99,7 +105,10 @@ function CategoryImageUpload({ mode }: { mode: 'new' | 'edit' }) {
                 className="hidden"
                 id="category-image-upload"
               />
-              <label htmlFor="category-image-upload" className="absolute bottom-3 right-3">
+              <label
+                htmlFor="category-image-upload"
+                className="absolute bottom-3 right-3"
+              >
                 <Button size="sm" variant="outline" asChild>
                   <span>{isEditMode ? 'Change' : 'Upload'}</span>
                 </Button>
@@ -115,7 +124,10 @@ function CategoryImageUpload({ mode }: { mode: 'new' | 'edit' }) {
                 className="hidden"
                 id="category-image-upload"
               />
-              <label htmlFor="category-image-upload" className="absolute bottom-3 right-3">
+              <label
+                htmlFor="category-image-upload"
+                className="absolute bottom-3 right-3"
+              >
                 <Button size="sm" variant="outline" asChild>
                   <span>Upload</span>
                 </Button>
@@ -140,9 +152,13 @@ export function CategoryFormSheet({
   const isNewMode = mode === 'new';
   const isEditMode = mode === 'edit';
 
-  const [categoryName, setCategoryName] = useState(isEditMode ? 'Nike Air Max' : '');
+  const [categoryName, setCategoryName] = useState(
+    isEditMode ? 'Nike Air Max' : '',
+  );
   const [status, setStatus] = useState(isEditMode ? 'active' : '');
-  const [description, setDescription] = useState(isEditMode ? 'Nice boots' : '');
+  const [description, setDescription] = useState(
+    isEditMode ? 'Nice boots' : '',
+  );
   const [isFeatured, setIsFeatured] = useState(false);
 
   const handleSave = () => {
@@ -224,7 +240,9 @@ export function CategoryFormSheet({
                 <Checkbox
                   id="featured"
                   checked={isFeatured}
-                  onCheckedChange={(checked) => setIsFeatured(checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    setIsFeatured(checked as boolean)
+                  }
                 />
                 <Label htmlFor="featured" className="text-xs font-medium">
                   Featured

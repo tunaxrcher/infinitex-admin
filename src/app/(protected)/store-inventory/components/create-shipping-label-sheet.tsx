@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useId, useState } from 'react';
-import { format } from 'date-fns';
-import { CalendarIcon, X } from 'lucide-react';
 import Link from 'next/link';
 import { BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
@@ -33,8 +36,15 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { format } from 'date-fns';
+import { CalendarIcon, X } from 'lucide-react';
 
 interface Item {
   logo: string;
@@ -168,7 +178,9 @@ export function CreateShippingLabelSheet({
                             <div className="flex md:items-center gap-3.5">
                               <Card className="flex items-center justify-center bg-accent/50 h-[50px] w-[60px] shadow-none shrink-0 rounded-md">
                                 <img
-                                  src={toAbsoluteUrl(`/media/store/client/1200x1200/${item.logo}`)}
+                                  src={toAbsoluteUrl(
+                                    `/media/store/client/1200x1200/${item.logo}`,
+                                  )}
                                   className="h-[50px]"
                                   alt="img"
                                 />

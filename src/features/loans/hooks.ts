@@ -1,9 +1,12 @@
 // src/features/loans/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-
 import { loanApi } from './api';
-import { type LoanFiltersSchema, type LoanCreateSchema, type LoanUpdateSchema } from './validations';
+import {
+  type LoanCreateSchema,
+  type LoanFiltersSchema,
+  type LoanUpdateSchema,
+} from './validations';
 
 export const loanKeys = {
   all: () => ['loans'] as const,
@@ -51,12 +54,14 @@ export const useCreateLoan = () => {
 export const useUpdateLoan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: LoanUpdateSchema }) => 
+    mutationFn: ({ id, data }: { id: string; data: LoanUpdateSchema }) =>
       loanApi.update(id, data),
     onSuccess: (_, variables) => {
       // Invalidate all loan list queries
       queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
-      queryClient.invalidateQueries({ queryKey: loanKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: loanKeys.detail(variables.id),
+      });
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
       toast.success('แก้ไขสินเชื่อสำเร็จ');
@@ -103,11 +108,13 @@ export const useApproveLoan = () => {
 export const useRejectLoan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, reviewNotes }: { id: string; reviewNotes: string }) => 
+    mutationFn: ({ id, reviewNotes }: { id: string; reviewNotes: string }) =>
       loanApi.reject(id, reviewNotes),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
-      queryClient.invalidateQueries({ queryKey: loanKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: loanKeys.detail(variables.id),
+      });
       queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
       toast.success('ยกเลิกสินเชื่อสำเร็จ');
     },
@@ -116,4 +123,3 @@ export const useRejectLoan = () => {
     },
   });
 };
-

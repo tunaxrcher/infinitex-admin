@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { GripVertical, Minus, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -39,6 +38,7 @@ import {
   SortableItem,
   SortableItemHandle,
 } from '@src/shared/components/ui/sortable';
+import { GripVertical, Minus, Plus, Trash2 } from 'lucide-react';
 
 interface OptionValue {
   id: string;
@@ -379,7 +379,7 @@ export function ManageVariantsSheet({
             <Button variant="outline" className="w-full" onClick={addNewOption}>
               Add New Option
             </Button>
-          </ScrollArea>          
+          </ScrollArea>
         </SheetBody>
 
         <SheetFooter className="flex-row border-t not-only-of-type:justify-between items-center p-5 border-border gap-2">

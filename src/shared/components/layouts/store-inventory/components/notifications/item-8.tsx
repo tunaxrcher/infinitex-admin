@@ -1,6 +1,4 @@
-import { Download } from 'lucide-react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Avatar,
   AvatarFallback,
@@ -9,6 +7,8 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Card } from '@src/shared/components/ui/card';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Download } from 'lucide-react';
 
 export default function Item8() {
   return (
@@ -24,7 +24,10 @@ export default function Item8() {
       <div className="flex flex-col gap-3.5 grow">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Skylar Frost
             </Link>
             <span className="text-secondary-foreground">

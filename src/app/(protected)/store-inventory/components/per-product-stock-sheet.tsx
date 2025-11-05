@@ -1,10 +1,14 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
@@ -26,7 +30,13 @@ import {
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
 import { Switch } from '@src/shared/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 // Interface for current stock data
 interface CurrentStockData {
@@ -82,9 +92,7 @@ export function PerProductStockSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="gap-0 lg:w-[960px] sm:max-w-none inset-5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="border-b py-3.5 px-5 border-border">
-          <SheetTitle className="font-medium">
-            Per Product Stock
-          </SheetTitle>
+          <SheetTitle className="font-medium">Per Product Stock</SheetTitle>
         </SheetHeader>
 
         <SheetBody className="p-0 grow px-1.5">

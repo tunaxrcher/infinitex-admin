@@ -1,11 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { X, User } from 'lucide-react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
+import {
+  Command,
+  CommandCheck,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@src/shared/components/ui/command';
 import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@src/shared/components/ui/popover';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -21,77 +34,68 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import {
-  Command,
-  CommandCheck,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@src/shared/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@src/shared/components/ui/popover';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { User, X } from 'lucide-react';
 
 // Country data for phone number input
 const countries = [
-  { code: "US", name: "United States", dialCode: "+1", flag: "🇺🇸" },
-  { code: "GB", name: "United Kingdom", dialCode: "+44", flag: "🇬🇧" },
-  { code: "CA", name: "Canada", dialCode: "+1", flag: "🇨🇦" },
-  { code: "AU", name: "Australia", dialCode: "+61", flag: "🇦🇺" },
-  { code: "DE", name: "Germany", dialCode: "+49", flag: "🇩🇪" },
-  { code: "FR", name: "France", dialCode: "+33", flag: "🇫🇷" },
-  { code: "IT", name: "Italy", dialCode: "+39", flag: "🇮🇹" },
-  { code: "ES", name: "Spain", dialCode: "+34", flag: "🇪🇸" },
-  { code: "NL", name: "Netherlands", dialCode: "+31", flag: "🇳🇱" },
-  { code: "BE", name: "Belgium", dialCode: "+32", flag: "🇧🇪" },
-  { code: "CH", name: "Switzerland", dialCode: "+41", flag: "🇨🇭" },
-  { code: "AT", name: "Austria", dialCode: "+43", flag: "🇦🇹" },
-  { code: "SE", name: "Sweden", dialCode: "+46", flag: "🇸🇪" },
-  { code: "NO", name: "Norway", dialCode: "+47", flag: "🇳🇴" },
-  { code: "DK", name: "Denmark", dialCode: "+45", flag: "🇩🇰" },
-  { code: "FI", name: "Finland", dialCode: "+358", flag: "🇫🇮" },
-  { code: "PL", name: "Poland", dialCode: "+48", flag: "🇵🇱" },
-  { code: "CZ", name: "Czech Republic", dialCode: "+420", flag: "🇨🇿" },
-  { code: "HU", name: "Hungary", dialCode: "+36", flag: "🇭🇺" },
-  { code: "PT", name: "Portugal", dialCode: "+351", flag: "🇵🇹" },
-  { code: "GR", name: "Greece", dialCode: "+30", flag: "🇬🇷" },
-  { code: "TR", name: "Turkey", dialCode: "+90", flag: "🇹🇷" },
-  { code: "RU", name: "Russia", dialCode: "+7", flag: "🇷🇺" },
-  { code: "JP", name: "Japan", dialCode: "+81", flag: "🇯🇵" },
-  { code: "KR", name: "South Korea", dialCode: "+82", flag: "🇰🇷" },
-  { code: "CN", name: "China", dialCode: "+86", flag: "🇨🇳" },
-  { code: "IN", name: "India", dialCode: "+91", flag: "🇮🇳" },
-  { code: "SG", name: "Singapore", dialCode: "+65", flag: "🇸🇬" },
-  { code: "HK", name: "Hong Kong", dialCode: "+852", flag: "🇭🇰" },
-  { code: "TW", name: "Taiwan", dialCode: "+886", flag: "🇹🇼" },
-  { code: "MY", name: "Malaysia", dialCode: "+60", flag: "🇲🇾" },
-  { code: "TH", name: "Thailand", dialCode: "+66", flag: "🇹🇭" },
-  { code: "PH", name: "Philippines", dialCode: "+63", flag: "🇵🇭" },
-  { code: "ID", name: "Indonesia", dialCode: "+62", flag: "🇮🇩" },
-  { code: "VN", name: "Vietnam", dialCode: "+84", flag: "🇻🇳" },
-  { code: "BR", name: "Brazil", dialCode: "+55", flag: "🇧🇷" },
-  { code: "MX", name: "Mexico", dialCode: "+52", flag: "🇲🇽" },
-  { code: "AR", name: "Argentina", dialCode: "+54", flag: "🇦🇷" },
-  { code: "CL", name: "Chile", dialCode: "+56", flag: "🇨🇱" },
-  { code: "CO", name: "Colombia", dialCode: "+57", flag: "🇨🇴" },
-  { code: "PE", name: "Peru", dialCode: "+51", flag: "🇵🇪" },
-  { code: "ZA", name: "South Africa", dialCode: "+27", flag: "🇿🇦" },
-  { code: "EG", name: "Egypt", dialCode: "+20", flag: "🇪🇬" },
-  { code: "NG", name: "Nigeria", dialCode: "+234", flag: "🇳🇬" },
-  { code: "KE", name: "Kenya", dialCode: "+254", flag: "🇰🇪" },
-  { code: "IL", name: "Israel", dialCode: "+972", flag: "🇮🇱" },
-  { code: "AE", name: "United Arab Emirates", dialCode: "+971", flag: "🇦🇪" },
-  { code: "SA", name: "Saudi Arabia", dialCode: "+966", flag: "🇸🇦" },
+  { code: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
+  { code: 'GB', name: 'United Kingdom', dialCode: '+44', flag: '🇬🇧' },
+  { code: 'CA', name: 'Canada', dialCode: '+1', flag: '🇨🇦' },
+  { code: 'AU', name: 'Australia', dialCode: '+61', flag: '🇦🇺' },
+  { code: 'DE', name: 'Germany', dialCode: '+49', flag: '🇩🇪' },
+  { code: 'FR', name: 'France', dialCode: '+33', flag: '🇫🇷' },
+  { code: 'IT', name: 'Italy', dialCode: '+39', flag: '🇮🇹' },
+  { code: 'ES', name: 'Spain', dialCode: '+34', flag: '🇪🇸' },
+  { code: 'NL', name: 'Netherlands', dialCode: '+31', flag: '🇳🇱' },
+  { code: 'BE', name: 'Belgium', dialCode: '+32', flag: '🇧🇪' },
+  { code: 'CH', name: 'Switzerland', dialCode: '+41', flag: '🇨🇭' },
+  { code: 'AT', name: 'Austria', dialCode: '+43', flag: '🇦🇹' },
+  { code: 'SE', name: 'Sweden', dialCode: '+46', flag: '🇸🇪' },
+  { code: 'NO', name: 'Norway', dialCode: '+47', flag: '🇳🇴' },
+  { code: 'DK', name: 'Denmark', dialCode: '+45', flag: '🇩🇰' },
+  { code: 'FI', name: 'Finland', dialCode: '+358', flag: '🇫🇮' },
+  { code: 'PL', name: 'Poland', dialCode: '+48', flag: '🇵🇱' },
+  { code: 'CZ', name: 'Czech Republic', dialCode: '+420', flag: '🇨🇿' },
+  { code: 'HU', name: 'Hungary', dialCode: '+36', flag: '🇭🇺' },
+  { code: 'PT', name: 'Portugal', dialCode: '+351', flag: '🇵🇹' },
+  { code: 'GR', name: 'Greece', dialCode: '+30', flag: '🇬🇷' },
+  { code: 'TR', name: 'Turkey', dialCode: '+90', flag: '🇹🇷' },
+  { code: 'RU', name: 'Russia', dialCode: '+7', flag: '🇷🇺' },
+  { code: 'JP', name: 'Japan', dialCode: '+81', flag: '🇯🇵' },
+  { code: 'KR', name: 'South Korea', dialCode: '+82', flag: '🇰🇷' },
+  { code: 'CN', name: 'China', dialCode: '+86', flag: '🇨🇳' },
+  { code: 'IN', name: 'India', dialCode: '+91', flag: '🇮🇳' },
+  { code: 'SG', name: 'Singapore', dialCode: '+65', flag: '🇸🇬' },
+  { code: 'HK', name: 'Hong Kong', dialCode: '+852', flag: '🇭🇰' },
+  { code: 'TW', name: 'Taiwan', dialCode: '+886', flag: '🇹🇼' },
+  { code: 'MY', name: 'Malaysia', dialCode: '+60', flag: '🇲🇾' },
+  { code: 'TH', name: 'Thailand', dialCode: '+66', flag: '🇹🇭' },
+  { code: 'PH', name: 'Philippines', dialCode: '+63', flag: '🇵🇭' },
+  { code: 'ID', name: 'Indonesia', dialCode: '+62', flag: '🇮🇩' },
+  { code: 'VN', name: 'Vietnam', dialCode: '+84', flag: '🇻🇳' },
+  { code: 'BR', name: 'Brazil', dialCode: '+55', flag: '🇧🇷' },
+  { code: 'MX', name: 'Mexico', dialCode: '+52', flag: '🇲🇽' },
+  { code: 'AR', name: 'Argentina', dialCode: '+54', flag: '🇦🇷' },
+  { code: 'CL', name: 'Chile', dialCode: '+56', flag: '🇨🇱' },
+  { code: 'CO', name: 'Colombia', dialCode: '+57', flag: '🇨🇴' },
+  { code: 'PE', name: 'Peru', dialCode: '+51', flag: '🇵🇪' },
+  { code: 'ZA', name: 'South Africa', dialCode: '+27', flag: '🇿🇦' },
+  { code: 'EG', name: 'Egypt', dialCode: '+20', flag: '🇪🇬' },
+  { code: 'NG', name: 'Nigeria', dialCode: '+234', flag: '🇳🇬' },
+  { code: 'KE', name: 'Kenya', dialCode: '+254', flag: '🇰🇪' },
+  { code: 'IL', name: 'Israel', dialCode: '+972', flag: '🇮🇱' },
+  { code: 'AE', name: 'United Arab Emirates', dialCode: '+971', flag: '🇦🇪' },
+  { code: 'SA', name: 'Saudi Arabia', dialCode: '+966', flag: '🇸🇦' },
 ];
 
 // Customer Avatar Upload Component
 function CustomerAvatarUpload({ mode }: { mode: 'new' | 'edit' }) {
   const isNewMode = mode === 'new';
   const isEditMode = mode === 'edit';
-  
+
   const [selectedImage, setSelectedImage] = useState<string | null>(
-    isEditMode ? toAbsoluteUrl('/media/avatars/300-13.png') : null
+    isEditMode ? toAbsoluteUrl('/media/avatars/300-13.png') : null,
   );
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +137,10 @@ function CustomerAvatarUpload({ mode }: { mode: 'new' | 'edit' }) {
                 className="hidden"
                 id="customer-avatar-upload"
               />
-              <label htmlFor="customer-avatar-upload" className="absolute bottom-3 right-3">
+              <label
+                htmlFor="customer-avatar-upload"
+                className="absolute bottom-3 right-3"
+              >
                 <Button size="sm" variant="outline" asChild>
                   <span>{isEditMode ? 'Change' : 'Upload'}</span>
                 </Button>
@@ -149,7 +156,10 @@ function CustomerAvatarUpload({ mode }: { mode: 'new' | 'edit' }) {
                 className="hidden"
                 id="customer-avatar-upload"
               />
-              <label htmlFor="customer-avatar-upload" className="absolute bottom-3 right-3">
+              <label
+                htmlFor="customer-avatar-upload"
+                className="absolute bottom-3 right-3"
+              >
                 <Button size="sm" variant="outline" asChild>
                   <span>Upload</span>
                 </Button>
@@ -163,12 +173,12 @@ function CustomerAvatarUpload({ mode }: { mode: 'new' | 'edit' }) {
 }
 
 // Phone Number Input Component
-function PhoneNumberInput({ 
-  value, 
-  onChange 
-}: { 
-  value: string; 
-  onChange: (value: string) => void; 
+function PhoneNumberInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countries[8]); // Default to Netherlands
@@ -176,11 +186,13 @@ function PhoneNumberInput({
   // Handle phone number input change
   const handlePhoneChange = (inputValue: string) => {
     // Remove any non-digit characters except + at the start
-    const cleanValue = inputValue.replace(/[^\d+]/g, "");
+    const cleanValue = inputValue.replace(/[^\d+]/g, '');
 
     // Check if user is typing a country code
-    if (cleanValue.startsWith("+")) {
-      const matchedCountry = countries.find((country) => cleanValue.startsWith(country.dialCode));
+    if (cleanValue.startsWith('+')) {
+      const matchedCountry = countries.find((country) =>
+        cleanValue.startsWith(country.dialCode),
+      );
 
       if (matchedCountry && matchedCountry.code !== selectedCountry.code) {
         setSelectedCountry(matchedCountry);
@@ -189,7 +201,7 @@ function PhoneNumberInput({
       }
     }
 
-    onChange(cleanValue.startsWith("+") ? cleanValue : cleanValue);
+    onChange(cleanValue.startsWith('+') ? cleanValue : cleanValue);
   };
 
   // Handle country selection
@@ -213,8 +225,12 @@ function PhoneNumberInput({
             className="w-24 items-center justify-between rounded-e-none border-e-0 bg-transparent"
           >
             <span className="flex items-center gap-1.5">
-              <span className="text-sm leading-none">{selectedCountry.flag}</span>
-              <span className="text-xs leading-none">{selectedCountry.dialCode}</span>
+              <span className="text-sm leading-none">
+                {selectedCountry.flag}
+              </span>
+              <span className="text-xs leading-none">
+                {selectedCountry.dialCode}
+              </span>
             </span>
             <svg
               className="ml-2 h-4 w-4 shrink-0 opacity-50"
@@ -247,10 +263,16 @@ function PhoneNumberInput({
                     >
                       <span className="flex items-center gap-1.5 leading-none">
                         <span className="text-sm">{country.flag}</span>
-                        <span className="text-sm text-foreground truncate">{country.name}</span>
-                        <span className="text-sm text-muted-foreground">{country.dialCode}</span>
+                        <span className="text-sm text-foreground truncate">
+                          {country.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {country.dialCode}
+                        </span>
                       </span>
-                      {selectedCountry.code === country.code && <CommandCheck />}
+                      {selectedCountry.code === country.code && (
+                        <CommandCheck />
+                      )}
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -264,7 +286,7 @@ function PhoneNumberInput({
       <Input
         type="tel"
         placeholder="Enter phone number"
-        value={value.startsWith("+") ? value : value}
+        value={value.startsWith('+') ? value : value}
         onChange={(e) => handlePhoneChange(e.target.value)}
         className="rounded-l-none flex-1"
       />
@@ -285,23 +307,17 @@ export function CustomerFormSheet({
   const isEditMode = mode === 'edit';
 
   // Form state
-  const [fullName, setFullName] = useState(
-    isEditMode ? 'Jeroen de Jong' : ''
-  );
+  const [fullName, setFullName] = useState(isEditMode ? 'Jeroen de Jong' : '');
   const [email, setEmail] = useState(
-    isEditMode ? 'jeroen.dejong@example.com' : ''
+    isEditMode ? 'jeroen.dejong@example.com' : '',
   );
-  const [phoneNumber, setPhoneNumber] = useState(
-    isEditMode ? '612345678' : ''
-  );
-  const [status, setStatus] = useState(
-    isEditMode ? 'active' : ''
-  );
+  const [phoneNumber, setPhoneNumber] = useState(isEditMode ? '612345678' : '');
+  const [status, setStatus] = useState(isEditMode ? 'active' : '');
   const [companyName, setCompanyName] = useState(
-    isEditMode ? 'Acme Corporation' : ''
+    isEditMode ? 'Acme Corporation' : '',
   );
   const [timeZone, setTimeZone] = useState(
-    isEditMode ? 'europe/amsterdam' : ''
+    isEditMode ? 'europe/amsterdam' : '',
   );
 
   // Handle form actions
@@ -347,7 +363,9 @@ export function CustomerFormSheet({
               <div className="grow lg:border-s border-border space-y-5 py-5 lg:ps-5">
                 {/* Full Name */}
                 <div className="flex items-center gap-10">
-                  <Label className="text-xs font-medium w-24 shrink-0">Full Name</Label>
+                  <Label className="text-xs font-medium w-24 shrink-0">
+                    Full Name
+                  </Label>
                   <Input
                     placeholder="Full Name"
                     value={fullName}
@@ -358,7 +376,9 @@ export function CustomerFormSheet({
 
                 {/* Email */}
                 <div className="flex items-center gap-10">
-                  <Label className="text-xs font-medium w-24 shrink-0">Email</Label>
+                  <Label className="text-xs font-medium w-24 shrink-0">
+                    Email
+                  </Label>
                   <Input
                     placeholder="Email"
                     type="email"
@@ -370,7 +390,9 @@ export function CustomerFormSheet({
 
                 {/* Phone Number */}
                 <div className="flex items-center gap-10">
-                  <Label className="text-xs font-medium w-24 shrink-0">Phone Number</Label>
+                  <Label className="text-xs font-medium w-24 shrink-0">
+                    Phone Number
+                  </Label>
                   <div className="flex-1">
                     <PhoneNumberInput
                       value={phoneNumber}
@@ -381,7 +403,9 @@ export function CustomerFormSheet({
 
                 {/* Status */}
                 <div className="flex items-center gap-10">
-                  <Label className="text-xs font-medium w-24 shrink-0">Status</Label>
+                  <Label className="text-xs font-medium w-24 shrink-0">
+                    Status
+                  </Label>
                   <Select value={status} onValueChange={setStatus}>
                     <SelectTrigger className="flex-1">
                       <SelectValue placeholder="Select Status" />
@@ -397,7 +421,9 @@ export function CustomerFormSheet({
 
                 {/* Company Name */}
                 <div className="flex items-center gap-10">
-                  <Label className="text-xs font-medium w-24 shrink-0">Company Name</Label>
+                  <Label className="text-xs font-medium w-24 shrink-0">
+                    Company Name
+                  </Label>
                   <Input
                     placeholder="Company Name"
                     value={companyName}
@@ -408,19 +434,33 @@ export function CustomerFormSheet({
 
                 {/* Time Zone */}
                 <div className="flex items-center gap-10">
-                  <Label className="text-xs font-medium w-24 shrink-0">Time Zone</Label>
+                  <Label className="text-xs font-medium w-24 shrink-0">
+                    Time Zone
+                  </Label>
                   <Select value={timeZone} onValueChange={setTimeZone}>
                     <SelectTrigger className="flex-1">
                       <SelectValue placeholder="Select Time Zone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="europe/amsterdam">Europe/Amsterdam</SelectItem>
-                      <SelectItem value="america/new_york">America/New_York</SelectItem>
-                      <SelectItem value="america/los_angeles">America/Los_Angeles</SelectItem>
-                      <SelectItem value="europe/london">Europe/London</SelectItem>
+                      <SelectItem value="europe/amsterdam">
+                        Europe/Amsterdam
+                      </SelectItem>
+                      <SelectItem value="america/new_york">
+                        America/New_York
+                      </SelectItem>
+                      <SelectItem value="america/los_angeles">
+                        America/Los_Angeles
+                      </SelectItem>
+                      <SelectItem value="europe/london">
+                        Europe/London
+                      </SelectItem>
                       <SelectItem value="asia/tokyo">Asia/Tokyo</SelectItem>
-                      <SelectItem value="asia/singapore">Asia/Singapore</SelectItem>
-                      <SelectItem value="australia/sydney">Australia/Sydney</SelectItem>
+                      <SelectItem value="asia/singapore">
+                        Asia/Singapore
+                      </SelectItem>
+                      <SelectItem value="australia/sydney">
+                        Australia/Sydney
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

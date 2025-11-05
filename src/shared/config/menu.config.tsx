@@ -90,7 +90,7 @@ export const MENU_SIDEBAR: MenuConfig = [
         path: '', //'/user-management/settings',
       },
     ],
-    disabled: true
+    disabled: true,
   },
   {
     title: 'สินเชื่อ',

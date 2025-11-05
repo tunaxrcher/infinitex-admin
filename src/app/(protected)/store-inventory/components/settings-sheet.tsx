@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -11,25 +12,41 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@src/shared/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@src/shared/components/ui/tooltip';  
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
+import { Checkout } from './settings/checkout';
 import { GeneralSettings } from './settings/general-settings';
 import { Payments } from './settings/payments';
-import { Checkout } from './settings/checkout';
 
 export function SettingsSheet({
   open,
-  onOpenChange
+  onOpenChange,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEditClick?: () => void;
-}) { 
+}) {
   const [activeTab, setActiveTab] = useState('general-settings');
 
   const handleTabChange = (value: string) => {
     // Prevent switching to disabled tabs
-    if (value === 'checkout' || value === 'shipping-delivery' || value === 'reviews' || value === 'security' || value === 'notification') {
+    if (
+      value === 'checkout' ||
+      value === 'shipping-delivery' ||
+      value === 'reviews' ||
+      value === 'security' ||
+      value === 'notification'
+    ) {
       return;
     }
     setActiveTab(value);
@@ -69,27 +86,42 @@ export function SettingsSheet({
                 <span className="font-normal text-muted-foreground">
                   Last Order
                 </span>
-                <span className="font-medium text-foreground">19 minutes ago</span>
+                <span className="font-medium text-foreground">
+                  19 minutes ago
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
-              <Button variant="ghost" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
               <Button variant="outline">Cancel</Button>
               <Button variant="mono">Save</Button>
             </div>
           </div>
           <div className="flex flex-col h-[calc(100dvh-22rem)]">
-            <div className="flex flex-wrap lg:flex-nowrap py-5 px-2 grow"> 
-              <Tabs value={activeTab} onValueChange={handleTabChange} className="text-2sm text-muted-foreground w-full space-y-3">
+            <div className="flex flex-wrap lg:flex-nowrap py-5 px-2 grow">
+              <Tabs
+                value={activeTab}
+                onValueChange={handleTabChange}
+                className="text-2sm text-muted-foreground w-full space-y-3"
+              >
                 <div className="px-3">
                   <div className="overflow-x-auto">
                     <TabsList className="inline-flex whitespace-nowrap border border-border/80 bg-muted/80 [&_[data-slot=tabs-trigger]]:text-foreground [&_[data-slot=tabs-trigger]]:font-normal [&_[data-slot=tabs-trigger][data-state=active]]:shadow-lg">
-                      <TabsTrigger value="general-settings">General Settings</TabsTrigger>
-                      <TabsTrigger value="payments" >Payments</TabsTrigger>
+                      <TabsTrigger value="general-settings">
+                        General Settings
+                      </TabsTrigger>
+                      <TabsTrigger value="payments">Payments</TabsTrigger>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <TabsTrigger value="checkout" className="opacity-50">Checkout</TabsTrigger>
+                            <TabsTrigger
+                              value="checkout"
+                              className="opacity-50"
+                            >
+                              Checkout
+                            </TabsTrigger>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Coming Soon</p>
@@ -99,7 +131,12 @@ export function SettingsSheet({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <TabsTrigger value="shipping-delivery" className="opacity-50">Shipping & Delivery</TabsTrigger>
+                            <TabsTrigger
+                              value="shipping-delivery"
+                              className="opacity-50"
+                            >
+                              Shipping & Delivery
+                            </TabsTrigger>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Coming Soon</p>
@@ -109,7 +146,9 @@ export function SettingsSheet({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <TabsTrigger value="reviews" className="opacity-50">Locations</TabsTrigger>
+                            <TabsTrigger value="reviews" className="opacity-50">
+                              Locations
+                            </TabsTrigger>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Coming Soon</p>
@@ -119,7 +158,12 @@ export function SettingsSheet({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <TabsTrigger value="security" className="opacity-50">Security</TabsTrigger>
+                            <TabsTrigger
+                              value="security"
+                              className="opacity-50"
+                            >
+                              Security
+                            </TabsTrigger>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Coming Soon</p>
@@ -128,8 +172,13 @@ export function SettingsSheet({
                       </TooltipProvider>
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger asChild >
-                            <TabsTrigger value="notification" className="opacity-50">Notification</TabsTrigger>
+                          <TooltipTrigger asChild>
+                            <TabsTrigger
+                              value="notification"
+                              className="opacity-50"
+                            >
+                              Notification
+                            </TabsTrigger>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Coming Soon</p>
@@ -139,17 +188,23 @@ export function SettingsSheet({
                     </TabsList>
                   </div>
                 </div>
-               
+
                 <ScrollArea className="px-3">
-                  <TabsContent value="general-settings" className="lg:h-[calc(100dvh-22.5rem)] h-[calc(100dvh-27.2rem)]">
+                  <TabsContent
+                    value="general-settings"
+                    className="lg:h-[calc(100dvh-22.5rem)] h-[calc(100dvh-27.2rem)]"
+                  >
                     <GeneralSettings />
                   </TabsContent>
-                  <TabsContent value="payments" className="lg:h-[calc(100dvh-22.4rem)] h-[calc(100dvh-27.1rem)]">
+                  <TabsContent
+                    value="payments"
+                    className="lg:h-[calc(100dvh-22.4rem)] h-[calc(100dvh-27.1rem)]"
+                  >
                     <Payments />
                   </TabsContent>
                   <TabsContent value="checkout">
                     <Checkout />
-                  </TabsContent> 
+                  </TabsContent>
                 </ScrollArea>
               </Tabs>
             </div>
@@ -157,9 +212,11 @@ export function SettingsSheet({
         </SheetBody>
 
         <SheetFooter className="flex-row border-t pb-4 p-5 border-border gap-2.5 lg:gap-0">
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>Close</Button>
-            <Button variant="outline">Cancel</Button>
-            <Button variant="mono">Save</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Close
+          </Button>
+          <Button variant="outline">Cancel</Button>
+          <Button variant="mono">Save</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

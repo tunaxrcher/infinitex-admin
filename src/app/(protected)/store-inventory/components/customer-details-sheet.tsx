@@ -11,14 +11,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@src/shared/components/ui/tabs';
-import { CustomerDetailsOverviews } from './customers/customer-details-overviews'; 
-import { CustomerDetailsOrders } from './customers/customer-details-orders'; 
-import { CustomerDetailsInvoice } from './customers/customer-details-invoice'; 
-import { CustomerDetailsBilling } from './customers/customer-details-billing'; 
-import { CustomerDetailsReviews } from './customers/customer-details-reviews'; 
-import { CustomerDetailsActivity } from './customers/customer-details-active';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
 import { Upload } from './customers/components/upload';
+import { CustomerDetailsActivity } from './customers/customer-details-active';
+import { CustomerDetailsBilling } from './customers/customer-details-billing';
+import { CustomerDetailsInvoice } from './customers/customer-details-invoice';
+import { CustomerDetailsOrders } from './customers/customer-details-orders';
+import { CustomerDetailsOverviews } from './customers/customer-details-overviews';
+import { CustomerDetailsReviews } from './customers/customer-details-reviews';
 
 export function CustomerDetailsSheet({
   open,
@@ -28,8 +33,7 @@ export function CustomerDetailsSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEditClick?: () => void;
-}) { 
-
+}) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="gap-0 lg:w-[1160px] sm:max-w-none inset-5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
@@ -68,9 +72,13 @@ export function CustomerDetailsSheet({
               </div>
             </div>
             <div className="flex items-center gap-2.5">
-              <Button variant="ghost" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
               <Button variant="outline">Send Email</Button>
-              <Button variant="mono" onClick={onEditClick}>Edit Details</Button>
+              <Button variant="mono" onClick={onEditClick}>
+                Edit Details
+              </Button>
             </div>
           </div>
           <ScrollArea
@@ -82,8 +90,11 @@ export function CustomerDetailsSheet({
                 <Upload />
               </div>
 
-              <div className="grow lg:border-s border-border space-y-5 py-5 lg:ps-5">   
-                <Tabs defaultValue="overview" className="w-auto text-sm text-muted-foreground">
+              <div className="grow lg:border-s border-border space-y-5 py-5 lg:ps-5">
+                <Tabs
+                  defaultValue="overview"
+                  className="w-auto text-sm text-muted-foreground"
+                >
                   <TabsList className="inline-flex w-auto grow-0 mb-2.5">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -98,9 +109,9 @@ export function CustomerDetailsSheet({
                   <TabsContent value="orders">
                     <CustomerDetailsOrders />
                   </TabsContent>
-                    <TabsContent value="invoices">
-                      <CustomerDetailsInvoice />
-                    </TabsContent>
+                  <TabsContent value="invoices">
+                    <CustomerDetailsInvoice />
+                  </TabsContent>
                   <TabsContent value="billin">
                     <CustomerDetailsBilling />
                   </TabsContent>
@@ -117,9 +128,13 @@ export function CustomerDetailsSheet({
         </SheetBody>
 
         <SheetFooter className="flex-row border-t pb-4 p-5 border-border gap-2.5 lg:gap-0">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Close</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Close
+          </Button>
           <Button variant="outline">Send Email</Button>
-          <Button variant="mono" onClick={onEditClick}>Edit Details</Button>
+          <Button variant="mono" onClick={onEditClick}>
+            Edit Details
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

@@ -1,13 +1,13 @@
 'use client';
 
-import { UsersRound } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
+import { UsersRound } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesNewArticle = () => {
   return (
-    <TimelineItem icon={UsersRound} className="text-primary" line={true}> 
+    <TimelineItem icon={UsersRound} className="text-primary" line={true}>
       <div className="flex flex-col">
         <div className="text-sm text-foreground font-normal">
           Posted a new article{' '}

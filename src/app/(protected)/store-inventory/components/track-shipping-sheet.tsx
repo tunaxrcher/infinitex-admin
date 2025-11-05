@@ -1,13 +1,16 @@
 'use client';
 
-
 import { useState } from 'react';
-import { Circle, CircleCheck, MapPin } from 'lucide-react';
 import Link from 'next/link';
 // import type { OrderListData } from '../tables/order-list';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import { Separator } from '@src/shared/components/ui/separator';
 import {
@@ -26,6 +29,7 @@ import {
   StepperTrigger,
 } from '@src/shared/components/ui/stepper';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Circle, CircleCheck, MapPin } from 'lucide-react';
 
 interface TrackShippingSheetProps {
   open: boolean;
@@ -51,9 +55,7 @@ export function TrackShippingSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:w-[720px] sm:max-w-none inset-3.5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="border-b py-3.5 px-5 border-border">
-          <SheetTitle className="font-medium">
-            Track Shipping
-          </SheetTitle>
+          <SheetTitle className="font-medium">Track Shipping</SheetTitle>
         </SheetHeader>
         <SheetBody className="p-0 lg:pt-2">
           <ScrollArea className="h-[calc(100dvh-11.75rem)] px-5 me-1">

@@ -1,18 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  CheckCircle,
-  ClipboardPenLine,
-  DollarSign,
-  Plus,
-  Settings,
-  Trash2,
-} from 'lucide-react';
-import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import {
@@ -30,7 +26,21 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
+import {
+  CheckCircle,
+  ClipboardPenLine,
+  DollarSign,
+  Plus,
+  Settings,
+  Trash2,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Variant {
   id: string;
@@ -43,58 +53,60 @@ interface Variant {
 
 export function ProductFormVariants({ mode }: { mode: 'new' | 'edit' }) {
   const isEditMode = mode === 'edit';
-  
+
   const [variants, setVariants] = useState<Variant[]>(
-    isEditMode ? [
-      {
-        id: '1',
-        size: '40',
-        color: 'White',
-        price: '96.00',
-        available: 'Yes',
-        onHand: '24',
-      },
-      {
-        id: '2',
-        size: '39',
-        color: 'White',
-        price: '96.00',
-        available: 'Yes',
-        onHand: '18',
-      },
-      {
-        id: '3',
-        size: '42',
-        color: 'Black',
-        price: '96.00',
-        available: 'Yes',
-        onHand: '12',
-      },
-      {
-        id: '4',
-        size: '41',
-        color: 'White',
-        price: '96.00',
-        available: 'No',
-        onHand: '30',
-      },
-      {
-        id: '5',
-        size: '44',
-        color: 'Red',
-        price: '96.00',
-        available: 'Yes',
-        onHand: '27',
-      },
-      {
-        id: '6',
-        size: '43',
-        color: 'Black',
-        price: '96.00',
-        available: 'No',
-        onHand: '15',
-      },
-    ] : []
+    isEditMode
+      ? [
+          {
+            id: '1',
+            size: '40',
+            color: 'White',
+            price: '96.00',
+            available: 'Yes',
+            onHand: '24',
+          },
+          {
+            id: '2',
+            size: '39',
+            color: 'White',
+            price: '96.00',
+            available: 'Yes',
+            onHand: '18',
+          },
+          {
+            id: '3',
+            size: '42',
+            color: 'Black',
+            price: '96.00',
+            available: 'Yes',
+            onHand: '12',
+          },
+          {
+            id: '4',
+            size: '41',
+            color: 'White',
+            price: '96.00',
+            available: 'No',
+            onHand: '30',
+          },
+          {
+            id: '5',
+            size: '44',
+            color: 'Red',
+            price: '96.00',
+            available: 'Yes',
+            onHand: '27',
+          },
+          {
+            id: '6',
+            size: '43',
+            color: 'Black',
+            price: '96.00',
+            available: 'No',
+            onHand: '15',
+          },
+        ]
+      : [],
   );
   const [activeTab, setActiveTab] = useState('list');
   const [editingId, setEditingId] = useState<string | null>(null);

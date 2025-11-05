@@ -1,16 +1,5 @@
 import { ReactNode, useState } from 'react';
-import {
-  Calendar,
-  CheckCheck,
-  MoreVertical,
-  Settings2,
-  Shield,
-  Upload,
-  Users,
-} from 'lucide-react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
 import {
   Avatar,
   AvatarFallback,
@@ -39,6 +28,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import {
+  Calendar,
+  CheckCheck,
+  MoreVertical,
+  Settings2,
+  Shield,
+  Upload,
+  Users,
+} from 'lucide-react';
 import { AvatarGroup } from './avatar-group';
 
 interface Message {

@@ -1,4 +1,3 @@
-import { CircleCheck } from 'lucide-react';
 import Link from 'next/link';
 import {
   Avatar,
@@ -8,6 +7,7 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
+import { CircleCheck } from 'lucide-react';
 
 export default function Item9() {
   return (
@@ -23,7 +23,10 @@ export default function Item9() {
       <div className="flex flex-col gap-3.5">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium mb-px">
-            <Link href="#" className="hover:text-primary text-mono font-semibold">
+            <Link
+              href="#"
+              className="hover:text-primary text-mono font-semibold"
+            >
               Selene Silverleaf
             </Link>
             <span className="text-secondary-foreground">

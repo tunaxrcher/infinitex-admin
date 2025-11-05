@@ -1,11 +1,8 @@
 'use client';
 
 import { JSX, useCallback } from 'react';
-import { MENU_SIDEBAR } from '../config/app.config';
-import { MenuConfig, MenuItem } from '../config/types';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@src/shared/lib/utils';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -18,6 +15,9 @@ import {
 } from '@src/shared/components/ui/accordion-menu';
 import { Badge } from '@src/shared/components/ui/badge';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
+import { cn } from '@src/shared/lib/utils';
+import { MENU_SIDEBAR } from '../config/app.config';
+import { MenuConfig, MenuItem } from '../config/types';
 
 export function SidebarMenu() {
   const pathname = usePathname();
@@ -29,19 +29,19 @@ export function SidebarMenu() {
       if (path === pathname) {
         return true;
       }
-      
+
       // Don't match root path
       if (path === '/store-inventory') {
         return false;
       }
-      
+
       // For paths longer than 1 character, check if pathname starts with path
       // but ensure it's followed by a slash or end of string to avoid partial matches
       if (path.length > 1) {
         const pathWithSlash = path + '/';
         return pathname.startsWith(pathWithSlash) || pathname === path;
       }
-      
+
       return false;
     },
     [pathname],

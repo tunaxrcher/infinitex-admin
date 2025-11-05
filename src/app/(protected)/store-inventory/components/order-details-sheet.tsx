@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
+import { Separator } from '@src/shared/components/ui/separator';
 import {
   Sheet,
   SheetBody,
@@ -15,12 +21,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { CircleCheck } from 'lucide-react';
-import { Circle } from 'lucide-react';
-import { Separator } from '@src/shared/components/ui/separator';
-import React from 'react';
-import Link from 'next/link';
-import { Stepper, StepperItem, StepperNav, StepperTrigger } from '@src/shared/components/ui/stepper'; 
+import {
+  Stepper,
+  StepperItem,
+  StepperNav,
+  StepperTrigger,
+} from '@src/shared/components/ui/stepper';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Circle, CircleCheck } from 'lucide-react';
 
 // Interface for current stock data
 interface CurrentStockData {
@@ -46,7 +54,7 @@ interface CurrentStockData {
   };
 }
 
-interface Item { 
+interface Item {
   logo: string;
   title: string;
   sku: string;
@@ -67,14 +75,13 @@ export function OrderDetailsSheet({
   onOpenChange,
   onTrackShipping,
 }: OrderDetailsSheetProps) {
-
   const [currentStep] = useState(2);
 
   const steps = [
-    { title: "Picking" },
-    { title: "Packed" },
-    { title: "Shipping" },
-    { title: "Delivered" },
+    { title: 'Picking' },
+    { title: 'Packed' },
+    { title: 'Shipping' },
+    { title: 'Delivered' },
   ];
 
   const items: Item[] = [
@@ -92,13 +99,13 @@ export function OrderDetailsSheet({
       color: 'Red',
       weight: '0.9',
     },
-  ]; 
+  ];
 
   const prices = {
-    'Subtotal': '$320.00',
-    'Shipping': '$10.00',
-    'Tax': '$20.00',
-    'Total': '$350.00',
+    Subtotal: '$320.00',
+    Shipping: '$10.00',
+    Tax: '$20.00',
+    Total: '$350.00',
   };
 
   return (
@@ -113,28 +120,32 @@ export function OrderDetailsSheet({
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="lg:text-[22px] font-semibold text-foreground leading-none">
-                  Order:  SO-FL-5633
+                  Order: SO-FL-5633
                 </span>
                 <Badge size="sm" variant="success" appearance="light">
                   Shipped
                 </Badge>
               </div>
               <div className="flex items-center flex-wrap gap-1.5 text-2sm">
-                <span className="font-normal text-muted-foreground">Created</span>
-                <span className="font-medium text-foreground/80">16 Jan, 2025</span>
+                <span className="font-normal text-muted-foreground">
+                  Created
+                </span>
+                <span className="font-medium text-foreground/80">
+                  16 Jan, 2025
+                </span>
                 <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
                 <span className="font-normal text-muted-foreground">
                   Customer:
                 </span>
                 <span className="font-medium text-foreground/80">
                   Jeroen de Jong
-                </span> 
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
               <Button variant="ghost">Delete</Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   if (onTrackShipping) {
                     onTrackShipping();
@@ -163,7 +174,7 @@ export function OrderDetailsSheet({
                         { label: 'Items', value: '2 Items' },
                         { label: 'Total Price', value: '$320.00' },
                         { label: 'Shipping Priority', value: 'High' },
-                        { label: 'Delivery Method', value: 'Express Delivery' }, 
+                        { label: 'Delivery Method', value: 'Express Delivery' },
                       ].map((item) => (
                         <div key={item.label} className="flex flex-col gap-1.5">
                           <span className="text-2sm font-normal text-secondary-foreground">
@@ -192,7 +203,9 @@ export function OrderDetailsSheet({
                             <div className="flex md:items-center gap-3.5">
                               <Card className="flex items-center justify-center bg-accent/50 h-[50px] w-[60px] shadow-none shrink-0 rounded-md">
                                 <img
-                                  src={toAbsoluteUrl(`/media/store/client/1200x1200/${item.logo}`)}
+                                  src={toAbsoluteUrl(
+                                    `/media/store/client/1200x1200/${item.logo}`,
+                                  )}
                                   className="h-[50px]"
                                   alt="img"
                                 />
@@ -278,7 +291,7 @@ export function OrderDetailsSheet({
 
                       <Button variant="outline" className="shrink-0">
                         <img
-                           src={toAbsoluteUrl('/media/brand-logos/ups.svg')}
+                          src={toAbsoluteUrl('/media/brand-logos/ups.svg')}
                           alt="UPS"
                           className="h-4 w-4"
                         />{' '}
@@ -286,8 +299,11 @@ export function OrderDetailsSheet({
                       </Button>
                     </div>
 
-                    <Stepper defaultValue={currentStep} className="w-full p-5 pt-3">
-                      <StepperNav className="flex w-full flex-wrap gap-2">   
+                    <Stepper
+                      defaultValue={currentStep}
+                      className="w-full p-5 pt-3"
+                    >
+                      <StepperNav className="flex w-full flex-wrap gap-2">
                         {steps.map((step, index) => {
                           const stepNumber = index + 1;
                           const isCompleted = stepNumber < currentStep;
@@ -405,7 +421,7 @@ export function OrderDetailsSheet({
                       </span>
                     </div>
                   </CardContent>
-                </Card>  
+                </Card>
               </div>
             </div>
           </ScrollArea>
@@ -423,8 +439,8 @@ export function OrderDetailsSheet({
           </div>
           <div className="flex items-center gap-2.5">
             <Button variant="ghost">Delete</Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 if (onTrackShipping) {
                   onTrackShipping();

@@ -57,4 +57,3 @@ export type LoanCreateSchema = z.infer<typeof loanCreateSchema>;
 export const loanUpdateSchema = loanCreateSchema.partial();
 
 export type LoanUpdateSchema = z.infer<typeof loanUpdateSchema>;
-

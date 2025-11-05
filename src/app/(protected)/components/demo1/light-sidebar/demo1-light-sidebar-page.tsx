@@ -85,9 +85,7 @@ export function Demo1LightSidebarPage() {
           </ToolbarActions>
         </Toolbar>
       </Container>
-      <Container>
-        {/* <Demo1LightSidebarContent /> */}
-      </Container>
+      <Container>{/* <Demo1LightSidebarContent /> */}</Container>
     </Fragment>
   );
 }

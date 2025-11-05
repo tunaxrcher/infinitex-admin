@@ -1,45 +1,52 @@
 'use client';
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { ShoppingCart, TrendingUp } from "lucide-react";
-import { toAbsoluteUrl } from "@/lib/helpers";
 import Link from 'next/link';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { ShoppingCart, TrendingUp } from 'lucide-react';
+import { toAbsoluteUrl } from '@/lib/helpers';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export function RecentOrders() {
   const orders = [
     {
-      id: "ORD-001",
-      product: "Air Max 270 React Eng...",
-      tooltip: "Air Max 270 React Engineered",
-      sku: "WM-8421",
-      image: "1.png"
+      id: 'ORD-001',
+      product: 'Air Max 270 React Eng...',
+      tooltip: 'Air Max 270 React Engineered',
+      sku: 'WM-8421',
+      image: '1.png',
     },
     {
-      id: "ORD-002", 
-      product: "Trail Runner Z2",
-      sku: "UC-3990",
-      image: "2.png",
-      amount: "$125.00"
+      id: 'ORD-002',
+      product: 'Trail Runner Z2',
+      sku: 'UC-3990',
+      image: '2.png',
+      amount: '$125.00',
     },
     {
-      id: "ORD-003",
-      product: "Urban Flex Knit Low...",
-      tooltip: "Urban Flex Knit Low Top Shoes",
-      sku: "KB-8820", 
-      image: "3.png"
-    }
-  ];  
+      id: 'ORD-003',
+      product: 'Urban Flex Knit Low...',
+      tooltip: 'Urban Flex Knit Low Top Shoes',
+      sku: 'KB-8820',
+      image: '3.png',
+    },
+  ];
 
   return (
     <TooltipProvider>
-      <Card className="bg-accent/70 rounded-md shadow-none"> 
-        <CardContent className="p-0 flex flex-col h-full"> 
-          <h3 className="text-sm font-medium text-foreground py-2.5 ps-2">Recent Orders</h3>
+      <Card className="bg-accent/70 rounded-md shadow-none">
+        <CardContent className="p-0 flex flex-col h-full">
+          <h3 className="text-sm font-medium text-foreground py-2.5 ps-2">
+            Recent Orders
+          </h3>
           <div className="bg-background rounded-md m-1 mt-0 border border-input py-5 px-3.5 flex flex-col justify-between h-full">
             <div className="space-y-6 mb-6">
               <div className="flex items-center gap-2.5">
@@ -48,31 +55,42 @@ export function RecentOrders() {
                     <div className="flex items-center justify-center bg-accent/50 rounded-md size-[30px]">
                       <ShoppingCart className="w-5 h-5 fill-indigo-600 text-indigo-600" />
                     </div>
-                  </div> 
-                  <span className="text-2xl leading-[22px] font-semibold">$472
-                    <span className="text-2xl font-semibold text-secondary-foreground/30">.59</span>
+                  </div>
+                  <span className="text-2xl leading-[22px] font-semibold">
+                    $472
+                    <span className="text-2xl font-semibold text-secondary-foreground/30">
+                      .59
+                    </span>
                   </span>
                 </div>
                 <Badge variant="success" size="sm" appearance="light">
                   <TrendingUp className="w-3 h-3 mr-1" />
-                  14.73%  
+                  14.73%
                 </Badge>
-                <span className="text-xs font-normal text-secondary-foreground/70">vs AOV</span>
-              </div> 
-              
-              { /*Progress Bars*/}
+                <span className="text-xs font-normal text-secondary-foreground/70">
+                  vs AOV
+                </span>
+              </div>
+
+              {/*Progress Bars*/}
               <div className="flex items-center gap-1">
                 <div className="flex flex-col gap-3 flex-1">
                   <Progress className="w-full h-1.5 bg-secondary-foreground/30 rounded-sm" />
-                  <span className="text-2sm font-medium text-foreground">$259.03</span>
+                  <span className="text-2sm font-medium text-foreground">
+                    $259.03
+                  </span>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Progress className="w-[120px] h-1.5 bg-secondary-foreground/18 rounded-sm" />
-                  <span className="text-2sm font-medium text-foreground">$125.00</span>
+                  <span className="text-2sm font-medium text-foreground">
+                    $125.00
+                  </span>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Progress  className="w-[76px] h-1.5 bg-secondary-foreground/10 rounded-sm" />
-                  <span className="text-2sm font-medium text-foreground">$72.56</span>
+                  <Progress className="w-[76px] h-1.5 bg-secondary-foreground/10 rounded-sm" />
+                  <span className="text-2sm font-medium text-foreground">
+                    $72.56
+                  </span>
                 </div>
               </div>
             </div>
@@ -107,7 +125,10 @@ export function RecentOrders() {
                               </Link>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>{order.tooltip || order.product.replace(/[….]/g, '')}</p>
+                              <p>
+                                {order.tooltip ||
+                                  order.product.replace(/[….]/g, '')}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         ) : (
@@ -129,11 +150,13 @@ export function RecentOrders() {
                         </span>
                       </div>
                     </div>
-                      <Button variant="outline" size="sm">
-                        View item
-                      </Button>
+                    <Button variant="outline" size="sm">
+                      View item
+                    </Button>
                   </div>
-                  {index < orders.length - 1 && <Separator className="my-3.5" />}
+                  {index < orders.length - 1 && (
+                    <Separator className="my-3.5" />
+                  )}
                 </div>
               ))}
             </div>

@@ -1,8 +1,10 @@
 // src/app/api/loans/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-
 import { loanService } from '@src/features/loans/services/server';
-import { loanFiltersSchema, loanCreateSchema } from '@src/features/loans/validations';
+import {
+  loanCreateSchema,
+  loanFiltersSchema,
+} from '@src/features/loans/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +29,7 @@ export async function GET(request: NextRequest) {
         message: error.message || 'เกิดข้อผิดพลาด',
         errors: error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -35,10 +37,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate request body
     const validatedData = loanCreateSchema.parse(body);
-    
+
     const result = await loanService.create(validatedData);
     return NextResponse.json({
       success: true,
@@ -53,8 +55,7 @@ export async function POST(request: NextRequest) {
         message: error.message || 'เกิดข้อผิดพลาด',
         errors: error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

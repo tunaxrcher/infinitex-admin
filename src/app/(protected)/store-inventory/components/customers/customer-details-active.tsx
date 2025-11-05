@@ -1,9 +1,7 @@
 'use client';
 
-import { ActivityPage } from "./components/activity/activity";
+import { ActivityPage } from './components/activity/activity';
 
 export function CustomerDetailsActivity() {
-  return ( 
-    <ActivityPage /> 
-  );
+  return <ActivityPage />;
 }

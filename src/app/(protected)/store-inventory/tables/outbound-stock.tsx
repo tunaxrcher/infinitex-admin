@@ -2,31 +2,7 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { addDays, format, isWithinInterval, parse } from 'date-fns';
-import {
-  ChevronDown,
-  EllipsisVertical,
-  Info,
-  Pencil,
-  Search,
-  Settings,
-  Trash,
-  X,
-} from 'lucide-react';
-import { DateRange } from 'react-day-picker';
 import Link from 'next/link';
-import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -78,9 +54,33 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { addDays, format, isWithinInterval, parse } from 'date-fns';
+import {
+  ChevronDown,
+  EllipsisVertical,
+  Info,
+  Pencil,
+  Search,
+  Settings,
+  Trash,
+  X,
+} from 'lucide-react';
+import { DateRange } from 'react-day-picker';
+import { toast } from 'sonner';
 import { CreateShippingLabelSheet } from '../components/create-shipping-label-sheet';
-import { TrackShippingSheet } from '../components/track-shipping-sheet';
 import { PerProductStockSheet } from '../components/per-product-stock-sheet';
+import { TrackShippingSheet } from '../components/track-shipping-sheet';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -683,7 +683,9 @@ export function OutboundStockTable({
 
   // PerProductStockSheet modal state
   const [isPerProductStockOpen, setIsPerProductStockOpen] = useState(false);
-  const [selectedProductForStock, setSelectedProductForStock] = useState<MappedStockData | undefined>(undefined);
+  const [selectedProductForStock, setSelectedProductForStock] = useState<
+    MappedStockData | undefined
+  >(undefined);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedCarriers, setSelectedCarriers] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

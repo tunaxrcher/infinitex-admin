@@ -1,13 +1,14 @@
 'use client';
-import { Basics } from "./components/general-settings/basics";
-import { Preferences } from "./components/general-settings/preferences";
-import { ContactChannels } from "./components/general-settings/contact-cannels";
-import { AIFeatures } from "./components/general-settings/ai-features";
+
+import { AIFeatures } from './components/general-settings/ai-features';
+import { Basics } from './components/general-settings/basics';
+import { ContactChannels } from './components/general-settings/contact-cannels';
+import { Preferences } from './components/general-settings/preferences';
 
 export function GeneralSettings() {
-  return ( 
+  return (
     <div className="space-y-5">
-      <Basics /> 
+      <Basics />
       <Preferences />
       <AIFeatures />
       <ContactChannels />

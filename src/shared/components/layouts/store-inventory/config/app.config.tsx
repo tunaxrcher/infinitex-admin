@@ -116,7 +116,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       },
       {
         title: 'Order Details',
-        path: '/store-inventory/order-details', 
+        path: '/store-inventory/order-details',
       },
       {
         title: 'Order Tracking',
@@ -145,7 +145,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       {
         title: 'Settings(Modal View)',
         path: '/store-inventory/settings-modal',
-      }
+      },
     ],
-  }
+  },
 ];

@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -8,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
 import { Switch } from '@src/shared/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 interface DropdownAppsItem {
   logo: string;
@@ -91,7 +91,7 @@ export function AppsDropdownMenu({ trigger }: { trigger: ReactNode }) {
         </div>
         <div className="grid p-5 border-t border-t-border">
           <Button asChild variant="outline" size="sm">
-            <Link  href="/account/api-keys">Go to Apps</Link>
+            <Link href="/account/api-keys">Go to Apps</Link>
           </Button>
         </div>
       </DropdownMenuContent>

@@ -1,8 +1,8 @@
 'use client';
 
-import { Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@src/shared/components/ui/button';
+import { Share2 } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesUpcomingContent = () => {
@@ -12,7 +12,9 @@ const ActivitiesUpcomingContent = () => {
         <div className="text-sm text-foreground">
           I couldn't resist sharing a sneak peek of our{' '}
           <Button mode="link" asChild>
-            <Link href="/public-profile/profiles/blogger">upcoming content</Link>
+            <Link href="/public-profile/profiles/blogger">
+              upcoming content
+            </Link>
           </Button>
         </div>
         <span className="text-xs text-secondary-foreground">

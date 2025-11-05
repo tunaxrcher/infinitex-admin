@@ -9,13 +9,13 @@ const rejectSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const body = await request.json();
     const { reviewNotes } = rejectSchema.parse(body);
-    
+
     const result = await loanService.reject(id, reviewNotes);
     return NextResponse.json({
       success: true,
@@ -24,7 +24,8 @@ export async function POST(
     });
   } catch (error) {
     const { id } = await params;
-    const errorMessage = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+    const errorMessage =
+      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
     console.error(`[API Error] POST /api/loans/${id}/reject:`, error);
     return NextResponse.json(
       {
@@ -32,8 +33,7 @@ export async function POST(
         message: errorMessage,
         errors: error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

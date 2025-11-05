@@ -1,15 +1,20 @@
 // src/features/loans/services/server.ts
 import 'server-only';
-
-import { loanRepository } from '../repositories/loanRepository';
-import { type LoanCreateSchema, type LoanUpdateSchema, type LoanFiltersSchema } from '../validations';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@src/shared/lib/db';
+import { loanRepository } from '../repositories/loanRepository';
+import {
+  type LoanCreateSchema,
+  type LoanFiltersSchema,
+  type LoanUpdateSchema,
+} from '../validations';
 
 // Helper function to generate unique loan number
 function generateLoanNumber(): string {
   const timestamp = Date.now().toString().slice(-8);
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  const random = Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(3, '0');
   return `LOA${timestamp}${random}`;
 }
 
@@ -94,9 +99,9 @@ export const loanService = {
     // คำนวณข้อมูลสินเชื่อ
     const { loanAmount, loanYears, interestRate } = data;
     const termMonths = loanYears * 12;
-    const r = (interestRate / 100) / 12; // อัตราดอกเบี้ยต่อเดือน
+    const r = interestRate / 100 / 12; // อัตราดอกเบี้ยต่อเดือน
     const n = termMonths;
-    
+
     // คำนวณงวดชำระรายเดือน (PMT formula)
     let monthlyPayment = 0;
     if (interestRate > 0) {
@@ -107,7 +112,7 @@ export const loanService = {
 
     const contractDate = new Date(data.loanStartDate);
     const expiryDate = new Date(data.loanDueDate);
-    
+
     // คำนวณวันชำระงวดแรก (1 เดือนหลังจากวันทำสัญญา)
     const nextPaymentDate = new Date(contractDate);
     nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
@@ -188,7 +193,7 @@ export const loanService = {
           monthlyPayment,
           currentInstallment: 0,
           totalInstallments: termMonths,
-          remainingBalance: loanAmount * (1 + (interestRate / 100)),
+          remainingBalance: loanAmount * (1 + interestRate / 100),
           nextPaymentDate,
           contractDate,
           expiryDate,
@@ -226,20 +231,20 @@ export const loanService = {
 
     if (data.loanAmount || data.loanYears || data.interestRate) {
       const loanAmount = data.loanAmount ?? Number(existing.principalAmount);
-      const loanYears = data.loanYears ?? (existing.termMonths / 12);
+      const loanYears = data.loanYears ?? existing.termMonths / 12;
       const interestRate = data.interestRate ?? Number(existing.interestRate);
-      
+
       termMonths = loanYears * 12;
-      const r = (interestRate / 100) / 12;
+      const r = interestRate / 100 / 12;
       const n = termMonths;
-      
+
       if (interestRate > 0) {
         monthlyPayment = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
       } else {
         monthlyPayment = loanAmount / n;
       }
 
-      remainingBalance = loanAmount * (1 + (interestRate / 100));
+      remainingBalance = loanAmount * (1 + interestRate / 100);
     }
 
     // Use transaction for update
@@ -248,13 +253,15 @@ export const loanService = {
       const updateData: Prisma.LoanUpdateInput = {
         ...(data.loanAmount && { principalAmount: data.loanAmount }),
         ...(data.interestRate && { interestRate: data.interestRate }),
-        ...(data.loanYears && { 
+        ...(data.loanYears && {
           termMonths,
           totalInstallments: termMonths,
         }),
         monthlyPayment,
         remainingBalance,
-        ...(data.loanStartDate && { contractDate: new Date(data.loanStartDate) }),
+        ...(data.loanStartDate && {
+          contractDate: new Date(data.loanStartDate),
+        }),
         ...(data.loanDueDate && { expiryDate: new Date(data.loanDueDate) }),
         ...(data.landNumber && { titleDeedNumber: data.landNumber }),
         updatedAt: new Date(),
@@ -276,15 +283,17 @@ export const loanService = {
       // Step 2: Update UserProfile ในตาราง user_profiles (ถ้ามีการเปลี่ยนแปลง)
       if (data.fullName || data.email || data.address || data.birthDate) {
         const profileData: any = {};
-        
+
         if (data.fullName) {
           profileData.firstName = data.fullName.split(' ')[0] || data.fullName;
-          profileData.lastName = data.fullName.split(' ').slice(1).join(' ') || '';
+          profileData.lastName =
+            data.fullName.split(' ').slice(1).join(' ') || '';
         }
         if (data.email) profileData.email = data.email;
         if (data.address) profileData.address = data.address;
         if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
-        if (data.idCard) profileData.idCardNumber = data.idCard.replace(/\D/g, '');
+        if (data.idCard)
+          profileData.idCardNumber = data.idCard.replace(/\D/g, '');
 
         // อัพเดท UserProfile
         await tx.userProfile.update({
@@ -294,7 +303,10 @@ export const loanService = {
       }
 
       // Step 3: Update User phone number (ถ้ามีการเปลี่ยนแปลง)
-      if (data.phoneNumber && data.phoneNumber !== existing.customer?.phoneNumber) {
+      if (
+        data.phoneNumber &&
+        data.phoneNumber !== existing.customer?.phoneNumber
+      ) {
         await tx.user.update({
           where: { id: existing.customerId },
           data: {
@@ -304,7 +316,12 @@ export const loanService = {
       }
 
       // Step 4: Update LoanApplication (ถ้ามีการเปลี่ยนแปลง)
-      if (data.ownerName || data.placeName || data.landArea || data.landNumber) {
+      if (
+        data.ownerName ||
+        data.placeName ||
+        data.landArea ||
+        data.landNumber
+      ) {
         await tx.loanApplication.update({
           where: { id: existing.applicationId },
           data: {
