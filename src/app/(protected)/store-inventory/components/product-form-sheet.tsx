@@ -2,8 +2,24 @@
 
 import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { useCreateLoan, useUpdateLoan, useGetLoanById } from '@src/features/loans/hooks';
+import { useSearchCustomers } from '@src/features/customers/hooks';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@src/shared/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@src/shared/components/ui/popover';
+import { cn } from '@src/shared/lib/utils';
 import {
   Card,
   CardContent,
@@ -50,9 +66,12 @@ export function ProductFormSheet({
   // Fetch loan data when in edit mode
   const { data: loanData } = useGetLoanById(loanId || '');
 
+  // Customer search
+  const [customerSearchQuery, setCustomerSearchQuery] = useState('');
+  const [openCustomerCombo, setOpenCustomerCombo] = useState(false);
+  const { data: customersData } = useSearchCustomers(customerSearchQuery);
+
   // Form state - Section 1: ข้อมูลพื้นฐาน
-  const [customerName, setCustomerName] = useState('');
-  const [ownerName, setOwnerName] = useState('');
   const [placeName, setPlaceName] = useState('');
   const [landNumber, setLandNumber] = useState('');
   const [landArea, setLandArea] = useState('');
@@ -110,17 +129,6 @@ export function ProductFormSheet({
     }).format(value);
   };
 
-  // Phone number formatter
-  const formatPhoneNumber = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length <= 2) return cleaned;
-    if (cleaned.length <= 5)
-      return `${cleaned.slice(0, 2)}-${cleaned.slice(2)}`;
-    if (cleaned.length <= 9)
-      return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 5)}-${cleaned.slice(5)}`;
-    return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 5)}-${cleaned.slice(5, 9)}`;
-  };
-
   // ID Card formatter
   const formatIdCard = (value: string) => {
     const cleaned = value.replace(/\D/g, '');
@@ -150,12 +158,35 @@ export function ProductFormSheet({
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Auto-fill customer data
+  const handleSelectCustomer = (customer: {
+    phoneNumber: string;
+    profile?: {
+      firstName?: string | null;
+      lastName?: string | null;
+      idCardNumber?: string | null;
+      email?: string | null;
+      dateOfBirth?: Date | null;
+      address?: string | null;
+    } | null;
+  }) => {
+    setPhoneNumber(customer.phoneNumber || '');
+    setFullName(`${customer.profile?.firstName || ''} ${customer.profile?.lastName || ''}`.trim());
+    setIdCard(customer.profile?.idCardNumber || '');
+    setEmail(customer.profile?.email || '');
+    if (customer.profile?.dateOfBirth) {
+      setBirthDate(new Date(customer.profile.dateOfBirth).toISOString().split('T')[0]);
+    }
+    setAddress(customer.profile?.address || '');
+    setOpenCustomerCombo(false);
+  };
+
   // Handle form submission
   const handleSubmit = async () => {
     try {
       const loanData = {
-        customerName,
-        ownerName,
+        customerName: fullName, // ใช้ fullName แทน customerName
+        ownerName: fullName, // ใช้ fullName แทน ownerName (ชื่อเจ้าของที่ดินก็คือลูกค้า)
         placeName,
         landNumber,
         landArea,
@@ -193,8 +224,6 @@ export function ProductFormSheet({
 
   // Reset form
   const resetForm = () => {
-    setCustomerName('');
-    setOwnerName('');
     setPlaceName('');
     setLandNumber('');
     setLandArea('');
@@ -215,6 +244,7 @@ export function ProductFormSheet({
     setOtherFee(0);
     setNote('');
     setUploadedFiles([]);
+    setCustomerSearchQuery('');
   };
 
   // Load data when in edit mode
@@ -223,8 +253,6 @@ export function ProductFormSheet({
       const loan = loanData.data;
       
       // Section 1: ข้อมูลพื้นฐาน
-      setCustomerName(loan.application?.ownerName || '');
-      setOwnerName(loan.application?.ownerName || '');
       setPlaceName(loan.application?.propertyLocation || '');
       setLandNumber(loan.titleDeedNumber || '');
       setLandArea(loan.application?.propertyArea || '');
@@ -298,28 +326,7 @@ export function ProductFormSheet({
                   </CardHeader>
                   <CardContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-2">
-                        <Label className="text-xs">
-                          ชื่อลูกค้า <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          placeholder="กรอกชื่อลูกค้า"
-                          value={customerName}
-                          onChange={(e) => setCustomerName(e.target.value)}
-                          required
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <Label className="text-xs">ชื่อเจ้าของที่ดิน (ตามโฉนด)</Label>
-                        <Input
-                          placeholder="กรอกชื่อเจ้าของที่ดิน"
-                          value={ownerName}
-                          onChange={(e) => setOwnerName(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 md:col-span-2">
                         <Label className="text-xs">ชื่อสถานที่</Label>
                         <Input
                           placeholder="กรอกชื่อสถานที่"
@@ -427,17 +434,79 @@ export function ProductFormSheet({
                           เบอร์ติดต่อ{' '}
                           <span className="text-destructive">*</span>
                         </Label>
-                        <Input
-                          type="tel"
-                          placeholder="0X-XXX-XXXX"
-                          value={phoneNumber}
-                          onChange={(e) => {
-                            const formatted = formatPhoneNumber(e.target.value);
-                            setPhoneNumber(formatted);
-                          }}
-                          maxLength={12}
-                          required
-                        />
+                        <Popover open={openCustomerCombo} onOpenChange={setOpenCustomerCombo}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={openCustomerCombo}
+                              className="w-full justify-between font-normal"
+                            >
+                              {phoneNumber || "ค้นหาเบอร์โทรลูกค้า..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0" align="start">
+                            <Command>
+                              <CommandInput 
+                                placeholder="พิมพ์เบอร์โทรหรือชื่อลูกค้า..." 
+                                value={customerSearchQuery}
+                                onValueChange={setCustomerSearchQuery}
+                              />
+                              <CommandList>
+                                <CommandEmpty>
+                                  <div className="py-6 text-center text-sm">
+                                    <p className="text-muted-foreground">ไม่พบลูกค้า</p>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="mt-2 text-primary"
+                                      onClick={() => {
+                                        setPhoneNumber(customerSearchQuery);
+                                        setOpenCustomerCombo(false);
+                                      }}
+                                    >
+                                      ใช้เบอร์ "{customerSearchQuery}" สำหรับลูกค้าใหม่
+                                    </Button>
+                                  </div>
+                                </CommandEmpty>
+                                <CommandGroup heading="ลูกค้าที่มีอยู่">
+                                  {customersData?.data?.map((customer: {
+                                    id: string;
+                                    phoneNumber: string;
+                                    profile?: {
+                                      firstName?: string | null;
+                                      lastName?: string | null;
+                                    } | null;
+                                  }) => {
+                                    const displayName = `${customer.profile?.firstName || ''} ${customer.profile?.lastName || ''}`.trim();
+                                    return (
+                                      <CommandItem
+                                        key={customer.id}
+                                        value={customer.phoneNumber}
+                                        onSelect={() => handleSelectCustomer(customer)}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            phoneNumber === customer.phoneNumber ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        <div className="flex flex-col">
+                                          <span className="font-medium">{customer.phoneNumber}</span>
+                                          {displayName && (
+                                            <span className="text-xs text-muted-foreground">{displayName}</span>
+                                          )}
+                                        </div>
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                 
                       </div>
 
                       <div className="flex flex-col gap-2">

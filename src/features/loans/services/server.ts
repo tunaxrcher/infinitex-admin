@@ -114,41 +114,53 @@ export const loanService = {
 
     // Use transaction to ensure data consistency
     const loan = await prisma.$transaction(async (tx) => {
-      // Step 1: สร้างหรือหา User (Customer)
-      const customer = await tx.user.upsert({
+      // Step 1: ตรวจสอบและสร้าง User (Customer) ที่ตาราง users
+      let customer = await tx.user.findUnique({
         where: { phoneNumber: data.phoneNumber },
-        update: {
-          profile: {
-            update: {
-              firstName: data.fullName.split(' ')[0] || data.fullName,
-              lastName: data.fullName.split(' ').slice(1).join(' ') || '',
-              idCardNumber: data.idCard.replace(/\D/g, ''),
-              dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
-              address: data.address,
-              email: data.email || null,
-            },
-          },
-        },
-        create: {
-          phoneNumber: data.phoneNumber,
-          userType: 'CUSTOMER',
-          profile: {
-            create: {
-              firstName: data.fullName.split(' ')[0] || data.fullName,
-              lastName: data.fullName.split(' ').slice(1).join(' ') || '',
-              idCardNumber: data.idCard.replace(/\D/g, ''),
-              dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
-              address: data.address,
-              email: data.email || null,
-            },
-          },
-        },
-        include: {
-          profile: true,
-        },
+        include: { profile: true },
       });
 
-      // Step 2: สร้าง LoanApplication
+      if (!customer) {
+        // สร้าง User ใหม่ในตาราง users
+        customer = await tx.user.create({
+          data: {
+            phoneNumber: data.phoneNumber,
+            userType: 'CUSTOMER',
+          },
+          include: { profile: true },
+        });
+      }
+
+      // Step 2: สร้างหรืออัพเดท UserProfile ที่ตาราง user_profiles
+      if (customer.profile) {
+        // อัพเดท profile ที่มีอยู่
+        await tx.userProfile.update({
+          where: { userId: customer.id },
+          data: {
+            firstName: data.fullName.split(' ')[0] || data.fullName,
+            lastName: data.fullName.split(' ').slice(1).join(' ') || '',
+            idCardNumber: data.idCard.replace(/\D/g, ''),
+            dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
+            address: data.address,
+            email: data.email || null,
+          },
+        });
+      } else {
+        // สร้าง profile ใหม่
+        await tx.userProfile.create({
+          data: {
+            userId: customer.id,
+            firstName: data.fullName.split(' ')[0] || data.fullName,
+            lastName: data.fullName.split(' ').slice(1).join(' ') || '',
+            idCardNumber: data.idCard.replace(/\D/g, ''),
+            dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
+            address: data.address,
+            email: data.email || null,
+          },
+        });
+      }
+
+      // Step 3: สร้าง LoanApplication
       const application = await tx.loanApplication.create({
         data: {
           loanType: 'HOUSE_LAND_MORTGAGE',
@@ -157,14 +169,14 @@ export const loanService = {
           requestedAmount: loanAmount,
           approvedAmount: loanAmount,
           landNumber: data.landNumber,
-          ownerName: data.ownerName || data.customerName, // เพิ่ม ownerName
+          ownerName: data.ownerName || data.customerName,
           propertyLocation: data.placeName,
           propertyArea: data.landArea,
           customerId: customer.id,
         },
       });
 
-      // Step 3: สร้าง Loan
+      // Step 4: สร้าง Loan
       const newLoan = await tx.loan.create({
         data: {
           loanNumber,
@@ -232,7 +244,7 @@ export const loanService = {
 
     // Use transaction for update
     return prisma.$transaction(async (tx) => {
-      // Update loan
+      // Step 1: Update Loan
       const updateData: Prisma.LoanUpdateInput = {
         ...(data.loanAmount && { principalAmount: data.loanAmount }),
         ...(data.interestRate && { interestRate: data.interestRate }),
@@ -251,32 +263,55 @@ export const loanService = {
       const updatedLoan = await tx.loan.update({
         where: { id },
         data: updateData,
+        include: {
+          customer: {
+            include: {
+              profile: true,
+            },
+          },
+          application: true,
+        },
       });
 
-      // Update customer profile if needed
-      if (data.fullName || data.email || data.address || data.birthDate || data.phoneNumber) {
+      // Step 2: Update UserProfile ในตาราง user_profiles (ถ้ามีการเปลี่ยนแปลง)
+      if (data.fullName || data.email || data.address || data.birthDate) {
+        const profileData: any = {};
+        
+        if (data.fullName) {
+          profileData.firstName = data.fullName.split(' ')[0] || data.fullName;
+          profileData.lastName = data.fullName.split(' ').slice(1).join(' ') || '';
+        }
+        if (data.email) profileData.email = data.email;
+        if (data.address) profileData.address = data.address;
+        if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
+        if (data.idCard) profileData.idCardNumber = data.idCard.replace(/\D/g, '');
+
+        // อัพเดท UserProfile
         await tx.userProfile.update({
           where: { userId: existing.customerId },
+          data: profileData,
+        });
+      }
+
+      // Step 3: Update User phone number (ถ้ามีการเปลี่ยนแปลง)
+      if (data.phoneNumber && data.phoneNumber !== existing.customer?.phoneNumber) {
+        await tx.user.update({
+          where: { id: existing.customerId },
           data: {
-            ...(data.fullName && {
-              firstName: data.fullName.split(' ')[0] || data.fullName,
-              lastName: data.fullName.split(' ').slice(1).join(' ') || '',
-            }),
-            ...(data.email && { email: data.email }),
-            ...(data.address && { address: data.address }),
-            ...(data.birthDate && { dateOfBirth: new Date(data.birthDate) }),
+            phoneNumber: data.phoneNumber,
           },
         });
       }
 
-      // Update application if needed
-      if (data.ownerName || data.placeName || data.landArea) {
+      // Step 4: Update LoanApplication (ถ้ามีการเปลี่ยนแปลง)
+      if (data.ownerName || data.placeName || data.landArea || data.landNumber) {
         await tx.loanApplication.update({
           where: { id: existing.applicationId },
           data: {
             ...(data.ownerName && { ownerName: data.ownerName }),
             ...(data.placeName && { propertyLocation: data.placeName }),
             ...(data.landArea && { propertyArea: data.landArea }),
+            ...(data.landNumber && { landNumber: data.landNumber }),
           },
         });
       }

@@ -21,10 +21,7 @@ export default function ProductList() {
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
-              <Upload className="h-4 w-4" />
-              Import
-            </Button>
+       
             <Button
               variant="mono"
               className="gap-2"
