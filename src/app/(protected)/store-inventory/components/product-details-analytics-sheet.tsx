@@ -6,7 +6,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { useGetLoanById } from '@src/features/loans/hooks';
+import { useGetLoanById, useDeleteLoan } from '@src/features/loans/hooks';
 import {
   Card,
   CardContent,
@@ -48,6 +48,21 @@ export function ProductDetailsAnalyticsSheet({
   // Fetch loan data from API
   const { data: loanResponse, isLoading } = useGetLoanById(loanId || '');
   const loan = loanResponse?.data;
+  const deleteLoan = useDeleteLoan();
+
+  // Handle delete
+  const handleDelete = () => {
+    if (!loanId) return;
+    
+    if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?\n\nการลบจะเปลี่ยนสถานะเป็น CANCELLED และไม่สามารถกู้คืนได้')) {
+      deleteLoan.mutate(loanId, {
+        onSuccess: () => {
+          onOpenChange(false); // ปิด modal หลังลบสำเร็จ
+        },
+      });
+    }
+  };
+
   // Chart data for Payment History (งวดที่ชำระ)
   const paymentHistoryData = [
     { value: 220000 },
@@ -186,7 +201,13 @@ export function ProductDetailsAnalyticsSheet({
             </div>
             <div className="flex items-center gap-2.5">
               <Button variant="ghost">พิมพ์เอกสาร</Button>
-              <Button variant="outline">ลบ</Button>
+              <Button 
+                variant="outline" 
+                onClick={handleDelete}
+                disabled={deleteLoan.isPending}
+              >
+                {deleteLoan.isPending ? 'กำลังลบ...' : 'ลบ'}
+              </Button>
               <Button variant="mono" onClick={() => {
                 onOpenChange(false);
                 onEdit?.();
@@ -740,8 +761,19 @@ export function ProductDetailsAnalyticsSheet({
 
         <SheetFooter className="flex-row border-t pb-4 p-5 border-border gap-2.5 lg:gap-0">
           <Button variant="ghost">พิมพ์เอกสาร</Button>
-          <Button variant="outline">ลบ</Button>
-          <Button variant="mono">แก้ไขข้อมูล</Button>
+          <Button 
+            variant="outline" 
+            onClick={handleDelete}
+            disabled={deleteLoan.isPending}
+          >
+            {deleteLoan.isPending ? 'กำลังลบ...' : 'ลบ'}
+          </Button>
+          <Button variant="mono" onClick={() => {
+            onOpenChange(false);
+            onEdit?.();
+          }}>
+            แก้ไขข้อมูล
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

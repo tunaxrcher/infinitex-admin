@@ -73,7 +73,9 @@ export const useDeleteLoan = () => {
     mutationFn: (id: string) => loanApi.delete(id),
     onSuccess: (_, id) => {
       queryClient.removeQueries({ queryKey: loanKeys.detail(id) });
-      queryClient.invalidateQueries({ queryKey: loanKeys.list() });
+      queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: ['loans', 'list'] });
       toast.success('ลบสินเชื่อสำเร็จ');
     },
     onError: (error: Error) => {

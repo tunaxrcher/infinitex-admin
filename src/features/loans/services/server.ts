@@ -327,10 +327,29 @@ export const loanService = {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
-    // Soft delete - เปลี่ยนสถานะเป็น CANCELLED แทนการลบ
-    return loanRepository.update(id, {
-      status: 'CANCELLED',
-      updatedAt: new Date(),
+    // Hard delete - ลบจริงจาก database
+    return prisma.$transaction(async (tx) => {
+      // 1. ลบ Loan Installments ก่อน (ถ้ามี)
+      await tx.loanInstallment.deleteMany({
+        where: { loanId: id },
+      });
+
+      // 2. ลบ Payments ที่เกี่ยวข้อง (ถ้ามี)
+      await tx.payment.deleteMany({
+        where: { loanId: id },
+      });
+
+      // 3. ลบ Loan
+      await tx.loan.delete({
+        where: { id },
+      });
+
+      // 4. ลบ LoanApplication
+      await tx.loanApplication.delete({
+        where: { id: existing.applicationId },
+      });
+
+      return { success: true };
     });
   },
 };

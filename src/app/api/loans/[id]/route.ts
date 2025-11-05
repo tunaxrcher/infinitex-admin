@@ -6,21 +6,24 @@ import { loanUpdateSchema } from '@src/features/loans/validations';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const result = await loanService.getById(params.id);
+    const { id } = await params;
+    const result = await loanService.getById(id);
     return NextResponse.json({
       success: true,
       message: 'สำเร็จ',
       data: result,
     });
-  } catch (error: any) {
-    console.error(`[API Error] GET /api/loans/${params.id}:`, error);
+  } catch (error) {
+    const { id } = await params;
+    const errorMessage = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+    console.error(`[API Error] GET /api/loans/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || 'เกิดข้อผิดพลาด',
+        message: errorMessage,
         errors: error,
       },
       { status: 500 }
@@ -30,26 +33,29 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     
     // Validate request body
     const validatedData = loanUpdateSchema.parse(body);
     
-    const result = await loanService.update(params.id, validatedData);
+    const result = await loanService.update(id, validatedData);
     return NextResponse.json({
       success: true,
       message: 'แก้ไขสินเชื่อสำเร็จ',
       data: result,
     });
-  } catch (error: any) {
-    console.error(`[API Error] PUT /api/loans/${params.id}:`, error);
+  } catch (error) {
+    const { id } = await params;
+    const errorMessage = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+    console.error(`[API Error] PUT /api/loans/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || 'เกิดข้อผิดพลาด',
+        message: errorMessage,
         errors: error,
       },
       { status: 500 }
@@ -59,24 +65,26 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await loanService.delete(params.id);
+    const { id } = await params;
+    await loanService.delete(id);
     return NextResponse.json({
       success: true,
       message: 'ลบสินเชื่อสำเร็จ',
     });
-  } catch (error: any) {
-    console.error(`[API Error] DELETE /api/loans/${params.id}:`, error);
+  } catch (error) {
+    const { id } = await params;
+    const errorMessage = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+    console.error(`[API Error] DELETE /api/loans/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || 'เกิดข้อผิดพลาด',
+        message: errorMessage,
         errors: error,
       },
       { status: 500 }
     );
   }
 }
-
