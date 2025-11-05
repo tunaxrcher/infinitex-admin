@@ -58,6 +58,7 @@ import { ManageVariantsSheet } from '../components/manage-variants';
 import { RejectLoanDialog } from '../components/reject-loan-dialog';
 import { cn } from '@src/shared/lib/utils';
 import { useGetLoanList, useDeleteLoan, useApproveLoan, useRejectLoan } from '@src/features/loans/hooks';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@src/shared/components/ui/tooltip';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -93,716 +94,11 @@ export interface IData {
 }
 
 interface ProductListProps {
-  mockData?: IData[];
   onRowClick?: (productId: string) => void;
   displaySheet?: "productDetails" | "createProduct" | "editProduct" | "manageVariants";
 }
 
-const mockData: IData[] = [
-  {
-    id: '1',
-    loanNumber: 'LOA000309',
-    customerName: 'งานไถ่',
-    placeName: 'test',
-    area: '0-0-80',
-    titleDeedNumber: '0000000',
-    titleDeedType: 'น.ส.3ก',
-    requestDate: '25 ต.ค. 2568',
-    creditLimit: 2200000,
-    paymentDay: 25,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 0,
-    remainingAmount: 2640000,
-    installmentAmount: 220000,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 0,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '2',
-    loanNumber: 'LOA000310',
-    customerName: 'สมชาย ใจดี',
-    placeName: 'บ้านสวนผล',
-    area: '1-2-50',
-    titleDeedNumber: '1234567',
-    titleDeedType: 'โฉนด',
-    requestDate: '20 ต.ค. 2568',
-    creditLimit: 1500000,
-    paymentDay: 15,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 250000,
-    remainingAmount: 1550000,
-    installmentAmount: 125000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '2 ปี',
-    paidInstallments: 2,
-    totalInstallments: 24,
-    interestRate: 96,
-    details: '',
-  },
-  {
-    id: '3',
-    loanNumber: 'LOA000311',
-    customerName: 'วิไล สุขใจ',
-    placeName: 'สวนยางพารา',
-    area: '2-3-25',
-    titleDeedNumber: '2345678',
-    titleDeedType: 'น.ส.3',
-    requestDate: '18 ต.ค. 2568',
-    creditLimit: 3500000,
-    paymentDay: 10,
-    status: {
-      label: 'รออนุมัติ',
-      variant: 'warning',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 0,
-    remainingAmount: 4200000,
-    installmentAmount: 350000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 0,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '4',
-    loanNumber: 'LOA000312',
-    customerName: 'ประเสริฐ มั่งมี',
-    placeName: 'โรงงานผลิตภัณฑ์',
-    area: '5-0-0',
-    titleDeedNumber: '3456789',
-    titleDeedType: 'โฉนด',
-    requestDate: '15 ต.ค. 2568',
-    creditLimit: 5000000,
-    paymentDay: 5,
-    status: {
-      label: 'เกินกำหนดชำระ',
-      variant: 'destructive',
-    },
-    overdueDays: 15,
-    outstandingBalance: 416667,
-    paidAmount: 833334,
-    remainingAmount: 5166666,
-    installmentAmount: 416667,
-    creditRisk: 'ความเสี่ยงสูง',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 2,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: 'ค้างชำระเกิน 15 วัน',
-  },
-  {
-    id: '5',
-    loanNumber: 'LOA000313',
-    customerName: 'มานะ ขยัน',
-    placeName: 'ไร่อ้อย',
-    area: '3-1-75',
-    titleDeedNumber: '4567890',
-    titleDeedType: 'น.ส.3ก',
-    requestDate: '12 ต.ค. 2568',
-    creditLimit: 2800000,
-    paymentDay: 30,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 466667,
-    remainingAmount: 2870000,
-    installmentAmount: 233333,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 2,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: '',
-  },
-  {
-    id: '6',
-    loanNumber: 'LOA000314',
-    customerName: 'สมหญิง เจริญ',
-    placeName: 'ที่ดินเปล่า',
-    area: '0-3-45',
-    titleDeedNumber: '5678901',
-    titleDeedType: 'น.ส.3',
-    requestDate: '10 ต.ค. 2568',
-    creditLimit: 800000,
-    paymentDay: 20,
-    status: {
-      label: 'ปิดบัญชี',
-      variant: 'info',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 960000,
-    remainingAmount: 0,
-    installmentAmount: 80000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 12,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: 'ชำระครบแล้ว',
-  },
-  {
-    id: '7',
-    loanNumber: 'LOA000315',
-    customerName: 'พิชัย สุขสันต์',
-    placeName: 'สวนทุเรียน',
-    area: '4-2-30',
-    titleDeedNumber: '6789012',
-    titleDeedType: 'โฉนด',
-    requestDate: '8 ต.ค. 2568',
-    creditLimit: 4200000,
-    paymentDay: 25,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 700000,
-    remainingAmount: 4340000,
-    installmentAmount: 350000,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '2 ปี',
-    paidInstallments: 2,
-    totalInstallments: 24,
-    interestRate: 96,
-    details: '',
-  },
-  {
-    id: '8',
-    loanNumber: 'LOA000316',
-    customerName: 'นิภา รุ่งเรือง',
-    placeName: 'บ้านพักตากอากาศ',
-    area: '0-2-75',
-    titleDeedNumber: '7890123',
-    titleDeedType: 'น.ส.3ก',
-    requestDate: '5 ต.ค. 2568',
-    creditLimit: 1200000,
-    paymentDay: 15,
-    status: {
-      label: 'ปิดบัญชี',
-      variant: 'info',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 1440000,
-    remainingAmount: 0,
-    installmentAmount: 100000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 12,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: 'ชำระครบแล้ว',
-  },
-  {
-    id: '9',
-    loanNumber: 'LOA000317',
-    customerName: 'ธนา มั่งคั่ง',
-    placeName: 'โกดังสินค้า',
-    area: '1-0-50',
-    titleDeedNumber: '8901234',
-    titleDeedType: 'โฉนด',
-    requestDate: '2 ต.ค. 2568',
-    creditLimit: 3000000,
-    paymentDay: 10,
-    status: {
-      label: 'รออนุมัติ',
-      variant: 'warning',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 0,
-    remainingAmount: 3600000,
-    installmentAmount: 300000,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 0,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '10',
-    loanNumber: 'LOA000318',
-    customerName: 'อรุณ ใจสู้',
-    placeName: 'ไร่มันสำปะหลัง',
-    area: '6-0-25',
-    titleDeedNumber: '9012345',
-    titleDeedType: 'น.ส.3',
-    requestDate: '30 ก.ย. 2568',
-    creditLimit: 1800000,
-    paymentDay: 5,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 300000,
-    remainingAmount: 1860000,
-    installmentAmount: 150000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 2,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: '',
-  },
-  {
-    id: '11',
-    loanNumber: 'LOA000319',
-    customerName: 'วาสนา พัฒนา',
-    placeName: 'ร้านค้า',
-    area: '0-1-20',
-    titleDeedNumber: '0123456',
-    titleDeedType: 'โฉนด',
-    requestDate: '28 ก.ย. 2568',
-    creditLimit: 950000,
-    paymentDay: 20,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 158333,
-    remainingAmount: 982667,
-    installmentAmount: 79167,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '12',
-    loanNumber: 'LOA000320',
-    customerName: 'สุรชัย วงศ์ดี',
-    placeName: 'สวนผลไม้',
-    area: '2-1-0',
-    titleDeedNumber: '1234560',
-    titleDeedType: 'น.ส.3ก',
-    requestDate: '25 ก.ย. 2568',
-    creditLimit: 1650000,
-    paymentDay: 30,
-    status: {
-      label: 'รออนุมัติ',
-      variant: 'warning',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 0,
-    remainingAmount: 1980000,
-    installmentAmount: 137500,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 0,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '13',
-    loanNumber: 'LOA000321',
-    customerName: 'กมลา ศรีสุข',
-    placeName: 'บ้านเดี่ยว',
-    area: '0-2-15',
-    titleDeedNumber: '2345601',
-    titleDeedType: 'โฉนด',
-    requestDate: '22 ก.ย. 2568',
-    creditLimit: 2100000,
-    paymentDay: 15,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 350000,
-    remainingAmount: 2170000,
-    installmentAmount: 175000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 2,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: '',
-  },
-  {
-    id: '14',
-    loanNumber: 'LOA000322',
-    customerName: 'บุญส่ง เฟื่องฟู',
-    placeName: 'โรงเรือน',
-    area: '0-0-50',
-    titleDeedNumber: '3456012',
-    titleDeedType: 'น.ส.3',
-    requestDate: '20 ก.ย. 2568',
-    creditLimit: 650000,
-    paymentDay: 10,
-    status: {
-      label: 'ปิดบัญชี',
-      variant: 'info',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 780000,
-    remainingAmount: 0,
-    installmentAmount: 54167,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 12,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: 'ชำระครบแล้ว',
-  },
-  {
-    id: '15',
-    loanNumber: 'LOA000323',
-    customerName: 'ชัยวัฒน์ มั่งมี',
-    placeName: 'โรงงาน',
-    area: '8-0-0',
-    titleDeedNumber: '4560123',
-    titleDeedType: 'โฉนด',
-    requestDate: '18 ก.ย. 2568',
-    creditLimit: 6500000,
-    paymentDay: 5,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 1300000,
-    remainingAmount: 6720000,
-    installmentAmount: 541667,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 2,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: '',
-  },
-  {
-    id: '16',
-    loanNumber: 'LOA000324',
-    customerName: 'ปราณี ศรีทอง',
-    placeName: 'คอนโด',
-    area: '0-0-35',
-    titleDeedNumber: '5601234',
-    titleDeedType: 'โฉนด',
-    requestDate: '15 ก.ย. 2568',
-    creditLimit: 750000,
-    paymentDay: 25,
-    status: {
-      label: 'รออนุมัติ',
-      variant: 'warning',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 0,
-    remainingAmount: 900000,
-    installmentAmount: 62500,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 0,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '17',
-    loanNumber: 'LOA000325',
-    customerName: 'สมพร รุ่งโรจน์',
-    placeName: 'ที่ดินว่าง',
-    area: '1-3-10',
-    titleDeedNumber: '6012345',
-    titleDeedType: 'น.ส.3ก',
-    requestDate: '12 ก.ย. 2568',
-    creditLimit: 1350000,
-    paymentDay: 20,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 225000,
-    remainingAmount: 1395000,
-    installmentAmount: 112500,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '18',
-    loanNumber: 'LOA000326',
-    customerName: 'นิรันดร์ วิริยะ',
-    placeName: 'สวนปาล์มน้ำมัน',
-    area: '7-2-40',
-    titleDeedNumber: '0123457',
-    titleDeedType: 'โฉนด',
-    requestDate: '10 ก.ย. 2568',
-    creditLimit: 5500000,
-    paymentDay: 5,
-    status: {
-      label: 'เกินกำหนดชำระ',
-      variant: 'destructive',
-    },
-    overdueDays: 8,
-    outstandingBalance: 458333,
-    paidAmount: 916666,
-    remainingAmount: 5683334,
-    installmentAmount: 458333,
-    creditRisk: 'ความเสี่ยงสูง',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 2,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: 'ค้างชำระ 8 วัน',
-  },
-  {
-    id: '19',
-    loanNumber: 'LOA000327',
-    customerName: 'รัตนา บุญมา',
-    placeName: 'โฮมสเตย์',
-    area: '0-3-60',
-    titleDeedNumber: '1234568',
-    titleDeedType: 'น.ส.3',
-    requestDate: '8 ก.ย. 2568',
-    creditLimit: 1850000,
-    paymentDay: 15,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 308333,
-    remainingAmount: 1913667,
-    installmentAmount: 154167,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '20',
-    loanNumber: 'LOA000328',
-    customerName: 'ชาติชาย สุขสม',
-    placeName: 'โรงนา',
-    area: '4-0-75',
-    titleDeedNumber: '2345670',
-    titleDeedType: 'โฉนด',
-    requestDate: '5 ก.ย. 2568',
-    creditLimit: 2450000,
-    paymentDay: 10,
-    status: {
-      label: 'ปิดบัญชี',
-      variant: 'info',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 2940000,
-    remainingAmount: 0,
-    installmentAmount: 204167,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 12,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: 'ชำระครบแล้ว',
-  },
-  {
-    id: '21',
-    loanNumber: 'LOA000329',
-    customerName: 'สุภาพ เกิดผล',
-    placeName: 'ไร่สับปะรด',
-    area: '3-2-20',
-    titleDeedNumber: '3456701',
-    titleDeedType: 'น.ส.3ก',
-    requestDate: '3 ก.ย. 2568',
-    creditLimit: 2750000,
-    paymentDay: 30,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 458333,
-    remainingAmount: 2841667,
-    installmentAmount: 229167,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '22',
-    loanNumber: 'LOA000330',
-    customerName: 'อนงค์ แก้วมา',
-    placeName: 'หอพัก',
-    area: '0-2-0',
-    titleDeedNumber: '4567012',
-    titleDeedType: 'โฉนด',
-    requestDate: '1 ก.ย. 2568',
-    creditLimit: 3200000,
-    paymentDay: 25,
-    status: {
-      label: 'รออนุมัติ',
-      variant: 'warning',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 0,
-    remainingAmount: 3456000,
-    installmentAmount: 266667,
-    creditRisk: 'ความเสี่ยงปานกลาง',
-    loanType: 'เงินสด',
-    duration: '1.5 ปี',
-    paidInstallments: 0,
-    totalInstallments: 18,
-    interestRate: 108,
-    details: '',
-  },
-  {
-    id: '23',
-    loanNumber: 'LOA000331',
-    customerName: 'พิทักษ์ ชัยชนะ',
-    placeName: 'สวนยาง',
-    area: '5-1-30',
-    titleDeedNumber: '5670123',
-    titleDeedType: 'โฉนด',
-    requestDate: '28 ส.ค. 2568',
-    creditLimit: 3850000,
-    paymentDay: 20,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 641667,
-    remainingAmount: 3981333,
-    installmentAmount: 320833,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '24',
-    loanNumber: 'LOA000332',
-    customerName: 'จิราพร สวัสดิ์',
-    placeName: 'รีสอร์ท',
-    area: '2-0-50',
-    titleDeedNumber: '6701234',
-    titleDeedType: 'โฉนด',
-    requestDate: '25 ส.ค. 2568',
-    creditLimit: 7200000,
-    paymentDay: 15,
-    status: {
-      label: 'ยังไม่ถึงกำหนด',
-      variant: 'success',
-    },
-    overdueDays: 0,
-    outstandingBalance: 0,
-    paidAmount: 1200000,
-    remainingAmount: 7440000,
-    installmentAmount: 600000,
-    creditRisk: 'ความเสี่ยงต่ำ',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: '',
-  },
-  {
-    id: '25',
-    loanNumber: 'LOA000333',
-    customerName: 'สุทิน มหาชัย',
-    placeName: 'ไร่มะพร้าว',
-    area: '6-3-15',
-    titleDeedNumber: '7012345',
-    titleDeedType: 'น.ส.3',
-    requestDate: '22 ส.ค. 2568',
-    creditLimit: 4100000,
-    paymentDay: 5,
-    status: {
-      label: 'เกินกำหนดชำระ',
-      variant: 'destructive',
-    },
-    overdueDays: 20,
-    outstandingBalance: 341667,
-    paidAmount: 683334,
-    remainingAmount: 4242666,
-    installmentAmount: 341667,
-    creditRisk: 'ความเสี่ยงสูง',
-    loanType: 'เงินสด',
-    duration: '1 ปี',
-    paidInstallments: 2,
-    totalInstallments: 12,
-    interestRate: 120,
-    details: 'ค้างชำระเกิน 20 วัน',
-  },
-];
-
 export function ProductListTable({
-  mockData: propsMockData,
   onRowClick,
   displaySheet,
 }: ProductListProps) {
@@ -843,8 +139,8 @@ export function ProductListTable({
   // Transform API data to match IData interface
   const apiData = useMemo(() => {
     if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
-      console.log('No API data, using mock data');
-      return mockData;
+      console.log('No API data available');
+      return [];
     }
 
     console.log('Transforming API data:', apiResponse.data.length, 'loans');
@@ -918,8 +214,8 @@ export function ProductListTable({
     });
   }, [apiResponse]);
 
-  // Use mock data as fallback if API fails
-  const data = propsMockData || (isError ? mockData : apiData);
+  // Use API data only
+  const data = apiData;
 
   // Search input state
   const [inputValue, setInputValue] = useState('');
@@ -1034,7 +330,7 @@ export function ProductListTable({
         enableSorting: false,
         enableHiding: false,
         enableResizing: false,
-        size: 40,
+        size: 50,
         meta: {
           cellClassName: '',
         },
@@ -1044,23 +340,67 @@ export function ProductListTable({
         accessorFn: (row) => row.loanNumber,
         header: ({ column }) => (
           <DataGridColumnHeader
-            title="เลขที่สินเชื่อ"
+            title="ชื่อสถานที่ / เลขที่สินเชื่อ"
             filter={<ColumnInputFilter column={column} />}
             column={column}
           />
         ),
         cell: (info) => {
-          return (
-            <span
-              className="text-sm font-medium text-foreground cursor-pointer hover:text-primary transition-colors"
-              onClick={() => setIsProductDetailsOpen(true)}
-            >
-              {info.row.original.loanNumber}
-            </span>
+          // return (
+          //   <span
+          //     className="text-sm font-medium text-foreground cursor-pointer hover:text-primary transition-colors"
+          //     onClick={() => setIsProductDetailsOpen(true)}
+          //   >
+          //     {info.row.original.loanNumber}
+          //   </span>
+          // );
+
+            return (
+            <div className="flex items-center gap-2.5">
+              <Card className="flex items-center justify-center rounded-md bg-accent/50 h-[40px] w-[50px] shadow-none shrink-0">
+                <img
+                  src={'/images/loan.png'}
+                  className="cursor-pointer h-[40px]"
+                  alt="image"
+                />
+              </Card>
+              <div className="flex flex-col gap-1">
+                {info.row.original.placeName.length > 20 ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span
+                          className="text-sm font-medium text-foreground leading-3.5 truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => setIsProductDetailsOpen(true)}
+                        >
+                          {info.row.original.placeName}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{info.row.original.placeName}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <span
+                    className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => setIsProductDetailsOpen(true)}
+                  >
+                    {info.row.original.placeName}
+                  </span>
+                )}
+                <span className="text-xs text-muted-foreground uppercase">
+                  เลขที่สินเชื่อ:{' '}
+                  <span className="text-xs font-medium text-secondary-foreground">
+                    {info.row.original.loanNumber}
+                  </span>
+                </span>
+              </div>
+            </div>
           );
         },
         enableSorting: true,
-        size: 130,
+        size: 260,
         meta: {
           cellClassName: '',
         },
@@ -1079,24 +419,7 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 130,
-        meta: {
-          cellClassName: '',
-        },
-      },
-      {
-        id: 'placeName',
-        accessorFn: (row) => row.placeName,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="สถานที่" column={column} />
-        ),
-        cell: (info) => {
-          return (
-            <span className="text-sm">{info.row.original.placeName}</span>
-          );
-        },
-        enableSorting: true,
-        size: 120,
+        size: 150,
         meta: {
           cellClassName: '',
         },
@@ -1113,7 +436,7 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 100,
+        size: 140,
         meta: {
           cellClassName: '',
         },
@@ -1135,7 +458,7 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 120,
+        size: 140,
         meta: {
           cellClassName: '',
         },
@@ -1154,7 +477,7 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 120,
+        size: 140,
         meta: {
           cellClassName: '',
         },
@@ -1179,7 +502,7 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 130,
+        size: 140,
         meta: {
           cellClassName: '',
         },
@@ -1223,7 +546,7 @@ export function ProductListTable({
           return info.row.original.requestDate;
         },
         enableSorting: true,
-        size: 120,
+        size: 140,
         meta: {
           cellClassName: '',
         },
@@ -1238,7 +561,7 @@ export function ProductListTable({
           return <div className="text-center">{info.row.original.interestRate}%</div>;
         },
         enableSorting: true,
-        size: 90,
+        size: 80,
         meta: {
           cellClassName: '',
         },
