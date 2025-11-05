@@ -1248,70 +1248,71 @@ export function ProductListTable({
         header: () => '',
         enableSorting: false,
         cell: ({ row }) => {
+          const isPending = row.original.status.label === 'รออนุมัติ';
+          
           return (
-            <div className="flex items-center justify-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" mode="icon" size="sm" className="">
-                    <EllipsisVertical />
+            <div className="flex items-center justify-center gap-1">
+              {isPending ? (
+                /* สำหรับสินเชื่อรออนุมัติ - แสดงปุ่มโดยตรง */
+                <>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className=" hover:text-green-700 hover:bg-green-50 "
+                    onClick={() => handleApproveLoan(row.original.id)}
+                  >
+                    <Check className="size-3.5" /> อนุมัติ
+                    
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" side="bottom">
-                  {/* เฉพาะสินเชื่อรออนุมัติ - แสดงปุ่มอนุมัติ/ยกเลิก */}
-                  {row.original.status.label === 'รออนุมัติ' ? (
-                    <>
-                      <DropdownMenuItem 
-                        onClick={() => handleApproveLoan(row.original.id)}
-                        className="text-green-600 focus:text-green-600"
-                      >
-                        <Check className="size-4" />
-                        อนุมัติสินเชื่อ
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        variant="destructive"
-                        onClick={() => handleRejectLoan(row.original.id)}
-                      >
-                        <X className="size-4" />
-                        ยกเลิกสินเชื่อ
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
-                        <Info className="size-4" />
-                        ข้อมูลเต็ม
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <DropdownMenuItem onClick={() => handleEditProduct(row.original)}>
-                        <Settings className="size-4" />
-                        แก้ไขข้อมูล
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleManageVariants(row.original)}>
-                        <Layers className="size-4" />
-                        รายละเอียดการชำระ
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
-                        <Info className="size-4" />
-                        ข้อมูลเต็ม
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        variant="destructive"
-                        onClick={() => {
-                          if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?')) {
-                            deleteLoan.mutate(row.original.id);
-                          }
-                        }}
-                      >
-                        <Trash className="size-4" />
-                        ลบ
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className=" hover:text-red-700 hover:bg-red-50 "
+                    onClick={() => handleRejectLoan(row.original.id)}
+                  >
+                    <X className="size-3.5" />
+                    
+                  </Button>
+                </>
+              ) : (
+                /* สำหรับสินเชื่ออื่นๆ - แสดง dropdown */
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" mode="icon" size="sm" className="">
+                      <EllipsisVertical />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" side="bottom">
+                    <DropdownMenuItem onClick={() => handleEditProduct(row.original)}>
+                      <Settings className="size-4" />
+                      แก้ไขข้อมูล
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleManageVariants(row.original)}>
+                      <Layers className="size-4" />
+                      รายละเอียดการชำระ
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleViewDetails(row.original)}>
+                      <Info className="size-4" />
+                      ข้อมูลเต็ม
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      variant="destructive"
+                      onClick={() => {
+                        if (confirm('คุณต้องการลบสินเชื่อนี้ใช่หรือไม่?')) {
+                          deleteLoan.mutate(row.original.id);
+                        }
+                      }}
+                    >
+                      <Trash className="size-4" />
+                      ลบ
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           );
         },
-        size: 80,
+        size: 160, // เพิ่มขนาด column เพื่อให้พอดีกับปุ่ม 2 ปุ่ม
       },
     ],
     [], // Same columns for all tabs
