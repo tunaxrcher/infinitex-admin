@@ -53,7 +53,6 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 
@@ -116,7 +115,6 @@ export function ProductDetailsAnalyticsSheet({
 
   // Get installments from loan data
   const installments = loan?.installments || [];
-  const paidInstallments = installments.filter((inst: { isPaid: boolean }) => inst.isPaid);
 
   // Calculate remaining interest for display
   const calculateRemainingInterest = (installmentNumber: number) => {
@@ -168,7 +166,35 @@ export function ProductDetailsAnalyticsSheet({
     rawData: inst,
   }));
 
-  const [selectedImage, setSelectedImage] = useState('title-deed-example1');
+  // Prepare images for display
+  const titleDeedImage = loan?.application?.titleDeedImage;
+  const supportingImages = loan?.application?.supportingImages 
+    ? (typeof loan.application.supportingImages === 'string' 
+        ? JSON.parse(loan.application.supportingImages) 
+        : loan.application.supportingImages)
+    : [];
+
+  // Create images array with fallbacks
+  const allImages: string[] = [];
+  
+  // Add title deed image or fallback
+  if (titleDeedImage) {
+    allImages.push(titleDeedImage);
+  } else {
+    allImages.push('/images/loan.png');
+  }
+  
+  // Add supporting images or fallbacks
+  if (supportingImages && supportingImages.length > 0) {
+    allImages.push(...supportingImages);
+  } else {
+    // Add 5 loan.png images as fallback
+    for (let i = 0; i < 5; i++) {
+      allImages.push('/images/loan.png');
+    }
+  }
+
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('details');
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [selectedInstallment, setSelectedInstallment] = useState<{
@@ -643,11 +669,7 @@ export function ProductDetailsAnalyticsSheet({
                         <CardTitle className="text-2sm">
                           ตารางการชำระเงิน
                         </CardTitle>
-                        <CardToolbar>
-                          <Button mode="link" className="text-primary">
-                            จัดการการชำระ
-                          </Button>
-                        </CardToolbar>
+                
                       </CardHeader>
 
                       <CardContent className="p-0">
@@ -656,7 +678,7 @@ export function ProductDetailsAnalyticsSheet({
                             <TableHeader>
                               <TableRow className="text-secondary-foreground font-normal text-2sm">
                                 <TableHead className="w-[70px] h-8.5 border-e border-border ps-5">
-                                  งวดที่
+                                  งวด
                                 </TableHead>
                                 <TableHead className="w-[140px] h-8.5 border-e border-border">
                                   ผู้รับชำระ
@@ -789,51 +811,40 @@ export function ProductDetailsAnalyticsSheet({
                     <div className="mb-5">
                       <Card className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 mb-5">
                         <img
-                          src={toAbsoluteUrl(`/images/${selectedImage}.jpg`)}
+                          src={allImages[selectedImageIndex] || '/images/loan.png'}
                           className="h-[250px] shrink-0 object-cover w-full rounded-md"
                           alt="รูปหลักประกัน/โฉนด"
                         />
                       </Card>
 
                       <ToggleGroup
-                        className="grid grid-cols-2 gap-4"
+                         className="grid grid-cols-5 gap-4"
                         type="single"
-                        value={selectedImage}
+                        value={selectedImageIndex.toString()}
                         onValueChange={(newValue) => {
-                          if (newValue) setSelectedImage(newValue);
+                          if (newValue) setSelectedImageIndex(parseInt(newValue));
                         }}
                       >
-                        {[
-                          {
-                            id: '1',
-                            value: 'title-deed-example1',
-                            image: 'title-deed-example1.jpg',
-                            alt: 'โฉนด 1',
-                          },
-                          {
-                            id: '2',
-                            value: 'title-deed-example2',
-                            image: 'title-deed-example2.jpg',
-                            alt: 'โฉนด 2',
-                          },
-                        ].map((item) => (
+                        {allImages.slice(0, 5).map((image, index) => (
                           <ToggleGroupItem
-                            key={item.id}
-                            value={item.value}
-                            className="rounded-md border border-border shrink-0 h-[80px] p-0 bg-accent/50 hover:bg-accent/50 data-[state=on]:border-zinc-950 dark:data-[state=on]:border-zinc-50"
+                            key={index}
+                            value={index.toString()}
+                            className="rounded-md border border-border shrink-0 h-[50px] p-0 bg-accent/50 hover:bg-accent/50 data-[state=on]:border-zinc-950 dark:data-[state=on]:border-zinc-50"
                           >
                             <img
-                              src={toAbsoluteUrl(`/images/${item.image}`)}
-                              className="h-[80px] w-full object-cover rounded-md"
-                              alt={item.alt}
+                              src={image || '/images/loan.png'}
+                              className="h-[50px] w-[50px] object-cover rounded-md"
+                              alt={`รูปที่ ${index + 1}`}
                             />
                           </ToggleGroupItem>
                         ))}
                       </ToggleGroup>
                     </div>
                     <p className="text-2sm font-normal text-secondary-foreground leading-5 mb-5">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum voluptatum temporibus officia.
+                      รายละเอียด (In development): Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum voluptatum temporibus officia.
                     </p>
+
+                    <hr className="my-5 border-border" />
 
                     <div className="space-y-3">
                       <div className="flex items-center lg:gap-13 gap-5">
