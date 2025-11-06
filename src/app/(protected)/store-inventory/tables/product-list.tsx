@@ -128,26 +128,17 @@ export function ProductListTable({
     pageSize: 10,
   });
 
-  // Fetch data from API
+  // Fetch data from API - ดึงทั้งหมดมาครั้งเดียว ไม่ส่ง status filter
   const {
     data: apiResponse,
     isLoading,
     error,
     isError,
   } = useGetLoanList({
-    page: pagination.pageIndex + 1,
-    limit: pagination.pageSize,
+    page: 1,
+    limit: 1000, // ดึงทั้งหมด (ปรับตามจำนวนข้อมูลจริง)
     search: searchQuery || undefined,
-    status:
-      activeTab === 'all'
-        ? undefined
-        : activeTab === 'active'
-          ? 'ACTIVE'
-          : activeTab === 'closed'
-            ? 'COMPLETED'
-            : activeTab === 'overdue'
-              ? 'DEFAULTED'
-              : undefined,
+    // ไม่ส่ง status filter - จะกรองฝั่ง client แทน
   });
 
   const deleteLoan = useDeleteLoan();
@@ -160,11 +151,13 @@ export function ProductListTable({
 
   // Log API response for debugging
   useEffect(() => {
+    console.log('Current Tab:', activeTab);
     console.log('API Response:', apiResponse);
+    console.log('API Data Count:', apiResponse?.data?.length || 0);
     console.log('Is Loading:', isLoading);
     console.log('Is Error:', isError);
     if (error) console.error('API Error:', error);
-  }, [apiResponse, isLoading, isError, error]);
+  }, [apiResponse, isLoading, isError, error, activeTab]);
 
   // Transform API data to match IData interface
   const apiData = useMemo(() => {

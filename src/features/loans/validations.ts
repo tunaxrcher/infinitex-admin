@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 export const loanFiltersSchema = z.object({
   page: z.coerce.number().min(1).optional().default(1),
-  limit: z.coerce.number().min(1).max(100).optional().default(10),
+  limit: z.coerce.number().min(1).max(10000).optional().default(10), // เพิ่ม max เป็น 10000
   search: z.string().optional(),
   status: z.enum(['ACTIVE', 'COMPLETED', 'DEFAULTED', 'CANCELLED']).optional(),
   sortBy: z.string().optional(),
