@@ -400,7 +400,7 @@ export function ProductListTable({
                       <TooltipTrigger asChild>
                         <span
                           className="text-sm font-medium text-foreground leading-3.5 truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors"
-                          onClick={() => setIsProductDetailsOpen(true)}
+                          onClick={() => handleViewDetails(info.row.original)}
                         >
                           {info.row.original.placeName}
                         </span>
@@ -413,7 +413,7 @@ export function ProductListTable({
                 ) : (
                   <span
                     className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
-                    onClick={() => setIsProductDetailsOpen(true)}
+                    onClick={() => handleViewDetails(info.row.original)}
                   >
                     {info.row.original.placeName}
                   </span>

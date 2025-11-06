@@ -53,6 +53,29 @@ export function ProductDetailsAnalyticsSheet({
   loanId?: string;
   onEdit?: () => void;
 }) {
+
+    // Chart data for Recharts
+    const salesPriceData = [
+      { value: 30 },
+      { value: 38 },
+      { value: 35 },
+      { value: 42 },
+      { value: 40 },
+      { value: 45 },
+      { value: 55 },
+    ];
+
+    const salesData = [
+      { value: 28 },
+      { value: 50 },
+      { value: 36 },
+      { value: 42 },
+      { value: 38 },
+      { value: 45 },
+      { value: 50 },
+    ];
+  
+
   // Fetch loan data from API
   const { data: loanResponse, isLoading } = useGetLoanById(loanId || '');
   const loan = loanResponse?.data;
@@ -402,218 +425,194 @@ export function ProductDetailsAnalyticsSheet({
 
                     {/* Analytics */}
                     <Card className="rounded-md">
-                      <CardHeader className="min-h-[34px] bg-accent/50">
-                        <CardTitle className="text-2sm">การวิเคราะห์</CardTitle>
-                      </CardHeader>
-                      <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
-                        <div className="space-y-1">
-                          <div className="text-2sm font-normal text-secondary-foreground">
-                            ประวัติการชำระ
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-lg font-semibold text-foreground">
-                              ฿{Math.round(avgPayment).toLocaleString()}
-                            </span>
-                            <Badge
-                              size="xs"
-                              variant={paidInstallments.some((inst: any) => inst.isLate) ? 'warning' : 'success'}
-                              appearance="light"
+                  <CardHeader className="min-h-[34px] bg-accent/50">
+                    <CardTitle className="text-2sm">การวิเคราะห์ (In Development)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
+                    <div className="space-y-1">
+                      <div className="text-2sm font-normal text-secondary-foreground">
+                        Demo
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-lg font-semibold text-foreground">
+                          $96.23
+                        </span>
+                        <Badge size="xs" variant="success" appearance="light">
+                          <TrendingUp />
+                          3.5%
+                        </Badge>
+                      </div>
+
+                      {/* Recharts Area Chart */}
+                      <div className="relative">
+                        <div className="h-[100px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                              data={salesPriceData}
+                              margin={{
+                                top: 5,
+                                right: 5,
+                                left: 5,
+                                bottom: 5,
+                              }}
                             >
-                              <TrendingUp />
-                              {paidInstallments.some((inst: any) => inst.isLate) ? 'มีการชำระล่าช้า' : 'ตรงเวลา'}
-                            </Badge>
-                          </div>
-
-                          {/* Recharts Area Chart */}
-                          <div className="relative">
-                            <div className="h-[100px] w-full">
-                              {paymentHistoryData.length > 0 ? (
-                                <ResponsiveContainer width="100%" height="100%">
-                                  <AreaChart
-                                    data={paymentHistoryData}
-                                    margin={{
-                                      top: 5,
-                                      right: 5,
-                                      left: 5,
-                                      bottom: 5,
-                                    }}
-                                  >
-                                    <defs>
-                                      <linearGradient
-                                        id="paymentHistoryGradient"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                      >
-                                        <stop
-                                          offset="0%"
-                                          stopColor="#16a34a"
-                                          stopOpacity={0.15}
-                                        />
-                                        <stop
-                                          offset="100%"
-                                          stopColor="#16a34a"
-                                          stopOpacity={0.02}
-                                        />
-                                      </linearGradient>
-                                    </defs>
-                                    <Tooltip
-                                      cursor={{
-                                        stroke: '#16a34a',
-                                        strokeWidth: 1,
-                                        strokeDasharray: '2 2',
-                                      }}
-                                      content={({ active, payload }) => {
-                                        if (active && payload && payload.length) {
-                                          const value = payload[0]
-                                            .value as number;
-                                          return (
-                                            <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                              <p className="text-sm font-semibold text-foreground">
-                                                ฿{value.toLocaleString()}
-                                              </p>
-                                            </div>
-                                          );
-                                        }
-                                        return null;
-                                      }}
-                                    />
-                                    <Area
-                                      type="monotone"
-                                      dataKey="value"
-                                      stroke="#16a34a"
-                                      fill="url(#paymentHistoryGradient)"
-                                      strokeWidth={1}
-                                      dot={false}
-                                      activeDot={{
-                                        r: 4,
-                                        fill: '#16a34a',
-                                        stroke: 'white',
-                                        strokeWidth: 2,
-                                      }}
-                                    />
-                                  </AreaChart>
-                                </ResponsiveContainer>
-                              ) : (
-                                <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
-                                  ยังไม่มีประวัติการชำระ
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                              <defs>
+                                <linearGradient
+                                  id="salesPriceGradient"
+                                  x1="0"
+                                  y1="0"
+                                  x2="0"
+                                  y2="1"
+                                >
+                                  <stop
+                                    offset="0%"
+                                    stopColor="#4921EA"
+                                    stopOpacity={0.15}
+                                  />
+                                  <stop
+                                    offset="100%"
+                                    stopColor="#4921EA"
+                                    stopOpacity={0.02}
+                                  />
+                                </linearGradient>
+                              </defs>
+                              <Tooltip
+                                cursor={{
+                                  stroke: '#4921EA',
+                                  strokeWidth: 1,
+                                  strokeDasharray: '2 2',
+                                }}
+                                content={({ active, payload }) => {
+                                  if (active && payload && payload.length) {
+                                    const value = payload[0].value as number;
+                                    return (
+                                      <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                        <p className="text-sm font-semibold text-foreground">
+                                          ${value}
+                                        </p>
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#4921EA"
+                                fill="url(#salesPriceGradient)"
+                                strokeWidth={1}
+                                dot={false}
+                                activeDot={{
+                                  r: 4,
+                                  fill: '#4921EA',
+                                  stroke: 'white',
+                                  strokeWidth: 2,
+                                }}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
                         </div>
+                      </div>
+                    </div>
 
-                        <div className="space-y-1">
-                          <div className="text-2sm font-normal text-secondary-foreground">
-                            ยอดคงเหลือ
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-lg font-semibold text-foreground">
-                              ฿{Number(loan?.remainingBalance || 0).toLocaleString()}
-                            </span>
-                            {balanceChangePercent > 0 && (
-                              <Badge
-                                size="xs"
-                                variant="info"
-                                appearance="light"
-                              >
-                                <TrendingDown />
-                                -{balanceChangePercent.toFixed(1)}%
-                              </Badge>
-                            )}
-                            <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
-                              {loan?.currentInstallment || 0}/{loan?.totalInstallments || 0} งวด
-                            </span>
-                          </div>
+                    <div className="space-y-1">
+                      <div className="text-2sm font-normal text-secondary-foreground">
+                        Demo
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-lg font-semibold text-foreground">
+                          6346
+                        </span>
+                        <Badge size="xs" variant="success" appearance="light">
+                          <TrendingUp />
+                          18%
+                        </Badge>
+                        <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
+                          $43,784,02
+                        </span>
+                      </div>
 
-                          {/* Recharts Area Chart */}
-                          <div className="relative">
-                            <div className="h-[100px] w-full">
-                              {outstandingBalanceData.length > 0 ? (
-                                <ResponsiveContainer width="100%" height="100%">
-                                  <AreaChart
-                                    data={outstandingBalanceData}
-                                    margin={{
-                                      top: 5,
-                                      right: 5,
-                                      left: 5,
-                                      bottom: 5,
-                                    }}
-                                  >
-                                    <defs>
-                                      <linearGradient
-                                        id="outstandingBalanceGradient"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                      >
-                                        <stop
-                                          offset="0%"
-                                          stopColor="#4921EA"
-                                          stopOpacity={0.15}
-                                        />
-                                        <stop
-                                          offset="100%"
-                                          stopColor="#4921EA"
-                                          stopOpacity={0.02}
-                                        />
-                                      </linearGradient>
-                                    </defs>
-                                    <Tooltip
-                                      cursor={{
-                                        stroke: '#4921EA',
-                                        strokeWidth: 1,
-                                        strokeDasharray: '2 2',
-                                      }}
-                                      content={({ active, payload }) => {
-                                        if (active && payload && payload.length) {
-                                          const value = payload[0]
-                                            .value as number;
-                                          return (
-                                            <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                              <p className="text-sm font-semibold text-foreground">
-                                                ฿{value.toLocaleString()}
-                                              </p>
-                                            </div>
-                                          );
-                                        }
-                                        return null;
-                                      }}
-                                    />
-                                    <Area
-                                      type="monotone"
-                                      dataKey="value"
-                                      stroke="#4921EA"
-                                      fill="url(#outstandingBalanceGradient)"
-                                      strokeWidth={1}
-                                      dot={false}
-                                      activeDot={{
-                                        r: 4,
-                                        fill: '#4921EA',
-                                        stroke: 'white',
-                                        strokeWidth: 2,
-                                      }}
-                                    />
-                                  </AreaChart>
-                                </ResponsiveContainer>
-                              ) : (
-                                <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
-                                  ยังไม่มีข้อมูลยอดคงเหลือ
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                      {/* Recharts Area Chart */}
+                      <div className="relative">
+                        <div className="h-[100px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                              data={salesData}
+                              margin={{
+                                top: 5,
+                                right: 5,
+                                left: 5,
+                                bottom: 5,
+                              }}
+                            >
+                              <defs>
+                                <linearGradient
+                                  id="salesGradient"
+                                  x1="0"
+                                  y1="0"
+                                  x2="0"
+                                  y2="1"
+                                >
+                                  <stop
+                                    offset="0%"
+                                    stopColor="#4921EA"
+                                    stopOpacity={0.15}
+                                  />
+                                  <stop
+                                    offset="100%"
+                                    stopColor="#4921EA"
+                                    stopOpacity={0.02}
+                                  />
+                                </linearGradient>
+                              </defs>
+                              <Tooltip
+                                cursor={{
+                                  stroke: '#4921EA',
+                                  strokeWidth: 1,
+                                  strokeDasharray: '2 2',
+                                }}
+                                content={({ active, payload }) => {
+                                  if (active && payload && payload.length) {
+                                    const value = payload[0].value as number;
+                                    return (
+                                      <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                        <p className="text-sm font-semibold text-foreground">
+                                          {value}
+                                        </p>
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#4921EA"
+                                fill="url(#salesGradient)"
+                                strokeWidth={1}
+                                dot={false}
+                                activeDot={{
+                                  r: 4,
+                                  fill: '#4921EA',
+                                  stroke: 'white',
+                                  strokeWidth: 2,
+                                }}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
                     {/* Payment Schedule table */}
                     <Card className="rounded-md">
                       <CardHeader className="min-h-[34px] bg-accent/50">
                         <CardTitle className="text-2sm">
-                          ตารางการชำระเงิน
+                          ตารางการชำระเงิน (In Development)
                         </CardTitle>
                         <CardToolbar>
                           <Button mode="link" className="text-primary">
