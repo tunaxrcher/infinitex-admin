@@ -18,7 +18,10 @@ export async function POST(
     const { id } = await params;
     const errorMessage =
       error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
-    console.error(`[API Error] POST /api/loans/${id}/generate-installments:`, error);
+    console.error(
+      `[API Error] POST /api/loans/${id}/generate-installments:`,
+      error,
+    );
     return NextResponse.json(
       {
         success: false,
@@ -29,4 +32,3 @@ export async function POST(
     );
   }
 }
-

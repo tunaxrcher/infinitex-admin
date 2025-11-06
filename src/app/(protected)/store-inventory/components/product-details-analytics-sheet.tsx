@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useDeleteLoan, useGenerateInstallments, useGetLoanById } from '@src/features/loans/hooks';
+import {
+  useDeleteLoan,
+  useGenerateInstallments,
+  useGetLoanById,
+} from '@src/features/loans/hooks';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -19,6 +23,7 @@ import {
 } from '@src/shared/components/ui/dialog';
 import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
+import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -26,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Sheet,
   SheetBody,
@@ -67,28 +71,27 @@ export function ProductDetailsAnalyticsSheet({
   loanId?: string;
   onEdit?: () => void;
 }) {
-  
   // Mockdata
-    // Chart data for Recharts
-    const salesPriceData = [
-      { value: 30 },
-      { value: 38 },
-      { value: 35 },
-      { value: 42 },
-      { value: 40 },
-      { value: 45 },
-      { value: 55 },
-    ];
-  
-    const salesData = [
-      { value: 28 },
-      { value: 50 },
-      { value: 36 },
-      { value: 42 },
-      { value: 38 },
-      { value: 45 },
-      { value: 50 },
-    ];
+  // Chart data for Recharts
+  const salesPriceData = [
+    { value: 30 },
+    { value: 38 },
+    { value: 35 },
+    { value: 42 },
+    { value: 40 },
+    { value: 45 },
+    { value: 55 },
+  ];
+
+  const salesData = [
+    { value: 28 },
+    { value: 50 },
+    { value: 36 },
+    { value: 42 },
+    { value: 38 },
+    { value: 45 },
+    { value: 50 },
+  ];
 
   // Fetch loan data from API
   const { data: loanResponse, isLoading } = useGetLoanById(loanId || '');
@@ -118,72 +121,78 @@ export function ProductDetailsAnalyticsSheet({
 
   // Calculate remaining interest for display
   const calculateRemainingInterest = (installmentNumber: number) => {
-    const remainingInstallments = (loan?.totalInstallments || 0) - installmentNumber;
-    const interestPerInstallment = Number(loan?.principalAmount || 0) * (Number(loan?.interestRate || 0) / 100) / (loan?.totalInstallments || 1);
+    const remainingInstallments =
+      (loan?.totalInstallments || 0) - installmentNumber;
+    const interestPerInstallment =
+      (Number(loan?.principalAmount || 0) *
+        (Number(loan?.interestRate || 0) / 100)) /
+      (loan?.totalInstallments || 1);
     return remainingInstallments * interestPerInstallment;
   };
 
   // Payment schedule table (ตารางการชำระเงิน) - show all installments
-  const paymentSchedule = installments.map((inst: {
-    id: string;
-    installmentNumber: number;
-    dueDate: Date;
-    paidDate?: Date;
-    totalAmount: number;
-    principalAmount: number;
-    interestAmount: number;
-    isPaid: boolean;
-    isLate: boolean;
-    paidAmount?: number;
-  }) => ({
-    id: inst.id,
-    installmentNumber: inst.installmentNumber,
-    installment: inst.installmentNumber.toString(),
-    receiver: '-', // TODO: เพิ่มข้อมูลผู้รับชำระ
-    dueDate: new Date(inst.dueDate).toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+  const paymentSchedule = installments.map(
+    (inst: {
+      id: string;
+      installmentNumber: number;
+      dueDate: Date;
+      paidDate?: Date;
+      totalAmount: number;
+      principalAmount: number;
+      interestAmount: number;
+      isPaid: boolean;
+      isLate: boolean;
+      paidAmount?: number;
+    }) => ({
+      id: inst.id,
+      installmentNumber: inst.installmentNumber,
+      installment: inst.installmentNumber.toString(),
+      receiver: '-', // TODO: เพิ่มข้อมูลผู้รับชำระ
+      dueDate: new Date(inst.dueDate).toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }),
+      paidDate: inst.paidDate
+        ? new Date(inst.paidDate).toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })
+        : '-',
+      amount: `฿${Number(inst.totalAmount).toLocaleString()}`,
+      principalAmount: Number(inst.principalAmount),
+      interestAmount: Number(inst.interestAmount),
+      totalAmount: Number(inst.totalAmount),
+      remainingInterest: calculateRemainingInterest(inst.installmentNumber),
+      status: inst.isPaid ? 'ชำระแล้ว' : inst.isLate ? 'เกินกำหนด' : 'รอชำระ',
+      paidAmount: inst.isPaid
+        ? `฿${Number(inst.paidAmount).toLocaleString()}`
+        : '-',
+      isPaid: inst.isPaid,
+      isLate: inst.isLate,
+      rawData: inst,
     }),
-    paidDate: inst.paidDate
-      ? new Date(inst.paidDate).toLocaleDateString('th-TH', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        })
-      : '-',
-    amount: `฿${Number(inst.totalAmount).toLocaleString()}`,
-    principalAmount: Number(inst.principalAmount),
-    interestAmount: Number(inst.interestAmount),
-    totalAmount: Number(inst.totalAmount),
-    remainingInterest: calculateRemainingInterest(inst.installmentNumber),
-    status: inst.isPaid ? 'ชำระแล้ว' : inst.isLate ? 'เกินกำหนด' : 'รอชำระ',
-    paidAmount: inst.isPaid
-      ? `฿${Number(inst.paidAmount).toLocaleString()}`
-      : '-',
-    isPaid: inst.isPaid,
-    isLate: inst.isLate,
-    rawData: inst,
-  }));
+  );
 
   // Prepare images for display
   const titleDeedImage = loan?.application?.titleDeedImage;
-  const supportingImages = loan?.application?.supportingImages 
-    ? (typeof loan.application.supportingImages === 'string' 
-        ? JSON.parse(loan.application.supportingImages) 
-        : loan.application.supportingImages)
+  const supportingImages = loan?.application?.supportingImages
+    ? typeof loan.application.supportingImages === 'string'
+      ? JSON.parse(loan.application.supportingImages)
+      : loan.application.supportingImages
     : [];
 
   // Create images array with fallbacks
   const allImages: string[] = [];
-  
+
   // Add title deed image or fallback
   if (titleDeedImage) {
     allImages.push(titleDeedImage);
   } else {
     allImages.push('/images/loan.png');
   }
-  
+
   // Add supporting images or fallbacks
   if (supportingImages && supportingImages.length > 0) {
     allImages.push(...supportingImages);
@@ -204,7 +213,7 @@ export function ProductDetailsAnalyticsSheet({
     totalAmount: number;
   } | null>(null);
   const [paymentTab, setPaymentTab] = useState('partial'); // 'partial' or 'full'
-  
+
   // Payment form state
   const [paymentForm, setPaymentForm] = useState({
     installmentNumber: '',
@@ -477,191 +486,202 @@ export function ProductDetailsAnalyticsSheet({
                       </CardContent>
                     </Card>
 
-          
-                         {/* Analytics */}
-                         <Card className="rounded-md">
-                  <CardHeader className="min-h-[34px] bg-accent/50">
-                    <CardTitle className="text-2sm">การวิเคราะห์ (In development)</CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
-                    <div className="space-y-1">
-                      <div className="text-2sm font-normal text-secondary-foreground">
-                        Demo...
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-lg font-semibold text-foreground">
-                          $0,000,000.00
-                        </span>
-                        <Badge size="xs" variant="success" appearance="light">
-                          <TrendingUp />
-                          3.5%
-                        </Badge>
-                      </div>
-
-                      {/* Recharts Area Chart */}
-                      <div className="relative">
-                        <div className="h-[100px] w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart
-                              data={salesPriceData}
-                              margin={{
-                                top: 5,
-                                right: 5,
-                                left: 5,
-                                bottom: 5,
-                              }}
+                    {/* Analytics */}
+                    <Card className="rounded-md">
+                      <CardHeader className="min-h-[34px] bg-accent/50">
+                        <CardTitle className="text-2sm">
+                          การวิเคราะห์ (In development)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
+                        <div className="space-y-1">
+                          <div className="text-2sm font-normal text-secondary-foreground">
+                            Demo...
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-lg font-semibold text-foreground">
+                              $0,000,000.00
+                            </span>
+                            <Badge
+                              size="xs"
+                              variant="success"
+                              appearance="light"
                             >
-                              <defs>
-                                <linearGradient
-                                  id="salesPriceGradient"
-                                  x1="0"
-                                  y1="0"
-                                  x2="0"
-                                  y2="1"
-                                >
-                                  <stop
-                                    offset="0%"
-                                    stopColor="#4921EA"
-                                    stopOpacity={0.15}
-                                  />
-                                  <stop
-                                    offset="100%"
-                                    stopColor="#4921EA"
-                                    stopOpacity={0.02}
-                                  />
-                                </linearGradient>
-                              </defs>
-                              <Tooltip
-                                cursor={{
-                                  stroke: '#4921EA',
-                                  strokeWidth: 1,
-                                  strokeDasharray: '2 2',
-                                }}
-                                content={({ active, payload }) => {
-                                  if (active && payload && payload.length) {
-                                    const value = payload[0].value as number;
-                                    return (
-                                      <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                        <p className="text-sm font-semibold text-foreground">
-                                          ${value}
-                                        </p>
-                                      </div>
-                                    );
-                                  }
-                                  return null;
-                                }}
-                              />
-                              <Area
-                                type="monotone"
-                                dataKey="value"
-                                stroke="#4921EA"
-                                fill="url(#salesPriceGradient)"
-                                strokeWidth={1}
-                                dot={false}
-                                activeDot={{
-                                  r: 4,
-                                  fill: '#4921EA',
-                                  stroke: 'white',
-                                  strokeWidth: 2,
-                                }}
-                              />
-                            </AreaChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
+                              <TrendingUp />
+                              3.5%
+                            </Badge>
+                          </div>
 
-                    <div className="space-y-1">
-                      <div className="text-2sm font-normal text-secondary-foreground">
-                        Demo..
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-lg font-semibold text-foreground">
-                          0,000.00
-                        </span>
-                        <Badge size="xs" variant="success" appearance="light">
-                          <TrendingUp />
-                          18%
-                        </Badge>
-                        {/* <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
+                          {/* Recharts Area Chart */}
+                          <div className="relative">
+                            <div className="h-[100px] w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                  data={salesPriceData}
+                                  margin={{
+                                    top: 5,
+                                    right: 5,
+                                    left: 5,
+                                    bottom: 5,
+                                  }}
+                                >
+                                  <defs>
+                                    <linearGradient
+                                      id="salesPriceGradient"
+                                      x1="0"
+                                      y1="0"
+                                      x2="0"
+                                      y2="1"
+                                    >
+                                      <stop
+                                        offset="0%"
+                                        stopColor="#4921EA"
+                                        stopOpacity={0.15}
+                                      />
+                                      <stop
+                                        offset="100%"
+                                        stopColor="#4921EA"
+                                        stopOpacity={0.02}
+                                      />
+                                    </linearGradient>
+                                  </defs>
+                                  <Tooltip
+                                    cursor={{
+                                      stroke: '#4921EA',
+                                      strokeWidth: 1,
+                                      strokeDasharray: '2 2',
+                                    }}
+                                    content={({ active, payload }) => {
+                                      if (active && payload && payload.length) {
+                                        const value = payload[0]
+                                          .value as number;
+                                        return (
+                                          <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                            <p className="text-sm font-semibold text-foreground">
+                                              ${value}
+                                            </p>
+                                          </div>
+                                        );
+                                      }
+                                      return null;
+                                    }}
+                                  />
+                                  <Area
+                                    type="monotone"
+                                    dataKey="value"
+                                    stroke="#4921EA"
+                                    fill="url(#salesPriceGradient)"
+                                    strokeWidth={1}
+                                    dot={false}
+                                    activeDot={{
+                                      r: 4,
+                                      fill: '#4921EA',
+                                      stroke: 'white',
+                                      strokeWidth: 2,
+                                    }}
+                                  />
+                                </AreaChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="text-2sm font-normal text-secondary-foreground">
+                            Demo..
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-lg font-semibold text-foreground">
+                              0,000.00
+                            </span>
+                            <Badge
+                              size="xs"
+                              variant="success"
+                              appearance="light"
+                            >
+                              <TrendingUp />
+                              18%
+                            </Badge>
+                            {/* <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
                           0,000,000.00
                         </span> */}
-                      </div>
+                          </div>
 
-                      {/* Recharts Area Chart */}
-                      <div className="relative">
-                        <div className="h-[100px] w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart
-                              data={salesData}
-                              margin={{
-                                top: 5,
-                                right: 5,
-                                left: 5,
-                                bottom: 5,
-                              }}
-                            >
-                              <defs>
-                                <linearGradient
-                                  id="salesGradient"
-                                  x1="0"
-                                  y1="0"
-                                  x2="0"
-                                  y2="1"
+                          {/* Recharts Area Chart */}
+                          <div className="relative">
+                            <div className="h-[100px] w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                  data={salesData}
+                                  margin={{
+                                    top: 5,
+                                    right: 5,
+                                    left: 5,
+                                    bottom: 5,
+                                  }}
                                 >
-                                  <stop
-                                    offset="0%"
-                                    stopColor="#4921EA"
-                                    stopOpacity={0.15}
+                                  <defs>
+                                    <linearGradient
+                                      id="salesGradient"
+                                      x1="0"
+                                      y1="0"
+                                      x2="0"
+                                      y2="1"
+                                    >
+                                      <stop
+                                        offset="0%"
+                                        stopColor="#4921EA"
+                                        stopOpacity={0.15}
+                                      />
+                                      <stop
+                                        offset="100%"
+                                        stopColor="#4921EA"
+                                        stopOpacity={0.02}
+                                      />
+                                    </linearGradient>
+                                  </defs>
+                                  <Tooltip
+                                    cursor={{
+                                      stroke: '#4921EA',
+                                      strokeWidth: 1,
+                                      strokeDasharray: '2 2',
+                                    }}
+                                    content={({ active, payload }) => {
+                                      if (active && payload && payload.length) {
+                                        const value = payload[0]
+                                          .value as number;
+                                        return (
+                                          <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                            <p className="text-sm font-semibold text-foreground">
+                                              {value}
+                                            </p>
+                                          </div>
+                                        );
+                                      }
+                                      return null;
+                                    }}
                                   />
-                                  <stop
-                                    offset="100%"
-                                    stopColor="#4921EA"
-                                    stopOpacity={0.02}
+                                  <Area
+                                    type="monotone"
+                                    dataKey="value"
+                                    stroke="#4921EA"
+                                    fill="url(#salesGradient)"
+                                    strokeWidth={1}
+                                    dot={false}
+                                    activeDot={{
+                                      r: 4,
+                                      fill: '#4921EA',
+                                      stroke: 'white',
+                                      strokeWidth: 2,
+                                    }}
                                   />
-                                </linearGradient>
-                              </defs>
-                              <Tooltip
-                                cursor={{
-                                  stroke: '#4921EA',
-                                  strokeWidth: 1,
-                                  strokeDasharray: '2 2',
-                                }}
-                                content={({ active, payload }) => {
-                                  if (active && payload && payload.length) {
-                                    const value = payload[0].value as number;
-                                    return (
-                                      <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                        <p className="text-sm font-semibold text-foreground">
-                                          {value}
-                                        </p>
-                                      </div>
-                                    );
-                                  }
-                                  return null;
-                                }}
-                              />
-                              <Area
-                                type="monotone"
-                                dataKey="value"
-                                stroke="#4921EA"
-                                fill="url(#salesGradient)"
-                                strokeWidth={1}
-                                dot={false}
-                                activeDot={{
-                                  r: 4,
-                                  fill: '#4921EA',
-                                  stroke: 'white',
-                                  strokeWidth: 2,
-                                }}
-                              />
-                            </AreaChart>
-                          </ResponsiveContainer>
+                                </AreaChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
 
                     {/* Payment Schedule table */}
                     <Card className="rounded-md">
@@ -669,7 +689,6 @@ export function ProductDetailsAnalyticsSheet({
                         <CardTitle className="text-2sm">
                           ตารางการชำระเงิน
                         </CardTitle>
-                
                       </CardHeader>
 
                       <CardContent className="p-0">
@@ -704,103 +723,120 @@ export function ProductDetailsAnalyticsSheet({
                               </TableRow>
                             </TableHeader>
 
-                          <TableBody>
-                            {paymentSchedule.length > 0 ? (
-                              paymentSchedule.map((payment: {
-                                id: string;
-                                installment: string;
-                                receiver: string;
-                                amount: string;
-                                remainingInterest: number;
-                                dueDate: string;
-                                paidDate: string;
-                                status: string;
-                                isLate: boolean;
-                                isPaid: boolean;
-                                totalAmount: number;
-                              }, index: number) => (
-                                  <TableRow
-                                    key={payment.id}
-                                    className={`text-secondary-foreground font-normal text-2sm ${index % 2 === 0 ? 'bg-accent/50' : ''}`}
-                                  >
-                                    <TableCell className="py-2 border-e border-border ps-5">
-                                      {payment.installment}
-                                    </TableCell>
-                                    <TableCell className="py-2 border-e border-border">
-                                      {payment.receiver}
-                                    </TableCell>
-                                    <TableCell className="py-2 border-e border-border text-right pe-3">
-                                      {payment.amount}
-                                    </TableCell>
-                                    <TableCell className="py-2 border-e border-border text-right pe-3">
-                                      ฿{payment.remainingInterest.toLocaleString()}
-                                    </TableCell>
-                                    <TableCell className="py-2 border-e border-border">
-                                      {payment.dueDate}
-                                    </TableCell>
-                                    <TableCell className="py-2 border-e border-border">
-                                      {payment.paidDate}
-                                    </TableCell>
-                                    <TableCell className="py-2 border-e border-border">
-                                      <Badge
-                                        variant={
-                                          payment.status === 'ชำระแล้ว'
-                                            ? 'success'
-                                            : payment.isLate
-                                              ? 'destructive'
-                                              : 'warning'
-                                        }
-                                        appearance="light"
-                                        size="sm"
-                                      >
-                                        {payment.status}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-center py-2">
-                                      {!payment.isPaid && (
-                                        <Button
-                                          variant="mono"
+                            <TableBody>
+                              {paymentSchedule.length > 0 ? (
+                                paymentSchedule.map(
+                                  (
+                                    payment: {
+                                      id: string;
+                                      installment: string;
+                                      receiver: string;
+                                      amount: string;
+                                      remainingInterest: number;
+                                      dueDate: string;
+                                      paidDate: string;
+                                      status: string;
+                                      isLate: boolean;
+                                      isPaid: boolean;
+                                      totalAmount: number;
+                                    },
+                                    index: number,
+                                  ) => (
+                                    <TableRow
+                                      key={payment.id}
+                                      className={`text-secondary-foreground font-normal text-2sm ${index % 2 === 0 ? 'bg-accent/50' : ''}`}
+                                    >
+                                      <TableCell className="py-2 border-e border-border ps-5">
+                                        {payment.installment}
+                                      </TableCell>
+                                      <TableCell className="py-2 border-e border-border">
+                                        {payment.receiver}
+                                      </TableCell>
+                                      <TableCell className="py-2 border-e border-border text-right pe-3">
+                                        {payment.amount}
+                                      </TableCell>
+                                      <TableCell className="py-2 border-e border-border text-right pe-3">
+                                        ฿
+                                        {payment.remainingInterest.toLocaleString()}
+                                      </TableCell>
+                                      <TableCell className="py-2 border-e border-border">
+                                        {payment.dueDate}
+                                      </TableCell>
+                                      <TableCell className="py-2 border-e border-border">
+                                        {payment.paidDate}
+                                      </TableCell>
+                                      <TableCell className="py-2 border-e border-border">
+                                        <Badge
+                                          variant={
+                                            payment.status === 'ชำระแล้ว'
+                                              ? 'success'
+                                              : payment.isLate
+                                                ? 'destructive'
+                                                : 'warning'
+                                          }
+                                          appearance="light"
                                           size="sm"
-                                          onClick={() => {
-                                            setSelectedInstallment(payment);
-                                            setIsPaymentDialogOpen(true);
-                                          }}
                                         >
-                                          ชำระสินเชื่อ
-                                        </Button>
-                                      )}
-                                    </TableCell>
-                                  </TableRow>
-                              ))
-                            ) : (
-                              <TableRow>
-                                <TableCell colSpan={8} className="text-center py-8">
-                                  {isLoading ? (
-                                    <span className="text-muted-foreground">กำลังโหลดข้อมูล...</span>
-                                  ) : (
-                                    <div className="flex flex-col items-center gap-3">
-                                      <p className="text-muted-foreground">ยังไม่มีข้อมูลตารางผ่อนชำระ</p>
-                                      {loan && (
-                                        <Button
-                                          variant="mono"
-                                          onClick={() => {
-                                            if (loanId) {
-                                              generateInstallments.mutate(loanId);
+                                          {payment.status}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell className="text-center py-2">
+                                        {!payment.isPaid && (
+                                          <Button
+                                            variant="mono"
+                                            size="sm"
+                                            onClick={() => {
+                                              setSelectedInstallment(payment);
+                                              setIsPaymentDialogOpen(true);
+                                            }}
+                                          >
+                                            ชำระสินเชื่อ
+                                          </Button>
+                                        )}
+                                      </TableCell>
+                                    </TableRow>
+                                  ),
+                                )
+                              ) : (
+                                <TableRow>
+                                  <TableCell
+                                    colSpan={8}
+                                    className="text-center py-8"
+                                  >
+                                    {isLoading ? (
+                                      <span className="text-muted-foreground">
+                                        กำลังโหลดข้อมูล...
+                                      </span>
+                                    ) : (
+                                      <div className="flex flex-col items-center gap-3">
+                                        <p className="text-muted-foreground">
+                                          ยังไม่มีข้อมูลตารางผ่อนชำระ
+                                        </p>
+                                        {loan && (
+                                          <Button
+                                            variant="mono"
+                                            onClick={() => {
+                                              if (loanId) {
+                                                generateInstallments.mutate(
+                                                  loanId,
+                                                );
+                                              }
+                                            }}
+                                            disabled={
+                                              generateInstallments.isPending
                                             }
-                                          }}
-                                          disabled={generateInstallments.isPending}
-                                        >
-                                          {generateInstallments.isPending
-                                            ? 'กำลังสร้าง...'
-                                            : 'สร้างตารางผ่อนชำระ'}
-                                        </Button>
-                                      )}
-                                    </div>
-                                  )}
-                                </TableCell>
-                              </TableRow>
-                            )}
-                          </TableBody>
+                                          >
+                                            {generateInstallments.isPending
+                                              ? 'กำลังสร้าง...'
+                                              : 'สร้างตารางผ่อนชำระ'}
+                                          </Button>
+                                        )}
+                                      </div>
+                                    )}
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
                           </Table>
                         </div>
                       </CardContent>
@@ -811,18 +847,21 @@ export function ProductDetailsAnalyticsSheet({
                     <div className="mb-5">
                       <Card className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 mb-5">
                         <img
-                          src={allImages[selectedImageIndex] || '/images/loan.png'}
+                          src={
+                            allImages[selectedImageIndex] || '/images/loan.png'
+                          }
                           className="h-[250px] shrink-0 object-cover w-full rounded-md"
                           alt="รูปหลักประกัน/โฉนด"
                         />
                       </Card>
 
                       <ToggleGroup
-                         className="grid grid-cols-5 gap-4"
+                        className="grid grid-cols-5 gap-4"
                         type="single"
                         value={selectedImageIndex.toString()}
                         onValueChange={(newValue) => {
-                          if (newValue) setSelectedImageIndex(parseInt(newValue));
+                          if (newValue)
+                            setSelectedImageIndex(parseInt(newValue));
                         }}
                       >
                         {allImages.slice(0, 5).map((image, index) => (
@@ -841,7 +880,9 @@ export function ProductDetailsAnalyticsSheet({
                       </ToggleGroup>
                     </div>
                     <p className="text-2sm font-normal text-secondary-foreground leading-5 mb-5">
-                      รายละเอียด (In development): Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum voluptatum temporibus officia.
+                      รายละเอียด (In development): Lorem ipsum dolor sit amet
+                      consectetur adipisicing elit. Hic dolorum voluptatum
+                      temporibus officia.
                     </p>
 
                     <hr className="my-5 border-border" />
@@ -873,7 +914,8 @@ export function ProductDetailsAnalyticsSheet({
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="primary" appearance="light">
-                            {loan ? Number(loan.interestRate).toFixed(2) : '0'}% ต่อปี
+                            {loan ? Number(loan.interestRate).toFixed(2) : '0'}%
+                            ต่อปี
                           </Badge>
                         </div>
                       </div>
@@ -892,8 +934,10 @@ export function ProductDetailsAnalyticsSheet({
                           สถานที่
                         </div>
                         <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.application?.propertyLocation || '-'} 
-                          {loan?.application?.propertyArea ? ` (${loan.application.propertyArea})` : ''}
+                          {loan?.application?.propertyLocation || '-'}
+                          {loan?.application?.propertyArea
+                            ? ` (${loan.application.propertyArea})`
+                            : ''}
                         </div>
                       </div>
                       <div className="flex items-center lg:gap-13 gap-5">
@@ -901,7 +945,9 @@ export function ProductDetailsAnalyticsSheet({
                           โฉนด
                         </div>
                         <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.titleDeedNumber || loan?.application?.landNumber || '-'}
+                          {loan?.titleDeedNumber ||
+                            loan?.application?.landNumber ||
+                            '-'}
                         </div>
                       </div>
                       <div className="flex items-center lg:gap-13 gap-5">
@@ -1006,169 +1052,179 @@ export function ProductDetailsAnalyticsSheet({
               <TabsTrigger value="full">ปิดสินเชื่อ</TabsTrigger>
             </TabsList>
 
-                            <TabsContent value="partial" className="space-y-6 pt-4">
-                              {selectedInstallment && (
-                                <>
-                                  {/* รายละเอียดผู้กู้ */}
-                                  <div>
-                                    <h3 className="text-base font-semibold mb-4 text-[#B8860B]">
-                                      รายละเอียดผู้กู้
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="borrower">
-                                          ผู้กู้ <span className="text-destructive">*</span>
-                                        </Label>
-                                        <Input
-                                          id="borrower"
-                                          value={loan ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim() : '-'}
-                                          disabled
-                                          className="bg-muted"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="receiver">
-                                          ผู้รับชำระ <span className="text-destructive">*</span>
-                                        </Label>
-                                        <Input
-                                          id="receiver"
-                                          value={paymentForm.receiver}
-                                          onChange={(e) =>
-                                            setPaymentForm({
-                                              ...paymentForm,
-                                              receiver: e.target.value,
-                                            })
-                                          }
-                                          placeholder="ระบุผู้รับชำระ"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="installment">งวดที่</Label>
-                                        <Input
-                                          id="installment"
-                                          value={selectedInstallment.installment || ''}
-                                          disabled
-                                          className="bg-muted"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="amount">
-                                          ยอดต้นชำระ <span className="text-destructive">*</span>
-                                        </Label>
-                                        <div className="relative">
-                                          <Input
-                                            id="amount"
-                                            type="text"
-                                            value={
-                                              selectedInstallment.totalAmount?.toLocaleString() ||
-                                              '0'
-                                            }
-                                            disabled
-                                            className="bg-muted pr-12"
-                                          />
-                                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                            บาท
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="paymentDate">วันที่ชำระ</Label>
-                                        <Input
-                                          id="paymentDate"
-                                          type="date"
-                                          value={paymentForm.paymentDate}
-                                          onChange={(e) =>
-                                            setPaymentForm({
-                                              ...paymentForm,
-                                              paymentDate: e.target.value,
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="paymentMethod">
-                                          ช่องทางการชำระ <span className="text-destructive">*</span>
-                                        </Label>
-                                        <Select
-                                          value={paymentForm.paymentMethod}
-                                          onValueChange={(value) =>
-                                            setPaymentForm({ ...paymentForm, paymentMethod: value })
-                                          }
-                                        >
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="เลือกการชำระ" />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="cash">เงินสด</SelectItem>
-                                            <SelectItem value="transfer">โอนเงิน</SelectItem>
-                                            <SelectItem value="qr">QR Code</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-                                    </div>
-                                  </div>
+            <TabsContent value="partial" className="space-y-6 pt-4">
+              {selectedInstallment && (
+                <>
+                  {/* รายละเอียดผู้กู้ */}
+                  <div>
+                    <h3 className="text-base font-semibold mb-4 text-[#B8860B]">
+                      รายละเอียดผู้กู้
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="borrower">
+                          ผู้กู้ <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="borrower"
+                          value={
+                            loan
+                              ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim()
+                              : '-'
+                          }
+                          disabled
+                          className="bg-muted"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="receiver">
+                          ผู้รับชำระ <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="receiver"
+                          value={paymentForm.receiver}
+                          onChange={(e) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              receiver: e.target.value,
+                            })
+                          }
+                          placeholder="ระบุผู้รับชำระ"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="installment">งวดที่</Label>
+                        <Input
+                          id="installment"
+                          value={selectedInstallment.installment || ''}
+                          disabled
+                          className="bg-muted"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="amount">
+                          ยอดต้นชำระ <span className="text-destructive">*</span>
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="amount"
+                            type="text"
+                            value={
+                              selectedInstallment.totalAmount?.toLocaleString() ||
+                              '0'
+                            }
+                            disabled
+                            className="bg-muted pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            บาท
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="paymentDate">วันที่ชำระ</Label>
+                        <Input
+                          id="paymentDate"
+                          type="date"
+                          value={paymentForm.paymentDate}
+                          onChange={(e) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              paymentDate: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="paymentMethod">
+                          ช่องทางการชำระ{' '}
+                          <span className="text-destructive">*</span>
+                        </Label>
+                        <Select
+                          value={paymentForm.paymentMethod}
+                          onValueChange={(value) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              paymentMethod: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="เลือกการชำระ" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="cash">เงินสด</SelectItem>
+                            <SelectItem value="transfer">โอนเงิน</SelectItem>
+                            <SelectItem value="qr">QR Code</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
 
-                                  {/* ข้อมูลการคำนวนรายการสินเชื่อ */}
-                                  <div>
-                                    <h3 className="text-base font-semibold mb-4 text-[#B8860B]">
-                                      ข้อมูลการคำนวนรายการสินเชื่อ
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="systemAmount">
-                                          ยอดต้นชำระ-ระบบทั้งสิ้น
-                                        </Label>
-                                        <div className="relative">
-                                          <Input
-                                            id="systemAmount"
-                                            type="text"
-                                            value={
-                                              selectedInstallment.totalAmount?.toLocaleString() ||
-                                              '0'
-                                            }
-                                            disabled
-                                            className="bg-muted pr-12"
-                                          />
-                                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                            บาท
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="totalLoan">ยอดสินเชื่อรวม</Label>
-                                        <div className="relative">
-                                          <Input
-                                            id="totalLoan"
-                                            type="text"
-                                            value={Number(loan?.remainingBalance || 0).toLocaleString()}
-                                            disabled
-                                            className="bg-muted pr-12"
-                                          />
-                                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                            บาท
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                  {/* ข้อมูลการคำนวนรายการสินเชื่อ */}
+                  <div>
+                    <h3 className="text-base font-semibold mb-4 text-[#B8860B]">
+                      ข้อมูลการคำนวนรายการสินเชื่อ
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="systemAmount">
+                          ยอดต้นชำระ-ระบบทั้งสิ้น
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="systemAmount"
+                            type="text"
+                            value={
+                              selectedInstallment.totalAmount?.toLocaleString() ||
+                              '0'
+                            }
+                            disabled
+                            className="bg-muted pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            บาท
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="totalLoan">ยอดสินเชื่อรวม</Label>
+                        <div className="relative">
+                          <Input
+                            id="totalLoan"
+                            type="text"
+                            value={Number(
+                              loan?.remainingBalance || 0,
+                            ).toLocaleString()}
+                            disabled
+                            className="bg-muted pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            บาท
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                                  {/* Buttons */}
-                                  <div className="flex justify-end">
-                                    <Button
-                                      variant="mono"
-                                      className="w-full"
-                                      onClick={() => {
-                                        // TODO: Implement payment submission
-                                        console.log('Payment submitted:', paymentForm);
-                                        setIsPaymentDialogOpen(false);
-                                      }}
-                                    >
-                                      บันทึก
-                                    </Button>
-                                  </div>
-                                </>
-                              )}
-                            </TabsContent>
+                  {/* Buttons */}
+                  <div className="flex justify-end">
+                    <Button
+                      variant="mono"
+                      className="w-full"
+                      onClick={() => {
+                        // TODO: Implement payment submission
+                        console.log('Payment submitted:', paymentForm);
+                        setIsPaymentDialogOpen(false);
+                      }}
+                    >
+                      บันทึก
+                    </Button>
+                  </div>
+                </>
+              )}
+            </TabsContent>
 
             <TabsContent value="full" className="space-y-6 pt-4">
               {loan && (
@@ -1208,13 +1264,16 @@ export function ProductDetailsAnalyticsSheet({
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="closeTotalAmount">
-                          ยอดชำระทั้งหมด <span className="text-destructive">*</span>
+                          ยอดชำระทั้งหมด{' '}
+                          <span className="text-destructive">*</span>
                         </Label>
                         <div className="relative">
                           <Input
                             id="closeTotalAmount"
                             type="text"
-                            value={Number(loan.remainingBalance || 0).toLocaleString()}
+                            value={Number(
+                              loan.remainingBalance || 0,
+                            ).toLocaleString()}
                             disabled
                             className="bg-muted pr-12"
                           />
@@ -1239,12 +1298,16 @@ export function ProductDetailsAnalyticsSheet({
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="closePaymentMethod">
-                          ช่องทางการชำระ <span className="text-destructive">*</span>
+                          ช่องทางการชำระ{' '}
+                          <span className="text-destructive">*</span>
                         </Label>
                         <Select
                           value={closeLoanForm.paymentMethod}
                           onValueChange={(value) =>
-                            setCloseLoanForm({ ...closeLoanForm, paymentMethod: value })
+                            setCloseLoanForm({
+                              ...closeLoanForm,
+                              paymentMethod: value,
+                            })
                           }
                         >
                           <SelectTrigger>
@@ -1274,7 +1337,9 @@ export function ProductDetailsAnalyticsSheet({
                           <Input
                             id="closeSystemAmount"
                             type="text"
-                            value={Number(loan.remainingBalance || 0).toLocaleString()}
+                            value={Number(
+                              loan.remainingBalance || 0,
+                            ).toLocaleString()}
                             disabled
                             className="bg-muted pr-12"
                           />

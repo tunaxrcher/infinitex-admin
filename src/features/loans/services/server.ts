@@ -214,15 +214,15 @@ export const loanService = {
       // Step 5: สร้างตารางผ่อนชำระ (LoanInstallments)
       const totalLoanAmount = loanAmount * (1 + interestRate / 100);
       const installmentsData = [];
-      
+
       for (let i = 1; i <= termMonths; i++) {
         const dueDate = new Date(contractDate);
         dueDate.setMonth(dueDate.getMonth() + i);
-        
+
         // คำนวณดอกเบี้ยและเงินต้นในแต่ละงวด
-        const interestAmount = (loanAmount * interestRate / 100) / termMonths;
+        const interestAmount = (loanAmount * interestRate) / 100 / termMonths;
         const principalAmount = monthlyPayment - interestAmount;
-        
+
         installmentsData.push({
           loanId: newLoan.id,
           installmentNumber: i,
@@ -234,7 +234,7 @@ export const loanService = {
           isLate: false,
         });
       }
-      
+
       await tx.loanInstallment.createMany({
         data: installmentsData,
       });
@@ -497,15 +497,15 @@ export const loanService = {
     const contractDate = new Date(loan.contractDate);
 
     const installmentsData = [];
-    
+
     for (let i = 1; i <= termMonths; i++) {
       const dueDate = new Date(contractDate);
       dueDate.setMonth(dueDate.getMonth() + i);
-      
+
       // คำนวณดอกเบี้ยและเงินต้นในแต่ละงวด
-      const interestAmount = (loanAmount * interestRate / 100) / termMonths;
+      const interestAmount = (loanAmount * interestRate) / 100 / termMonths;
       const principalAmount = monthlyPayment - interestAmount;
-      
+
       installmentsData.push({
         loanId: id,
         installmentNumber: i,
@@ -517,7 +517,7 @@ export const loanService = {
         isLate: false,
       });
     }
-    
+
     await prisma.loanInstallment.createMany({
       data: installmentsData,
     });
