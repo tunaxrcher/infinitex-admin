@@ -472,4 +472,57 @@ export const loanService = {
       return { success: true };
     });
   },
+
+  async generateInstallments(id: string) {
+    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
+    const loan = await this.getById(id);
+    if (!loan) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    // ตรวจสอบว่ามี installments อยู่แล้วหรือไม่
+    const existingInstallments = await prisma.loanInstallment.count({
+      where: { loanId: id },
+    });
+
+    if (existingInstallments > 0) {
+      throw new Error('สินเชื่อนี้มีตารางผ่อนชำระอยู่แล้ว');
+    }
+
+    // สร้างตารางผ่อนชำระ
+    const loanAmount = Number(loan.principalAmount);
+    const interestRate = Number(loan.interestRate);
+    const termMonths = loan.termMonths;
+    const monthlyPayment = Number(loan.monthlyPayment);
+    const contractDate = new Date(loan.contractDate);
+
+    const installmentsData = [];
+    
+    for (let i = 1; i <= termMonths; i++) {
+      const dueDate = new Date(contractDate);
+      dueDate.setMonth(dueDate.getMonth() + i);
+      
+      // คำนวณดอกเบี้ยและเงินต้นในแต่ละงวด
+      const interestAmount = (loanAmount * interestRate / 100) / termMonths;
+      const principalAmount = monthlyPayment - interestAmount;
+      
+      installmentsData.push({
+        loanId: id,
+        installmentNumber: i,
+        dueDate,
+        principalAmount,
+        interestAmount,
+        totalAmount: monthlyPayment,
+        isPaid: false,
+        isLate: false,
+      });
+    }
+    
+    await prisma.loanInstallment.createMany({
+      data: installmentsData,
+    });
+
+    // ดึงข้อมูลใหม่พร้อม installments
+    return this.getById(id);
+  },
 };

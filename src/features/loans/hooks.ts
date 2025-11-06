@@ -123,3 +123,18 @@ export const useRejectLoan = () => {
     },
   });
 };
+
+export const useGenerateInstallments = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => loanApi.generateInstallments(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: loanKeys.detail(id) });
+      queryClient.refetchQueries({ queryKey: loanKeys.detail(id) });
+      toast.success('สร้างตารางผ่อนชำระสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};

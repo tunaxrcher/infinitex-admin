@@ -99,4 +99,15 @@ export const loanApi = {
     }
     return response.json();
   },
+
+  generateInstallments: async (id: string) => {
+    const response = await apiFetch(`/api/loans/${id}/generate-installments`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
 };
