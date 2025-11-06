@@ -75,73 +75,71 @@ export function ProductDetailsAnalyticsSheet({
     }
   };
 
-  // Chart data for Payment History (งวดที่ชำระ)
-  const paymentHistoryData = [
-    { value: 220000 },
-    { value: 220000 },
-    { value: 220000 },
-    { value: 220000 },
-    { value: 220000 },
-    { value: 220000 },
-    { value: 220000 },
-  ];
+  // Get installments from loan data
+  const installments = loan?.installments || [];
+  const paidInstallments = installments.filter((inst: any) => inst.isPaid);
+  
+  // Chart data for Payment History (งวดที่ชำระ) - last 7 paid installments
+  const paymentHistoryData = paidInstallments
+    .slice(-7)
+    .map((inst: any) => ({
+      value: Number(inst.paidAmount || 0),
+    }));
 
   // Chart data for Outstanding Balance (ยอดคงเหลือ)
-  const outstandingBalanceData = [
-    { value: 2640000 },
-    { value: 2420000 },
-    { value: 2200000 },
-    { value: 1980000 },
-    { value: 1760000 },
-    { value: 1540000 },
-    { value: 1320000 },
-  ];
+  // Calculate remaining balance after each paid installment
+  const outstandingBalanceData = (() => {
+    if (!loan) return [];
+    
+    let balance = Number(loan.principalAmount) * (1 + Number(loan.interestRate) / 100);
+    const data = [];
+    
+    // Get last 7 installments (or all if less than 7)
+    const lastInstallments = installments.slice(0, 7);
+    
+    for (const inst of lastInstallments) {
+      if (inst.isPaid) {
+        balance -= Number(inst.totalAmount || 0);
+      }
+      data.push({ value: Math.max(0, balance) });
+    }
+    
+    return data.reverse(); // Reverse to show oldest first
+  })();
 
-  // Payment schedule table (ตารางการชำระเงิน)
-  const paymentSchedule = [
-    {
-      installment: '1',
-      dueDate: '25 พ.ย. 2568',
-      amount: '฿220,000',
-      status: 'ชำระแล้ว',
-      paidAmount: '฿220,000',
-    },
-    {
-      installment: '2',
-      dueDate: '25 ธ.ค. 2568',
-      amount: '฿220,000',
-      status: 'ชำระแล้ว',
-      paidAmount: '฿220,000',
-    },
-    {
-      installment: '3',
-      dueDate: '25 ม.ค. 2569',
-      amount: '฿220,000',
-      status: 'รอชำระ',
-      paidAmount: '-',
-    },
-    {
-      installment: '4',
-      dueDate: '25 ก.พ. 2569',
-      amount: '฿220,000',
-      status: 'รอชำระ',
-      paidAmount: '-',
-    },
-    {
-      installment: '5',
-      dueDate: '25 มี.ค. 2569',
-      amount: '฿220,000',
-      status: 'รอชำระ',
-      paidAmount: '-',
-    },
-    {
-      installment: '6',
-      dueDate: '25 เม.ย. 2569',
-      amount: '฿220,000',
-      status: 'รอชำระ',
-      paidAmount: '-',
-    },
-  ];
+  // Payment schedule table (ตารางการชำระเงิน) - show all installments
+  const paymentSchedule = installments.map((inst: any) => ({
+    installment: inst.installmentNumber.toString(),
+    dueDate: new Date(inst.dueDate).toLocaleDateString('th-TH', {
+      year: '2-digit',
+      month: 'short',
+      day: 'numeric',
+    }),
+    amount: `฿${Number(inst.totalAmount).toLocaleString()}`,
+    status: inst.isPaid ? 'ชำระแล้ว' : inst.isLate ? 'เกินกำหนด' : 'รอชำระ',
+    paidAmount: inst.isPaid
+      ? `฿${Number(inst.paidAmount).toLocaleString()}`
+      : '-',
+    isLate: inst.isLate,
+  }));
+
+  // Calculate total paid and average payment
+  const totalPaid = paidInstallments.reduce(
+    (sum: number, inst: any) => sum + Number(inst.paidAmount || 0),
+    0,
+  );
+  const avgPayment = paidInstallments.length > 0 
+    ? totalPaid / paidInstallments.length 
+    : 0;
+  
+  // Calculate percentage change in balance
+  const initialBalance = loan 
+    ? Number(loan.principalAmount) * (1 + Number(loan.interestRate) / 100)
+    : 0;
+  const currentBalance = Number(loan?.remainingBalance || 0);
+  const balanceChangePercent = initialBalance > 0
+    ? ((initialBalance - currentBalance) / initialBalance) * 100
+    : 0;
 
   const [selectedImage, setSelectedImage] = useState('title-deed-example1');
   const [activeTab, setActiveTab] = useState('details');
@@ -414,88 +412,94 @@ export function ProductDetailsAnalyticsSheet({
                           </div>
                           <div className="flex items-center gap-1.5">
                             <span className="text-lg font-semibold text-foreground">
-                              ฿220,000
+                              ฿{Math.round(avgPayment).toLocaleString()}
                             </span>
                             <Badge
                               size="xs"
-                              variant="success"
+                              variant={paidInstallments.some((inst: any) => inst.isLate) ? 'warning' : 'success'}
                               appearance="light"
                             >
                               <TrendingUp />
-                              ตรงเวลา
+                              {paidInstallments.some((inst: any) => inst.isLate) ? 'มีการชำระล่าช้า' : 'ตรงเวลา'}
                             </Badge>
                           </div>
 
                           {/* Recharts Area Chart */}
                           <div className="relative">
                             <div className="h-[100px] w-full">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                  data={paymentHistoryData}
-                                  margin={{
-                                    top: 5,
-                                    right: 5,
-                                    left: 5,
-                                    bottom: 5,
-                                  }}
-                                >
-                                  <defs>
-                                    <linearGradient
-                                      id="paymentHistoryGradient"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1"
-                                    >
-                                      <stop
-                                        offset="0%"
-                                        stopColor="#16a34a"
-                                        stopOpacity={0.15}
-                                      />
-                                      <stop
-                                        offset="100%"
-                                        stopColor="#16a34a"
-                                        stopOpacity={0.02}
-                                      />
-                                    </linearGradient>
-                                  </defs>
-                                  <Tooltip
-                                    cursor={{
-                                      stroke: '#16a34a',
-                                      strokeWidth: 1,
-                                      strokeDasharray: '2 2',
+                              {paymentHistoryData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <AreaChart
+                                    data={paymentHistoryData}
+                                    margin={{
+                                      top: 5,
+                                      right: 5,
+                                      left: 5,
+                                      bottom: 5,
                                     }}
-                                    content={({ active, payload }) => {
-                                      if (active && payload && payload.length) {
-                                        const value = payload[0]
-                                          .value as number;
-                                        return (
-                                          <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                            <p className="text-sm font-semibold text-foreground">
-                                              ฿{value.toLocaleString()}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                      return null;
-                                    }}
-                                  />
-                                  <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke="#16a34a"
-                                    fill="url(#paymentHistoryGradient)"
-                                    strokeWidth={1}
-                                    dot={false}
-                                    activeDot={{
-                                      r: 4,
-                                      fill: '#16a34a',
-                                      stroke: 'white',
-                                      strokeWidth: 2,
-                                    }}
-                                  />
-                                </AreaChart>
-                              </ResponsiveContainer>
+                                  >
+                                    <defs>
+                                      <linearGradient
+                                        id="paymentHistoryGradient"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                      >
+                                        <stop
+                                          offset="0%"
+                                          stopColor="#16a34a"
+                                          stopOpacity={0.15}
+                                        />
+                                        <stop
+                                          offset="100%"
+                                          stopColor="#16a34a"
+                                          stopOpacity={0.02}
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                    <Tooltip
+                                      cursor={{
+                                        stroke: '#16a34a',
+                                        strokeWidth: 1,
+                                        strokeDasharray: '2 2',
+                                      }}
+                                      content={({ active, payload }) => {
+                                        if (active && payload && payload.length) {
+                                          const value = payload[0]
+                                            .value as number;
+                                          return (
+                                            <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                              <p className="text-sm font-semibold text-foreground">
+                                                ฿{value.toLocaleString()}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+                                        return null;
+                                      }}
+                                    />
+                                    <Area
+                                      type="monotone"
+                                      dataKey="value"
+                                      stroke="#16a34a"
+                                      fill="url(#paymentHistoryGradient)"
+                                      strokeWidth={1}
+                                      dot={false}
+                                      activeDot={{
+                                        r: 4,
+                                        fill: '#16a34a',
+                                        stroke: 'white',
+                                        strokeWidth: 2,
+                                      }}
+                                    />
+                                  </AreaChart>
+                                </ResponsiveContainer>
+                              ) : (
+                                <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+                                  ยังไม่มีประวัติการชำระ
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -506,91 +510,99 @@ export function ProductDetailsAnalyticsSheet({
                           </div>
                           <div className="flex items-center gap-1.5">
                             <span className="text-lg font-semibold text-foreground">
-                              ฿2,640,000
+                              ฿{Number(loan?.remainingBalance || 0).toLocaleString()}
                             </span>
-                            <Badge
-                              size="xs"
-                              variant="destructive"
-                              appearance="light"
-                            >
-                              <TrendingDown />
-                              -16.7%
-                            </Badge>
+                            {balanceChangePercent > 0 && (
+                              <Badge
+                                size="xs"
+                                variant="info"
+                                appearance="light"
+                              >
+                                <TrendingDown />
+                                -{balanceChangePercent.toFixed(1)}%
+                              </Badge>
+                            )}
                             <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
-                              0/12 งวด
+                              {loan?.currentInstallment || 0}/{loan?.totalInstallments || 0} งวด
                             </span>
                           </div>
 
                           {/* Recharts Area Chart */}
                           <div className="relative">
                             <div className="h-[100px] w-full">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                  data={outstandingBalanceData}
-                                  margin={{
-                                    top: 5,
-                                    right: 5,
-                                    left: 5,
-                                    bottom: 5,
-                                  }}
-                                >
-                                  <defs>
-                                    <linearGradient
-                                      id="outstandingBalanceGradient"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1"
-                                    >
-                                      <stop
-                                        offset="0%"
-                                        stopColor="#4921EA"
-                                        stopOpacity={0.15}
-                                      />
-                                      <stop
-                                        offset="100%"
-                                        stopColor="#4921EA"
-                                        stopOpacity={0.02}
-                                      />
-                                    </linearGradient>
-                                  </defs>
-                                  <Tooltip
-                                    cursor={{
-                                      stroke: '#4921EA',
-                                      strokeWidth: 1,
-                                      strokeDasharray: '2 2',
+                              {outstandingBalanceData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <AreaChart
+                                    data={outstandingBalanceData}
+                                    margin={{
+                                      top: 5,
+                                      right: 5,
+                                      left: 5,
+                                      bottom: 5,
                                     }}
-                                    content={({ active, payload }) => {
-                                      if (active && payload && payload.length) {
-                                        const value = payload[0]
-                                          .value as number;
-                                        return (
-                                          <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                            <p className="text-sm font-semibold text-foreground">
-                                              ฿{value.toLocaleString()}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                      return null;
-                                    }}
-                                  />
-                                  <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke="#4921EA"
-                                    fill="url(#outstandingBalanceGradient)"
-                                    strokeWidth={1}
-                                    dot={false}
-                                    activeDot={{
-                                      r: 4,
-                                      fill: '#4921EA',
-                                      stroke: 'white',
-                                      strokeWidth: 2,
-                                    }}
-                                  />
-                                </AreaChart>
-                              </ResponsiveContainer>
+                                  >
+                                    <defs>
+                                      <linearGradient
+                                        id="outstandingBalanceGradient"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                      >
+                                        <stop
+                                          offset="0%"
+                                          stopColor="#4921EA"
+                                          stopOpacity={0.15}
+                                        />
+                                        <stop
+                                          offset="100%"
+                                          stopColor="#4921EA"
+                                          stopOpacity={0.02}
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                    <Tooltip
+                                      cursor={{
+                                        stroke: '#4921EA',
+                                        strokeWidth: 1,
+                                        strokeDasharray: '2 2',
+                                      }}
+                                      content={({ active, payload }) => {
+                                        if (active && payload && payload.length) {
+                                          const value = payload[0]
+                                            .value as number;
+                                          return (
+                                            <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                              <p className="text-sm font-semibold text-foreground">
+                                                ฿{value.toLocaleString()}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+                                        return null;
+                                      }}
+                                    />
+                                    <Area
+                                      type="monotone"
+                                      dataKey="value"
+                                      stroke="#4921EA"
+                                      fill="url(#outstandingBalanceGradient)"
+                                      strokeWidth={1}
+                                      dot={false}
+                                      activeDot={{
+                                        r: 4,
+                                        fill: '#4921EA',
+                                        stroke: 'white',
+                                        strokeWidth: 2,
+                                      }}
+                                    />
+                                  </AreaChart>
+                                </ResponsiveContainer>
+                              ) : (
+                                <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+                                  ยังไม่มีข้อมูลยอดคงเหลือ
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -634,43 +646,53 @@ export function ProductDetailsAnalyticsSheet({
                           </TableHeader>
 
                           <TableBody>
-                            {paymentSchedule.map((payment, index) => (
-                              <TableRow
-                                key={payment.installment}
-                                className={`text-secondary-foreground font-normal text-2sm ${index % 2 === 0 ? 'bg-accent/50' : ''}`}
-                              >
-                                <TableCell className="py-1 border-e border-border ps-5">
-                                  งวดที่ {payment.installment}
-                                </TableCell>
-                                <TableCell className="py-1 border-e border-border">
-                                  {payment.dueDate}
-                                </TableCell>
-                                <TableCell className="py-1 border-e border-border">
-                                  {payment.amount}
-                                </TableCell>
-                                <TableCell className="py-1 border-e border-border">
-                                  <Badge
-                                    variant={
-                                      payment.status === 'ชำระแล้ว'
-                                        ? 'success'
-                                        : 'warning'
-                                    }
-                                    appearance="light"
-                                    size="sm"
-                                  >
-                                    {payment.status}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="py-1 border-e border-border">
-                                  {payment.paidAmount}
-                                </TableCell>
-                                <TableCell className="text-center py-1">
-                                  <Button variant="ghost" mode="icon" size="sm">
-                                    <SquarePen />
-                                  </Button>
+                            {paymentSchedule.length > 0 ? (
+                              paymentSchedule.map((payment, index) => (
+                                <TableRow
+                                  key={payment.installment}
+                                  className={`text-secondary-foreground font-normal text-2sm ${index % 2 === 0 ? 'bg-accent/50' : ''}`}
+                                >
+                                  <TableCell className="py-1 border-e border-border ps-5">
+                                    งวดที่ {payment.installment}
+                                  </TableCell>
+                                  <TableCell className="py-1 border-e border-border">
+                                    {payment.dueDate}
+                                  </TableCell>
+                                  <TableCell className="py-1 border-e border-border">
+                                    {payment.amount}
+                                  </TableCell>
+                                  <TableCell className="py-1 border-e border-border">
+                                    <Badge
+                                      variant={
+                                        payment.status === 'ชำระแล้ว'
+                                          ? 'success'
+                                          : payment.isLate
+                                            ? 'destructive'
+                                            : 'warning'
+                                      }
+                                      appearance="light"
+                                      size="sm"
+                                    >
+                                      {payment.status}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="py-1 border-e border-border">
+                                    {payment.paidAmount}
+                                  </TableCell>
+                                  <TableCell className="text-center py-1">
+                                    <Button variant="ghost" mode="icon" size="sm">
+                                      <SquarePen />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            ) : (
+                              <TableRow>
+                                <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
+                                  {isLoading ? 'กำลังโหลดข้อมูล...' : 'ยังไม่มีข้อมูลตารางผ่อนชำระ'}
                                 </TableCell>
                               </TableRow>
-                            ))}
+                            )}
                           </TableBody>
                         </Table>
                       </CardContent>
@@ -755,7 +777,7 @@ export function ProductDetailsAnalyticsSheet({
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="primary" appearance="light">
-                            120% ต่อปี
+                            {loan ? Number(loan.interestRate).toFixed(2) : '0'}% ต่อปี
                           </Badge>
                         </div>
                       </div>
@@ -774,7 +796,8 @@ export function ProductDetailsAnalyticsSheet({
                           สถานที่
                         </div>
                         <div className="text-2sm text-secondary-foreground font-medium">
-                          test (0-0-80 ไร่)
+                          {loan?.application?.propertyLocation || '-'} 
+                          {loan?.application?.propertyArea ? ` (${loan.application.propertyArea})` : ''}
                         </div>
                       </div>
                       <div className="flex items-center lg:gap-13 gap-5">
@@ -782,7 +805,15 @@ export function ProductDetailsAnalyticsSheet({
                           โฉนด
                         </div>
                         <div className="text-2sm text-secondary-foreground font-medium">
-                          น.ส.3ก เลขที่ 0000000
+                          {loan?.titleDeedNumber || loan?.application?.landNumber || '-'}
+                        </div>
+                      </div>
+                      <div className="flex items-center lg:gap-13 gap-5">
+                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                          เจ้าของ
+                        </div>
+                        <div className="text-2sm text-secondary-foreground font-medium">
+                          {loan?.application?.ownerName || '-'}
                         </div>
                       </div>
                     </div>

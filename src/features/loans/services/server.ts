@@ -174,7 +174,7 @@ export const loanService = {
           requestedAmount: loanAmount,
           approvedAmount: loanAmount,
           landNumber: data.landNumber,
-          ownerName: data.ownerName || fullName,
+          ownerName: data.ownerName || data.fullName,
           propertyLocation: data.placeName,
           propertyArea: data.landArea,
           customerId: customer.id,
@@ -209,6 +209,34 @@ export const loanService = {
           },
           application: true,
         },
+      });
+
+      // Step 5: สร้างตารางผ่อนชำระ (LoanInstallments)
+      const totalLoanAmount = loanAmount * (1 + interestRate / 100);
+      const installmentsData = [];
+      
+      for (let i = 1; i <= termMonths; i++) {
+        const dueDate = new Date(contractDate);
+        dueDate.setMonth(dueDate.getMonth() + i);
+        
+        // คำนวณดอกเบี้ยและเงินต้นในแต่ละงวด
+        const interestAmount = (loanAmount * interestRate / 100) / termMonths;
+        const principalAmount = monthlyPayment - interestAmount;
+        
+        installmentsData.push({
+          loanId: newLoan.id,
+          installmentNumber: i,
+          dueDate,
+          principalAmount,
+          interestAmount,
+          totalAmount: monthlyPayment,
+          isPaid: false,
+          isLate: false,
+        });
+      }
+      
+      await tx.loanInstallment.createMany({
+        data: installmentsData,
       });
 
       return newLoan;
