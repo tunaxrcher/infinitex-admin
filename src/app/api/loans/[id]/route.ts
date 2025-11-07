@@ -43,6 +43,7 @@ export async function PUT(
     // Extract form fields
     const data: any = {};
     const titleDeedFiles: File[] = [];
+    const supportingFiles: File[] = [];
 
     // Parse form data
     for (const [key, value] of formData.entries()) {
@@ -51,7 +52,12 @@ export async function PUT(
         if (value instanceof File) {
           titleDeedFiles.push(value);
         }
-      } else if (key === 'existingImageUrls') {
+      } else if (key === 'supportingFiles') {
+        // Collect all supporting files
+        if (value instanceof File) {
+          supportingFiles.push(value);
+        }
+      } else if (key === 'existingImageUrls' || key === 'existingSupportingImageUrls') {
         // Parse existing image URLs from JSON
         try {
           data[key] = JSON.parse(value as string);
@@ -103,6 +109,32 @@ export async function PUT(
       }
     }
 
+    // Upload supporting images
+    const supportingImageUrls: string[] = [];
+    if (supportingFiles.length > 0) {
+      console.log(
+        `[API] Uploading ${supportingFiles.length} supporting images...`,
+      );
+
+      for (const file of supportingFiles) {
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          const result = await storage.uploadFile(buffer, file.type, {
+            folder: 'supporting-images',
+            filename: file.name,
+          });
+
+          supportingImageUrls.push(result.url);
+          console.log(`[API] Uploaded supporting: ${file.name} -> ${result.url}`);
+        } catch (uploadError) {
+          console.error(`[API] Failed to upload ${file.name}:`, uploadError);
+          throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
+        }
+      }
+    }
+
     // Replace title deed images
     // - ถ้ามีรูปใหม่: ใช้เฉพาะรูปใหม่ (ทิ้งรูปเก่าทั้งหมด)
     // - ถ้าไม่มีรูปใหม่: ใช้รูปเก่าที่ยังเลือกไว้
@@ -119,6 +151,23 @@ export async function PUT(
     });
     
     data.titleDeedImages = allImageUrls;
+
+    // Replace supporting images
+    // - ถ้ามีรูปใหม่: ใช้เฉพาะรูปใหม่ (ทิ้งรูปเก่าทั้งหมด)
+    // - ถ้าไม่มีรูปใหม่: ใช้รูปเก่าที่ยังเลือกไว้
+    const existingSupporting = data.existingSupportingImageUrls || [];
+    const allSupportingUrls = supportingImageUrls.length > 0 ? supportingImageUrls : existingSupporting;
+    
+    console.log('[API Update] Replacing supporting images:', {
+      hasNewImages: supportingImageUrls.length > 0,
+      existingCount: existingSupporting.length,
+      newCount: supportingImageUrls.length,
+      finalCount: allSupportingUrls.length,
+      action: supportingImageUrls.length > 0 ? 'Using NEW images only' : 'Using existing images',
+      images: allSupportingUrls,
+    });
+    
+    data.supportingImages = allSupportingUrls;
 
     // Validate request body
     const validatedData = loanUpdateSchema.parse(data);

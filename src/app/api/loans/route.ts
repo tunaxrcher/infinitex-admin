@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
     // Extract form fields
     const data: any = {};
     const titleDeedFiles: File[] = [];
+    const supportingFiles: File[] = [];
 
     // Parse form data
     for (const [key, value] of formData.entries()) {
@@ -50,7 +51,12 @@ export async function POST(request: NextRequest) {
         if (value instanceof File) {
           titleDeedFiles.push(value);
         }
-      } else if (key === 'existingImageUrls') {
+      } else if (key === 'supportingFiles') {
+        // Collect all supporting files
+        if (value instanceof File) {
+          supportingFiles.push(value);
+        }
+      } else if (key === 'existingImageUrls' || key === 'existingSupportingImageUrls') {
         // Parse existing image URLs from JSON
         try {
           data[key] = JSON.parse(value as string);
@@ -94,7 +100,7 @@ export async function POST(request: NextRequest) {
           });
 
           newImageUrls.push(result.url);
-          console.log(`[API] Uploaded: ${file.name} -> ${result.url}`);
+          console.log(`[API] Uploaded title deed: ${file.name} -> ${result.url}`);
         } catch (uploadError) {
           console.error(`[API] Failed to upload ${file.name}:`, uploadError);
           throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
@@ -102,10 +108,41 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Combine existing images with newly uploaded ones
+    // Upload supporting images
+    const supportingImageUrls: string[] = [];
+    if (supportingFiles.length > 0) {
+      console.log(
+        `[API] Uploading ${supportingFiles.length} supporting images...`,
+      );
+
+      for (const file of supportingFiles) {
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          const result = await storage.uploadFile(buffer, file.type, {
+            folder: 'supporting-images',
+            filename: file.name,
+          });
+
+          supportingImageUrls.push(result.url);
+          console.log(`[API] Uploaded supporting: ${file.name} -> ${result.url}`);
+        } catch (uploadError) {
+          console.error(`[API] Failed to upload ${file.name}:`, uploadError);
+          throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
+        }
+      }
+    }
+
+    // Combine title deed images (existing + new)
     const existingImages = data.existingImageUrls || [];
     const allImageUrls = [...existingImages, ...newImageUrls];
     data.titleDeedImages = allImageUrls;
+
+    // Combine supporting images (existing + new)
+    const existingSupporting = data.existingSupportingImageUrls || [];
+    const allSupportingUrls = [...existingSupporting, ...supportingImageUrls];
+    data.supportingImages = allSupportingUrls;
 
     // Validate request body
     const validatedData = loanCreateSchema.parse(data);

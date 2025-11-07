@@ -33,22 +33,37 @@ export const loanApi = {
     return response.json();
   },
 
-  create: async (data: LoanCreateSchema & { titleDeedFiles?: File[]; existingImageUrls?: string[] }) => {
+  create: async (data: LoanCreateSchema & { 
+    titleDeedFiles?: File[]; 
+    existingImageUrls?: string[];
+    supportingFiles?: File[];
+    existingSupportingImageUrls?: string[];
+  }) => {
     // Create FormData to send files along with loan data
     const formData = new FormData();
 
     // Append all form fields
     Object.entries(data).forEach(([key, value]) => {
       if (key === 'titleDeedFiles' && Array.isArray(value)) {
-        // Append files
+        // Append title deed files
         value.forEach((file) => {
           if (file instanceof File) {
             formData.append('titleDeedFiles', file);
           }
         });
+      } else if (key === 'supportingFiles' && Array.isArray(value)) {
+        // Append supporting files
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append('supportingFiles', file);
+          }
+        });
       } else if (key === 'existingImageUrls' && Array.isArray(value)) {
-        // Append existing image URLs as JSON array
+        // Append existing title deed image URLs as JSON array
         formData.append('existingImageUrls', JSON.stringify(value));
+      } else if (key === 'existingSupportingImageUrls' && Array.isArray(value)) {
+        // Append existing supporting image URLs as JSON array
+        formData.append('existingSupportingImageUrls', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }
@@ -66,22 +81,37 @@ export const loanApi = {
     return response.json();
   },
 
-  update: async (id: string, data: LoanUpdateSchema & { titleDeedFiles?: File[]; existingImageUrls?: string[] }) => {
+  update: async (id: string, data: LoanUpdateSchema & { 
+    titleDeedFiles?: File[]; 
+    existingImageUrls?: string[];
+    supportingFiles?: File[];
+    existingSupportingImageUrls?: string[];
+  }) => {
     // Create FormData to send files along with loan data
     const formData = new FormData();
 
     // Append all form fields
     Object.entries(data).forEach(([key, value]) => {
       if (key === 'titleDeedFiles' && Array.isArray(value)) {
-        // Append files
+        // Append title deed files
         value.forEach((file) => {
           if (file instanceof File) {
             formData.append('titleDeedFiles', file);
           }
         });
+      } else if (key === 'supportingFiles' && Array.isArray(value)) {
+        // Append supporting files
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append('supportingFiles', file);
+          }
+        });
       } else if (key === 'existingImageUrls' && Array.isArray(value)) {
-        // Append existing image URLs as JSON array
+        // Append existing title deed image URLs as JSON array
         formData.append('existingImageUrls', JSON.stringify(value));
+      } else if (key === 'existingSupportingImageUrls' && Array.isArray(value)) {
+        // Append existing supporting image URLs as JSON array
+        formData.append('existingSupportingImageUrls', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }

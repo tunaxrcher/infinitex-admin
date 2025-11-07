@@ -49,8 +49,10 @@ export const loanCreateSchema = z.object({
   note: z.string().optional(),
 
   // ไฟล์อัพโหลด
-  titleDeedImages: z.array(z.string()).optional(),
-  existingImageUrls: z.array(z.string()).optional(), // URL ของรูปที่มีอยู่แล้ว
+  titleDeedImages: z.array(z.string()).optional(), // URL ของรูปโฉนดทั้งหมด
+  existingImageUrls: z.array(z.string()).optional(), // URL ของรูปโฉนดที่มีอยู่แล้ว
+  supportingImages: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมทั้งหมด
+  existingSupportingImageUrls: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
 });
 
 export type LoanCreateSchema = z.infer<typeof loanCreateSchema>;

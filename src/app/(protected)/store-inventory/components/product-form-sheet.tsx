@@ -123,10 +123,16 @@ export function ProductFormSheet({
   const [otherFee, setOtherFee] = useState<number>(0);
   const [note, setNote] = useState('');
 
-  // File upload
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // ไฟล์ใหม่ที่จะอัปโหลด
-  const [existingImages, setExistingImages] = useState<string[]>([]); // รูปที่มีอยู่แล้ว (URL)
+  // File upload - Title Deed Images
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // ไฟล์โฉนดใหม่ที่จะอัปโหลด
+  const [existingImages, setExistingImages] = useState<string[]>([]); // รูปโฉนดที่มีอยู่แล้ว (URL)
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // File upload - Supporting Images
+  const [supportingFiles, setSupportingFiles] = useState<File[]>([]); // ไฟล์เพิ่มเติมใหม่ที่จะอัปโหลด
+  const [existingSupportingImages, setExistingSupportingImages] = useState<string[]>([]); // รูปเพิ่มเติมที่มีอยู่แล้ว (URL)
+  const supportingInputRef = useRef<HTMLInputElement>(null);
+  
   const formRef = useRef<HTMLFormElement>(null);
 
   // Calculations
@@ -191,6 +197,26 @@ export function ProductFormSheet({
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Supporting images handlers
+  const handleSupportingFileClick = () => {
+    supportingInputRef.current?.click();
+  };
+
+  const handleSupportingFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      setSupportingFiles((prev) => [...prev, ...Array.from(files)]);
+    }
+  };
+
+  const handleRemoveSupportingFile = (index: number) => {
+    setSupportingFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveExistingSupportingImage = (index: number) => {
+    setExistingSupportingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // Auto-fill customer data
   const handleSelectCustomer = (customer: {
     phoneNumber: string;
@@ -253,8 +279,10 @@ export function ProductFormSheet({
         transferFee,
         otherFee,
         note,
-        titleDeedFiles: uploadedFiles, // ส่งไฟล์ใหม่ที่จะอัปโหลด
-        existingImageUrls: existingImages, // ส่ง URL ของรูปที่มีอยู่แล้ว
+        titleDeedFiles: uploadedFiles, // ส่งไฟล์โฉนดใหม่ที่จะอัปโหลด
+        existingImageUrls: existingImages, // ส่ง URL ของรูปโฉนดที่มีอยู่แล้ว
+        supportingFiles: supportingFiles, // ส่งไฟล์เพิ่มเติมใหม่ที่จะอัปโหลด
+        existingSupportingImageUrls: existingSupportingImages, // ส่ง URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
       };
 
       if (isNewMode) {
@@ -294,6 +322,8 @@ export function ProductFormSheet({
     setNote('');
     setUploadedFiles([]);
     setExistingImages([]);
+    setSupportingFiles([]);
+    setExistingSupportingImages([]);
     setCustomerSearchQuery('');
   };
 
@@ -334,14 +364,18 @@ export function ProductFormSheet({
       // Note: operation fees ไม่ได้เก็บใน schema ตอนนี้
 
       // Load existing title deed images
-      const images: string[] = [];
+      const titleDeedImages: string[] = [];
       if (loan.application?.titleDeedImage) {
-        images.push(loan.application.titleDeedImage);
+        titleDeedImages.push(loan.application.titleDeedImage);
       }
+      setExistingImages(titleDeedImages);
+
+      // Load existing supporting images
+      const supportingImgs: string[] = [];
       if (loan.application?.supportingImages && Array.isArray(loan.application.supportingImages)) {
-        images.push(...loan.application.supportingImages);
+        supportingImgs.push(...loan.application.supportingImages);
       }
-      setExistingImages(images);
+      setExistingSupportingImages(supportingImgs);
     }
   }, [mode, loanData, open, loanId]);
 
@@ -1005,7 +1039,7 @@ export function ProductFormSheet({
                     {/* อัพโหลดโฉนด */}
                     <Card className="rounded-md">
                       <CardHeader className="min-h-[38px] bg-accent/50">
-                        <CardTitle className="text-2sm">อัพโหลดโฉนด</CardTitle>
+                        <CardTitle className="text-2sm">อัพโหลดโฉนด (ไม่บังคับ)</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4">
                         <div className="space-y-4">
@@ -1164,6 +1198,183 @@ export function ProductFormSheet({
                                ยังไม่มีไฟล์ที่อัพโหลด
                              </div>
                            )}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* อัพโหลดภาพเพิ่มเติม */}
+                    <Card className="rounded-md">
+                      <CardHeader className="min-h-[38px] bg-accent/50">
+                        <CardTitle className="text-2sm">
+                          อัพโหลดภาพเพิ่มเติม (ไม่บังคับ)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-4">
+                        <div className="space-y-4">
+                          <div
+                            className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                            onClick={handleSupportingFileClick}
+                          >
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="w-12 h-12 rounded-full bg-accent/50 flex items-center justify-center">
+                                <svg
+                                  className="w-6 h-6 text-muted-foreground"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4v16m8-8H4"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="text-sm font-medium text-foreground">
+                                คลิกเพื่ออัพโหลดภาพเพิ่มเติม
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                รองรับไฟล์ JPG, PNG (สูงสุด 10MB/ไฟล์)
+                              </div>
+                            </div>
+                          </div>
+                          <Input
+                            ref={supportingInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            multiple
+                            onChange={handleSupportingFileChange}
+                          />
+
+                          {/* Preview area */}
+                          {existingSupportingImages.length > 0 ||
+                          supportingFiles.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-2">
+                              {/* รูปที่มีอยู่แล้ว */}
+                              {existingSupportingImages.map((imageUrl, index) => (
+                                <div
+                                  key={`existing-supporting-${index}`}
+                                  className="relative group aspect-square rounded-lg overflow-hidden border-2 border-green-500 bg-green-50 dark:bg-green-950/20"
+                                >
+                                  <img
+                                    src={imageUrl}
+                                    alt={`รูปเพิ่มเติม ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() =>
+                                        window.open(imageUrl, '_blank')
+                                      }
+                                      title="ดูรูปภาพ"
+                                    >
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                        />
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                        />
+                                      </svg>
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="destructive"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() =>
+                                        handleRemoveExistingSupportingImage(
+                                          index,
+                                        )
+                                      }
+                                      title="ลบรูปภาพ"
+                                    >
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"
+                                        />
+                                      </svg>
+                                    </Button>
+                                  </div>
+                                  <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">
+                                    บันทึกแล้ว
+                                  </div>
+                                </div>
+                              ))}
+
+                              {/* ไฟล์ใหม่ที่จะอัปโหลด */}
+                              {supportingFiles.map((file, index) => (
+                                <div
+                                  key={`new-supporting-${index}`}
+                                  className="relative group aspect-square rounded-lg overflow-hidden border-2 border-blue-500 bg-accent"
+                                >
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={file.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Button
+                                      type="button"
+                                      variant="destructive"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() =>
+                                        handleRemoveSupportingFile(index)
+                                      }
+                                      title="ลบรูปภาพ"
+                                    >
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"
+                                        />
+                                      </svg>
+                                    </Button>
+                                  </div>
+                                  <div className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-2 py-0.5 rounded">
+                                    ใหม่
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-xs text-muted-foreground text-center">
+                              ยังไม่มีไฟล์ที่อัพโหลด
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

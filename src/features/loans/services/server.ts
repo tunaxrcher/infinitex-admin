@@ -183,11 +183,8 @@ export const loanService = {
             data.titleDeedImages && data.titleDeedImages.length > 0
               ? data.titleDeedImages[0]
               : null,
-          // บันทึกภาพเพิ่มเติมใน supportingImages (ถ้ามีมากกว่า 1 รูป)
-          supportingImages:
-            data.titleDeedImages && data.titleDeedImages.length > 1
-              ? data.titleDeedImages.slice(1)
-              : [],
+          // บันทึกภาพเพิ่มเติม (supporting images)
+          supportingImages: data.supportingImages || [],
         },
       });
 
@@ -359,7 +356,8 @@ export const loanService = {
         data.placeName ||
         data.landArea ||
         data.landNumber ||
-        data.titleDeedImages
+        data.titleDeedImages ||
+        data.supportingImages
       ) {
         const updateApplicationData: any = {
           ...(data.ownerName && { ownerName: data.ownerName }),
@@ -368,19 +366,22 @@ export const loanService = {
           ...(data.landNumber && { landNumber: data.landNumber }),
         };
 
-        // Update title deed images (แทนที่รูปเดิมทั้งหมด)
+        // Update title deed image (แทนที่รูปเดิม)
         if (data.titleDeedImages && data.titleDeedImages.length > 0) {
           // รูปแรกเป็น titleDeedImage
           updateApplicationData.titleDeedImage = data.titleDeedImages[0];
-          // รูปที่เหลือเป็น supportingImages
-          updateApplicationData.supportingImages =
-            data.titleDeedImages.length > 1
-              ? data.titleDeedImages.slice(1)
-              : [];
           
-          console.log('[Service] Replacing title deed images:', {
+          console.log('[Service] Replacing title deed image:', {
             titleDeedImage: updateApplicationData.titleDeedImage,
-            supportingImagesCount: updateApplicationData.supportingImages.length,
+          });
+        }
+
+        // Update supporting images (แทนที่รูปเดิม)
+        if (data.supportingImages !== undefined) {
+          updateApplicationData.supportingImages = data.supportingImages;
+          
+          console.log('[Service] Replacing supporting images:', {
+            supportingImagesCount: data.supportingImages.length,
           });
         }
 
