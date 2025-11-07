@@ -358,16 +358,35 @@ export const loanService = {
         data.ownerName ||
         data.placeName ||
         data.landArea ||
-        data.landNumber
+        data.landNumber ||
+        data.titleDeedImages
       ) {
+        const updateApplicationData: any = {
+          ...(data.ownerName && { ownerName: data.ownerName }),
+          ...(data.placeName && { propertyLocation: data.placeName }),
+          ...(data.landArea && { propertyArea: data.landArea }),
+          ...(data.landNumber && { landNumber: data.landNumber }),
+        };
+
+        // Update title deed images (แทนที่รูปเดิมทั้งหมด)
+        if (data.titleDeedImages && data.titleDeedImages.length > 0) {
+          // รูปแรกเป็น titleDeedImage
+          updateApplicationData.titleDeedImage = data.titleDeedImages[0];
+          // รูปที่เหลือเป็น supportingImages
+          updateApplicationData.supportingImages =
+            data.titleDeedImages.length > 1
+              ? data.titleDeedImages.slice(1)
+              : [];
+          
+          console.log('[Service] Replacing title deed images:', {
+            titleDeedImage: updateApplicationData.titleDeedImage,
+            supportingImagesCount: updateApplicationData.supportingImages.length,
+          });
+        }
+
         await tx.loanApplication.update({
           where: { id: existing.applicationId },
-          data: {
-            ...(data.ownerName && { ownerName: data.ownerName }),
-            ...(data.placeName && { propertyLocation: data.placeName }),
-            ...(data.landArea && { propertyArea: data.landArea }),
-            ...(data.landNumber && { landNumber: data.landNumber }),
-          },
+          data: updateApplicationData,
         });
       }
 

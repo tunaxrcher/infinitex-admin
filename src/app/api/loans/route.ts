@@ -50,6 +50,13 @@ export async function POST(request: NextRequest) {
         if (value instanceof File) {
           titleDeedFiles.push(value);
         }
+      } else if (key === 'existingImageUrls') {
+        // Parse existing image URLs from JSON
+        try {
+          data[key] = JSON.parse(value as string);
+        } catch {
+          data[key] = [];
+        }
       } else {
         // Parse other fields
         if (value === 'undefined' || value === 'null') {
@@ -69,8 +76,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Upload title deed images
-    const titleDeedImageUrls: string[] = [];
+    // Upload new title deed images
+    const newImageUrls: string[] = [];
     if (titleDeedFiles.length > 0) {
       console.log(
         `[API] Uploading ${titleDeedFiles.length} title deed images...`,
@@ -86,7 +93,7 @@ export async function POST(request: NextRequest) {
             filename: file.name,
           });
 
-          titleDeedImageUrls.push(result.url);
+          newImageUrls.push(result.url);
           console.log(`[API] Uploaded: ${file.name} -> ${result.url}`);
         } catch (uploadError) {
           console.error(`[API] Failed to upload ${file.name}:`, uploadError);
@@ -95,8 +102,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Add uploaded image URLs to data
-    data.titleDeedImages = titleDeedImageUrls;
+    // Combine existing images with newly uploaded ones
+    const existingImages = data.existingImageUrls || [];
+    const allImageUrls = [...existingImages, ...newImageUrls];
+    data.titleDeedImages = allImageUrls;
 
     // Validate request body
     const validatedData = loanCreateSchema.parse(data);

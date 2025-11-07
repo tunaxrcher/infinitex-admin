@@ -50,6 +50,7 @@ export const loanCreateSchema = z.object({
 
   // ไฟล์อัพโหลด
   titleDeedImages: z.array(z.string()).optional(),
+  existingImageUrls: z.array(z.string()).optional(), // URL ของรูปที่มีอยู่แล้ว
 });
 
 export type LoanCreateSchema = z.infer<typeof loanCreateSchema>;
