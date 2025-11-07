@@ -126,6 +126,7 @@ export function ProductFormSheet({
   // File upload
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Calculations
   const totalInterest = useMemo(() => {
@@ -213,7 +214,17 @@ export function ProductFormSheet({
   };
 
   // Handle form submission
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+
+    // ตรวจสอบ form validation
+    if (formRef.current && !formRef.current.checkValidity()) {
+      formRef.current.reportValidity();
+      return;
+    }
+
     try {
       const loanData = {
         customerName: fullName, // ใช้ fullName แทน customerName
@@ -344,8 +355,9 @@ export function ProductFormSheet({
                 ยกเลิก
               </Button>
               <Button
+                type="submit"
+                form="loan-form"
                 variant="mono"
-                onClick={handleSubmit}
                 disabled={
                   createLoan.isPending ||
                   updateLoan.isPending ||
@@ -375,11 +387,12 @@ export function ProductFormSheet({
             </div>
           ) : (
             /* Scroll */
-            <ScrollArea
-              className="flex flex-col h-[calc(100dvh-15.2rem)] mx-1.5"
-              viewportClassName="[&>div]:h-full [&>div>div]:h-full"
-            >
-              <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
+            <form ref={formRef} id="loan-form" onSubmit={handleSubmit}>
+              <ScrollArea
+                className="flex flex-col h-[calc(100dvh-15.2rem)] mx-1.5"
+                viewportClassName="[&>div]:h-full [&>div>div]:h-full"
+              >
+                <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
                 <div className="grow lg:border-e border-border lg:pe-5 space-y-5 py-5">
                   {/* Section 1: ข้อมูลพื้นฐาน */}
                   <Card className="rounded-md">
@@ -1061,7 +1074,8 @@ export function ProductFormSheet({
                   </Card>
                 </div>
               </div>
-            </ScrollArea>
+              </ScrollArea>
+            </form>
           )}
         </SheetBody>
 
@@ -1074,8 +1088,9 @@ export function ProductFormSheet({
               ยกเลิก
             </Button>
             <Button
+              type="submit"
+              form="loan-form"
               variant="mono"
-              onClick={handleSubmit}
               disabled={createLoan.isPending || updateLoan.isPending}
             >
               {createLoan.isPending || updateLoan.isPending
