@@ -33,13 +33,28 @@ export const loanApi = {
     return response.json();
   },
 
-  create: async (data: LoanCreateSchema) => {
+  create: async (data: LoanCreateSchema & { titleDeedFiles?: File[] }) => {
+    // Create FormData to send files along with loan data
+    const formData = new FormData();
+
+    // Append all form fields
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'titleDeedFiles' && Array.isArray(value)) {
+        // Append files
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append('titleDeedFiles', file);
+          }
+        });
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
+      }
+    });
+
     const response = await apiFetch(`/api/loans`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+      // Don't set Content-Type header - browser will set it with boundary for multipart/form-data
+      body: formData,
     });
     if (!response.ok) {
       const error = await response.json();

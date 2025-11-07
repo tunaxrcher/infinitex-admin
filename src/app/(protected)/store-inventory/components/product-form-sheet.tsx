@@ -248,6 +248,7 @@ export function ProductFormSheet({
         transferFee,
         otherFee,
         note,
+        titleDeedFiles: uploadedFiles, // ส่งไฟล์โดยตรง
       };
 
       if (isNewMode) {
