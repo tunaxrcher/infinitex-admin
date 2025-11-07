@@ -13,7 +13,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardToolbar,
 } from '@src/shared/components/ui/card';
 import {
   Dialog,
@@ -59,6 +58,7 @@ import {
 } from '@src/shared/components/ui/toggle-group';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
+import Image from 'next/image';
 
 export function ProductDetailsAnalyticsSheet({
   open,
@@ -1042,8 +1042,18 @@ export function ProductDetailsAnalyticsSheet({
       {/* Payment Dialog */}
       <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
         <DialogContent className="max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>ชำระเงิน</DialogTitle>
+          <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+            <div className="flex justify-center">
+              <Image
+                src="/images/logo.png"
+                alt="Logo"
+                width={120}
+                height={40}
+                className="object-contain"
+              />
+            </div>
+            <DialogTitle className="text-center text-xl">ชำระเงิน</DialogTitle>
+            <hr className="w-full border-border" />
           </DialogHeader>
 
           <Tabs value={paymentTab} onValueChange={setPaymentTab}>
@@ -1219,7 +1229,7 @@ export function ProductDetailsAnalyticsSheet({
                         setIsPaymentDialogOpen(false);
                       }}
                     >
-                      บันทึก
+                      ยืนยัน
                     </Button>
                   </div>
                 </>
@@ -1316,7 +1326,6 @@ export function ProductDetailsAnalyticsSheet({
                           <SelectContent>
                             <SelectItem value="cash">เงินสด</SelectItem>
                             <SelectItem value="transfer">โอนเงิน</SelectItem>
-                            <SelectItem value="qr">QR Code</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
