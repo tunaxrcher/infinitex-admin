@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import {
   useDeleteLoan,
   useGenerateInstallments,
@@ -58,7 +59,6 @@ import {
 } from '@src/shared/components/ui/toggle-group';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
-import Image from 'next/image';
 
 export function ProductDetailsAnalyticsSheet({
   open,
@@ -160,7 +160,7 @@ export function ProductDetailsAnalyticsSheet({
             day: 'numeric',
           })
         : '-',
-      amount: `฿${Number(inst.totalAmount).toLocaleString()}`,
+      amount: `฿${Number(inst.totalAmount).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       principalAmount: Number(inst.principalAmount),
       interestAmount: Number(inst.interestAmount),
       totalAmount: Number(inst.totalAmount),
@@ -319,7 +319,7 @@ export function ProductDetailsAnalyticsSheet({
               </div>
             </div>
             <div className="flex items-center gap-2.5">
-              <Button variant="ghost">พิมพ์เอกสาร</Button>
+              {/* <Button variant="ghost">พิมพ์เอกสาร</Button> */}
               <Button
                 variant="outline"
                 onClick={handleDelete}
@@ -757,7 +757,13 @@ export function ProductDetailsAnalyticsSheet({
                                       </TableCell>
                                       <TableCell className="py-2 border-e border-border text-right pe-3">
                                         ฿
-                                        {payment.remainingInterest.toLocaleString()}
+                                        {payment.remainingInterest.toLocaleString(
+                                          'th-TH',
+                                          {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                          },
+                                        )}
                                       </TableCell>
                                       <TableCell className="py-2 border-e border-border">
                                         {payment.dueDate}
@@ -971,7 +977,7 @@ export function ProductDetailsAnalyticsSheet({
               >
                 <div className="flex items-center justify-center h-full px-3.5 py-10">
                   <p className="text-muted-foreground text-sm">
-                    เนื้อหาหนังสือสัญญากู้เงิน (ยังไม่ได้พัฒนา)
+                    เนื้อหาหนังสือสัญญากู้เงิน (In development)
                   </p>
                 </div>
               </ScrollArea>
@@ -984,7 +990,7 @@ export function ProductDetailsAnalyticsSheet({
               >
                 <div className="flex items-center justify-center h-full px-3.5 py-10">
                   <p className="text-muted-foreground text-sm">
-                    เนื้อหาตารางผ่อนชำระ (ยังไม่ได้พัฒนา)
+                    เนื้อหาตารางผ่อนชำระ (In development)
                   </p>
                 </div>
               </ScrollArea>
@@ -997,7 +1003,7 @@ export function ProductDetailsAnalyticsSheet({
               >
                 <div className="flex items-center justify-center h-full px-3.5 py-10">
                   <p className="text-muted-foreground text-sm">
-                    เนื้อหาชำระสินเชื่อ (ยังไม่ได้พัฒนา)
+                    เนื้อหาชำระสินเชื่อ (In development)
                   </p>
                 </div>
               </ScrollArea>
@@ -1010,7 +1016,7 @@ export function ProductDetailsAnalyticsSheet({
               >
                 <div className="flex items-center justify-center h-full px-3.5 py-10">
                   <p className="text-muted-foreground text-sm">
-                    เนื้อหายกเลิกสินเชื่อ (ยังไม่ได้พัฒนา)
+                    เนื้อหายกเลิกสินเชื่อ (In development)
                   </p>
                 </div>
               </ScrollArea>
@@ -1019,7 +1025,7 @@ export function ProductDetailsAnalyticsSheet({
         </SheetBody>
 
         <SheetFooter className="flex-row border-t pb-4 p-5 border-border gap-2.5 lg:gap-0">
-          <Button variant="ghost">พิมพ์เอกสาร</Button>
+          {/* <Button variant="ghost">พิมพ์เอกสาร</Button> */}
           <Button
             variant="outline"
             onClick={handleDelete}
