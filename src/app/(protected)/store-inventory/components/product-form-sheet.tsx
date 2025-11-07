@@ -455,14 +455,20 @@ export function ProductFormSheet({
                           </Label>
                           <div className="relative">
                             <Input
-                              type="number"
+                              type="text"
                               placeholder="0.00"
-                              value={loanAmount || ''}
-                              onChange={(e) =>
-                                setLoanAmount(parseFloat(e.target.value) || 0)
+                              value={
+                                loanAmount
+                                  ? loanAmount.toLocaleString('th-TH', {
+                                      minimumFractionDigits: 0,
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : ''
                               }
-                              min={0}
-                              step={0.01}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/,/g, '');
+                                setLoanAmount(parseFloat(value) || 0);
+                              }}
                               className="pr-12"
                               required
                             />
