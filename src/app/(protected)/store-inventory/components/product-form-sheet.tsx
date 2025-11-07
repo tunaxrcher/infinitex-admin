@@ -50,6 +50,19 @@ import { Textarea } from '@src/shared/components/ui/textarea';
 import { cn } from '@src/shared/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
 
+// Helper functions for date calculations
+const getTodayDate = () => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
+
+const getNextMonthDate = () => {
+  const today = new Date();
+  const nextMonth = new Date(today);
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  return nextMonth.toISOString().split('T')[0];
+};
+
 export function ProductFormSheet({
   mode,
   open,
@@ -90,8 +103,8 @@ export function ProductFormSheet({
   const [landNumber, setLandNumber] = useState('');
   const [landArea, setLandArea] = useState('');
   const [loanAmount, setLoanAmount] = useState<number>(0);
-  const [loanStartDate, setLoanStartDate] = useState('');
-  const [loanDueDate, setLoanDueDate] = useState('');
+  const [loanStartDate, setLoanStartDate] = useState(getTodayDate());
+  const [loanDueDate, setLoanDueDate] = useState(getNextMonthDate());
 
   // Form state - Section 2: ข้อมูลลูกค้า
   const [fullName, setFullName] = useState('');
@@ -246,8 +259,8 @@ export function ProductFormSheet({
     setLandNumber('');
     setLandArea('');
     setLoanAmount(0);
-    setLoanStartDate('');
-    setLoanDueDate('');
+    setLoanStartDate(getTodayDate());
+    setLoanDueDate(getNextMonthDate());
     setFullName('');
     setPhoneNumber('');
     setIdCard('');
@@ -398,11 +411,14 @@ export function ProductFormSheet({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                          <Label className="text-xs">เนื้อที่</Label>
+                          <Label className="text-xs">
+                            เนื้อที่ <span className="text-destructive">*</span>
+                          </Label>
                           <Input
                             placeholder="เช่น 0.0.40"
                             value={landArea}
                             onChange={(e) => setLandArea(e.target.value)}
+                            required
                           />
                         </div>
 
@@ -705,7 +721,9 @@ export function ProductFormSheet({
                           </div>
 
                           <div className="flex flex-col gap-2">
-                            <Label className="text-xs">จำนวนปี</Label>
+                            <Label className="text-xs">
+                              จำนวนปี <span className="text-destructive">*</span>
+                            </Label>
                             <div className="relative">
                               <Input
                                 type="number"
@@ -716,6 +734,7 @@ export function ProductFormSheet({
                                 min={1}
                                 step={1}
                                 className="pr-12"
+                                required
                               />
                               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                                 ปี
@@ -724,7 +743,9 @@ export function ProductFormSheet({
                           </div>
 
                           <div className="flex flex-col gap-2">
-                            <Label className="text-xs">ดอกเบี้ย/ปี</Label>
+                            <Label className="text-xs">
+                              ดอกเบี้ย/ปี <span className="text-destructive">*</span>
+                            </Label>
                             <div className="relative">
                               <Input
                                 type="number"
@@ -737,6 +758,7 @@ export function ProductFormSheet({
                                 min={0}
                                 step={0.01}
                                 className="pr-12"
+                                required
                               />
                               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                                 %
