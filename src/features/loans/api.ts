@@ -33,12 +33,14 @@ export const loanApi = {
     return response.json();
   },
 
-  create: async (data: LoanCreateSchema & { 
-    titleDeedFiles?: File[]; 
-    existingImageUrls?: string[];
-    supportingFiles?: File[];
-    existingSupportingImageUrls?: string[];
-  }) => {
+  create: async (
+    data: LoanCreateSchema & {
+      titleDeedFiles?: File[];
+      existingImageUrls?: string[];
+      supportingFiles?: File[];
+      existingSupportingImageUrls?: string[];
+    },
+  ) => {
     // Create FormData to send files along with loan data
     const formData = new FormData();
 
@@ -61,7 +63,10 @@ export const loanApi = {
       } else if (key === 'existingImageUrls' && Array.isArray(value)) {
         // Append existing title deed image URLs as JSON array
         formData.append('existingImageUrls', JSON.stringify(value));
-      } else if (key === 'existingSupportingImageUrls' && Array.isArray(value)) {
+      } else if (
+        key === 'existingSupportingImageUrls' &&
+        Array.isArray(value)
+      ) {
         // Append existing supporting image URLs as JSON array
         formData.append('existingSupportingImageUrls', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
@@ -81,12 +86,15 @@ export const loanApi = {
     return response.json();
   },
 
-  update: async (id: string, data: LoanUpdateSchema & { 
-    titleDeedFiles?: File[]; 
-    existingImageUrls?: string[];
-    supportingFiles?: File[];
-    existingSupportingImageUrls?: string[];
-  }) => {
+  update: async (
+    id: string,
+    data: LoanUpdateSchema & {
+      titleDeedFiles?: File[];
+      existingImageUrls?: string[];
+      supportingFiles?: File[];
+      existingSupportingImageUrls?: string[];
+    },
+  ) => {
     // Create FormData to send files along with loan data
     const formData = new FormData();
 
@@ -109,7 +117,10 @@ export const loanApi = {
       } else if (key === 'existingImageUrls' && Array.isArray(value)) {
         // Append existing title deed image URLs as JSON array
         formData.append('existingImageUrls', JSON.stringify(value));
-      } else if (key === 'existingSupportingImageUrls' && Array.isArray(value)) {
+      } else if (
+        key === 'existingSupportingImageUrls' &&
+        Array.isArray(value)
+      ) {
         // Append existing supporting image URLs as JSON array
         formData.append('existingSupportingImageUrls', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {

@@ -370,7 +370,7 @@ export const loanService = {
         if (data.titleDeedImages && data.titleDeedImages.length > 0) {
           // รูปแรกเป็น titleDeedImage
           updateApplicationData.titleDeedImage = data.titleDeedImages[0];
-          
+
           console.log('[Service] Replacing title deed image:', {
             titleDeedImage: updateApplicationData.titleDeedImage,
           });
@@ -379,7 +379,7 @@ export const loanService = {
         // Update supporting images (แทนที่รูปเดิม)
         if (data.supportingImages !== undefined) {
           updateApplicationData.supportingImages = data.supportingImages;
-          
+
           console.log('[Service] Replacing supporting images:', {
             supportingImagesCount: data.supportingImages.length,
           });

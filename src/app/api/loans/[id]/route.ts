@@ -57,7 +57,10 @@ export async function PUT(
         if (value instanceof File) {
           supportingFiles.push(value);
         }
-      } else if (key === 'existingImageUrls' || key === 'existingSupportingImageUrls') {
+      } else if (
+        key === 'existingImageUrls' ||
+        key === 'existingSupportingImageUrls'
+      ) {
         // Parse existing image URLs from JSON
         try {
           data[key] = JSON.parse(value as string);
@@ -127,7 +130,9 @@ export async function PUT(
           });
 
           supportingImageUrls.push(result.url);
-          console.log(`[API] Uploaded supporting: ${file.name} -> ${result.url}`);
+          console.log(
+            `[API] Uploaded supporting: ${file.name} -> ${result.url}`,
+          );
         } catch (uploadError) {
           console.error(`[API] Failed to upload ${file.name}:`, uploadError);
           throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
@@ -139,34 +144,42 @@ export async function PUT(
     // - ถ้ามีรูปใหม่: ใช้เฉพาะรูปใหม่ (ทิ้งรูปเก่าทั้งหมด)
     // - ถ้าไม่มีรูปใหม่: ใช้รูปเก่าที่ยังเลือกไว้
     const existingImages = data.existingImageUrls || [];
-    const allImageUrls = newImageUrls.length > 0 ? newImageUrls : existingImages;
-    
+    const allImageUrls =
+      newImageUrls.length > 0 ? newImageUrls : existingImages;
+
     console.log('[API Update] Replacing title deed images:', {
       hasNewImages: newImageUrls.length > 0,
       existingCount: existingImages.length,
       newCount: newImageUrls.length,
       finalCount: allImageUrls.length,
-      action: newImageUrls.length > 0 ? 'Using NEW images only' : 'Using existing images',
+      action:
+        newImageUrls.length > 0
+          ? 'Using NEW images only'
+          : 'Using existing images',
       images: allImageUrls,
     });
-    
+
     data.titleDeedImages = allImageUrls;
 
     // Replace supporting images
     // - ถ้ามีรูปใหม่: ใช้เฉพาะรูปใหม่ (ทิ้งรูปเก่าทั้งหมด)
     // - ถ้าไม่มีรูปใหม่: ใช้รูปเก่าที่ยังเลือกไว้
     const existingSupporting = data.existingSupportingImageUrls || [];
-    const allSupportingUrls = supportingImageUrls.length > 0 ? supportingImageUrls : existingSupporting;
-    
+    const allSupportingUrls =
+      supportingImageUrls.length > 0 ? supportingImageUrls : existingSupporting;
+
     console.log('[API Update] Replacing supporting images:', {
       hasNewImages: supportingImageUrls.length > 0,
       existingCount: existingSupporting.length,
       newCount: supportingImageUrls.length,
       finalCount: allSupportingUrls.length,
-      action: supportingImageUrls.length > 0 ? 'Using NEW images only' : 'Using existing images',
+      action:
+        supportingImageUrls.length > 0
+          ? 'Using NEW images only'
+          : 'Using existing images',
       images: allSupportingUrls,
     });
-    
+
     data.supportingImages = allSupportingUrls;
 
     // Validate request body

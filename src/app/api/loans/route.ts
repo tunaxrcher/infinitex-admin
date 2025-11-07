@@ -56,7 +56,10 @@ export async function POST(request: NextRequest) {
         if (value instanceof File) {
           supportingFiles.push(value);
         }
-      } else if (key === 'existingImageUrls' || key === 'existingSupportingImageUrls') {
+      } else if (
+        key === 'existingImageUrls' ||
+        key === 'existingSupportingImageUrls'
+      ) {
         // Parse existing image URLs from JSON
         try {
           data[key] = JSON.parse(value as string);
@@ -100,7 +103,9 @@ export async function POST(request: NextRequest) {
           });
 
           newImageUrls.push(result.url);
-          console.log(`[API] Uploaded title deed: ${file.name} -> ${result.url}`);
+          console.log(
+            `[API] Uploaded title deed: ${file.name} -> ${result.url}`,
+          );
         } catch (uploadError) {
           console.error(`[API] Failed to upload ${file.name}:`, uploadError);
           throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
@@ -126,7 +131,9 @@ export async function POST(request: NextRequest) {
           });
 
           supportingImageUrls.push(result.url);
-          console.log(`[API] Uploaded supporting: ${file.name} -> ${result.url}`);
+          console.log(
+            `[API] Uploaded supporting: ${file.name} -> ${result.url}`,
+          );
         } catch (uploadError) {
           console.error(`[API] Failed to upload ${file.name}:`, uploadError);
           throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
