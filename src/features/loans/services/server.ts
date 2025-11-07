@@ -179,13 +179,15 @@ export const loanService = {
           propertyArea: data.landArea,
           customerId: customer.id,
           // บันทึกภาพโฉนด (ใช้ภาพแรกเป็นหลัก)
-          titleDeedImage: data.titleDeedImages && data.titleDeedImages.length > 0 
-            ? data.titleDeedImages[0] 
-            : null,
+          titleDeedImage:
+            data.titleDeedImages && data.titleDeedImages.length > 0
+              ? data.titleDeedImages[0]
+              : null,
           // บันทึกภาพเพิ่มเติมใน supportingImages (ถ้ามีมากกว่า 1 รูป)
-          supportingImages: data.titleDeedImages && data.titleDeedImages.length > 1
-            ? data.titleDeedImages.slice(1)
-            : [],
+          supportingImages:
+            data.titleDeedImages && data.titleDeedImages.length > 1
+              ? data.titleDeedImages.slice(1)
+              : [],
         },
       });
 

@@ -54,8 +54,14 @@ export async function POST(request: NextRequest) {
         // Parse other fields
         if (value === 'undefined' || value === 'null') {
           data[key] = undefined;
-        } else if (key === 'loanAmount' || key === 'loanYears' || key === 'interestRate' || 
-                   key === 'operationFee' || key === 'transferFee' || key === 'otherFee') {
+        } else if (
+          key === 'loanAmount' ||
+          key === 'loanYears' ||
+          key === 'interestRate' ||
+          key === 'operationFee' ||
+          key === 'transferFee' ||
+          key === 'otherFee'
+        ) {
           data[key] = parseFloat(value as string);
         } else {
           data[key] = value;
@@ -66,7 +72,9 @@ export async function POST(request: NextRequest) {
     // Upload title deed images
     const titleDeedImageUrls: string[] = [];
     if (titleDeedFiles.length > 0) {
-      console.log(`[API] Uploading ${titleDeedFiles.length} title deed images...`);
+      console.log(
+        `[API] Uploading ${titleDeedFiles.length} title deed images...`,
+      );
 
       for (const file of titleDeedFiles) {
         try {

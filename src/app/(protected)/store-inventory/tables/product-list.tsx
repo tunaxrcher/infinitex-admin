@@ -536,7 +536,10 @@ export function ProductListTable({
         id: 'creditRisk',
         accessorFn: (row) => row.creditRisk,
         header: ({ column }) => (
-          <DataGridColumnHeader title="เครดิต (In Development)" column={column} />
+          <DataGridColumnHeader
+            title="เครดิต (In Development)"
+            column={column}
+          />
         ),
         cell: (info) => {
           const risk = info.row.original.creditRisk;
