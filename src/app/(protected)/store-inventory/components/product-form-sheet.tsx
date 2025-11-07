@@ -400,7 +400,7 @@ export function ProductFormSheet({
                         <div className="flex flex-col gap-2">
                           <Label className="text-xs">เนื้อที่</Label>
                           <Input
-                            placeholder="เช่น 2-3-50 ไร่"
+                            placeholder="เช่น 0.0.40"
                             value={landArea}
                             onChange={(e) => setLandArea(e.target.value)}
                           />
