@@ -181,26 +181,26 @@ export function ProductListTable({
       const fullName =
         `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
 
-      // กำหนดสถานะตาม application.status และ loan.status
+      // กำหนดสถานะตาม loan.status เป็นหลัก
       const appStatus = application?.status as string;
       let statusLabel = 'รออนุมัติ';
       let statusVariant = 'warning';
 
+      // ถ้ามี Loan แล้ว ให้ดูจาก loan.status เป็นหลัก
       if (appStatus === 'REJECTED' || loanData.status === 'CANCELLED') {
         statusLabel = 'ยกเลิกแล้ว';
         statusVariant = 'destructive';
-      } else if (appStatus === 'APPROVED') {
-        if (loanData.status === 'ACTIVE') {
-          statusLabel = 'ยังไม่ถึงกำหนด';
-          statusVariant = 'success';
-        } else if (loanData.status === 'COMPLETED') {
-          statusLabel = 'ปิดบัญชี';
-          statusVariant = 'info';
-        } else if (loanData.status === 'DEFAULTED') {
-          statusLabel = 'เกินกำหนดชำระ';
-          statusVariant = 'destructive';
-        }
+      } else if (loanData.status === 'ACTIVE') {
+        statusLabel = 'ยังไม่ถึงกำหนด';
+        statusVariant = 'success';
+      } else if (loanData.status === 'COMPLETED') {
+        statusLabel = 'ปิดบัญชี';
+        statusVariant = 'info';
+      } else if (loanData.status === 'DEFAULTED') {
+        statusLabel = 'เกินกำหนดชำระ';
+        statusVariant = 'destructive';
       } else if (['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(appStatus)) {
+        // เฉพาะกรณีที่ยังไม่มี loan.status ที่ชัดเจน
         statusLabel = 'รออนุมัติ';
         statusVariant = 'warning';
       }
@@ -536,7 +536,7 @@ export function ProductListTable({
         id: 'creditRisk',
         accessorFn: (row) => row.creditRisk,
         header: ({ column }) => (
-          <DataGridColumnHeader title="เครดิต" column={column} />
+          <DataGridColumnHeader title="เครดิต (In Development)" column={column} />
         ),
         cell: (info) => {
           const risk = info.row.original.creditRisk;
@@ -556,7 +556,7 @@ export function ProductListTable({
           );
         },
         enableSorting: true,
-        size: 140,
+        size: 180,
         meta: {
           cellClassName: '',
         },

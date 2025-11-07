@@ -165,11 +165,11 @@ export const loanService = {
         });
       }
 
-      // Step 3: สร้าง LoanApplication (สถานะรออนุมัติ)
+      // Step 3: สร้าง LoanApplication (สถานะอนุมัติแล้ว)
       const application = await tx.loanApplication.create({
         data: {
           loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'SUBMITTED', // เริ่มต้นเป็น SUBMITTED (รออนุมัติ)
+          status: 'APPROVED', // เริ่มต้นเป็น APPROVED (อนุมัติแล้ว)
           currentStep: 4,
           requestedAmount: loanAmount,
           approvedAmount: loanAmount,
@@ -181,12 +181,12 @@ export const loanService = {
         },
       });
 
-      // Step 4: สร้าง Loan (สถานะรออนุมัติ)
+      // Step 4: สร้าง Loan (สถานะ ACTIVE)
       const newLoan = await tx.loan.create({
         data: {
           loanNumber,
           loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'ACTIVE', // เริ่มเป็น ACTIVE ไปก่อน จะใช้ application.status เป็นตัวกำหนดว่ารออนุมัติ
+          status: 'ACTIVE', // เริ่มเป็น ACTIVE (ยังไม่ถึงกำหนด)
           principalAmount: loanAmount,
           interestRate: interestRate,
           termMonths,
