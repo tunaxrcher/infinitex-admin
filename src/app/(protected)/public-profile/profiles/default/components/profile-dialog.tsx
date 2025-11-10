@@ -8,6 +8,8 @@ import { Contributions } from '@src/app/(protected)/public-profile/profiles/defa
 import { Projects } from '@src/app/(protected)/public-profile/profiles/default/components/projects';
 import { WorkExperience } from '@src/app/(protected)/public-profile/profiles/default/components/work-experience';
 import { DropdownMenu9 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-9';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical, Luggage, Mail, Users, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -17,8 +19,6 @@ import {
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { EllipsisVertical, Luggage, Mail, Users, X } from 'lucide-react';
 
 export function ProfileDialog({
   open,

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Heart, Mail } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -8,7 +9,6 @@ import {
 } from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Card } from '@src/shared/components/ui/card';
-import { Heart, Mail } from 'lucide-react';
 
 export default function Item12() {
   return (

@@ -2,8 +2,8 @@
 
 import { Fragment } from 'react';
 import { useStoreClient } from '@src/app/(protected)/store-client/components/context';
-import { Card, CardContent } from '@src/shared/components/ui/card';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 interface ICard1Item {
   logo: string;

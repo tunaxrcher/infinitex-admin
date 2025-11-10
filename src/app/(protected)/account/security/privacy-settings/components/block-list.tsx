@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Trash2 } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -14,8 +16,6 @@ import {
   CardTitle,
 } from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Trash2 } from 'lucide-react';
 
 interface IBlockListItem {
   avatar: string;

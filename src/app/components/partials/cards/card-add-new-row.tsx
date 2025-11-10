@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Rocket } from 'lucide-react';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 import { HexagonBadge } from '../common/hexagon-badge';
 
 interface IAddNewProps {

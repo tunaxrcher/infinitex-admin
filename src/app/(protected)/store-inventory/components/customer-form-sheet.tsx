@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { User, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Command,
@@ -34,8 +36,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { User, X } from 'lucide-react';
 
 // Country data for phone number input
 const countries = [

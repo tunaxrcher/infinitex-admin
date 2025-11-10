@@ -3,15 +3,6 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
-import {
-  AccordionMenu,
-  AccordionMenuClassNames,
-  AccordionMenuItem,
-  AccordionMenuSeparator,
-  AccordionMenuSub,
-  AccordionMenuSubContent,
-  AccordionMenuSubTrigger,
-} from '@src/shared/components/ui/accordion-menu';
 import { cn } from '@src/shared/lib/utils';
 import {
   Activity,
@@ -25,6 +16,15 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
+import {
+  AccordionMenu,
+  AccordionMenuClassNames,
+  AccordionMenuItem,
+  AccordionMenuSeparator,
+  AccordionMenuSub,
+  AccordionMenuSubContent,
+  AccordionMenuSubTrigger,
+} from '@src/shared/components/ui/accordion-menu';
 
 interface Item {
   title: string;

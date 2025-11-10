@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Image as ImageIcon, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Input } from '@src/shared/components/ui/input';
@@ -22,8 +24,6 @@ import {
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Image as ImageIcon, X } from 'lucide-react';
 
 function CategoryImageUpload({ mode }: { mode: 'new' | 'edit' }) {
   const isNewMode = mode === 'new';

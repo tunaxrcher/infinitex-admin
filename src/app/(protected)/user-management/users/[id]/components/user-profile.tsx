@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { User, UserStatus } from '@src/app/models/user';
+import { formatDateTime } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { formatDateTime } from '@src/shared/lib/helpers';
 import { getUserStatusProps } from '../../constants/status';
 import UserProfileEditDialog from './user-profile-edit-dialog';
 

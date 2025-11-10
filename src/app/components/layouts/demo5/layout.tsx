@@ -2,6 +2,12 @@
 
 import { ReactNode, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useBodyClass } from '@src/shared/hooks/use-body-class';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useSettings } from '@src/shared/providers/settings-provider';
+import { addDays, format } from 'date-fns';
+import { CalendarDays } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
 import {
@@ -9,12 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@src/shared/components/ui/popover';
-import { useBodyClass } from '@src/shared/hooks/use-body-class';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useSettings } from '@src/shared/providers/settings-provider';
-import { addDays, format } from 'date-fns';
-import { CalendarDays } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
 import { Footer } from './components/footer';
 import { Header } from './components/header';
 import { Navbar } from './components/navbar';

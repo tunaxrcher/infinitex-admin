@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Image as ImageIcon } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -11,7 +12,6 @@ import {
 } from '@src/shared/components/ui/avatar';
 import { Card } from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
-import { Image as ImageIcon } from 'lucide-react';
 
 interface ItemProps {
   userName: string;

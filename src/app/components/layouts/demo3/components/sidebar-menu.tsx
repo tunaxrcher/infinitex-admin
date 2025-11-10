@@ -1,13 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@src/shared/components/ui/tooltip';
 import { cn } from '@src/shared/lib/utils';
 import {
   BarChart3,
@@ -21,6 +14,13 @@ import {
   UserCircle,
   Users,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 
 export interface Item {
   icon: React.ComponentType<{ className?: string }>;

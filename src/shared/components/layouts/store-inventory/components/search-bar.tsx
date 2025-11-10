@@ -1,3 +1,5 @@
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { Search } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
@@ -6,8 +8,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@src/shared/components/ui/popover';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { Search } from 'lucide-react';
 
 export function SearchBar() {
   const isMobile = useIsMobile();

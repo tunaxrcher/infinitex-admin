@@ -1,3 +1,20 @@
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  Bell,
+  Clock,
+  Download,
+  ExternalLink,
+  Gift,
+  HelpCircle,
+  Keyboard,
+  LogOut,
+  Moon,
+  Settings,
+  Sun,
+  User,
+  VolumeX,
+} from 'lucide-react';
+import { useTheme } from 'next-themes';
 import {
   Avatar,
   AvatarFallback,
@@ -16,23 +33,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import {
-  Bell,
-  Clock,
-  Download,
-  ExternalLink,
-  Gift,
-  HelpCircle,
-  Keyboard,
-  LogOut,
-  Moon,
-  Settings,
-  Sun,
-  User,
-  VolumeX,
-} from 'lucide-react';
-import { useTheme } from 'next-themes';
 
 export function UserDropdownMenu() {
   const { theme, setTheme } = useTheme();

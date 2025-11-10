@@ -18,16 +18,6 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-} from '@src/shared/components/ui/alert';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent } from '@src/shared/components/ui/card';
-import { Progress } from '@src/shared/components/ui/progress';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { cn } from '@src/shared/lib/utils';
 import {
@@ -38,6 +28,16 @@ import {
   TriangleAlert,
   XIcon,
 } from 'lucide-react';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+} from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Progress } from '@src/shared/components/ui/progress';
 
 interface ImageFile {
   id: string;

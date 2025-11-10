@@ -2,7 +2,6 @@
 
 import { Fragment } from 'react';
 import Link from 'next/link';
-import { Button } from '@src/shared/components/ui/button';
 import {
   Bell,
   Boxes,
@@ -16,6 +15,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 import { IOptionsItems, Options } from './components';
 
 export function AccountGetStartedContent() {

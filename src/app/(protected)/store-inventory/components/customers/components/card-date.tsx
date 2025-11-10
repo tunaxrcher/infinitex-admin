@@ -2,16 +2,16 @@
 'use client';
 
 import Link from 'next/link';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Card, CardContent } from '@/components/ui/card';
-import { Rating } from '@/components/ui/rating';
-import { Separator } from '@/components/ui/separator';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Rating } from '@src/shared/components/ui/rating';
+import { Separator } from '@src/shared/components/ui/separator';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@src/shared/components/ui/tooltip';
 
 const cardData = [
   {

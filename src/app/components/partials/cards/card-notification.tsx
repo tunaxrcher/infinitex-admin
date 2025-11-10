@@ -1,9 +1,9 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { LucideIcon, SquarePen } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { CardContent } from '@src/shared/components/ui/card';
-import { LucideIcon, SquarePen } from 'lucide-react';
 import { HexagonBadge } from '../common/hexagon-badge';
 
 interface INotificationProps {

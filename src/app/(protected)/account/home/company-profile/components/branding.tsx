@@ -2,6 +2,8 @@
 
 import { useId, useState } from 'react';
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Image as ImageIcon, SquareMousePointer } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -13,8 +15,6 @@ import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Image as ImageIcon, SquareMousePointer } from 'lucide-react';
 
 const Branding = () => {
   const id = useId();

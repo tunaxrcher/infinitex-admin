@@ -1,7 +1,7 @@
 'use client';
 
-import { Input } from '@src/shared/components/ui/input';
 import { Search } from 'lucide-react';
+import { Input } from '@src/shared/components/ui/input';
 
 export function HeaderSearch() {
   const handleInputChange = () => {};

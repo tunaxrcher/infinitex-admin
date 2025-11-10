@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Container } from '@src/shared/components/common/container';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Menu } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Sheet,
@@ -12,8 +13,7 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Menu } from 'lucide-react';
+import { Container } from '@src/shared/components/common/container';
 import { SidebarFooter } from './sidebar-footer';
 import { SidebarMenu } from './sidebar-menu';
 

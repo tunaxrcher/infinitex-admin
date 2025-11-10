@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@src/shared/components/ui/button';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { cn } from '@src/shared/lib/utils';
 import { useSettings } from '@src/shared/providers/settings-provider';
 import { ChevronFirst } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 export function SidebarHeader() {
   const { settings, storeOption } = useSettings();

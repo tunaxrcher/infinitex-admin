@@ -3,6 +3,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
 import { User } from '@src/app/models/user';
+import { apiFetch } from '@src/shared/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { LoaderCircleIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -21,12 +27,6 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { apiFetch } from '@src/shared/lib/api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { LoaderCircleIcon } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
 
 // Validation schema for email confirmation
 const EmailConfirmationSchema = (userEmail: string) =>

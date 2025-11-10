@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { Calendar, Settings, Settings2, Shield, Users } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -27,7 +28,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@src/shared/components/ui/tabs';
-import { Calendar, Settings, Settings2, Shield, Users } from 'lucide-react';
 import Item1 from './notifications/item-1';
 import Item2 from './notifications/item-2';
 import Item3 from './notifications/item-3';

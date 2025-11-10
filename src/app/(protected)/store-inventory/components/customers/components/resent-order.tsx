@@ -1,19 +1,19 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { ShoppingCart, TrendingUp } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Progress } from '@src/shared/components/ui/progress';
+import { Separator } from '@src/shared/components/ui/separator';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@src/shared/components/ui/tooltip';
 
 export function RecentOrders() {
   const orders = [

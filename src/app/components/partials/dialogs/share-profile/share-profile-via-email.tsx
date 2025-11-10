@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Info } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
-import { Info } from 'lucide-react';
 
 export function ShareProfileViaEmail() {
   const [emailInput, setEmailInput] = useState('');

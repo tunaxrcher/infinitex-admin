@@ -3,13 +3,9 @@
 import React, { use, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Container } from '@src/shared/components/common/container';
-import {
-  Toolbar,
-  ToolbarActions,
-  ToolbarHeading,
-  ToolbarTitle,
-} from '@src/shared/components/common/toolbar';
+import { apiFetch } from '@src/shared/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { Activity, MoveLeft, UserPen } from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,9 +16,13 @@ import {
 } from '@src/shared/components/ui/breadcrumb';
 import { Button } from '@src/shared/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
-import { apiFetch } from '@src/shared/lib/api';
-import { useQuery } from '@tanstack/react-query';
-import { Activity, MoveLeft, UserPen } from 'lucide-react';
+import { Container } from '@src/shared/components/common/container';
+import {
+  Toolbar,
+  ToolbarActions,
+  ToolbarHeading,
+  ToolbarTitle,
+} from '@src/shared/components/common/toolbar';
 import { UserProvider } from './components/user-context';
 import UserHero from './components/user-hero';
 

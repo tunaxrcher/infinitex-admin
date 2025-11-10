@@ -17,6 +17,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Cell, flexRender, HeaderGroup, Row } from '@tanstack/react-table';
+import { GripHorizontal } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { useDataGrid } from '@src/shared/components/ui/data-grid';
 import {
@@ -33,8 +35,6 @@ import {
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
 } from '@src/shared/components/ui/data-grid-table';
-import { Cell, flexRender, HeaderGroup, Row } from '@tanstack/react-table';
-import { GripHorizontal } from 'lucide-react';
 
 function DataGridTableDndRowHandle({ rowId }: { rowId: string }) {
   const { attributes, listeners } = useSortable({

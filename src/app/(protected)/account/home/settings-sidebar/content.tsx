@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AccountSettingsSidebar } from '@src/app/(protected)/account/home/settings-sidebar/account-basic-sidebar';
-import { Scrollspy } from '@src/shared/components/ui/scrollspy';
 import { useIsMobile } from '@src/shared/hooks/use-mobile';
 import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
 import { cn } from '@src/shared/lib/utils';
 import { useSettings } from '@src/shared/providers/settings-provider';
+import { Scrollspy } from '@src/shared/components/ui/scrollspy';
 import {
   AdvancedSettingsAddress,
   AdvancedSettingsAppearance,

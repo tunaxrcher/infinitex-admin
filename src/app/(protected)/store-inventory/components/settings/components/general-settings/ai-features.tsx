@@ -1,9 +1,9 @@
 'use client';
 
+import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Label } from '@src/shared/components/ui/label';
 import { Separator } from '@src/shared/components/ui/separator';
 import { Switch } from '@src/shared/components/ui/switch';
-import { Card, CardContent } from '@/components/ui/card';
 
 export function AIFeatures() {
   return (

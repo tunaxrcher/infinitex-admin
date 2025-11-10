@@ -1,5 +1,13 @@
 import Link from 'next/link';
 import {
+  CalendarDays,
+  Lock,
+  MapPin,
+  NotepadText,
+  Timer,
+  Users,
+} from 'lucide-react';
+import {
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -9,14 +17,6 @@ import {
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
-import {
-  CalendarDays,
-  Lock,
-  MapPin,
-  NotepadText,
-  Timer,
-  Users,
-} from 'lucide-react';
 import { AvatarGroup } from '../avatar-group';
 
 export default function Item7() {

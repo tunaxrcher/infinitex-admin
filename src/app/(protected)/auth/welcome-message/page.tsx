@@ -11,8 +11,8 @@ import {
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
 import { WelcomeMessageDialog } from '@src/app/components/partials/dialogs/welcome-message-dialog';
-import { Container } from '@src/shared/components/common/container';
 import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
 
 export default function AuthWelcomeMessagePage() {
   const [profileModalOpen, setProfileModalOpen] = useState(true);

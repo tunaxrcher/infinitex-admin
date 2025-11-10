@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { GripVertical, Minus, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -38,7 +39,6 @@ import {
   SortableItem,
   SortableItemHandle,
 } from '@src/shared/components/ui/sortable';
-import { GripVertical, Minus, Plus, Trash2 } from 'lucide-react';
 
 interface OptionValue {
   id: string;

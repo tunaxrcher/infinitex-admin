@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Settings } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -9,8 +11,6 @@ import {
   CardTitle,
 } from '@src/shared/components/ui/card';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Settings } from 'lucide-react';
 
 interface IExternalServicesIntegrationsItem {
   logo: string;

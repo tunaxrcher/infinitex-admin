@@ -8,6 +8,18 @@ import {
   AvatarGroup,
 } from '@src/app/components/partials/common/avatar-group';
 import { Rating } from '@src/app/components/partials/common/rating';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Search, Settings2, SquarePen, Trash2, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -30,18 +42,6 @@ import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Switch } from '@src/shared/components/ui/switch';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Search, Settings2, SquarePen, Trash2, X } from 'lucide-react';
 
 interface IData {
   id: string;

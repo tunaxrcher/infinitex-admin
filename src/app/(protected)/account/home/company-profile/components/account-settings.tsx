@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Copy, SquarePen } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -14,8 +16,6 @@ import {
   TableCell,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Copy, SquarePen } from 'lucide-react';
 
 const AccountSettings = () => {
   return (

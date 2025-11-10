@@ -2,16 +2,16 @@
 
 import { RiGatsbyLine, RiNextjsLine } from '@remixicon/react';
 import { Euro, Info } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
+} from '@src/shared/components/ui/select';
+import { Separator } from '@src/shared/components/ui/separator';
 import { CardPayment } from './components/card';
 import { DigitalWallets } from './components/digital-wallets';
 

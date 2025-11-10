@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { type DialogProps } from '@radix-ui/react-dialog';
+import { cn } from '@src/shared/lib/utils';
+import { Command as CommandPrimitive } from 'cmdk';
+import { Check, LucideIcon, Search } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
-import { cn } from '@src/shared/lib/utils';
-import { Command as CommandPrimitive } from 'cmdk';
-import { Check, LucideIcon, Search } from 'lucide-react';
 
 function Command({
   className,

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Container } from '@src/shared/components/common/container';
 import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
 import { cn } from '@src/shared/lib/utils';
 import { useSettings } from '@src/shared/providers/settings-provider';
+import { Container } from '@src/shared/components/common/container';
 import { HeaderLogo } from './header-logo';
 import { HeaderSearch } from './header-search';
 import { HeaderTopbar } from './header-topbar';

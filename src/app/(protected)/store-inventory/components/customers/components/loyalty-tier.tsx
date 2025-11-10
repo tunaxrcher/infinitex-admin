@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Bolt, FolderSymlink, Radar, TrendingUp } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Slider, SliderThumb } from '@/components/ui/slider';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Separator } from '@src/shared/components/ui/separator';
+import { Slider, SliderThumb } from '@src/shared/components/ui/slider';
 
 const tiers = [
   { name: 'Lite', color: '#e879f9', points: 0, nextGoal: 1000 },

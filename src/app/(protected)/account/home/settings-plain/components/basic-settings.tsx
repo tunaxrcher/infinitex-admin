@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { AvatarInput } from '@src/app/components/partials/common/avatar-input';
+import { cn } from '@src/shared/lib/utils';
+import { format } from 'date-fns';
+import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
 import {
@@ -27,9 +30,6 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Switch } from '@src/shared/components/ui/switch';
-import { cn } from '@src/shared/lib/utils';
-import { format } from 'date-fns';
-import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
 
 interface IGeneralSettingsProps {
   title: string;

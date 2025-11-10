@@ -7,6 +7,30 @@ import {
   useGetLoanList,
   useRejectLoan,
 } from '@src/features/loans/hooks';
+import { cn } from '@src/shared/lib/utils';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Check,
+  EllipsisVertical,
+  Filter,
+  Info,
+  Layers,
+  Search,
+  Settings,
+  Trash,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge, BadgeProps } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -46,30 +70,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
-import { cn } from '@src/shared/lib/utils';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  Check,
-  EllipsisVertical,
-  Filter,
-  Info,
-  Layers,
-  Search,
-  Settings,
-  Trash,
-  X,
-} from 'lucide-react';
-import { toast } from 'sonner';
 import { ManageVariantsSheet } from '../components/manage-variants';
 import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
 import { ProductFormSheet } from '../components/product-form-sheet';

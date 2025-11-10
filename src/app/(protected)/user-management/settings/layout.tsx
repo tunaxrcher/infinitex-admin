@@ -2,6 +2,9 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { apiFetch } from '@src/shared/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
 import { Container } from '@src/shared/components/common/container';
 import { ContentLoader } from '@src/shared/components/common/content-loader';
 import {
@@ -10,9 +13,6 @@ import {
   ToolbarHeading,
   ToolbarTitle,
 } from '@src/shared/components/common/toolbar';
-import { Tabs, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
-import { apiFetch } from '@src/shared/lib/api';
-import { useQuery } from '@tanstack/react-query';
 import { SettingsProvider } from './components/settings-context';
 
 type NavRoutes = Record<

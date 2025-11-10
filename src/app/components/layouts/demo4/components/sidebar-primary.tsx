@@ -6,13 +6,6 @@ import { usePathname } from 'next/navigation';
 import { AppsDropdownMenu } from '@src/app/components/partials/topbar/apps-dropdown-menu';
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
 import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@src/shared/components/ui/tooltip';
 import { useViewport } from '@src/shared/hooks/use-viewport';
 import { getHeight } from '@src/shared/lib/dom';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
@@ -32,6 +25,13 @@ import {
   UserCircle,
   Users,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 
 interface MenuItem {
   icon: React.ComponentType<{ className?: string }>;

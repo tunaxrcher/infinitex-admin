@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { CircleCheck, LucideIcon, Users } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/shared/components/ui/card';
-import { CircleCheck, LucideIcon, Users } from 'lucide-react';
 import { AvatarGroup } from '../common/avatar-group';
 import { Rating } from '../common/rating';
 

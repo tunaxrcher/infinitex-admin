@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ApexOptions } from 'apexcharts';
+import ApexChart from 'react-apexcharts';
 import {
   Card,
   CardContent,
@@ -14,8 +16,6 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Switch } from '@src/shared/components/ui/switch';
-import { ApexOptions } from 'apexcharts';
-import ApexChart from 'react-apexcharts';
 
 // Hardcoded dummy data for the earnings chart
 const dummyChartData: number[] = [

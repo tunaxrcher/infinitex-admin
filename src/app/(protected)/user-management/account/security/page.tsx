@@ -1,6 +1,5 @@
 'use client';
 
-import { comingSoonToast } from '@src/shared/components/common/coming-soon-toast';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
+import { comingSoonToast } from '@src/shared/components/common/coming-soon-toast';
 import { useAccount } from '../components/account-context';
 
 export default function Page() {

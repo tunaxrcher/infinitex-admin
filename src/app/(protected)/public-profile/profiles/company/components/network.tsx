@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { RemixiconComponentType } from '@remixicon/react';
+import { LucideIcon } from 'lucide-react';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { LucideIcon } from 'lucide-react';
 
 interface INetworkItem {
   icon: LucideIcon | RemixiconComponentType;

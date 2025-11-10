@@ -1,5 +1,7 @@
 'use client';
 
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { CircleCheck } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -10,8 +12,6 @@ import {
 import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { CircleCheck } from 'lucide-react';
 
 interface IAdvancedSettingsAppearanceItem {
   image: string;

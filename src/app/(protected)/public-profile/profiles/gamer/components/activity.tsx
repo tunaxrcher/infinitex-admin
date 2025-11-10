@@ -7,6 +7,7 @@ import { ActivitiesLogin } from '@src/app/components/partials/activities/login';
 import { ActivitiesNewProduct } from '@src/app/components/partials/activities/new-product';
 import { ActivitiesProductSpecific } from '@src/app/components/partials/activities/product-specific';
 import { ActivitiesProductWebinar } from '@src/app/components/partials/activities/product-webinar';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -17,7 +18,6 @@ import {
 } from '@src/shared/components/ui/card';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 const Activity = () => {
   const id = useId();

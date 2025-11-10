@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Calendar, ChevronDown } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -9,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
-import { Calendar, ChevronDown } from 'lucide-react';
 
 const ToolbarMenu = () => {
   const months = [

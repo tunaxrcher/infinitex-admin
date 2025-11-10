@@ -2,9 +2,9 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { cn } from '@src/shared/lib/utils';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
-import { cn } from '@src/shared/lib/utils';
 
 export interface CreateTeamProps {
   className?: string;

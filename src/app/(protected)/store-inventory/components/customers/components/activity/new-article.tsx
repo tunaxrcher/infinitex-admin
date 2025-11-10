@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@src/shared/components/ui/button';
 import { UsersRound } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesNewArticle = () => {

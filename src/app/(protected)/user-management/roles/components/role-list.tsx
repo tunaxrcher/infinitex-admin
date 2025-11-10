@@ -2,6 +2,25 @@
 
 import { useMemo, useState } from 'react';
 import { UserRole } from '@src/app/models/user';
+import { apiFetch } from '@src/shared/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Ellipsis,
+  Plus,
+  Search,
+  ShieldAlert,
+  UserRound,
+  X,
+} from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -28,25 +47,6 @@ import {
 import { Input } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { apiFetch } from '@src/shared/lib/api';
-import { useQuery } from '@tanstack/react-query';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  Ellipsis,
-  Plus,
-  Search,
-  ShieldAlert,
-  UserRound,
-  X,
-} from 'lucide-react';
 import RoleDefaultDialog from './role-default-dialog';
 import RoleDeleteDialog from './role-delete-dialog';
 import RoleEditDialog from './role-edit-dialog';

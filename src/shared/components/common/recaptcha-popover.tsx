@@ -2,10 +2,10 @@
 
 import * as Popover from '@radix-ui/react-popover';
 import { RiErrorWarningFill } from '@remixicon/react';
-import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
-import { Button } from '@src/shared/components/ui/button';
 import { useRecaptchaV2 } from '@src/shared/hooks/use-recaptcha-v2';
 import { toast } from 'sonner';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Button } from '@src/shared/components/ui/button';
 
 interface RecaptchaPopoverProps {
   open: boolean;

@@ -2,10 +2,10 @@
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@src/shared/components/ui/button';
-import { CardFooter } from '@src/shared/components/ui/card';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { CircleCheck, PersonStanding } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import { CardFooter } from '@src/shared/components/ui/card';
 
 interface ILikesItem {
   avatar: string;

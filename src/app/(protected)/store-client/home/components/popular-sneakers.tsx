@@ -6,8 +6,8 @@ import {
   INewArrivalsItem,
   INewArrivalsItems,
 } from '@src/app/(protected)/store-client/home/components/new-arrivals';
-import { Button } from '@src/shared/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 export function PopularSneakers() {
   const items: INewArrivalsItems = [

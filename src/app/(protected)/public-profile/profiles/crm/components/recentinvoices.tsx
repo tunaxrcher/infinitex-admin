@@ -2,13 +2,6 @@
 
 import { DropdownMenu1 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-1';
 import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@src/shared/components/ui/card';
 import {
   Barcode,
   EllipsisVertical,
@@ -18,6 +11,13 @@ import {
   Tag,
   TicketPercent,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 
 interface IRecentInvoicesItem {
   icon: LucideIcon;

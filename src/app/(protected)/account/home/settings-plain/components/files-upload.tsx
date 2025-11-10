@@ -2,23 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  AlertToolbar,
-} from '@src/shared/components/ui/alert';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@src/shared/components/ui/card';
-import { Progress } from '@src/shared/components/ui/progress';
-import {
   formatBytes,
   useFileUpload,
   type FileMetadata,
@@ -38,6 +21,23 @@ import {
   VideoIcon,
   XIcon,
 } from 'lucide-react';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  AlertToolbar,
+} from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
+import { Progress } from '@src/shared/components/ui/progress';
 
 interface FileUploadItem extends FileWithPreview {
   progress: number;

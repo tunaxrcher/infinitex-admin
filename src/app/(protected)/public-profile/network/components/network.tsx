@@ -6,12 +6,12 @@ import {
   CardConnection,
   CardConnectionRow,
 } from '@src/app/components/partials/cards';
+import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
-import { LayoutGrid, List } from 'lucide-react';
 
 interface INetworkItem {
   name: string;

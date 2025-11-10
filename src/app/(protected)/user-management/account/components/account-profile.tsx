@@ -3,6 +3,13 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
+import { apiFetch } from '@src/shared/lib/api';
+import { getInitials } from '@src/shared/lib/helpers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { LoaderCircleIcon } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import {
   Avatar,
@@ -28,13 +35,6 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { apiFetch } from '@src/shared/lib/api';
-import { getInitials } from '@src/shared/lib/helpers';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { LoaderCircleIcon } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import { ControllerRenderProps, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import {
   AccountProfileSchema,
   AccountProfileSchemaType,

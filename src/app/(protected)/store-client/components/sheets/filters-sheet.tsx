@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { RiMoneyDollarCircleLine } from '@remixicon/react';
+import { Info, Star } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
@@ -25,7 +26,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
-import { Info, Star } from 'lucide-react';
 
 const items = [
   { label: 'Sneakers' },

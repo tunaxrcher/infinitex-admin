@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CircleCheck } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -9,7 +10,6 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
-import { CircleCheck } from 'lucide-react';
 
 export default function Item9() {
   return (

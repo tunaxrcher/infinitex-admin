@@ -1,7 +1,7 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 export function Statistics3({}: object) {
   const items = [

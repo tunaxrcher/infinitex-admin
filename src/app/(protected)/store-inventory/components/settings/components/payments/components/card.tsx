@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Circle, CircleCheck } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Card } from '@/components/ui/card';
+import { Card } from '@src/shared/components/ui/card';
 
 export function CardPayment() {
   const [selectedMethods, setSelectedMethods] = useState(['visa', 'ideal']);

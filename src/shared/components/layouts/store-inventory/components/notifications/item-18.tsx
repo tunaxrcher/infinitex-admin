@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Avatar,
   AvatarFallback,
@@ -7,7 +8,6 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Card } from '@src/shared/components/ui/card';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 interface IItem18Item {
   image: string;

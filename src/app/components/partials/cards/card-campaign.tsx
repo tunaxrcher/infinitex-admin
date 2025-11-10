@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
 import { Progress } from '@src/shared/components/ui/progress';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { EllipsisVertical } from 'lucide-react';
 import { DropdownMenu2 } from '../dropdown-menu/dropdown-menu-2';
 
 interface ICampaignItem {

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Card } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card } from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 
 export function DigitalWallets() {
   const [wallets, setWallets] = useState({

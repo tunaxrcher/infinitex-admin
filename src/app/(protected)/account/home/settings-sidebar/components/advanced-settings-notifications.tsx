@@ -3,6 +3,8 @@
 import { ReactNode, useId } from 'react';
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Mail } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -17,8 +19,6 @@ import {
   RadioGroupItem,
 } from '@src/shared/components/ui/radio-group';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Mail } from 'lucide-react';
 
 interface IAdvancedSettingsNotificationsItem {
   title: string;

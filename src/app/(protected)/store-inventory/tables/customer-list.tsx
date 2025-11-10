@@ -1,6 +1,32 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { VariantProps } from 'class-variance-authority';
+import {
+  ChevronUp,
+  Copy,
+  Download,
+  Eye,
+  Info,
+  Link,
+  Search,
+  SquarePen,
+  Trash,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import {
   AlertDialog,
@@ -45,32 +71,6 @@ import {
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Separator } from '@src/shared/components/ui/separator';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { VariantProps } from 'class-variance-authority';
-import {
-  ChevronUp,
-  Copy,
-  Download,
-  Eye,
-  Info,
-  Link,
-  Search,
-  SquarePen,
-  Trash,
-  X,
-} from 'lucide-react';
-import { toast } from 'sonner';
 import { CustomerDetailsSheet } from '../components/customer-details-sheet';
 import { CustomerFormSheet } from '../components/customer-form-sheet';
 

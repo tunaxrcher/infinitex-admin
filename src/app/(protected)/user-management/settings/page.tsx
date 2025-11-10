@@ -3,6 +3,11 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
+import { apiFetch } from '@src/shared/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { LoaderCircleIcon } from 'lucide-react';
+import { ControllerRenderProps, FieldErrors, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -32,11 +37,6 @@ import {
 } from '@src/shared/components/ui/select';
 import { Switch } from '@src/shared/components/ui/switch';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { apiFetch } from '@src/shared/lib/api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { LoaderCircleIcon } from 'lucide-react';
-import { ControllerRenderProps, FieldErrors, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { useSettings } from './components/settings-context';
 import TimezoneSelect from './components/timezone-select';
 import {

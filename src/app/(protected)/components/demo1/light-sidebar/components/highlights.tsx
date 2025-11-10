@@ -7,6 +7,12 @@ import {
   RiStore2Line,
 } from '@remixicon/react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
+import {
+  ArrowDown,
+  ArrowUp,
+  EllipsisVertical,
+  type LucideIcon,
+} from 'lucide-react';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -15,12 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import {
-  ArrowDown,
-  ArrowUp,
-  EllipsisVertical,
-  type LucideIcon,
-} from 'lucide-react';
 
 interface IHighlightsRow {
   icon: LucideIcon | RemixiconComponentType;

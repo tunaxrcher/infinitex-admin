@@ -1,16 +1,16 @@
 'use client';
 
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { CircleCheck, SquarePlus } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 import {
   Input,
   InputAddon,
   InputGroup,
   InputWrapper,
-} from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 
 export function ContactChannels() {
   return (

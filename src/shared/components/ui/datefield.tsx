@@ -1,6 +1,5 @@
 'use client';
 
-import { inputVariants } from '@src/shared/components/ui/input';
 import { cn } from '@src/shared/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
 import {
@@ -16,6 +15,7 @@ import {
   TimeField as TimeFieldRa,
   TimeValue as TimeValueRa,
 } from 'react-aria-components';
+import { inputVariants } from '@src/shared/components/ui/input';
 
 function DateField<T extends DateValueRa>({
   className,

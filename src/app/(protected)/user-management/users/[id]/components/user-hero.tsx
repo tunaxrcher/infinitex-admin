@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { User } from '@src/app/models/user';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { getInitials } from '@src/shared/lib/helpers';
+import { Check } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -15,9 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
-import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
-import { getInitials } from '@src/shared/lib/helpers';
-import { Check } from 'lucide-react';
 
 interface UserProfileProps {
   user: User;

@@ -21,8 +21,8 @@
     "^@/hooks/(.*)$",
     "^@/providers/(.*)$",
     "^@/services/(.*)$",
-    "^@/components/ui/(.*)$",
-    "^@/components/(.*)$",
+    "^@src/shared/components/ui/(.*)$",
+    "^@src/shared/components/(.*)$",
     "^@/app/(.*)$",
     "^[./]",
     "^@/styles/(.*)$"

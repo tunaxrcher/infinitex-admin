@@ -4,6 +4,14 @@ import { useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  Badge,
+  ChevronDown,
+  FileText,
+  Settings,
+  SquareCode,
+  UserCircle,
+} from 'lucide-react';
+import {
   AccordionMenu,
   AccordionMenuClassNames,
   AccordionMenuGroup,
@@ -17,14 +25,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
-import {
-  Badge,
-  ChevronDown,
-  FileText,
-  Settings,
-  SquareCode,
-  UserCircle,
-} from 'lucide-react';
 
 interface DropdownItem {
   title: string;

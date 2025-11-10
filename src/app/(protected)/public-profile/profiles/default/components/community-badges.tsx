@@ -2,18 +2,18 @@
 
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@src/shared/components/ui/card';
-import {
   MessagesSquare,
   Truck,
   Volleyball,
   Zap,
   type LucideIcon,
 } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 
 interface ICommunityBadgesItem {
   stroke: string;

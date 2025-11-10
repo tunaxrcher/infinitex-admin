@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { Copy, FileText, Pencil, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
-import { Copy, FileText, Pencil, Trash2 } from 'lucide-react';
 
 export function DropdownMenu8({ trigger }: { trigger: ReactNode }) {
   return (

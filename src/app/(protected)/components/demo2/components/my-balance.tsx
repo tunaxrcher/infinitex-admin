@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
+import { ApexOptions } from 'apexcharts';
+import { EllipsisVertical } from 'lucide-react';
+import ApexChart from 'react-apexcharts';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -11,9 +14,6 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
-import { ApexOptions } from 'apexcharts';
-import { EllipsisVertical } from 'lucide-react';
-import ApexChart from 'react-apexcharts';
 
 interface IMyBalanceProps {
   className: string;

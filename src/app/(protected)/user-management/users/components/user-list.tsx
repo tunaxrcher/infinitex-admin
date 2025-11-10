@@ -3,6 +3,23 @@
 import { useMemo, useState } from 'react';
 import { redirect } from 'next/navigation';
 import { User, UserStatus } from '@src/app/models/user';
+import { apiFetch } from '@src/shared/lib/api';
+import {
+  formatDate,
+  formatDateTime,
+  getInitials,
+} from '@src/shared/lib/helpers';
+import { useQuery } from '@tanstack/react-query';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ChevronRight, Plus, Search, X } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -34,23 +51,6 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { apiFetch } from '@src/shared/lib/api';
-import {
-  formatDate,
-  formatDateTime,
-  getInitials,
-} from '@src/shared/lib/helpers';
-import { useQuery } from '@tanstack/react-query';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { ChevronRight, Plus, Search, X } from 'lucide-react';
 import { useRoleSelectQuery } from '../../roles/hooks/use-role-select-query';
 import { getUserStatusProps, UserStatusProps } from '../constants/status';
 import UserInviteDialog from './user-add-dialog';

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button } from '@src/shared/components/ui/button';
 import { cn } from '@src/shared/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 const alertVariants = cva(
   'flex items-stretch w-full gap-2 group-[.toaster]:w-(--width)',

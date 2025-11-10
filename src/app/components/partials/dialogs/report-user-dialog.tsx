@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -15,7 +16,6 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@src/shared/components/ui/radio-group';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export function ReportUserDialog({
   open,

@@ -1,8 +1,8 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Button } from '@src/shared/components/ui/button';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Button } from '@src/shared/components/ui/button';
 
 const Saves = () => {
   return (

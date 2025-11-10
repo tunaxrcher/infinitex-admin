@@ -1,5 +1,7 @@
 'use client';
 
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Info } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -7,8 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Info } from 'lucide-react';
 
 const DataImport = () => {
   return (

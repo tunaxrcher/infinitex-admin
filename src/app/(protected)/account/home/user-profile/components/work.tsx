@@ -1,5 +1,6 @@
 'use client';
 
+import { SquarePen } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -16,7 +17,6 @@ import {
   TableCell,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { SquarePen } from 'lucide-react';
 
 const Work = () => {
   return (

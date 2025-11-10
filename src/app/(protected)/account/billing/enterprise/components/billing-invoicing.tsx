@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
+import { Download, EllipsisVertical } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -19,7 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { Download, EllipsisVertical } from 'lucide-react';
 
 interface IBillingInvoicingItem {
   number: string;

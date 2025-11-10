@@ -2,6 +2,19 @@
 
 import { ReactNode, useState } from 'react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
+import {
+  Badge,
+  Bolt,
+  Captions,
+  CircleUserRound,
+  Home,
+  IdCard,
+  Search,
+  Settings,
+  SquareCode,
+  UserRoundPen,
+  UserRoundPlus,
+} from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -20,19 +33,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@src/shared/components/ui/tabs';
-import {
-  Badge,
-  Bolt,
-  Captions,
-  CircleUserRound,
-  Home,
-  IdCard,
-  Search,
-  Settings,
-  SquareCode,
-  UserRoundPen,
-  UserRoundPlus,
-} from 'lucide-react';
 import {
   SearchDocs,
   SearchDocsItem,

@@ -16,6 +16,14 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  Cell,
+  flexRender,
+  Header,
+  HeaderGroup,
+  Row,
+} from '@tanstack/react-table';
+import { GripVertical } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { useDataGrid } from '@src/shared/components/ui/data-grid';
 import {
@@ -33,14 +41,6 @@ import {
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
 } from '@src/shared/components/ui/data-grid-table';
-import {
-  Cell,
-  flexRender,
-  Header,
-  HeaderGroup,
-  Row,
-} from '@tanstack/react-table';
-import { GripVertical } from 'lucide-react';
 
 function DataGridTableDndHeader<TData>({
   header,

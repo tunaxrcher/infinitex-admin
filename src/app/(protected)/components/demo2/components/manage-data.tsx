@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { LogOut } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -7,7 +8,6 @@ import {
   CardTitle,
 } from '@src/shared/components/ui/card';
 import { Switch } from '@src/shared/components/ui/switch';
-import { LogOut } from 'lucide-react';
 
 interface IManageDataItem {
   title: string;

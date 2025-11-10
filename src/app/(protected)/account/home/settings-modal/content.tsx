@@ -16,6 +16,8 @@ import { BasicSettings } from '@src/app/(protected)/account/home/settings-sideba
 import { DeleteAccount } from '@src/app/(protected)/account/home/settings-sidebar/components/delete-account';
 import { ExternalServicesIntegrations } from '@src/app/(protected)/account/home/settings-sidebar/components/external-services-integrations';
 import { ExternalServicesManageApi } from '@src/app/(protected)/account/home/settings-sidebar/components/external-services-manage-api';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useViewport } from '@src/shared/hooks/use-viewport';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -26,8 +28,6 @@ import {
 } from '@src/shared/components/ui/dialog';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import { Scrollspy } from '@src/shared/components/ui/scrollspy';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useViewport } from '@src/shared/hooks/use-viewport';
 
 interface IModalProfileProps {
   open: boolean;

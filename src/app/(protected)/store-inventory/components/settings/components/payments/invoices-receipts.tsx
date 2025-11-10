@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input, InputAddon, InputGroup } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Input, InputAddon, InputGroup } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { Separator } from '@src/shared/components/ui/separator';
+import { Switch } from '@src/shared/components/ui/switch';
 
 export function InvoicesReceipts() {
   const [automaticInvoice, setAutomaticInvoice] = useState(false);

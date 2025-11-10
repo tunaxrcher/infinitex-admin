@@ -8,7 +8,6 @@ import { AppsDropdownMenu } from '@src/app/components/partials/topbar/apps-dropd
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
 import { NotificationsSheet } from '@src/app/components/partials/topbar/notifications-sheet';
 import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
-import { Button } from '@src/shared/components/ui/button';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   LayoutGrid,
@@ -16,6 +15,7 @@ import {
   MessageSquareDot,
   Search,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 export function HeaderTopbar() {
   const pathname = usePathname();

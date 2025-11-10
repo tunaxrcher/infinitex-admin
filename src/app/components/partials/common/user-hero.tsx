@@ -2,10 +2,10 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Container } from '@src/shared/components/common/container';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { LucideIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { Container } from '@src/shared/components/common/container';
 
 export interface UserHeroInfo {
   email?: string;

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent } from '@src/shared/components/ui/card';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Smile } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesPhotographyWorkshop = () => {

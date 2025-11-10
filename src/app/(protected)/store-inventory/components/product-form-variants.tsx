@@ -1,6 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  CheckCircle,
+  ClipboardPenLine,
+  DollarSign,
+  Plus,
+  Settings,
+  Trash2,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -32,15 +41,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@src/shared/components/ui/tabs';
-import {
-  CheckCircle,
-  ClipboardPenLine,
-  DollarSign,
-  Plus,
-  Settings,
-  Trash2,
-} from 'lucide-react';
-import { toast } from 'sonner';
 
 interface Variant {
   id: string;

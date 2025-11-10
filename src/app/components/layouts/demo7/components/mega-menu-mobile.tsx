@@ -4,6 +4,9 @@
 import { JSX, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MENU_MEGA_MOBILE } from '@src/shared/config/menu.config';
+import { cn } from '@src/shared/lib/utils';
+import { LucideIcon } from 'lucide-react';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -15,9 +18,6 @@ import {
   AccordionMenuSubTrigger,
 } from '@src/shared/components/ui/accordion-menu';
 import { Badge } from '@src/shared/components/ui/badge';
-import { MENU_MEGA_MOBILE } from '@src/shared/config/menu.config';
-import { cn } from '@src/shared/lib/utils';
-import { LucideIcon } from 'lucide-react';
 
 export interface MenuItem {
   title?: string;

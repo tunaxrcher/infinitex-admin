@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { Search as SearchInput } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Card } from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
-import { Search as SearchInput } from 'lucide-react';
 
 export function Search() {
   const [searchInput, setSearchInput] = useState('');

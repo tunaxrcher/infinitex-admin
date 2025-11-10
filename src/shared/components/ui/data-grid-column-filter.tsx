@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { cn } from '@src/shared/lib/utils';
+import { Column } from '@tanstack/react-table';
+import { Check, CirclePlus } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -16,9 +19,6 @@ import {
   PopoverTrigger,
 } from '@src/shared/components/ui/popover';
 import { Separator } from '@src/shared/components/ui/separator';
-import { cn } from '@src/shared/lib/utils';
-import { Column } from '@tanstack/react-table';
-import { Check, CirclePlus } from 'lucide-react';
 
 interface DataGridColumnFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;

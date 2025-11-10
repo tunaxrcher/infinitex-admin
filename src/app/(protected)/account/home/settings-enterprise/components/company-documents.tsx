@@ -3,6 +3,28 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
+  formatBytes,
+  useFileUpload,
+  type FileMetadata,
+  type FileWithPreview,
+} from '@src/shared/hooks/use-file-upload';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import {
+  CloudUpload,
+  Download,
+  FileArchiveIcon,
+  FileSpreadsheetIcon,
+  FileTextIcon,
+  HeadphonesIcon,
+  ImageIcon,
+  RefreshCwIcon,
+  Trash2,
+  TriangleAlert,
+  Upload,
+  VideoIcon,
+} from 'lucide-react';
+import {
   Alert,
   AlertContent,
   AlertDescription,
@@ -25,28 +47,6 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import {
-  formatBytes,
-  useFileUpload,
-  type FileMetadata,
-  type FileWithPreview,
-} from '@src/shared/hooks/use-file-upload';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import {
-  CloudUpload,
-  Download,
-  FileArchiveIcon,
-  FileSpreadsheetIcon,
-  FileTextIcon,
-  HeadphonesIcon,
-  ImageIcon,
-  RefreshCwIcon,
-  Trash2,
-  TriangleAlert,
-  Upload,
-  VideoIcon,
-} from 'lucide-react';
 
 interface FileUploadItem extends FileWithPreview {
   progress: number;

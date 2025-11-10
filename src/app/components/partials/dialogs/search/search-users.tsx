@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical } from 'lucide-react';
 import {
   AccordionMenu,
   AccordionMenuGroup,
@@ -8,8 +10,6 @@ import {
 } from '@src/shared/components/ui/accordion-menu';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { EllipsisVertical } from 'lucide-react';
 import { SearchUsersItem } from './types';
 
 export function SearchUsers({

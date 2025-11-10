@@ -3,17 +3,20 @@
 import { useState } from 'react';
 import { RiMapPinLine } from '@remixicon/react';
 import { FileMinus, FilePlus, Globe, Globe2 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@src/shared/components/ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
+} from '@src/shared/components/ui/select';
+import { Separator } from '@src/shared/components/ui/separator';
 
 export function TaxSettings() {
   const [taxCalculation, setTaxCalculation] = useState('inclusive');

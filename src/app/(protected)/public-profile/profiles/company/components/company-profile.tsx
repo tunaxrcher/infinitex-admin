@@ -9,6 +9,8 @@ import {
   RiWhatsappLine,
   RiYoutubeLine,
 } from '@remixicon/react';
+import { Dribbble, LucideIcon, MapPinHouse } from 'lucide-react';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { Badge } from '@src/shared/components/ui/badge';
 import {
   Card,
@@ -16,8 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { Dribbble, LucideIcon, MapPinHouse } from 'lucide-react';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
 interface IProfileRow {
   icon: LucideIcon | RemixiconComponentType;

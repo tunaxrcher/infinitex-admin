@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Circle, CircleCheck } from 'lucide-react';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -27,8 +29,6 @@ import {
   StepperNav,
   StepperTrigger,
 } from '@src/shared/components/ui/stepper';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Circle, CircleCheck } from 'lucide-react';
 
 // Interface for current stock data
 interface CurrentStockData {

@@ -3,6 +3,14 @@
 import Link from 'next/link';
 import { AvatarGroup } from '@src/app/components/partials/common/avatar-group';
 import {
+  CalendarDays,
+  Lock,
+  MapPin,
+  NotepadText,
+  Timer,
+  Users,
+} from 'lucide-react';
+import {
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -12,14 +20,6 @@ import {
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
-import {
-  CalendarDays,
-  Lock,
-  MapPin,
-  NotepadText,
-  Timer,
-  Users,
-} from 'lucide-react';
 
 export default function Item7() {
   return (

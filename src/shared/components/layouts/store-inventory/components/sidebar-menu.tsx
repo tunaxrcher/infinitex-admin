@@ -3,6 +3,7 @@
 import { JSX, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@src/shared/lib/utils';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -15,7 +16,6 @@ import {
 } from '@src/shared/components/ui/accordion-menu';
 import { Badge } from '@src/shared/components/ui/badge';
 import { ScrollArea } from '@src/shared/components/ui/scroll-area';
-import { cn } from '@src/shared/lib/utils';
 import { MENU_SIDEBAR } from '../config/app.config';
 import { MenuConfig, MenuItem } from '../config/types';
 

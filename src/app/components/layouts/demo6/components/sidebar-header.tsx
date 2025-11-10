@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MENU_ROOT } from '@src/shared/config/menu.config';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { ChevronDown, Search } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,10 +14,6 @@ import {
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
 import { Input } from '@src/shared/components/ui/input';
-import { MENU_ROOT } from '@src/shared/config/menu.config';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import { ChevronDown, Search } from 'lucide-react';
 
 export function SidebarHeader() {
   const pathname = usePathname();

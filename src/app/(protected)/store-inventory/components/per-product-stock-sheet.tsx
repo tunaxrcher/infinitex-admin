@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -36,7 +37,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@src/shared/components/ui/tabs';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 // Interface for current stock data
 interface CurrentStockData {

@@ -3,6 +3,8 @@
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Copy, User } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -14,8 +16,6 @@ import {
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Copy, User } from 'lucide-react';
 
 interface IExternalServicesManageApiProps {
   title: string;

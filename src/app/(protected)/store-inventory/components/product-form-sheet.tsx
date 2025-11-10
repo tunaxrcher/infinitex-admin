@@ -8,6 +8,8 @@ import {
   useGetLoanById,
   useUpdateLoan,
 } from '@src/features/loans/hooks';
+import { cn } from '@src/shared/lib/utils';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -47,8 +49,6 @@ import {
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { cn } from '@src/shared/lib/utils';
-import { Check, ChevronsUpDown } from 'lucide-react';
 
 // Helper functions for date calculations
 const getTodayDate = () => {

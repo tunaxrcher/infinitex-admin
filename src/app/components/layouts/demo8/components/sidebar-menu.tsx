@@ -2,18 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@src/shared/components/ui/dropdown-menu';
 import { MENU_HELP, MENU_SIDEBAR } from '@src/shared/config/menu.config';
 import { MenuConfig } from '@src/shared/config/types';
 import { useMenu } from '@src/shared/hooks/use-menu';
@@ -27,6 +15,18 @@ import {
   User,
   Users,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@src/shared/components/ui/dropdown-menu';
 
 export function SidebarMenu() {
   const pathname = usePathname();

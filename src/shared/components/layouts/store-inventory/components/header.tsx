@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useIsMobile } from '@src/shared/hooks/use-mobile';
+import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
+import { Bell, LayoutGrid, Menu, MessageCircleMore } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Sheet,
@@ -9,11 +14,6 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@src/shared/components/ui/sheet';
-import { useIsMobile } from '@src/shared/hooks/use-mobile';
-import { useScrollPosition } from '@src/shared/hooks/use-scroll-position';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import { Bell, LayoutGrid, Menu, MessageCircleMore } from 'lucide-react';
 import { AppsDropdownMenu } from './apps-dropdown-menu';
 import { Breadcrumb } from './breadcrumb';
 import { ChatSheet } from './chat-sheet';

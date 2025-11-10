@@ -6,11 +6,11 @@ import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdo
 import { ChatSheet } from '@src/app/components/partials/topbar/chat-sheet';
 import { NotificationsSheet } from '@src/app/components/partials/topbar/notifications-sheet';
 import { UserDropdownMenu } from '@src/app/components/partials/topbar/user-dropdown-menu';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ChevronDown, MessageCircleMore, MessageSquareDot } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Label } from '@src/shared/components/ui/label';
 import { Switch } from '@src/shared/components/ui/switch';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { ChevronDown, MessageCircleMore, MessageSquareDot } from 'lucide-react';
 
 export function HeaderTopbar() {
   const pathname = usePathname();

@@ -4,6 +4,29 @@
 import { ReactElement, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { RiCheckboxCircleFill } from '@remixicon/react';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  Row,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Chrome,
+  Compass,
+  EllipsisVertical,
+  Filter,
+  Search,
+  Settings2,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -41,29 +64,6 @@ import {
 } from '@src/shared/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Switch } from '@src/shared/components/ui/switch';
-import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  Row,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  Chrome,
-  Compass,
-  EllipsisVertical,
-  Filter,
-  Search,
-  Settings2,
-  X,
-} from 'lucide-react';
-import { toast } from 'sonner';
 
 interface IUser {
   avatar: string;

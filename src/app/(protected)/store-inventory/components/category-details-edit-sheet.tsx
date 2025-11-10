@@ -1,6 +1,9 @@
 'use client';
 
 import { useId, useState } from 'react';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Star, TrendingUp } from 'lucide-react';
+import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -38,9 +41,6 @@ import {
   TableRow,
 } from '@src/shared/components/ui/table';
 import { Textarea } from '@src/shared/components/ui/textarea';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Star, TrendingUp } from 'lucide-react';
-import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function CategoryDetailsEditSheet({
   open,

@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { SquarePen, SquarePlus, Trash2 } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -9,8 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { SquarePen, SquarePlus, Trash2 } from 'lucide-react';
 
 interface IPaymentMethodsItem {
   logo: string;

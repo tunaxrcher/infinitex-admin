@@ -9,9 +9,9 @@ import {
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
-import { Container } from '@src/shared/components/common/container';
-import { Button } from '@src/shared/components/ui/button';
 import { useSettings } from '@src/shared/providers/settings-provider';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
 
 export default function NetworkMiniCardsPage() {
   const { settings } = useSettings();

@@ -2,6 +2,13 @@
 
 import { ReactNode } from 'react';
 import { CardNotification } from '@src/app/components/partials/cards';
+import {
+  ArrowRight,
+  ArrowRightCircle,
+  EyeOff,
+  LucideIcon,
+  Monitor,
+} from 'lucide-react';
 import { Card, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import {
   Select,
@@ -11,13 +18,6 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Switch } from '@src/shared/components/ui/switch';
-import {
-  ArrowRight,
-  ArrowRightCircle,
-  EyeOff,
-  LucideIcon,
-  Monitor,
-} from 'lucide-react';
 
 interface AccessibilityItem {
   icon: LucideIcon;

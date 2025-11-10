@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { buttonVariants } from '@src/shared/components/ui/button';
 import { cn } from '@src/shared/lib/utils';
 import { VariantProps } from 'class-variance-authority';
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
+import { buttonVariants } from '@src/shared/components/ui/button';
 
 function AlertDialog({
   ...props

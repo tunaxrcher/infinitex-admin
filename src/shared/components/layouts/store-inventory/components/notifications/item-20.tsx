@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CircleCheck } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -7,7 +8,6 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
-import { CircleCheck } from 'lucide-react';
 
 export default function Item20() {
   return (

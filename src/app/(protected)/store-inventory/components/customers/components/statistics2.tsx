@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 
 export function Statistics2({}: object) {
   const items = [

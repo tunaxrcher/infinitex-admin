@@ -1,6 +1,20 @@
 'use client';
 
 import { ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+  Column,
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Copy, Settings2, SquarePen } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -23,20 +37,6 @@ import { Input } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Switch } from '@src/shared/components/ui/switch';
-import {
-  Column,
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Copy, Settings2, SquarePen } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;

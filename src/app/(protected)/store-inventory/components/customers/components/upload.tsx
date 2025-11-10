@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { UserIcon } from 'lucide-react';
-import { toAbsoluteUrl } from '@/lib/helpers';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@src/shared/components/ui/button';
+import { Separator } from '@src/shared/components/ui/separator';
 
 export function Upload() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Copy, SquarePen } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -17,7 +18,6 @@ import {
   TableCell,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { Copy, SquarePen } from 'lucide-react';
 
 const GeneralInfo = () => {
   return (

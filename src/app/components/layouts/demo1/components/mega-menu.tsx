@@ -6,6 +6,9 @@ import { MegaMenuSubAccount } from '@src/app/components/partials/mega-menu/mega-
 import { MegaMenuSubApps } from '@src/app/components/partials/mega-menu/mega-menu-sub-apps';
 import { MegaMenuSubNetwork } from '@src/app/components/partials/mega-menu/mega-menu-sub-network';
 import { MegaMenuSubProfiles } from '@src/app/components/partials/mega-menu/mega-menu-sub-profiles';
+import { MENU_MEGA } from '@src/shared/config/menu.config';
+import { useMenu } from '@src/shared/hooks/use-menu';
+import { cn } from '@src/shared/lib/utils';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,9 +17,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@src/shared/components/ui/navigation-menu';
-import { MENU_MEGA } from '@src/shared/config/menu.config';
-import { useMenu } from '@src/shared/hooks/use-menu';
-import { cn } from '@src/shared/lib/utils';
 
 export function MegaMenu() {
   const pathname = usePathname();

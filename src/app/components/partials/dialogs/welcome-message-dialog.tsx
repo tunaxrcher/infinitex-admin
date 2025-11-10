@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Dialog,
   DialogBody,
@@ -9,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export function WelcomeMessageDialog({
   open,

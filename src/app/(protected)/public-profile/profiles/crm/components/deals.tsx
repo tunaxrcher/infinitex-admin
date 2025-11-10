@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { DropdownMenu3 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-3';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
+import { EllipsisVertical } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -20,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { EllipsisVertical } from 'lucide-react';
 
 interface IDealsItem {
   name: string;

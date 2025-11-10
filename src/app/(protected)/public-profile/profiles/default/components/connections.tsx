@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Check, EllipsisVertical, Plus } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -11,8 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Check, EllipsisVertical, Plus } from 'lucide-react';
 
 interface IConnectionsItem {
   avatar: string;

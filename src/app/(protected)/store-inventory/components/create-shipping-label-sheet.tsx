@@ -2,6 +2,9 @@
 
 import React, { useId, useState } from 'react';
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { format } from 'date-fns';
+import { CalendarIcon, X } from 'lucide-react';
 import { BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
@@ -42,9 +45,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@src/shared/components/ui/tabs';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { format } from 'date-fns';
-import { CalendarIcon, X } from 'lucide-react';
 
 interface Item {
   logo: string;

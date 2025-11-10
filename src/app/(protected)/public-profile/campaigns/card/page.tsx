@@ -9,8 +9,6 @@ import {
   Navbar,
   NavbarActions,
 } from '@src/app/components/partials/navbar/navbar';
-import { Container } from '@src/shared/components/common/container';
-import { Button } from '@src/shared/components/ui/button';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   EllipsisVertical,
@@ -20,6 +18,8 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
 
 export default function CampaignsCardPage() {
   const image = (

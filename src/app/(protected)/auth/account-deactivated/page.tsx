@@ -11,8 +11,8 @@ import {
   ToolbarPageTitle,
 } from '@src/app/components/partials/common/toolbar';
 import { AccountDeactivatedDialog } from '@src/app/components/partials/dialogs/account-deactivated-dialog';
-import { Container } from '@src/shared/components/common/container';
 import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
 
 export default function AuthAccountDeactivatedPage() {
   const [profileModalOpen, setProfileModalOpen] = useState(true);

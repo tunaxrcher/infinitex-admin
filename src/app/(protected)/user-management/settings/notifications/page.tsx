@@ -2,6 +2,18 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RiCheckboxCircleFill, RiErrorWarningFill } from '@remixicon/react';
+import { apiFetch } from '@src/shared/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  AppWindowMac,
+  Bell,
+  LoaderCircleIcon,
+  MailWarning,
+  UserPlus,
+  Users,
+} from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
@@ -42,18 +54,6 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { apiFetch } from '@src/shared/lib/api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  AppWindowMac,
-  Bell,
-  LoaderCircleIcon,
-  MailWarning,
-  UserPlus,
-  Users,
-} from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { useSettings } from '../components/settings-context';
 import {
   NotificationSettingsSchema,

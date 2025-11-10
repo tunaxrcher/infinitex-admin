@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { useStoreClient } from '@src/app/(protected)/store-client/components/context';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { ShoppingCart, Star } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardContent } from '@src/shared/components/ui/card';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { ShoppingCart, Star } from 'lucide-react';
 
 interface ICard3Props {
   badge?: boolean;

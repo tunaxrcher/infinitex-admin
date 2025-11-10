@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CalendarClock, SquareDashedBottomCode } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -10,7 +11,6 @@ import { AvatarGroup } from '@src/shared/components/ui/avatar-group';
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
 import { Progress } from '@src/shared/components/ui/progress';
-import { CalendarClock, SquareDashedBottomCode } from 'lucide-react';
 import { TimelineItem } from './timeline-item';
 
 const ActivitiesProductWebinar = () => {

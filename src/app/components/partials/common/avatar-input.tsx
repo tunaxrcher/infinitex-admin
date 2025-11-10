@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ImageInput, ImageInputFile } from '@src/shared/components/image-input';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Tooltip,
@@ -9,8 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { X } from 'lucide-react';
+import { ImageInput, ImageInputFile } from '@src/shared/components/image-input';
 
 export function AvatarInput() {
   const [avatar, setAvatar] = useState<ImageInputFile[]>([

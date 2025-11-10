@@ -3,7 +3,10 @@
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
+import { apiFetch } from '@src/shared/lib/api';
+import { AlertCircle, ArrowLeft, Check, LoaderCircleIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -15,10 +18,7 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { apiFetch } from '@src/shared/lib/api';
-import { AlertCircle, ArrowLeft, Check, LoaderCircleIcon } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
 
 export default function Page() {
   const [error, setError] = useState<string | null>(null);

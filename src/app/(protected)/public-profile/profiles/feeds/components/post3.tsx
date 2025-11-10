@@ -7,8 +7,8 @@ import { Heading } from '@src/app/(protected)/public-profile/profiles/feeds/post
 import { Likes } from '@src/app/(protected)/public-profile/profiles/feeds/post/likes';
 import { Saves } from '@src/app/(protected)/public-profile/profiles/feeds/post/saves';
 import { Tabs } from '@src/app/(protected)/public-profile/profiles/feeds/post/tabs';
-import { Card } from '@src/shared/components/ui/card';
 import { FileText } from 'lucide-react';
+import { Card } from '@src/shared/components/ui/card';
 
 const Post3 = () => {
   const [activeTab, setActiveTab] = useState('likes');

@@ -4,6 +4,15 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { apiFetch } from '@src/shared/lib/api';
+import {
+  AlertCircle,
+  Check,
+  Eye,
+  EyeOff,
+  LoaderCircleIcon,
+} from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -15,15 +24,6 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { apiFetch } from '@src/shared/lib/api';
-import {
-  AlertCircle,
-  Check,
-  Eye,
-  EyeOff,
-  LoaderCircleIcon,
-} from 'lucide-react';
-import { useForm } from 'react-hook-form';
 import {
   ChangePasswordSchemaType,
   getChangePasswordSchema,

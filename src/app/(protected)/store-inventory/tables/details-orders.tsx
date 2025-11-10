@@ -2,29 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardFooter, CardTable } from '@src/shared/components/ui/card';
-import { DataGrid } from '@src/shared/components/ui/data-grid';
-import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
-import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
-import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@src/shared/components/ui/dropdown-menu';
-import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@src/shared/components/ui/tooltip';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   ColumnDef,
@@ -48,6 +25,29 @@ import {
   Trash,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardFooter, CardTable } from '@src/shared/components/ui/card';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@src/shared/components/ui/dropdown-menu';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 import { CreateShippingLabelSheet } from '../components/create-shipping-label-sheet';
 import { OrderDetailsSheet } from '../components/order-details-sheet';
 import { ProductInfoSheet } from '../components/product-info-sheet';

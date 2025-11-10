@@ -2,10 +2,6 @@
 
 import { Fragment, ReactNode } from 'react';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import { Card, CardContent } from '@src/shared/components/ui/card';
-import { Switch } from '@src/shared/components/ui/switch';
 import {
   BadgePercent,
   CheckCircle2,
@@ -16,6 +12,10 @@ import {
   ShieldQuestion,
   UserCircle2,
 } from 'lucide-react';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Switch } from '@src/shared/components/ui/switch';
 
 interface IPrivacySettingsItem {
   icon: LucideIcon;

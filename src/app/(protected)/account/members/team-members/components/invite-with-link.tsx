@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Copy, RefreshCw } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -12,7 +13,6 @@ import {
 } from '@src/shared/components/ui/card';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { Label } from '@src/shared/components/ui/label';
-import { Copy, RefreshCw } from 'lucide-react';
 
 const InviteWithLink = () => {
   const [linkInput, setLinkInput] = useState(

@@ -4,8 +4,16 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Icons } from '@src/shared/components/common/icons';
-import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
+import { apiFetch } from '@src/shared/lib/api';
+import {
+  AlertCircle,
+  Check,
+  Eye,
+  EyeOff,
+  LoaderCircleIcon,
+} from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
@@ -18,16 +26,8 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import { apiFetch } from '@src/shared/lib/api';
-import {
-  AlertCircle,
-  Check,
-  Eye,
-  EyeOff,
-  LoaderCircleIcon,
-} from 'lucide-react';
-import { signIn } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
+import { Icons } from '@src/shared/components/common/icons';
+import { RecaptchaPopover } from '@src/shared/components/common/recaptcha-popover';
 import { getSignupSchema, SignupSchemaType } from '../forms/signup-schema';
 
 export default function Page() {

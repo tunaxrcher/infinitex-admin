@@ -1,20 +1,5 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Badge } from '@src/shared/components/ui/badge';
-import { Button } from '@src/shared/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@src/shared/components/ui/dropdown-menu';
-import { Switch } from '@src/shared/components/ui/switch';
 import { I18N_LANGUAGES, Language } from '@src/shared/i18n/config';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { useLanguage } from '@src/shared/providers/i18n-provider';
@@ -33,6 +18,21 @@ import {
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@src/shared/components/ui/dropdown-menu';
+import { Switch } from '@src/shared/components/ui/switch';
 
 export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
   const { data: session } = useSession();

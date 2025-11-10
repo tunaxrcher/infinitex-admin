@@ -7,6 +7,8 @@ import {
   useGenerateInstallments,
   useGetLoanById,
 } from '@src/features/loans/hooks';
+import { TrendingUp } from 'lucide-react';
+import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -57,8 +59,6 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
-import { TrendingUp } from 'lucide-react';
-import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function ProductDetailsAnalyticsSheet({
   open,

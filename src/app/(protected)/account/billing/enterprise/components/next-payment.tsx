@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { HexagonBadge } from '@src/app/components/partials/common/hexagon-badge';
+import { CalendarDays, Check } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -9,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { CalendarDays, Check } from 'lucide-react';
 
 const NextPayment = () => {
   return (

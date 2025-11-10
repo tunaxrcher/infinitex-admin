@@ -1,7 +1,7 @@
 'use client';
 
-import { Container } from '@src/shared/components/common/container';
 import { generalSettings } from '@src/shared/config/general.config';
+import { Container } from '@src/shared/components/common/container';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();

@@ -6,8 +6,8 @@ import { Heading } from '@src/app/(protected)/public-profile/profiles/feeds/post
 import { Likes } from '@src/app/(protected)/public-profile/profiles/feeds/post/likes';
 import { Saves } from '@src/app/(protected)/public-profile/profiles/feeds/post/saves';
 import { Tabs } from '@src/app/(protected)/public-profile/profiles/feeds/post/tabs';
-import { Card } from '@src/shared/components/ui/card';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card } from '@src/shared/components/ui/card';
 
 interface ICommentsItem {
   avatar: string;

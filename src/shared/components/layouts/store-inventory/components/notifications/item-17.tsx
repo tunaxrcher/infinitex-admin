@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import {
   Avatar,
   AvatarFallback,
@@ -7,7 +8,6 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Button } from '@src/shared/components/ui/button';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 
 export default function Item17() {
   return (

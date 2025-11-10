@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { DropdownMenu5 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-5';
 import { DropdownMenu6 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-6';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -24,8 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { EllipsisVertical } from 'lucide-react';
 
 interface ILoginSessionsItem {
   avatar: string;

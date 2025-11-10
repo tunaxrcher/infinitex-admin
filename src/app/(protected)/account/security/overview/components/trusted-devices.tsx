@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { DropdownMenu2 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-2';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { EllipsisVertical, LogOut } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -16,8 +18,6 @@ import {
   TableCell,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { EllipsisVertical, LogOut } from 'lucide-react';
 
 interface ITrustedDevicesItem {
   logo: string;

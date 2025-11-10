@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { AvatarInput } from '@src/app/components/partials/common/avatar-input';
+import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Copy, SquarePen } from 'lucide-react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -18,8 +20,6 @@ import {
   TableCell,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
-import { Copy, SquarePen } from 'lucide-react';
 
 interface IAccountProps {
   title: string;

@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { Offer } from '@src/app/(protected)/public-profile/works/cards/offer';
 import { OfferRow } from '@src/app/(protected)/public-profile/works/cards/offer-row';
 import { CardWork, CardWorkRow } from '@src/app/components/partials/cards';
+import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
-import { LayoutGrid, List } from 'lucide-react';
 
 interface IWorksItem {
   title: string;

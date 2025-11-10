@@ -6,12 +6,12 @@ import {
   CardProject,
   CardProjectRow,
 } from '@src/app/components/partials/cards';
+import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
-import { LayoutGrid, List } from 'lucide-react';
 
 interface IProjects2Item {
   logo: string;

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { UserRoundCheck } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -9,7 +10,6 @@ import {
   AvatarStatus,
 } from '@src/shared/components/ui/avatar';
 import { Card } from '@src/shared/components/ui/card';
-import { UserRoundCheck } from 'lucide-react';
 
 export default function Item19() {
   return (

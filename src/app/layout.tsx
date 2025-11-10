@@ -1,7 +1,6 @@
 import { ReactNode, Suspense } from 'react';
 import { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
-import { Toaster } from '@src/shared/components/ui/sonner';
 import { cn } from '@src/shared/lib/utils';
 import { AuthProvider } from '@src/shared/providers/auth-provider';
 import { I18nProvider } from '@src/shared/providers/i18n-provider';
@@ -10,6 +9,7 @@ import { QueryProvider } from '@src/shared/providers/query-provider';
 import { SettingsProvider } from '@src/shared/providers/settings-provider';
 import { ThemeProvider } from '@src/shared/providers/theme-provider';
 import { TooltipsProvider } from '@src/shared/providers/tooltips-provider';
+import { Toaster } from '@src/shared/components/ui/sonner';
 import '@src/shared/css/styles.css';
 import '@src/shared/components/keenicons/assets/styles.css';
 
