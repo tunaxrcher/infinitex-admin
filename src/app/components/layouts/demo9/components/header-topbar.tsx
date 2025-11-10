@@ -52,7 +52,7 @@ export function HeaderTopbar() {
               trigger={
                 <img
                   className="ms-2.5 size-9 rounded-full border-2 border-success shrink-0 cursor-pointer"
-                  src={toAbsoluteUrl('/media/avatars/300-2.png')}
+                  src={toAbsoluteUrl('/images/user.png')}
                   alt="User Avatar"
                 />
               }
