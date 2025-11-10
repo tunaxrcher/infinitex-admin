@@ -201,7 +201,7 @@ export const paymentApi = {
     const searchParams = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
+      if (value !== undefined && value !== null && value !== '') {
         searchParams.append(key, value.toString());
       }
     });
