@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     // Only admins should be able to verify payments
 
     const result = await paymentService.verifyPayment(validatedData);
-    
+
     return NextResponse.json({
       success: true,
       message: result.message,
@@ -32,4 +32,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

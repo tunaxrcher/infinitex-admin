@@ -35,11 +35,14 @@ export class PaymentRepository {
     });
   }
 
-  async findByLoanId(loanId: string, options?: {
-    status?: string;
-    skip?: number;
-    take?: number;
-  }) {
+  async findByLoanId(
+    loanId: string,
+    options?: {
+      status?: string;
+      skip?: number;
+      take?: number;
+    },
+  ) {
     return prisma.payment.findMany({
       where: {
         loanId,
@@ -130,10 +133,9 @@ export class PaymentRepository {
         amount: true,
       },
     });
-    
+
     return Number(result._sum.amount || 0);
   }
 }
 
 export const paymentRepository = new PaymentRepository();
-

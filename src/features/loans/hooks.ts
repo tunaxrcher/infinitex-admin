@@ -1,7 +1,12 @@
 // src/features/loans/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { loanApi } from './api';
+// ============================================
+// PAYMENT HOOKS
+// ============================================
+
+// Import payment API
+import { loanApi, paymentApi } from './api';
 import {
   type LoanCreateSchema,
   type LoanFiltersSchema,
@@ -139,13 +144,6 @@ export const useGenerateInstallments = () => {
   });
 };
 
-// ============================================
-// PAYMENT HOOKS
-// ============================================
-
-// Import payment API
-import { paymentApi } from './api';
-
 // Query keys for payments
 export const paymentKeys = {
   all: () => ['payments'] as const,
@@ -231,7 +229,7 @@ export const usePayInstallment = () => {
       queryClient.invalidateQueries({
         queryKey: paymentKeys.byLoan(variables.loanId),
       });
-      
+
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: paymentKeys.all() });
       queryClient.refetchQueries({ queryKey: ['loans'] });
@@ -258,7 +256,7 @@ export const useCloseLoan = () => {
       queryClient.invalidateQueries({
         queryKey: paymentKeys.byLoan(variables.loanId),
       });
-      
+
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: paymentKeys.all() });
       queryClient.refetchQueries({ queryKey: ['loans'] });
@@ -285,7 +283,7 @@ export const useVerifyPayment = () => {
       queryClient.invalidateQueries({
         queryKey: paymentKeys.detail(variables.paymentId),
       });
-      
+
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: paymentKeys.all() });
       queryClient.refetchQueries({ queryKey: ['loans'] });
@@ -309,7 +307,7 @@ export const useCreatePayment = () => {
       // Invalidate all payment list queries
       queryClient.invalidateQueries({ queryKey: ['payments', 'list'] });
       queryClient.invalidateQueries({ queryKey: ['loans'] });
-      
+
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: ['payments', 'list'] });
 
@@ -335,7 +333,7 @@ export const useUpdatePayment = () => {
       queryClient.invalidateQueries({
         queryKey: paymentKeys.detail(variables.id),
       });
-      
+
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: ['payments', 'list'] });
 
@@ -357,7 +355,7 @@ export const useDeletePayment = () => {
     onSuccess: (_, id) => {
       queryClient.removeQueries({ queryKey: paymentKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: ['payments', 'list'] });
-      
+
       // Refetch immediately
       queryClient.refetchQueries({ queryKey: ['payments', 'list'] });
 

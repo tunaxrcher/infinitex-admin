@@ -405,17 +405,16 @@ export function ProductFormSheet({
         <SheetBody className="p-0 grow">
           <div className="flex justify-between gap-2 flex-wrap border-b border-border p-5">
             <div className="flex items-center gap-2.5 text-xs text-gray-800 font-medium">
-            <Link
-              href="#"
-              className="text-primary"
-              onClick={(e) => {
-                e.preventDefault(); // ป้องกันการเปลี่ยนหน้า
-                alert("In development");
-              }}
-            >
-              คู่มือการเพิ่มสินเชื่อ
-            </Link>
-
+              <Link
+                href="#"
+                className="text-primary"
+                onClick={(e) => {
+                  e.preventDefault(); // ป้องกันการเปลี่ยนหน้า
+                  alert('In development');
+                }}
+              >
+                คู่มือการเพิ่มสินเชื่อ
+              </Link>
             </div>
             <div className="flex items-center gap-2.5">
               <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -591,7 +590,8 @@ export function ProductFormSheet({
                                   aria-expanded={openCustomerCombo}
                                   className="w-full justify-between font-normal"
                                 >
-                                  {phoneNumber || 'ค้นหาเบอร์โทรลูกค้า หรือเพิ่มลูกค้าใหม่...'}
+                                  {phoneNumber ||
+                                    'ค้นหาเบอร์โทรลูกค้า หรือเพิ่มลูกค้าใหม่...'}
                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                               </PopoverTrigger>

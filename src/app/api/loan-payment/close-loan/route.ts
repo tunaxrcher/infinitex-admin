@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     // userId is optional - service will use loan.customerId by default
     const result = await paymentService.closeLoan(validatedData);
-    
+
     return NextResponse.json({
       success: true,
       message: result.message,
@@ -30,4 +30,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

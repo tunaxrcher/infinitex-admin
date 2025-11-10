@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
+  useCloseLoan,
   useDeleteLoan,
   useGenerateInstallments,
   useGetLoanById,
   usePayInstallment,
-  useCloseLoan,
 } from '@src/features/loans/hooks';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
@@ -1180,10 +1180,15 @@ export function ProductDetailsAnalyticsSheet({
                             <SelectValue placeholder="เลือกการชำระ" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="QR_CODE">QR Code</SelectItem>
-                            <SelectItem value="BARCODE">Barcode</SelectItem>
-                            <SelectItem value="INTERNET_BANKING">Internet Banking</SelectItem>
-                            <SelectItem value="BANK_TRANSFER">โอนเงินผ่านธนาคาร</SelectItem>
+                            <SelectItem value="CASH">💰 เงินสด</SelectItem>
+                            {/* <SelectItem value="QR_CODE">QR Code</SelectItem> */}
+                            {/* <SelectItem value="BARCODE">Barcode</SelectItem> */}
+                            <SelectItem value="INTERNET_BANKING">
+                              💳 Internet Banking
+                            </SelectItem>
+                            <SelectItem value="BANK_TRANSFER">
+                              ⛪ โอนเงินผ่านธนาคาร
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1260,31 +1265,38 @@ export function ProductDetailsAnalyticsSheet({
 
                         // Submit installment payment
                         if (paymentTab === 'partial') {
-                          payInstallment.mutate({
-                            loanId: loanId,
-                            installmentId: selectedInstallment.id,
-                            amount: selectedInstallment.totalAmount,
-                            paymentMethod: paymentForm.paymentMethod as any,
-                            includeLateFee: true,
-                          }, {
-                            onSuccess: () => {
-                              setIsPaymentDialogOpen(false);
-                              // Reset form
-                              setPaymentForm({
-                                installmentNumber: '',
-                                paymentAmount: '',
-                                paymentDate: new Date().toISOString().split('T')[0],
-                                paymentMethod: '',
-                                receiver: '',
-                              });
-                              setSelectedInstallment(null);
-                            }
-                          });
+                          payInstallment.mutate(
+                            {
+                              loanId: loanId,
+                              installmentId: selectedInstallment.id,
+                              amount: selectedInstallment.totalAmount,
+                              paymentMethod: paymentForm.paymentMethod as any,
+                              includeLateFee: true,
+                            },
+                            {
+                              onSuccess: () => {
+                                setIsPaymentDialogOpen(false);
+                                // Reset form
+                                setPaymentForm({
+                                  installmentNumber: '',
+                                  paymentAmount: '',
+                                  paymentDate: new Date()
+                                    .toISOString()
+                                    .split('T')[0],
+                                  paymentMethod: '',
+                                  receiver: '',
+                                });
+                                setSelectedInstallment(null);
+                              },
+                            },
+                          );
                         }
                       }}
                       disabled={payInstallment.isPending}
                     >
-                      {payInstallment.isPending ? 'กำลังดำเนินการ...' : 'ยืนยัน'}
+                      {payInstallment.isPending
+                        ? 'กำลังดำเนินการ...'
+                        : 'ยืนยัน'}
                     </Button>
                   </div>
                 </>
@@ -1379,10 +1391,15 @@ export function ProductDetailsAnalyticsSheet({
                             <SelectValue placeholder="เลือกการชำระ" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="QR_CODE">QR Code</SelectItem>
-                            <SelectItem value="BARCODE">Barcode</SelectItem>
-                            <SelectItem value="INTERNET_BANKING">Internet Banking</SelectItem>
-                            <SelectItem value="BANK_TRANSFER">โอนเงินผ่านธนาคาร</SelectItem>
+                            <SelectItem value="CASH">💰 เงินสด</SelectItem>
+                            {/* <SelectItem value="QR_CODE">QR Code</SelectItem> */}
+                            {/* <SelectItem value="BARCODE">Barcode</SelectItem> */}
+                            <SelectItem value="INTERNET_BANKING">
+                              💳 Internet Banking
+                            </SelectItem>
+                            <SelectItem value="BANK_TRANSFER">
+                              ⛪ โอนเงินผ่านธนาคาร
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1454,23 +1471,28 @@ export function ProductDetailsAnalyticsSheet({
                         }
 
                         // Submit close loan payment
-                        closeLoan.mutate({
-                          loanId: loanId,
-                          paymentMethod: closeLoanForm.paymentMethod as any,
-                          discountAmount: 0,
-                          additionalFees: 0,
-                          notes: `ปิดสินเชื่อ - รับชำระโดย ${closeLoanForm.receiver}`,
-                        }, {
-                          onSuccess: () => {
-                            setIsPaymentDialogOpen(false);
-                            // Reset form
-                            setCloseLoanForm({
-                              paymentDate: new Date().toISOString().split('T')[0],
-                              paymentMethod: '',
-                              receiver: '',
-                            });
-                          }
-                        });
+                        closeLoan.mutate(
+                          {
+                            loanId: loanId,
+                            paymentMethod: closeLoanForm.paymentMethod as any,
+                            discountAmount: 0,
+                            additionalFees: 0,
+                            notes: `ปิดสินเชื่อ - รับชำระโดย ${closeLoanForm.receiver}`,
+                          },
+                          {
+                            onSuccess: () => {
+                              setIsPaymentDialogOpen(false);
+                              // Reset form
+                              setCloseLoanForm({
+                                paymentDate: new Date()
+                                  .toISOString()
+                                  .split('T')[0],
+                                paymentMethod: '',
+                                receiver: '',
+                              });
+                            },
+                          },
+                        );
                       }}
                       disabled={closeLoan.isPending}
                     >

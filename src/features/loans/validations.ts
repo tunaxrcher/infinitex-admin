@@ -89,16 +89,19 @@ export const payInstallmentSchema = z.object({
   loanId: z.string().min(1, 'กรุณาระบุรหัสสินเชื่อ'),
   installmentId: z.string().min(1, 'กรุณาระบุรหัสงวดชำระ'),
   amount: z.number().positive('จำนวนเงินต้องมากกว่า 0'),
-  paymentMethod: z.enum(['QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER'], {
-    errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
-  }),
-  
+  paymentMethod: z.enum(
+    ['CASH', 'QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER'],
+    {
+      errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
+    },
+  ),
+
   // Optional fields based on payment method
   bankName: z.string().optional(),
   accountNumber: z.string().optional(),
   accountName: z.string().optional(),
   transactionId: z.string().optional(),
-  
+
   // Late payment handling
   includeLateFee: z.boolean().optional().default(false),
   lateFeeAmount: z.number().optional().default(0),
@@ -112,16 +115,19 @@ export type PayInstallmentSchema = z.infer<typeof payInstallmentSchema>;
 
 export const closeLoanSchema = z.object({
   loanId: z.string().min(1, 'กรุณาระบุรหัสสินเชื่อ'),
-  paymentMethod: z.enum(['QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER'], {
-    errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
-  }),
-  
+  paymentMethod: z.enum(
+    ['CASH', 'QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER'],
+    {
+      errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
+    },
+  ),
+
   // Optional fields based on payment method
   bankName: z.string().optional(),
   accountNumber: z.string().optional(),
   accountName: z.string().optional(),
   transactionId: z.string().optional(),
-  
+
   // Early closure might have discount or additional fees
   discountAmount: z.number().optional().default(0),
   additionalFees: z.number().optional().default(0),
@@ -155,14 +161,20 @@ export const paymentCreateSchema = z.object({
   loanId: z.string().min(1, 'กรุณาระบุรหัสสินเชื่อ'),
   installmentId: z.string().optional(),
   amount: z.number().positive('จำนวนเงินต้องมากกว่า 0'),
-  paymentMethod: z.enum(['QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER']),
+  paymentMethod: z.enum([
+    'CASH',
+    'QR_CODE',
+    'BARCODE',
+    'INTERNET_BANKING',
+    'BANK_TRANSFER',
+  ]),
   dueDate: z.string(),
-  
+
   // Payment breakdown
   principalAmount: z.number().optional().default(0),
   interestAmount: z.number().optional().default(0),
   feeAmount: z.number().optional().default(0),
-  
+
   // Optional fields
   bankName: z.string().optional(),
   accountNumber: z.string().optional(),

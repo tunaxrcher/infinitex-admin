@@ -98,4 +98,3 @@ export class InstallmentRepository {
 }
 
 export const installmentRepository = new InstallmentRepository();
-

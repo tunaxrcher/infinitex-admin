@@ -18,7 +18,10 @@ export async function GET(
     const { loanId } = await params;
     const errorMessage =
       error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
-    console.error(`[API Error] GET /api/loan-payment/by-loan/${loanId}:`, error);
+    console.error(
+      `[API Error] GET /api/loan-payment/by-loan/${loanId}:`,
+      error,
+    );
     return NextResponse.json(
       {
         success: false,
@@ -29,4 +32,3 @@ export async function GET(
     );
   }
 }
-

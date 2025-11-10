@@ -2,14 +2,14 @@
 import 'server-only';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@src/shared/lib/db';
-import { loanRepository } from '../repositories/loanRepository';
 import { installmentRepository } from '../repositories/installmentRepository';
+import { loanRepository } from '../repositories/loanRepository';
 import { paymentRepository } from '../repositories/paymentRepository';
 import {
+  type CloseLoanSchema,
   type LoanCreateSchema,
   type LoanFiltersSchema,
   type LoanUpdateSchema,
-  type CloseLoanSchema,
   type PayInstallmentSchema,
   type PaymentCreateSchema,
   type PaymentFiltersSchema,
@@ -1008,8 +1008,8 @@ export const paymentService = {
           status: 'COMPLETED',
           remainingBalance: 0,
           currentInstallment: Number(
-            (await loanRepository.findById(payment.loanId))?.totalInstallments ||
-              0,
+            (await loanRepository.findById(payment.loanId))
+              ?.totalInstallments || 0,
           ),
         });
       }
