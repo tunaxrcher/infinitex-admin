@@ -82,6 +82,85 @@
   @apply bg-clip-text text-transparent;
 }
 
+/** Gradient Button Classes (Background) **/
+.gradientButton {
+  @apply bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton:hover {
+  @apply opacity-90;
+}
+
+/* Gradient Button Variants */
+.gradientButton-rainbow {
+  @apply bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton-rainbow:hover {
+  @apply opacity-90;
+}
+
+.gradientButton-sunset {
+  @apply bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton-sunset:hover {
+  @apply opacity-90;
+}
+
+.gradientButton-ocean {
+  @apply bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton-ocean:hover {
+  @apply opacity-90;
+}
+
+.gradientButton-greenBlue {
+  @apply bg-gradient-to-r from-green-400 via-teal-500 to-blue-500;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton-greenBlue:hover {
+  @apply opacity-90;
+}
+
+.gradientButton-orangeRed {
+  @apply bg-gradient-to-r from-orange-500 via-red-500 to-pink-600;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton-orangeRed:hover {
+  @apply opacity-90;
+}
+
+.gradientButton-purpleBlue {
+  @apply bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500;
+  @apply bg-[length:200%_200%];
+  @apply text-white border-0;
+  animation: gradient-x 4s ease infinite;
+}
+
+.gradientButton-purpleBlue:hover {
+  @apply opacity-90;
+}
+
 /* Metronic Components  */
 @import './components/image-input.css';
 @import './components/apexcharts.css';
