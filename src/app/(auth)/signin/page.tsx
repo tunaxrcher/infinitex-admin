@@ -85,10 +85,12 @@ export default function Page() {
             priority
             className="object-contain"
           />
-          <h1 className="text-xl font-semibold tracking-tight text-center text-muted-foreground">
+          <hr className='w-full' />
+          <h1 className="gradientText text-xl font-semibold tracking-tight text-center">
             ล็อกอิน เพื่อเข้าสู่ระบบ
           </h1>
         </div>
+        
         {/* 
         <Alert size="sm" close={false}>
           <AlertIcon>
@@ -136,7 +138,7 @@ export default function Page() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>ชื่อผู้ใช้งาน (Email)</FormLabel>
               <FormControl>
                 <Input placeholder="Your email" {...field} />
               </FormControl>
@@ -151,13 +153,13 @@ export default function Page() {
           render={({ field }) => (
             <FormItem>
               <div className="flex justify-between items-center gap-2.5">
-                <FormLabel>Password</FormLabel>
-                <Link
+                <FormLabel>รหัสผ่าน</FormLabel>
+                {/* <Link
                   href="/reset-password"
                   className="text-sm font-semibold text-foreground hover:text-primary"
                 >
                   Forgot Password?
-                </Link>
+                </Link> */}
               </div>
               <div className="relative">
                 <Input
@@ -203,7 +205,7 @@ export default function Page() {
                   htmlFor="remember-me"
                   className="text-sm leading-none text-muted-foreground"
                 >
-                  Remember me
+                  จดจำ
                 </label>
               </>
             )}
