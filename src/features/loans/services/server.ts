@@ -338,16 +338,20 @@ export const loanService = {
       }
 
       // Step 3: Update User phone number (ถ้ามีการเปลี่ยนแปลง)
-      if (
-        data.phoneNumber &&
-        data.phoneNumber !== existing.customer?.phoneNumber
-      ) {
-        await tx.user.update({
+      if (data.phoneNumber) {
+        // Query current customer data
+        const currentCustomer = await tx.user.findUnique({
           where: { id: existing.customerId },
-          data: {
-            phoneNumber: data.phoneNumber,
-          },
         });
+
+        if (currentCustomer && data.phoneNumber !== currentCustomer.phoneNumber) {
+          await tx.user.update({
+            where: { id: existing.customerId },
+            data: {
+              phoneNumber: data.phoneNumber,
+            },
+          });
+        }
       }
 
       // Step 4: Update LoanApplication (ถ้ามีการเปลี่ยนแปลง)
@@ -403,8 +407,11 @@ export const loanService = {
     }
 
     // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ (DRAFT, SUBMITTED, UNDER_REVIEW)
-    const currentStatus = existing.application?.status;
-    if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(currentStatus)) {
+    const application = await prisma.loanApplication.findUnique({
+      where: { id: existing.applicationId },
+    });
+    
+    if (!application || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
       throw new Error('สินเชื่อนี้ไม่สามารถอนุมัติได้');
     }
 
@@ -440,8 +447,11 @@ export const loanService = {
     }
 
     // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ
-    const currentStatus = existing.application?.status;
-    if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(currentStatus)) {
+    const application = await prisma.loanApplication.findUnique({
+      where: { id: existing.applicationId },
+    });
+    
+    if (!application || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
       throw new Error('สินเชื่อนี้ไม่สามารถยกเลิกได้');
     }
 

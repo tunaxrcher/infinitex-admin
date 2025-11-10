@@ -1,9 +1,12 @@
 import { $Enums } from '@prisma/client';
 import { SystemSetting } from './system';
 
-// Enums
-export const UserStatus = $Enums.UserStatus;
-export type UserStatus = $Enums.UserStatus;
+// Enums - Custom TypeScript enum (not from Prisma)
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  BLOCKED = 'BLOCKED',
+}
 
 // Models
 export interface User {
