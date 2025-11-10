@@ -85,12 +85,12 @@ export default function Page() {
             priority
             className="object-contain"
           />
-          <hr className='w-full' />
+          <hr className="w-full" />
           <h1 className="gradientText text-xl font-semibold tracking-tight text-center">
             ล็อกอิน เพื่อเข้าสู่ระบบ
           </h1>
         </div>
-        
+
         {/* 
         <Alert size="sm" close={false}>
           <AlertIcon>
@@ -213,7 +213,11 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <Button type="submit" disabled={isProcessing} className="gradientButton">
+          <Button
+            type="submit"
+            disabled={isProcessing}
+            className="gradientButton"
+          >
             {isProcessing ? (
               <LoaderCircleIcon className="size-4 animate-spin" />
             ) : null}

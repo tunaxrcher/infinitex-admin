@@ -397,7 +397,7 @@ export function ProductFormSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="gap-0 lg:w-[1080px] sm:max-w-none inset-5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="border-b py-3.5 px-5 border-border">
-          <SheetTitle className="font-medium">
+          <SheetTitle className="font-medium gradientText">
             {isNewMode ? 'เพิ่มสินเชื่อ' : 'แก้ไขสินเชื่อ'}
           </SheetTitle>
         </SheetHeader>
@@ -417,6 +417,7 @@ export function ProductFormSheet({
                 type="submit"
                 form="loan-form"
                 variant="mono"
+                className="gradientButton"
                 disabled={
                   createLoan.isPending ||
                   updateLoan.isPending ||
@@ -1414,6 +1415,7 @@ export function ProductFormSheet({
               type="submit"
               form="loan-form"
               variant="mono"
+              className="gradientButton"
               disabled={createLoan.isPending || updateLoan.isPending}
             >
               {createLoan.isPending || updateLoan.isPending

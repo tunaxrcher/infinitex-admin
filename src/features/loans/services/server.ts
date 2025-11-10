@@ -344,7 +344,10 @@ export const loanService = {
           where: { id: existing.customerId },
         });
 
-        if (currentCustomer && data.phoneNumber !== currentCustomer.phoneNumber) {
+        if (
+          currentCustomer &&
+          data.phoneNumber !== currentCustomer.phoneNumber
+        ) {
           await tx.user.update({
             where: { id: existing.customerId },
             data: {
@@ -410,8 +413,11 @@ export const loanService = {
     const application = await prisma.loanApplication.findUnique({
       where: { id: existing.applicationId },
     });
-    
-    if (!application || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
+
+    if (
+      !application ||
+      !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)
+    ) {
       throw new Error('สินเชื่อนี้ไม่สามารถอนุมัติได้');
     }
 
@@ -450,8 +456,11 @@ export const loanService = {
     const application = await prisma.loanApplication.findUnique({
       where: { id: existing.applicationId },
     });
-    
-    if (!application || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
+
+    if (
+      !application ||
+      !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)
+    ) {
       throw new Error('สินเชื่อนี้ไม่สามารถยกเลิกได้');
     }
 

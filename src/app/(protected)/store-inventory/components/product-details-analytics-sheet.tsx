@@ -244,7 +244,10 @@ export function ProductDetailsAnalyticsSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="gap-0 lg:w-[1080px] sm:max-w-none inset-5 border start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="border-b py-3.5 px-5 border-border">
-          <SheetTitle tabIndex={0} className="focus:outline-none font-medium">
+          <SheetTitle
+            tabIndex={0}
+            className="focus:outline-none font-medium gradientText"
+          >
             รายละเอียดและวิเคราะห์สินเชื่อ
           </SheetTitle>
         </SheetHeader>
@@ -329,6 +332,7 @@ export function ProductDetailsAnalyticsSheet({
               </Button>
               <Button
                 variant="mono"
+                className="gradientButton"
                 onClick={() => {
                   onOpenChange(false);
                   onEdit?.();
@@ -1035,6 +1039,7 @@ export function ProductDetailsAnalyticsSheet({
           </Button>
           <Button
             variant="mono"
+            className="gradientButton"
             onClick={() => {
               onOpenChange(false);
               onEdit?.();
@@ -1058,7 +1063,9 @@ export function ProductDetailsAnalyticsSheet({
                 className="object-contain"
               />
             </div>
-            <DialogTitle className="text-center text-xl">ชำระเงิน</DialogTitle>
+            <DialogTitle className="text-center text-xl gradientText">
+              ชำระเงิน
+            </DialogTitle>
             <hr className="w-full border-border" />
           </DialogHeader>
 
@@ -1228,7 +1235,7 @@ export function ProductDetailsAnalyticsSheet({
                   <div className="flex justify-end">
                     <Button
                       variant="mono"
-                      className="w-full"
+                      className="w-full gradientButton"
                       onClick={() => {
                         // TODO: Implement payment submission
                         console.log('Payment submitted:', paymentForm);
@@ -1384,7 +1391,7 @@ export function ProductDetailsAnalyticsSheet({
                   <div className="flex justify-end">
                     <Button
                       variant="mono"
-                      className="w-full"
+                      className="w-full gradientButton"
                       onClick={() => {
                         // TODO: Implement close loan submission
                         console.log('Close loan submitted:', closeLoanForm);
