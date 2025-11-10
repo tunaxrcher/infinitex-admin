@@ -188,3 +188,188 @@ export const loanApi = {
     return response.json();
   },
 };
+
+// ============================================
+// PAYMENT APIs
+// ============================================
+
+export const paymentApi = {
+  /**
+   * Get list of payments with filters
+   */
+  getList: async (filters: any) => {
+    const searchParams = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        searchParams.append(key, value.toString());
+      }
+    });
+
+    const response = await apiFetch(`/api/loan-payment?${searchParams}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Get payment by ID
+   */
+  getById: async (id: string) => {
+    const response = await apiFetch(`/api/loan-payment/${id}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Pay a specific installment
+   */
+  payInstallment: async (data: any) => {
+    const response = await apiFetch(`/api/loan-payment/pay-installment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Close/Payoff entire loan
+   */
+  closeLoan: async (data: any) => {
+    const response = await apiFetch(`/api/loan-payment/close-loan`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Verify payment (admin function)
+   */
+  verifyPayment: async (data: any) => {
+    const response = await apiFetch(`/api/loan-payment/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Get payment history for a loan
+   */
+  getPaymentsByLoanId: async (loanId: string) => {
+    const response = await apiFetch(`/api/loan-payment/by-loan/${loanId}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Get upcoming payments for current user
+   */
+  getUpcomingPayments: async (limit?: number) => {
+    const searchParams = new URLSearchParams();
+    if (limit) {
+      searchParams.append('limit', limit.toString());
+    }
+
+    const response = await apiFetch(
+      `/api/loan-payment/upcoming?${searchParams}`,
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Get overdue payments for current user
+   */
+  getOverduePayments: async () => {
+    const response = await apiFetch(`/api/loan-payment/overdue`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Create a new payment (admin function)
+   */
+  create: async (data: any) => {
+    const response = await apiFetch(`/api/loan-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Update a payment (admin function)
+   */
+  update: async (id: string, data: any) => {
+    const response = await apiFetch(`/api/loan-payment/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  /**
+   * Delete a payment (only if pending)
+   */
+  delete: async (id: string) => {
+    const response = await apiFetch(`/api/loan-payment/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+};

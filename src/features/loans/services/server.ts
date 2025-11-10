@@ -3,10 +3,17 @@ import 'server-only';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@src/shared/lib/db';
 import { loanRepository } from '../repositories/loanRepository';
+import { installmentRepository } from '../repositories/installmentRepository';
+import { paymentRepository } from '../repositories/paymentRepository';
 import {
   type LoanCreateSchema,
   type LoanFiltersSchema,
   type LoanUpdateSchema,
+  type CloseLoanSchema,
+  type PayInstallmentSchema,
+  type PaymentCreateSchema,
+  type PaymentFiltersSchema,
+  type VerifyPaymentSchema,
 } from '../validations';
 
 // Helper function to generate unique loan number
@@ -573,5 +580,584 @@ export const loanService = {
 
     // ดึงข้อมูลใหม่พร้อม installments
     return this.getById(id);
+  },
+};
+
+// ============================================
+// PAYMENT SERVICE
+// ============================================
+
+// Generate unique reference number for payment
+function generateReferenceNumber(): string {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, '0');
+  return `PAY${timestamp}${random}`;
+}
+
+// Calculate late fee based on days overdue
+function calculateLateFee(
+  originalAmount: number,
+  daysLate: number,
+  lateFeePerDay: number = 50,
+): number {
+  return daysLate * lateFeePerDay;
+}
+
+// Calculate days between two dates
+function calculateDaysBetween(date1: Date, date2: Date): number {
+  const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
+
+export const paymentService = {
+  /**
+   * Get list of payments with filters and pagination
+   */
+  async getList(filters: PaymentFiltersSchema) {
+    const where: Prisma.PaymentWhereInput = {};
+
+    if (filters.status) {
+      where.status = filters.status as any;
+    }
+
+    if (filters.loanId) {
+      where.loanId = filters.loanId;
+    }
+
+    if (filters.userId) {
+      where.userId = filters.userId;
+    }
+
+    if (filters.paymentMethod) {
+      where.paymentMethod = filters.paymentMethod as any;
+    }
+
+    if (filters.search) {
+      where.referenceNumber = {
+        contains: filters.search,
+      };
+    }
+
+    if (filters.dateFrom || filters.dateTo) {
+      where.createdAt = {};
+      if (filters.dateFrom) {
+        where.createdAt.gte = new Date(filters.dateFrom);
+      }
+      if (filters.dateTo) {
+        where.createdAt.lte = new Date(filters.dateTo);
+      }
+    }
+
+    return paymentRepository.paginate({
+      where,
+      page: filters.page || 1,
+      limit: filters.limit || 10,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        loan: {
+          select: {
+            loanNumber: true,
+            principalAmount: true,
+            status: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            phoneNumber: true,
+            profile: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        installment: {
+          select: {
+            installmentNumber: true,
+            dueDate: true,
+            totalAmount: true,
+          },
+        },
+      },
+    });
+  },
+
+  /**
+   * Get payment by ID
+   */
+  async getById(id: string) {
+    const payment = await paymentRepository.findById(id, {
+      loan: {
+        include: {
+          customer: {
+            include: {
+              profile: true,
+            },
+          },
+        },
+      },
+      installment: true,
+      user: {
+        include: {
+          profile: true,
+        },
+      },
+    });
+
+    if (!payment) {
+      throw new Error('ไม่พบข้อมูลการชำระเงิน');
+    }
+
+    return payment;
+  },
+
+  /**
+   * Pay a specific installment
+   */
+  async payInstallment(data: PayInstallmentSchema, userId?: string) {
+    const loan = await loanRepository.findById(data.loanId, {
+      installments: true,
+    });
+
+    if (!loan) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    if (loan.status !== 'ACTIVE') {
+      throw new Error('สินเชื่อไม่อยู่ในสถานะที่สามารถชำระได้');
+    }
+
+    // Use customer ID from loan as the payer
+    const payerUserId = userId || loan.customerId;
+
+    const installment = await installmentRepository.findById(
+      data.installmentId,
+      {
+        payments: true,
+      },
+    );
+
+    if (!installment) {
+      throw new Error('ไม่พบข้อมูลงวดชำระ');
+    }
+
+    if (installment.isPaid) {
+      throw new Error('งวดนี้ชำระแล้ว');
+    }
+
+    if (installment.loanId !== data.loanId) {
+      throw new Error('งวดชำระไม่ตรงกับสินเชื่อที่ระบุ');
+    }
+
+    const today = new Date();
+    const dueDate = new Date(installment.dueDate);
+    let totalAmount = Number(installment.totalAmount);
+    let lateFee = 0;
+    let daysLate = 0;
+    let isLate = false;
+
+    if (today > dueDate) {
+      isLate = true;
+      daysLate = calculateDaysBetween(dueDate, today);
+      lateFee = data.includeLateFee
+        ? data.lateFeeAmount || calculateLateFee(totalAmount, daysLate)
+        : 0;
+
+      await installmentRepository.updateLateFee(
+        installment.id,
+        lateFee,
+        daysLate,
+      );
+
+      totalAmount += lateFee;
+    }
+
+    if (data.amount < totalAmount) {
+      throw new Error(
+        `จำนวนเงินไม่เพียงพอ ต้องชำระอย่างน้อย ${totalAmount.toLocaleString()} บาท`,
+      );
+    }
+
+    const paidDate = new Date();
+
+    const payment = await paymentRepository.create({
+      user: { connect: { id: payerUserId } },
+      loan: { connect: { id: data.loanId } },
+      installment: { connect: { id: data.installmentId } },
+      amount: data.amount,
+      paymentMethod: data.paymentMethod,
+      status: 'COMPLETED',
+      referenceNumber: generateReferenceNumber(),
+      dueDate: installment.dueDate,
+      paidDate: paidDate,
+      principalAmount: Number(installment.principalAmount),
+      interestAmount: Number(installment.interestAmount),
+      feeAmount: lateFee,
+      bankName: data.bankName,
+      accountNumber: data.accountNumber,
+      accountName: data.accountName,
+      transactionId: data.transactionId,
+    });
+
+    // Mark installment as paid
+    await installmentRepository.markAsPaid(
+      data.installmentId,
+      data.amount,
+      paidDate,
+    );
+
+    // Update loan's current installment and remaining balance
+    const currentInstallment = loan.currentInstallment + 1;
+    const newRemainingBalance =
+      Number(loan.remainingBalance) - Number(installment.principalAmount);
+
+    await loanRepository.update(data.loanId, {
+      currentInstallment,
+      remainingBalance: Math.max(0, newRemainingBalance),
+    });
+
+    // Check if all installments are paid
+    const unpaidCount = await installmentRepository.count({
+      loanId: data.loanId,
+      isPaid: false,
+    });
+
+    if (unpaidCount === 0) {
+      // Mark loan as completed
+      await loanRepository.update(data.loanId, {
+        status: 'COMPLETED',
+        remainingBalance: 0,
+      });
+    }
+
+    return {
+      payment,
+      message: 'ชำระเงินสำเร็จ',
+      totalAmount,
+      lateFee,
+      daysLate,
+      isLate,
+    };
+  },
+
+  /**
+   * Close/Payoff the entire loan
+   */
+  async closeLoan(data: CloseLoanSchema, userId?: string) {
+    const loan = await loanRepository.findById(data.loanId, {
+      installments: true,
+    });
+
+    if (!loan) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    if (loan.status !== 'ACTIVE') {
+      throw new Error('สินเชื่อไม่อยู่ในสถานะที่สามารถปิดได้');
+    }
+
+    // Use customer ID from loan as the payer
+    const payerUserId = userId || loan.customerId;
+
+    const unpaidInstallments = await installmentRepository.findUnpaidByLoanId(
+      data.loanId,
+    );
+
+    if (unpaidInstallments.length === 0) {
+      throw new Error('สินเชื่อนี้ชำระครบแล้ว');
+    }
+
+    let totalPayoffAmount = unpaidInstallments.reduce((sum, inst) => {
+      return sum + Number(inst.totalAmount);
+    }, 0);
+
+    const discount = data.discountAmount || 0;
+    const additionalFees = data.additionalFees || 0;
+    totalPayoffAmount = totalPayoffAmount - discount + additionalFees;
+
+    const paidDate = new Date();
+
+    const payment = await paymentRepository.create({
+      user: { connect: { id: payerUserId } },
+      loan: { connect: { id: data.loanId } },
+      amount: totalPayoffAmount,
+      paymentMethod: data.paymentMethod,
+      status: 'COMPLETED',
+      referenceNumber: generateReferenceNumber(),
+      dueDate: paidDate,
+      paidDate: paidDate,
+      principalAmount: unpaidInstallments.reduce(
+        (sum, inst) => sum + Number(inst.principalAmount),
+        0,
+      ),
+      interestAmount: unpaidInstallments.reduce(
+        (sum, inst) => sum + Number(inst.interestAmount),
+        0,
+      ),
+      feeAmount: additionalFees,
+      bankName: data.bankName,
+      accountNumber: data.accountNumber,
+      accountName: data.accountName,
+      transactionId: data.transactionId,
+    });
+
+    // Mark all unpaid installments as paid
+    await Promise.all(
+      unpaidInstallments.map((inst) =>
+        installmentRepository.markAsPaid(
+          inst.id,
+          Number(inst.totalAmount),
+          paidDate,
+        ),
+      ),
+    );
+
+    // Mark loan as completed
+    await loanRepository.update(data.loanId, {
+      status: 'COMPLETED',
+      remainingBalance: 0,
+      currentInstallment: loan.totalInstallments,
+    });
+
+    return {
+      payment,
+      message: 'ปิดสินเชื่อสำเร็จ',
+      totalPayoffAmount,
+      unpaidInstallmentsCount: unpaidInstallments.length,
+      discount,
+      additionalFees,
+    };
+  },
+
+  /**
+   * Verify and complete a payment (admin function)
+   */
+  async verifyPayment(data: VerifyPaymentSchema) {
+    const payment = await paymentRepository.findById(data.paymentId);
+
+    if (!payment) {
+      throw new Error('ไม่พบข้อมูลการชำระเงิน');
+    }
+
+    if (payment.status !== 'PENDING') {
+      throw new Error('การชำระเงินนี้ถูกดำเนินการแล้ว');
+    }
+
+    const paidDate = data.paidDate ? new Date(data.paidDate) : new Date();
+
+    await paymentRepository.update(payment.id, {
+      status: data.status,
+      paidDate: data.status === 'COMPLETED' ? paidDate : null,
+      transactionId: data.transactionId || payment.transactionId,
+    });
+
+    if (data.status === 'COMPLETED') {
+      if (payment.installmentId) {
+        await installmentRepository.markAsPaid(
+          payment.installmentId,
+          Number(payment.amount),
+          paidDate,
+        );
+
+        const loan = await loanRepository.findById(payment.loanId, {
+          installments: true,
+        });
+
+        if (loan) {
+          const currentInstallment = loan.currentInstallment + 1;
+          const newRemainingBalance =
+            Number(loan.remainingBalance) - Number(payment.principalAmount);
+
+          await loanRepository.update(payment.loanId, {
+            currentInstallment,
+            remainingBalance: Math.max(0, newRemainingBalance),
+          });
+
+          const unpaidCount = await installmentRepository.count({
+            loanId: payment.loanId,
+            isPaid: false,
+          });
+
+          if (unpaidCount === 0) {
+            await loanRepository.update(payment.loanId, {
+              status: 'COMPLETED',
+              remainingBalance: 0,
+            });
+          }
+        }
+      } else {
+        const unpaidInstallments =
+          await installmentRepository.findUnpaidByLoanId(payment.loanId);
+
+        await Promise.all(
+          unpaidInstallments.map((inst) =>
+            installmentRepository.markAsPaid(
+              inst.id,
+              Number(inst.totalAmount),
+              paidDate,
+            ),
+          ),
+        );
+
+        await loanRepository.update(payment.loanId, {
+          status: 'COMPLETED',
+          remainingBalance: 0,
+          currentInstallment: Number(
+            (await loanRepository.findById(payment.loanId))?.totalInstallments ||
+              0,
+          ),
+        });
+      }
+    }
+
+    return {
+      message:
+        data.status === 'COMPLETED'
+          ? 'ยืนยันการชำระเงินสำเร็จ'
+          : 'ปฏิเสธการชำระเงินสำเร็จ',
+    };
+  },
+
+  /**
+   * Get payment history for a loan
+   */
+  async getPaymentsByLoanId(loanId: string) {
+    const payments = await paymentRepository.findByLoanId(loanId);
+    const totalPaid = await paymentRepository.getTotalPaidByLoanId(loanId);
+
+    return {
+      payments,
+      totalPaid,
+    };
+  },
+
+  /**
+   * Get upcoming payments for a user
+   */
+  async getUpcomingPayments(userId: string, limit: number = 5) {
+    const loans = await loanRepository.findMany({
+      where: {
+        customerId: userId,
+        status: 'ACTIVE',
+      },
+    });
+
+    const loanIds = loans.map((loan) => loan.id);
+
+    const upcomingInstallments = await prisma.loanInstallment.findMany({
+      where: {
+        loanId: { in: loanIds },
+        isPaid: false,
+        dueDate: {
+          gte: new Date(),
+        },
+      },
+      include: {
+        loan: {
+          select: {
+            loanNumber: true,
+            principalAmount: true,
+          },
+        },
+      },
+      orderBy: { dueDate: 'asc' },
+      take: limit,
+    });
+
+    return upcomingInstallments;
+  },
+
+  /**
+   * Get overdue payments for a user
+   */
+  async getOverduePayments(userId: string) {
+    const loans = await loanRepository.findMany({
+      where: {
+        customerId: userId,
+        status: 'ACTIVE',
+      },
+    });
+
+    const loanIds = loans.map((loan) => loan.id);
+
+    const overdueInstallments = await prisma.loanInstallment.findMany({
+      where: {
+        loanId: { in: loanIds },
+        isPaid: false,
+        dueDate: {
+          lt: new Date(),
+        },
+      },
+      include: {
+        loan: {
+          select: {
+            loanNumber: true,
+            principalAmount: true,
+          },
+        },
+      },
+      orderBy: { dueDate: 'asc' },
+    });
+
+    return overdueInstallments;
+  },
+
+  /**
+   * Create a new payment record (for admin or manual entry)
+   */
+  async create(data: PaymentCreateSchema) {
+    const loan = await loanRepository.findById(data.loanId);
+    if (!loan) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    const referenceNumber = generateReferenceNumber();
+
+    const payment = await paymentRepository.create({
+      user: { connect: { id: data.userId } },
+      loan: { connect: { id: data.loanId } },
+      ...(data.installmentId && {
+        installment: { connect: { id: data.installmentId } },
+      }),
+      amount: data.amount,
+      paymentMethod: data.paymentMethod,
+      status: 'PENDING',
+      referenceNumber,
+      dueDate: new Date(data.dueDate),
+      principalAmount: data.principalAmount || 0,
+      interestAmount: data.interestAmount || 0,
+      feeAmount: data.feeAmount || 0,
+      bankName: data.bankName,
+      accountNumber: data.accountNumber,
+      accountName: data.accountName,
+      qrCode: data.qrCode,
+      barcodeNumber: data.barcodeNumber,
+    });
+
+    return payment;
+  },
+
+  /**
+   * Delete a payment (only if pending)
+   */
+  async delete(id: string) {
+    const payment = await paymentRepository.findById(id);
+
+    if (!payment) {
+      throw new Error('ไม่พบข้อมูลการชำระเงิน');
+    }
+
+    if (payment.status !== 'PENDING') {
+      throw new Error('ไม่สามารถลบรายการชำระเงินที่ดำเนินการแล้ว');
+    }
+
+    await paymentRepository.delete(id);
+
+    return { message: 'ลบรายการชำระเงินสำเร็จ' };
   },
 };

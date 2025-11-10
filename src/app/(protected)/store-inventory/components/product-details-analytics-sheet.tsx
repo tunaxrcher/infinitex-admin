@@ -6,6 +6,8 @@ import {
   useDeleteLoan,
   useGenerateInstallments,
   useGetLoanById,
+  usePayInstallment,
+  useCloseLoan,
 } from '@src/features/loans/hooks';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
@@ -98,6 +100,8 @@ export function ProductDetailsAnalyticsSheet({
   const loan = loanResponse?.data;
   const deleteLoan = useDeleteLoan();
   const generateInstallments = useGenerateInstallments();
+  const payInstallment = usePayInstallment();
+  const closeLoan = useCloseLoan();
 
   // Handle delete
   const handleDelete = () => {
@@ -1176,9 +1180,10 @@ export function ProductDetailsAnalyticsSheet({
                             <SelectValue placeholder="เลือกการชำระ" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="cash">เงินสด</SelectItem>
-                            <SelectItem value="transfer">โอนเงิน</SelectItem>
-                            <SelectItem value="qr">QR Code</SelectItem>
+                            <SelectItem value="QR_CODE">QR Code</SelectItem>
+                            <SelectItem value="BARCODE">Barcode</SelectItem>
+                            <SelectItem value="INTERNET_BANKING">Internet Banking</SelectItem>
+                            <SelectItem value="BANK_TRANSFER">โอนเงินผ่านธนาคาร</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1237,12 +1242,49 @@ export function ProductDetailsAnalyticsSheet({
                       variant="mono"
                       className="w-full gradientButton"
                       onClick={() => {
-                        // TODO: Implement payment submission
-                        console.log('Payment submitted:', paymentForm);
-                        setIsPaymentDialogOpen(false);
+                        if (!loanId || !selectedInstallment) {
+                          alert('กรุณาเลือกงวดที่ต้องการชำระ');
+                          return;
+                        }
+
+                        // Validate required fields
+                        if (!paymentForm.paymentMethod) {
+                          alert('กรุณาเลือกช่องทางการชำระเงิน');
+                          return;
+                        }
+
+                        if (!paymentForm.receiver) {
+                          alert('กรุณาระบุผู้รับชำระ');
+                          return;
+                        }
+
+                        // Submit installment payment
+                        if (paymentTab === 'partial') {
+                          payInstallment.mutate({
+                            loanId: loanId,
+                            installmentId: selectedInstallment.id,
+                            amount: selectedInstallment.totalAmount,
+                            paymentMethod: paymentForm.paymentMethod as any,
+                            includeLateFee: true,
+                          }, {
+                            onSuccess: () => {
+                              setIsPaymentDialogOpen(false);
+                              // Reset form
+                              setPaymentForm({
+                                installmentNumber: '',
+                                paymentAmount: '',
+                                paymentDate: new Date().toISOString().split('T')[0],
+                                paymentMethod: '',
+                                receiver: '',
+                              });
+                              setSelectedInstallment(null);
+                            }
+                          });
+                        }
                       }}
+                      disabled={payInstallment.isPending}
                     >
-                      ยืนยัน
+                      {payInstallment.isPending ? 'กำลังดำเนินการ...' : 'ยืนยัน'}
                     </Button>
                   </div>
                 </>
@@ -1337,8 +1379,10 @@ export function ProductDetailsAnalyticsSheet({
                             <SelectValue placeholder="เลือกการชำระ" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="cash">เงินสด</SelectItem>
-                            <SelectItem value="transfer">โอนเงิน</SelectItem>
+                            <SelectItem value="QR_CODE">QR Code</SelectItem>
+                            <SelectItem value="BARCODE">Barcode</SelectItem>
+                            <SelectItem value="INTERNET_BANKING">Internet Banking</SelectItem>
+                            <SelectItem value="BANK_TRANSFER">โอนเงินผ่านธนาคาร</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1393,12 +1437,44 @@ export function ProductDetailsAnalyticsSheet({
                       variant="mono"
                       className="w-full gradientButton"
                       onClick={() => {
-                        // TODO: Implement close loan submission
-                        console.log('Close loan submitted:', closeLoanForm);
-                        setIsPaymentDialogOpen(false);
+                        if (!loanId) {
+                          alert('ไม่พบข้อมูลสินเชื่อ');
+                          return;
+                        }
+
+                        // Validate required fields
+                        if (!closeLoanForm.paymentMethod) {
+                          alert('กรุณาเลือกช่องทางการชำระเงิน');
+                          return;
+                        }
+
+                        if (!closeLoanForm.receiver) {
+                          alert('กรุณาระบุผู้รับชำระ');
+                          return;
+                        }
+
+                        // Submit close loan payment
+                        closeLoan.mutate({
+                          loanId: loanId,
+                          paymentMethod: closeLoanForm.paymentMethod as any,
+                          discountAmount: 0,
+                          additionalFees: 0,
+                          notes: `ปิดสินเชื่อ - รับชำระโดย ${closeLoanForm.receiver}`,
+                        }, {
+                          onSuccess: () => {
+                            setIsPaymentDialogOpen(false);
+                            // Reset form
+                            setCloseLoanForm({
+                              paymentDate: new Date().toISOString().split('T')[0],
+                              paymentMethod: '',
+                              receiver: '',
+                            });
+                          }
+                        });
                       }}
+                      disabled={closeLoan.isPending}
                     >
-                      บันทึก
+                      {closeLoan.isPending ? 'กำลังดำเนินการ...' : 'บันทึก'}
                     </Button>
                   </div>
                 </>

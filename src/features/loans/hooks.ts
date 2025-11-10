@@ -138,3 +138,233 @@ export const useGenerateInstallments = () => {
     },
   });
 };
+
+// ============================================
+// PAYMENT HOOKS
+// ============================================
+
+// Import payment API
+import { paymentApi } from './api';
+
+// Query keys for payments
+export const paymentKeys = {
+  all: () => ['payments'] as const,
+  list: (filters?: any) => ['payments', 'list', filters] as const,
+  detail: (id: string) => ['payments', 'detail', id] as const,
+  byLoan: (loanId: string) => ['payments', 'by-loan', loanId] as const,
+  upcoming: (limit?: number) => ['payments', 'upcoming', limit] as const,
+  overdue: () => ['payments', 'overdue'] as const,
+};
+
+/**
+ * Get list of payments with filters and pagination
+ */
+export const useGetPaymentList = (filters: any) => {
+  return useQuery({
+    queryKey: paymentKeys.list(filters),
+    queryFn: () => paymentApi.getList(filters),
+    placeholderData: (previousData) => previousData,
+    staleTime: 30000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+};
+
+/**
+ * Get payment by ID
+ */
+export const useGetPaymentById = (id: string) => {
+  return useQuery({
+    queryKey: paymentKeys.detail(id),
+    queryFn: () => paymentApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Get payment history for a loan
+ */
+export const useGetPaymentsByLoanId = (loanId: string) => {
+  return useQuery({
+    queryKey: paymentKeys.byLoan(loanId),
+    queryFn: () => paymentApi.getPaymentsByLoanId(loanId),
+    enabled: !!loanId,
+  });
+};
+
+/**
+ * Get upcoming payments
+ */
+export const useGetUpcomingPayments = (limit?: number) => {
+  return useQuery({
+    queryKey: paymentKeys.upcoming(limit),
+    queryFn: () => paymentApi.getUpcomingPayments(limit),
+    staleTime: 60000, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Get overdue payments
+ */
+export const useGetOverduePayments = () => {
+  return useQuery({
+    queryKey: paymentKeys.overdue(),
+    queryFn: () => paymentApi.getOverduePayments(),
+    staleTime: 60000, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Pay a specific installment
+ */
+export const usePayInstallment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => paymentApi.payInstallment(data),
+    onSuccess: (data, variables) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: paymentKeys.all() });
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      queryClient.invalidateQueries({
+        queryKey: paymentKeys.byLoan(variables.loanId),
+      });
+      
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: paymentKeys.all() });
+      queryClient.refetchQueries({ queryKey: ['loans'] });
+
+      toast.success(data.message || 'สร้างรายการชำระเงินสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+
+/**
+ * Close/Payoff entire loan
+ */
+export const useCloseLoan = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => paymentApi.closeLoan(data),
+    onSuccess: (data, variables) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: paymentKeys.all() });
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      queryClient.invalidateQueries({
+        queryKey: paymentKeys.byLoan(variables.loanId),
+      });
+      
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: paymentKeys.all() });
+      queryClient.refetchQueries({ queryKey: ['loans'] });
+
+      toast.success(data.message || 'สร้างรายการปิดสินเชื่อสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+
+/**
+ * Verify payment (admin function)
+ */
+export const useVerifyPayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => paymentApi.verifyPayment(data),
+    onSuccess: (data, variables) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: paymentKeys.all() });
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      queryClient.invalidateQueries({
+        queryKey: paymentKeys.detail(variables.paymentId),
+      });
+      
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: paymentKeys.all() });
+      queryClient.refetchQueries({ queryKey: ['loans'] });
+
+      toast.success(data.message || 'ยืนยันการชำระเงินสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+
+/**
+ * Create a new payment (admin function)
+ */
+export const useCreatePayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => paymentApi.create(data),
+    onSuccess: () => {
+      // Invalidate all payment list queries
+      queryClient.invalidateQueries({ queryKey: ['payments', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: ['payments', 'list'] });
+
+      toast.success('สร้างรายการชำระเงินสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+
+/**
+ * Update a payment (admin function)
+ */
+export const useUpdatePayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      paymentApi.update(id, data),
+    onSuccess: (_, variables) => {
+      // Invalidate all payment list queries
+      queryClient.invalidateQueries({ queryKey: ['payments', 'list'] });
+      queryClient.invalidateQueries({
+        queryKey: paymentKeys.detail(variables.id),
+      });
+      
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: ['payments', 'list'] });
+
+      toast.success('แก้ไขรายการชำระเงินสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};
+
+/**
+ * Delete a payment (only if pending)
+ */
+export const useDeletePayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => paymentApi.delete(id),
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: paymentKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ['payments', 'list'] });
+      
+      // Refetch immediately
+      queryClient.refetchQueries({ queryKey: ['payments', 'list'] });
+
+      toast.success('ลบรายการชำระเงินสำเร็จ');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    },
+  });
+};

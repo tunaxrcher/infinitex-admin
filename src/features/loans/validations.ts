@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 // ============================================
-// FILTER SCHEMAS
+// LOAN FILTER SCHEMAS
 // ============================================
 
 export const loanFiltersSchema = z.object({
@@ -60,3 +60,123 @@ export type LoanCreateSchema = z.infer<typeof loanCreateSchema>;
 export const loanUpdateSchema = loanCreateSchema.partial();
 
 export type LoanUpdateSchema = z.infer<typeof loanUpdateSchema>;
+
+// ============================================
+// PAYMENT FILTER SCHEMAS
+// ============================================
+
+export const paymentFiltersSchema = z.object({
+  page: z.coerce.number().min(1).optional().default(1),
+  limit: z.coerce.number().min(1).max(10000).optional().default(10),
+  status: z.string().optional(),
+  search: z.string().optional(),
+  loanId: z.string().optional(),
+  userId: z.string().optional(),
+  paymentMethod: z.string().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+});
+
+export type PaymentFiltersSchema = z.infer<typeof paymentFiltersSchema>;
+
+// ============================================
+// INSTALLMENT PAYMENT
+// ============================================
+
+export const payInstallmentSchema = z.object({
+  loanId: z.string().min(1, 'กรุณาระบุรหัสสินเชื่อ'),
+  installmentId: z.string().min(1, 'กรุณาระบุรหัสงวดชำระ'),
+  amount: z.number().positive('จำนวนเงินต้องมากกว่า 0'),
+  paymentMethod: z.enum(['QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER'], {
+    errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
+  }),
+  
+  // Optional fields based on payment method
+  bankName: z.string().optional(),
+  accountNumber: z.string().optional(),
+  accountName: z.string().optional(),
+  transactionId: z.string().optional(),
+  
+  // Late payment handling
+  includeLateFee: z.boolean().optional().default(false),
+  lateFeeAmount: z.number().optional().default(0),
+});
+
+export type PayInstallmentSchema = z.infer<typeof payInstallmentSchema>;
+
+// ============================================
+// LOAN CLOSURE (PAYOFF)
+// ============================================
+
+export const closeLoanSchema = z.object({
+  loanId: z.string().min(1, 'กรุณาระบุรหัสสินเชื่อ'),
+  paymentMethod: z.enum(['QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER'], {
+    errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
+  }),
+  
+  // Optional fields based on payment method
+  bankName: z.string().optional(),
+  accountNumber: z.string().optional(),
+  accountName: z.string().optional(),
+  transactionId: z.string().optional(),
+  
+  // Early closure might have discount or additional fees
+  discountAmount: z.number().optional().default(0),
+  additionalFees: z.number().optional().default(0),
+  notes: z.string().optional(),
+});
+
+export type CloseLoanSchema = z.infer<typeof closeLoanSchema>;
+
+// ============================================
+// PAYMENT VERIFICATION
+// ============================================
+
+export const verifyPaymentSchema = z.object({
+  paymentId: z.string().min(1, 'กรุณาระบุรหัสการชำระเงิน'),
+  status: z.enum(['COMPLETED', 'FAILED'], {
+    errorMap: () => ({ message: 'สถานะไม่ถูกต้อง' }),
+  }),
+  transactionId: z.string().optional(),
+  paidDate: z.string().optional(),
+  verificationNotes: z.string().optional(),
+});
+
+export type VerifyPaymentSchema = z.infer<typeof verifyPaymentSchema>;
+
+// ============================================
+// PAYMENT CREATION
+// ============================================
+
+export const paymentCreateSchema = z.object({
+  userId: z.string().min(1, 'กรุณาระบุรหัสผู้ใช้'),
+  loanId: z.string().min(1, 'กรุณาระบุรหัสสินเชื่อ'),
+  installmentId: z.string().optional(),
+  amount: z.number().positive('จำนวนเงินต้องมากกว่า 0'),
+  paymentMethod: z.enum(['QR_CODE', 'BARCODE', 'INTERNET_BANKING', 'BANK_TRANSFER']),
+  dueDate: z.string(),
+  
+  // Payment breakdown
+  principalAmount: z.number().optional().default(0),
+  interestAmount: z.number().optional().default(0),
+  feeAmount: z.number().optional().default(0),
+  
+  // Optional fields
+  bankName: z.string().optional(),
+  accountNumber: z.string().optional(),
+  accountName: z.string().optional(),
+  qrCode: z.string().optional(),
+  barcodeNumber: z.string().optional(),
+});
+
+export type PaymentCreateSchema = z.infer<typeof paymentCreateSchema>;
+
+// ============================================
+// PAYMENT UPDATE
+// ============================================
+
+export const paymentUpdateSchema = paymentCreateSchema.partial();
+
+export type PaymentUpdateSchema = z.infer<typeof paymentUpdateSchema>;
