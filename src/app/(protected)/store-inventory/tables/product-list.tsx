@@ -391,6 +391,7 @@ export function ProductListTable({
                   src={'/images/loan.png'}
                   className="cursor-pointer h-[40px]"
                   alt="image"
+                  onClick={() => handleViewDetails(info.row.original)}
                 />
               </Card>
               <div className="flex flex-col gap-1">
