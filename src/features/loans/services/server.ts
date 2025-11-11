@@ -87,6 +87,7 @@ export const loanService = {
               profile: true,
             },
           },
+          agent: true, // เพิ่ม agent
           loan: {
             include: {
               installments: {
@@ -190,6 +191,7 @@ export const loanService = {
             profile: true,
           },
         },
+        agent: true, // เพิ่ม agent
         loan: {
           include: {
             installments: {
@@ -596,6 +598,7 @@ export const loanService = {
             profile: true,
           },
         },
+        agent: true,
         loan: true,
       },
     });
@@ -612,6 +615,8 @@ export const loanService = {
                   profile: true,
                 },
               },
+              agent: true,
+              loan: true,
             },
           },
         },
@@ -738,6 +743,12 @@ export const loanService = {
     let application = await prisma.loanApplication.findUnique({
       where: { id },
       include: {
+        customer: {
+          include: {
+            profile: true,
+          },
+        },
+        agent: true,
         loan: true,
       },
     });
@@ -747,7 +758,17 @@ export const loanService = {
       const loan = await prisma.loan.findUnique({
         where: { id },
         include: {
-          application: true,
+          application: {
+            include: {
+              customer: {
+                include: {
+                  profile: true,
+                },
+              },
+              agent: true,
+              loan: true,
+            },
+          },
         },
       });
 
@@ -801,6 +822,12 @@ export const loanService = {
     let application = await prisma.loanApplication.findUnique({
       where: { id },
       include: {
+        customer: {
+          include: {
+            profile: true,
+          },
+        },
+        agent: true,
         loan: true,
       },
     });
@@ -812,7 +839,17 @@ export const loanService = {
       const loan = await prisma.loan.findUnique({
         where: { id },
         include: {
-          application: true,
+          application: {
+            include: {
+              customer: {
+                include: {
+                  profile: true,
+                },
+              },
+              agent: true,
+              loan: true,
+            },
+          },
         },
       });
 
