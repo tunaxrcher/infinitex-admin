@@ -956,6 +956,24 @@ export function ProductDetailsAnalyticsSheet({
                       </div>
                       <div className="flex items-center lg:gap-13 gap-5">
                         <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                          ประเภททรัพย์
+                        </div>
+                        <div className="text-2sm text-secondary-foreground font-medium">
+                          {loan?.application?.propertyType || '-'}
+                        </div>
+                      </div>
+                      <div className="flex items-center lg:gap-13 gap-5">
+                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                          มูลค่าประเมิน
+                        </div>
+                        <div className="text-2sm text-secondary-foreground font-medium">
+                          {loan?.application?.propertyValue
+                            ? `฿${Number(loan.application.propertyValue).toLocaleString()}`
+                            : '-'}
+                        </div>
+                      </div>
+                      <div className="flex items-center lg:gap-13 gap-5">
+                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
                           โฉนด
                         </div>
                         <div className="text-2sm text-secondary-foreground font-medium">
@@ -972,6 +990,42 @@ export function ProductDetailsAnalyticsSheet({
                           {loan?.application?.ownerName || '-'}
                         </div>
                       </div>
+                      <div className="flex items-center lg:gap-13 gap-5">
+                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                          วงเงินที่ขอ
+                        </div>
+                        <div className="text-2sm text-secondary-foreground font-medium">
+                          {loan?.application?.requestedAmount
+                            ? `฿${Number(loan.application.requestedAmount).toLocaleString()}`
+                            : '-'}
+                        </div>
+                      </div>
+                      {loan?.application?.approvedAmount && (
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            วงเงินอนุมัติ
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            ฿
+                            {Number(
+                              loan.application.approvedAmount,
+                            ).toLocaleString()}
+                          </div>
+                        </div>
+                      )}
+                      {loan?.application?.maxApprovedAmount && (
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            วงเงินสูงสุด
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            ฿
+                            {Number(
+                              loan.application.maxApprovedAmount,
+                            ).toLocaleString()}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

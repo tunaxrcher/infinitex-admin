@@ -36,43 +36,128 @@ export const loanService = {
       sortOrder = 'desc',
     } = filters;
 
-    // Build where clause
-    const where: Prisma.LoanWhereInput = {};
+    // Query จาก loan_applications เป็นหลัก เพื่อให้แสดงทั้งที่ยังไม่มี loan
+    const where: Prisma.LoanApplicationWhereInput = {
+      // ไม่แสดง DRAFT
+      status: {
+        not: 'DRAFT',
+      },
+    };
 
     if (search) {
       where.OR = [
-        { loanNumber: { contains: search } },
         { customer: { profile: { firstName: { contains: search } } } },
         { customer: { profile: { lastName: { contains: search } } } },
+        { propertyLocation: { contains: search } },
+        { ownerName: { contains: search } },
       ];
     }
 
+    // กรองตาม status ของ loan (ถ้ามี) หรือ application status
     if (status) {
-      where.status = status;
+      // ถ้ามีการระบุ status ให้กรองจาก loan.status
+      where.loan = {
+        status: status,
+      };
     }
 
-    // Build orderBy
-    const orderBy: Prisma.LoanOrderByWithRelationInput = {
-      [sortBy]: sortOrder,
-    };
+    // Build orderBy - เรียงตามวันที่ขอ (createdAt) เป็นค่าเริ่มต้น
+    const orderBy: Prisma.LoanApplicationOrderByWithRelationInput =
+      sortBy === 'createdAt'
+        ? {
+            createdAt: sortOrder,
+          }
+        : {
+            [sortBy]: sortOrder,
+            createdAt: 'desc', // เพิ่มการเรียงตาม createdAt เป็น secondary
+          };
 
-    return loanRepository.paginate({
-      where,
-      page,
-      limit,
-      orderBy,
-      include: {
-        customer: {
-          include: {
-            profile: true,
+    // Query applications with pagination
+    const skip = (page - 1) * limit;
+
+    const [applications, total] = await Promise.all([
+      prisma.loanApplication.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include: {
+          customer: {
+            include: {
+              profile: true,
+            },
+          },
+          loan: {
+            include: {
+              installments: {
+                orderBy: {
+                  installmentNumber: 'asc',
+                },
+                take: 1, // เอาแค่งวดแรกเพื่อประหยัด
+              },
+            },
           },
         },
-        application: true,
-      },
+      }),
+      prisma.loanApplication.count({ where }),
+    ]);
+
+    // แปลงข้อมูลให้เป็นรูปแบบเดียวกับ Loan
+    const transformedData = applications.map((app) => {
+      // ถ้ามี loan ให้ใช้ข้อมูลจาก loan
+      if (app.loan) {
+        return {
+          ...app.loan,
+          application: app,
+          customer: app.customer,
+        };
+      }
+
+      // ถ้ายังไม่มี loan ให้สร้างข้อมูลจาก application
+      return {
+        id: app.id,
+        loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`, // ใช้ application ID เป็น temporary loan number
+        customerId: app.customerId,
+        customer: app.customer,
+        agentId: app.agentId,
+        agent: app.agent,
+        applicationId: app.id,
+        application: app,
+        loanType: app.loanType,
+        status: app.status as any, // ใช้ application status แทน
+        principalAmount: app.approvedAmount || app.requestedAmount || 0,
+        interestRate: 0, // ยังไม่มีข้อมูล
+        termMonths: 0,
+        monthlyPayment: 0,
+        currentInstallment: 0,
+        totalInstallments: 0,
+        remainingBalance: app.approvedAmount || app.requestedAmount || 0,
+        nextPaymentDate: new Date(),
+        contractDate: app.createdAt,
+        expiryDate: app.createdAt,
+        titleDeedNumber: app.landNumber,
+        collateralValue: app.propertyValue,
+        collateralDetails: null,
+        createdAt: app.createdAt,
+        updatedAt: app.updatedAt,
+        payments: [],
+        installments: [],
+      };
     });
+
+    return {
+      data: transformedData,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   },
 
   async getById(id: string) {
+    // ลองหา loan ก่อน
     const loan = await loanRepository.findById(id, {
       customer: {
         include: {
@@ -92,11 +177,81 @@ export const loanService = {
       },
     });
 
-    if (!loan) {
+    if (loan) {
+      return loan;
+    }
+
+    // ถ้าไม่เจอ loan ให้ลองหาจาก application
+    const application = await prisma.loanApplication.findUnique({
+      where: { id },
+      include: {
+        customer: {
+          include: {
+            profile: true,
+          },
+        },
+        loan: {
+          include: {
+            installments: {
+              orderBy: {
+                installmentNumber: 'asc',
+              },
+            },
+            payments: {
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!application) {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
-    return loan;
+    // ถ้ามี loan ใน application ให้ return loan
+    if (application.loan) {
+      return {
+        ...application.loan,
+        application,
+        customer: application.customer,
+      };
+    }
+
+    // ถ้ายังไม่มี loan ให้สร้างข้อมูลจาก application
+    return {
+      id: application.id,
+      loanNumber: `APP-${application.id.slice(0, 8).toUpperCase()}`,
+      customerId: application.customerId,
+      customer: application.customer,
+      agentId: application.agentId,
+      agent: application.agent,
+      applicationId: application.id,
+      application: application,
+      loanType: application.loanType,
+      status: application.status as any,
+      principalAmount:
+        application.approvedAmount || application.requestedAmount || 0,
+      interestRate: 0,
+      termMonths: 0,
+      monthlyPayment: 0,
+      currentInstallment: 0,
+      totalInstallments: 0,
+      remainingBalance:
+        application.approvedAmount || application.requestedAmount || 0,
+      nextPaymentDate: new Date(),
+      contractDate: application.createdAt,
+      expiryDate: application.createdAt,
+      titleDeedNumber: application.landNumber,
+      collateralValue: application.propertyValue,
+      collateralDetails: null,
+      createdAt: application.createdAt,
+      updatedAt: application.updatedAt,
+      payments: [],
+      installments: [],
+    };
   },
 
   async create(data: LoanCreateSchema) {
@@ -173,17 +328,23 @@ export const loanService = {
       }
 
       // Step 3: สร้าง LoanApplication (สถานะอนุมัติแล้ว)
+      const requestedAmount = data.requestedAmount ?? loanAmount;
+      const maxApprovedAmount = data.maxApprovedAmount ?? loanAmount * 1.5; // ค่า default = 150% ของยอดที่ขอ
+
       const application = await tx.loanApplication.create({
         data: {
           loanType: 'HOUSE_LAND_MORTGAGE',
           status: 'APPROVED', // เริ่มต้นเป็น APPROVED (อนุมัติแล้ว)
           currentStep: 4,
-          requestedAmount: loanAmount,
+          requestedAmount: requestedAmount,
           approvedAmount: loanAmount,
+          maxApprovedAmount: maxApprovedAmount,
           landNumber: data.landNumber,
           ownerName: data.ownerName || data.fullName,
           propertyLocation: data.placeName,
           propertyArea: data.landArea,
+          propertyType: data.propertyType || 'ที่ดิน', // ค่า default
+          propertyValue: data.propertyValue ?? loanAmount * 2, // ค่า default = 2 เท่าของยอดกู้
           customerId: customer.id,
           // บันทึกภาพโฉนด (ใช้ภาพแรกเป็นหลัก)
           titleDeedImage:
@@ -370,6 +531,11 @@ export const loanService = {
         data.placeName ||
         data.landArea ||
         data.landNumber ||
+        data.propertyType ||
+        data.propertyValue !== undefined ||
+        data.requestedAmount !== undefined ||
+        data.maxApprovedAmount !== undefined ||
+        data.loanAmount ||
         data.titleDeedImages ||
         data.supportingImages
       ) {
@@ -378,6 +544,17 @@ export const loanService = {
           ...(data.placeName && { propertyLocation: data.placeName }),
           ...(data.landArea && { propertyArea: data.landArea }),
           ...(data.landNumber && { landNumber: data.landNumber }),
+          ...(data.propertyType && { propertyType: data.propertyType }),
+          ...(data.propertyValue !== undefined && {
+            propertyValue: data.propertyValue,
+          }),
+          ...(data.requestedAmount !== undefined && {
+            requestedAmount: data.requestedAmount,
+          }),
+          ...(data.maxApprovedAmount !== undefined && {
+            maxApprovedAmount: data.maxApprovedAmount,
+          }),
+          ...(data.loanAmount && { approvedAmount: data.loanAmount }),
         };
 
         // Update title deed image (แทนที่รูปเดิม)
@@ -410,71 +587,186 @@ export const loanService = {
   },
 
   async approve(id: string) {
-    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
-    const existing = await this.getById(id);
-    if (!existing) {
-      throw new Error('ไม่พบข้อมูลสินเชื่อ');
-    }
-
-    // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ (DRAFT, SUBMITTED, UNDER_REVIEW)
-    const application = await prisma.loanApplication.findUnique({
-      where: { id: existing.applicationId },
+    // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
+    let application = await prisma.loanApplication.findUnique({
+      where: { id },
+      include: {
+        customer: {
+          include: {
+            profile: true,
+          },
+        },
+        loan: true,
+      },
     });
 
-    if (
-      !application ||
-      !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)
-    ) {
+    // ถ้าไม่เจอ ให้ลองหาจาก loan
+    if (!application) {
+      const loan = await prisma.loan.findUnique({
+        where: { id },
+        include: {
+          application: {
+            include: {
+              customer: {
+                include: {
+                  profile: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!loan) {
+        throw new Error('ไม่พบข้อมูลสินเชื่อ');
+      }
+
+      application = loan.application;
+    }
+
+    // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ
+    if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
       throw new Error('สินเชื่อนี้ไม่สามารถอนุมัติได้');
     }
 
     return prisma.$transaction(async (tx) => {
       // อัพเดท LoanApplication
       await tx.loanApplication.update({
-        where: { id: existing.applicationId },
+        where: { id: application.id },
         data: {
           status: 'APPROVED',
           reviewedAt: new Date(),
+          approvedAmount: application.requestedAmount, // อนุมัติตามยอดที่ขอ
           // reviewedBy: adminId, // TODO: เพิ่ม admin authentication
         },
       });
 
-      // อัพเดท Loan status เป็น ACTIVE
-      await tx.loan.update({
-        where: { id },
-        data: {
-          status: 'ACTIVE',
-          updatedAt: new Date(),
-        },
+      // ตรวจสอบว่ามี Loan record อยู่แล้วหรือไม่
+      const existingLoan = await tx.loan.findUnique({
+        where: { applicationId: application.id },
       });
+
+      if (existingLoan) {
+        // ถ้ามี loan แล้ว ให้ update status
+        await tx.loan.update({
+          where: { id: existingLoan.id },
+          data: {
+            status: 'ACTIVE',
+            updatedAt: new Date(),
+          },
+        });
+      } else {
+        // ถ้ายังไม่มี loan ให้สร้างใหม่
+        const loanNumber = generateLoanNumber();
+        const loanAmount = Number(application.requestedAmount || 0);
+        const interestRate = 1; // ดอกเบี้ย default 1%
+        const loanYears = 4; // ระยะเวลา default 4 ปี
+        const termMonths = loanYears * 12;
+        const r = interestRate / 100 / 12;
+        const n = termMonths;
+
+        // คำนวณงวดชำระรายเดือน
+        let monthlyPayment = 0;
+        if (interestRate > 0) {
+          monthlyPayment = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
+        } else {
+          monthlyPayment = loanAmount / n;
+        }
+
+        const contractDate = new Date();
+        const expiryDate = new Date();
+        expiryDate.setFullYear(expiryDate.getFullYear() + loanYears);
+
+        const nextPaymentDate = new Date(contractDate);
+        nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+
+        // สร้าง Loan record
+        const newLoan = await tx.loan.create({
+          data: {
+            loanNumber,
+            loanType: application.loanType,
+            status: 'ACTIVE',
+            principalAmount: loanAmount,
+            interestRate: interestRate,
+            termMonths,
+            monthlyPayment,
+            currentInstallment: 0,
+            totalInstallments: termMonths,
+            remainingBalance: loanAmount * (1 + interestRate / 100),
+            nextPaymentDate,
+            contractDate,
+            expiryDate,
+            titleDeedNumber: application.landNumber,
+            customerId: application.customerId,
+            applicationId: application.id,
+            agentId: application.agentId,
+          },
+        });
+
+        // สร้างตารางผ่อนชำระ
+        const installmentsData = [];
+        for (let i = 1; i <= termMonths; i++) {
+          const dueDate = new Date(contractDate);
+          dueDate.setMonth(dueDate.getMonth() + i);
+
+          const interestAmount = (loanAmount * interestRate) / 100 / termMonths;
+          const principalAmount = monthlyPayment - interestAmount;
+
+          installmentsData.push({
+            loanId: newLoan.id,
+            installmentNumber: i,
+            dueDate,
+            principalAmount,
+            interestAmount,
+            totalAmount: monthlyPayment,
+            isPaid: false,
+            isLate: false,
+          });
+        }
+
+        await tx.loanInstallment.createMany({
+          data: installmentsData,
+        });
+      }
 
       return { success: true };
     });
   },
 
   async reject(id: string, reviewNotes: string) {
-    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
-    const existing = await this.getById(id);
-    if (!existing) {
-      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
+    let application = await prisma.loanApplication.findUnique({
+      where: { id },
+      include: {
+        loan: true,
+      },
+    });
+
+    // ถ้าไม่เจอ ให้ลองหาจาก loan
+    if (!application) {
+      const loan = await prisma.loan.findUnique({
+        where: { id },
+        include: {
+          application: true,
+        },
+      });
+
+      if (!loan) {
+        throw new Error('ไม่พบข้อมูลสินเชื่อ');
+      }
+
+      application = loan.application;
     }
 
     // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ
-    const application = await prisma.loanApplication.findUnique({
-      where: { id: existing.applicationId },
-    });
-
-    if (
-      !application ||
-      !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)
-    ) {
+    if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
       throw new Error('สินเชื่อนี้ไม่สามารถยกเลิกได้');
     }
 
     return prisma.$transaction(async (tx) => {
       // อัพเดท LoanApplication
       await tx.loanApplication.update({
-        where: { id: existing.applicationId },
+        where: { id: application.id },
         data: {
           status: 'REJECTED',
           reviewedAt: new Date(),
@@ -483,46 +775,80 @@ export const loanService = {
         },
       });
 
-      // อัพเดท Loan status เป็น CANCELLED
-      await tx.loan.update({
-        where: { id },
-        data: {
-          status: 'CANCELLED',
-          updatedAt: new Date(),
-        },
+      // ตรวจสอบว่ามี Loan record หรือไม่
+      const existingLoan = await tx.loan.findUnique({
+        where: { applicationId: application.id },
       });
+
+      if (existingLoan) {
+        // ถ้ามี loan แล้ว ให้ update status เป็น CANCELLED
+        await tx.loan.update({
+          where: { id: existingLoan.id },
+          data: {
+            status: 'CANCELLED',
+            updatedAt: new Date(),
+          },
+        });
+      }
+      // ถ้ายังไม่มี loan ก็ไม่ต้องทำอะไร (แค่ update application ก็พอ)
 
       return { success: true };
     });
   },
 
   async delete(id: string) {
-    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
-    const existing = await this.getById(id);
-    if (!existing) {
-      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
+    let application = await prisma.loanApplication.findUnique({
+      where: { id },
+      include: {
+        loan: true,
+      },
+    });
+
+    let loanId: string | null = null;
+
+    // ถ้าไม่เจอ ให้ลองหาจาก loan
+    if (!application) {
+      const loan = await prisma.loan.findUnique({
+        where: { id },
+        include: {
+          application: true,
+        },
+      });
+
+      if (!loan) {
+        throw new Error('ไม่พบข้อมูลสินเชื่อ');
+      }
+
+      application = loan.application;
+      loanId = loan.id;
+    } else if (application.loan) {
+      loanId = application.loan.id;
     }
 
     // Hard delete - ลบจริงจาก database
     return prisma.$transaction(async (tx) => {
-      // 1. ลบ Loan Installments ก่อน (ถ้ามี)
-      await tx.loanInstallment.deleteMany({
-        where: { loanId: id },
-      });
+      // ถ้ามี loan record ให้ลบข้อมูลที่เกี่ยวข้อง
+      if (loanId) {
+        // 1. ลบ Loan Installments ก่อน (ถ้ามี)
+        await tx.loanInstallment.deleteMany({
+          where: { loanId: loanId },
+        });
 
-      // 2. ลบ Payments ที่เกี่ยวข้อง (ถ้ามี)
-      await tx.payment.deleteMany({
-        where: { loanId: id },
-      });
+        // 2. ลบ Payments ที่เกี่ยวข้อง (ถ้ามี)
+        await tx.payment.deleteMany({
+          where: { loanId: loanId },
+        });
 
-      // 3. ลบ Loan
-      await tx.loan.delete({
-        where: { id },
-      });
+        // 3. ลบ Loan
+        await tx.loan.delete({
+          where: { id: loanId },
+        });
+      }
 
       // 4. ลบ LoanApplication
       await tx.loanApplication.delete({
-        where: { id: existing.applicationId },
+        where: { id: application.id },
       });
 
       return { success: true };

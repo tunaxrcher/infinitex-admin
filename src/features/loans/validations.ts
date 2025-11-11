@@ -31,6 +31,12 @@ export const loanCreateSchema = z.object({
   loanDueDate: z.string().min(1, 'กรุณาเลือกกำหนดชำระสินเชื่อ'),
   loanAmount: z.number().min(0, 'ยอดสินเชื่อต้องมากกว่า 0'),
 
+  // ข้อมูลทรัพย์สิน (จาก loan_application)
+  propertyType: z.string().optional(), // ประเภททรัพย์ (เช่น บ้านเดี่ยว, คอนโด, ที่ดิน)
+  propertyValue: z.number().optional(), // มูลค่าทรัพย์ประเมิน
+  requestedAmount: z.number().optional(), // วงเงินที่ขอ (ถ้าไม่ระบุจะใช้ loanAmount)
+  maxApprovedAmount: z.number().optional(), // วงเงินสูงสุดที่อนุมัติได้
+
   // ข้อมูลลูกค้า
   fullName: z.string().min(1, 'กรุณากรอกชื่อ-นามสกุล'),
   phoneNumber: z.string().min(1, 'กรุณากรอกเบอร์ติดต่อ'),

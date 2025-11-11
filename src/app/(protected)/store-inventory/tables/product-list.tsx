@@ -88,6 +88,7 @@ export interface IData {
   titleDeedNumber: string;
   titleDeedType: string;
   requestDate: string;
+  requestDateRaw: Date; // เพิ่มฟิลด์ raw date สำหรับการเรียง
   creditLimit: number;
   paymentDay: number;
   status: {
@@ -181,29 +182,97 @@ export function ProductListTable({
       const fullName =
         `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
 
-      // กำหนดสถานะตาม loan.status เป็นหลัก
+      // กำหนดสถานะตาม loan.status หรือ application.status
+      const loanStatus = loanData.status as string;
       const appStatus = application?.status as string;
       let statusLabel = 'รออนุมัติ';
       let statusVariant = 'warning';
 
-      // ถ้ามี Loan แล้ว ให้ดูจาก loan.status เป็นหลัก
-      if (appStatus === 'REJECTED' || loanData.status === 'CANCELLED') {
-        statusLabel = 'ยกเลิกแล้ว';
-        statusVariant = 'destructive';
-      } else if (loanData.status === 'ACTIVE') {
+      // ตรวจสอบสถานะจาก loan.status ก่อน (ถ้ามี)
+      if (loanStatus === 'ACTIVE') {
         statusLabel = 'ยังไม่ถึงกำหนด';
         statusVariant = 'success';
-      } else if (loanData.status === 'COMPLETED') {
+      } else if (loanStatus === 'COMPLETED') {
         statusLabel = 'ปิดบัญชี';
         statusVariant = 'info';
-      } else if (loanData.status === 'DEFAULTED') {
+      } else if (loanStatus === 'DEFAULTED') {
         statusLabel = 'เกินกำหนดชำระ';
         statusVariant = 'destructive';
-      } else if (['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(appStatus)) {
-        // เฉพาะกรณีที่ยังไม่มี loan.status ที่ชัดเจน
+      } else if (loanStatus === 'CANCELLED' || appStatus === 'REJECTED') {
+        statusLabel = 'ยกเลิกแล้ว';
+        statusVariant = 'destructive';
+      } else if (
+        appStatus === 'DRAFT' ||
+        appStatus === 'SUBMITTED' ||
+        appStatus === 'UNDER_REVIEW' ||
+        appStatus === 'APPROVED'
+      ) {
+        // ทุกสถานะก่อนสร้าง loan ให้แสดงเป็น "รออนุมัติ"
+        statusLabel = 'รออนุมัติ';
+        statusVariant = 'warning';
+      } else {
+        // Default
         statusLabel = 'รออนุมัติ';
         statusVariant = 'warning';
       }
+
+      // ดึงข้อมูลจาก loan_application
+      const propertyType = (application?.propertyType as string) || '-';
+      const propertyValue = application?.propertyValue
+        ? Number(application.propertyValue)
+        : null;
+      const requestedAmount = application?.requestedAmount
+        ? Number(application.requestedAmount)
+        : null;
+      const approvedAmount = application?.approvedAmount
+        ? Number(application.approvedAmount)
+        : null;
+      const maxApprovedAmount = application?.maxApprovedAmount
+        ? Number(application.maxApprovedAmount)
+        : null;
+      const ownerName = (application?.ownerName as string) || fullName;
+      const landNumber = (application?.landNumber as string) || '-';
+
+      // แปลง loanType จาก enum ให้เป็นภาษาไทย
+      const loanTypeMap: Record<string, string> = {
+        HOUSE_LAND_MORTGAGE: 'จำนองบ้านและโฉนด',
+        CAR_REGISTRATION: 'ทะเบียนรถ',
+        FINX_PLUS: 'FinX พลัส',
+      };
+      const loanTypeDisplay =
+        loanTypeMap[loanData.loanType as string] || 'จำนองบ้านและโฉนด';
+
+      // คำนวณ overdue days (ถ้ามี loan)
+      let overdueDays = 0;
+      let outstandingBalance = 0;
+      let paymentDay = 0;
+
+      if (loanStatus === 'ACTIVE' || loanStatus === 'DEFAULTED') {
+        const nextPaymentDate = new Date(loanData.nextPaymentDate as string);
+        const today = new Date();
+        const diffTime = today.getTime() - nextPaymentDate.getTime();
+        overdueDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+        paymentDay = nextPaymentDate.getDate();
+
+        // คำนวณ outstanding balance (ยอดค้างชำระ) - ถ้าเลยกำหนดชำระ
+        const isOverdue = loanStatus === 'DEFAULTED' || overdueDays > 0;
+        outstandingBalance = isOverdue
+          ? Number(loanData.monthlyPayment || 0)
+          : 0;
+      }
+
+      // ใช้ข้อมูลจาก application ถ้ายังไม่มี loan
+      const principalAmount = loanStatus
+        ? Number(loanData.principalAmount)
+        : Number(application?.requestedAmount || 0);
+      const remainingBalance = loanStatus
+        ? Number(loanData.remainingBalance)
+        : principalAmount;
+
+      // ใช้วันที่จาก application.createdAt (วันที่ยื่นคำขอ) หรือ loan.contractDate
+      const requestDateRaw = application?.createdAt
+        ? new Date(application.createdAt as string)
+        : new Date(loanData.contractDate as string);
 
       return {
         id: loanData.id as string,
@@ -211,33 +280,34 @@ export function ProductListTable({
         customerName: fullName,
         placeName: (application?.propertyLocation as string) || '-',
         area: (application?.propertyArea as string) || '-',
-        titleDeedNumber: (loanData.titleDeedNumber as string) || '-',
-        titleDeedType: '-',
-        requestDate: new Date(
-          loanData.contractDate as string,
-        ).toLocaleDateString('th-TH', {
+        titleDeedNumber:
+          (loanData.titleDeedNumber as string) || landNumber || '-',
+        titleDeedType: propertyType,
+        requestDate: requestDateRaw.toLocaleDateString('th-TH', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
         }),
-        creditLimit: Number(loanData.principalAmount),
-        paymentDay: new Date(loanData.nextPaymentDate as string).getDate(),
+        requestDateRaw: requestDateRaw, // เก็บค่า raw date ไว้สำหรับการเรียง
+        creditLimit: principalAmount,
+        paymentDay: paymentDay,
         status: {
           label: statusLabel,
           variant: statusVariant,
         },
-        overdueDays: 0,
-        outstandingBalance: 0,
-        paidAmount:
-          Number(loanData.principalAmount) - Number(loanData.remainingBalance),
-        remainingAmount: Number(loanData.remainingBalance),
-        installmentAmount: Number(loanData.monthlyPayment),
+        overdueDays: overdueDays,
+        outstandingBalance: outstandingBalance,
+        paidAmount: principalAmount - remainingBalance,
+        remainingAmount: remainingBalance,
+        installmentAmount: Number(loanData.monthlyPayment || 0),
         creditRisk: 'ความเสี่ยงต่ำ',
-        loanType: 'เงินสด',
-        duration: `${Number(loanData.termMonths) / 12} ปี`,
-        paidInstallments: loanData.currentInstallment as number,
-        totalInstallments: loanData.totalInstallments as number,
-        interestRate: Number(loanData.interestRate),
+        loanType: loanTypeDisplay,
+        duration: loanData.termMonths
+          ? `${Number(loanData.termMonths) / 12} ปี`
+          : '-',
+        paidInstallments: (loanData.currentInstallment as number) || 0,
+        totalInstallments: (loanData.totalInstallments as number) || 0,
+        interestRate: Number(loanData.interestRate || 0),
         details: '',
       };
     });
@@ -459,7 +529,7 @@ export function ProductListTable({
           <DataGridColumnHeader title="เนื้อที่" column={column} />
         ),
         cell: (info) => {
-          return <span className="text-sm">{info.row.original.area} ไร่</span>;
+          return <span className="text-sm">{info.row.original.area}</span>;
         },
         enableSorting: true,
         size: 140,
@@ -567,12 +637,12 @@ export function ProductListTable({
       },
       {
         id: 'requestDate',
-        accessorFn: (row) => row.requestDate,
+        accessorFn: (row) => row.requestDateRaw, // ใช้ raw date สำหรับการเรียง
         header: ({ column }) => (
           <DataGridColumnHeader title="วันที่ขอ" column={column} />
         ),
         cell: (info) => {
-          return info.row.original.requestDate;
+          return info.row.original.requestDate; // แสดง formatted date
         },
         enableSorting: true,
         size: 140,
@@ -602,7 +672,8 @@ export function ProductListTable({
         header: () => '',
         enableSorting: false,
         cell: ({ row }) => {
-          const isPending = row.original.status.label === 'รออนุมัติ';
+          const statusLabel = row.original.status.label;
+          const isPending = statusLabel === 'รออนุมัติ';
 
           return (
             <div className="flex items-center justify-center gap-1">
