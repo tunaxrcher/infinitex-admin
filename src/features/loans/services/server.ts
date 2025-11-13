@@ -1331,7 +1331,7 @@ export const paymentService = {
     });
 
     if (data.status === 'COMPLETED') {
-      if (payment.installmentId) {
+      if (payment.installmentId && payment.loanId) {
         await installmentRepository.markAsPaid(
           payment.installmentId,
           Number(payment.amount),
@@ -1364,7 +1364,7 @@ export const paymentService = {
             });
           }
         }
-      } else {
+      } else if (payment.loanId) {
         const unpaidInstallments =
           await installmentRepository.findUnpaidByLoanId(payment.loanId);
 
