@@ -427,10 +427,10 @@ model Payment {
   id              String        @id @default(cuid())
   
   // Relationships
-  userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  loanId          String
-  loan            Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loanId          String?
+  loan            Loan?         @relation(fields: [loanId], references: [id], onDelete: Cascade)
   
   // Link to installment
   installmentId   String?
