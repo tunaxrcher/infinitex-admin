@@ -486,7 +486,10 @@ export const loanService = {
       });
 
       // Step 2: Update UserProfile ในตาราง user_profiles (ถ้ามีการเปลี่ยนแปลง)
-      if (data.fullName || data.email || data.address || data.birthDate) {
+      if (
+        existing.customerId &&
+        (data.fullName || data.email || data.address || data.birthDate)
+      ) {
         const profileData: any = {};
 
         if (data.fullName) {
@@ -508,7 +511,7 @@ export const loanService = {
       }
 
       // Step 3: Update User phone number (ถ้ามีการเปลี่ยนแปลง)
-      if (data.phoneNumber) {
+      if (existing.customerId && data.phoneNumber) {
         // Query current customer data
         const currentCustomer = await tx.user.findUnique({
           where: { id: existing.customerId },
@@ -1097,6 +1100,10 @@ export const paymentService = {
 
     // Use customer ID from loan as the payer
     const payerUserId = userId || loan.customerId;
+    
+    if (!payerUserId) {
+      throw new Error('ไม่พบข้อมูลผู้ชำระเงิน');
+    }
 
     const installment = await installmentRepository.findById(
       data.installmentId,
@@ -1226,6 +1233,10 @@ export const paymentService = {
 
     // Use customer ID from loan as the payer
     const payerUserId = userId || loan.customerId;
+    
+    if (!payerUserId) {
+      throw new Error('ไม่พบข้อมูลผู้ชำระเงิน');
+    }
 
     const unpaidInstallments = await installmentRepository.findUnpaidByLoanId(
       data.loanId,

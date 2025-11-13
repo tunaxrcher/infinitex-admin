@@ -247,8 +247,8 @@ model LoanApplication {
   id          String            @id @default(cuid())
   
   // Relationships
-  customerId  String
-  customer    User              @relation("CustomerApplications", fields: [customerId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    User?             @relation("CustomerApplications", fields: [customerId], references: [id], onDelete: Cascade)
   agentId     String?           // Optional: if submitted by agent
   agent       User?             @relation("AgentApplications", fields: [agentId], references: [id])
   
@@ -320,8 +320,8 @@ model Loan {
   loanNumber        String     @unique @db.VarChar(50)
   
   // Relationships
-  customerId        String
-  customer          User       @relation("CustomerLoans", fields: [customerId], references: [id], onDelete: Cascade)
+  customerId        String?
+  customer          User?      @relation("CustomerLoans", fields: [customerId], references: [id], onDelete: Cascade)
   agentId           String?
   agent             User?      @relation("AgentManagedLoans", fields: [agentId], references: [id])
   applicationId     String     @unique
