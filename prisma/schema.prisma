@@ -14,6 +14,22 @@ datasource db {
 // ============================================
 // USER TYPES (Customer & Agent only)
 // ============================================
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// ============================================
+// USER TYPES (Customer & Agent only)
+// ============================================
 
 enum UserType {
   CUSTOMER
@@ -68,7 +84,7 @@ model UserProfile {
   // Personal information
   firstName    String?  @db.VarChar(255)
   lastName     String?  @db.VarChar(255)
-  idCardNumber String?  @unique @db.VarChar(13)
+  idCardNumber String?  @db.VarChar(13)
   dateOfBirth  DateTime?
   address      String?  @db.Text
   
@@ -246,7 +262,7 @@ enum ApplicationStatus {
 model LoanApplication {
   id          String            @id @default(cuid())
   
-  // Relationships
+  // Relationships (nullable to match schema 2)
   customerId  String?
   customer    User?             @relation("CustomerApplications", fields: [customerId], references: [id], onDelete: Cascade)
   agentId     String?           // Optional: if submitted by agent
@@ -254,7 +270,7 @@ model LoanApplication {
   
   // Application details
   loanType    LoanType          @default(HOUSE_LAND_MORTGAGE)
-  hirePurchase Boolean          @default(false) // เพิ่มฟิลด์สำหรับระบบเช่าซื้อ
+  hirePurchase Boolean          @default(false)
   status      ApplicationStatus @default(DRAFT)
   
   // Multi-step form tracking
@@ -319,7 +335,7 @@ model Loan {
   id                String     @id @default(cuid())
   loanNumber        String     @unique @db.VarChar(50)
   
-  // Relationships
+  // Relationships (nullable to match schema 2)
   customerId        String?
   customer          User?      @relation("CustomerLoans", fields: [customerId], references: [id], onDelete: Cascade)
   agentId           String?
@@ -329,7 +345,7 @@ model Loan {
   
   // Loan details
   loanType          LoanType
-  hirePurchase      Boolean    @default(false) // เพิ่มฟิลด์สำหรับระบบเช่าซื้อ
+  hirePurchase      Boolean    @default(false)
   status            LoanStatus @default(ACTIVE)
   principalAmount   Decimal    @db.Decimal(15, 2)
   interestRate      Decimal    @db.Decimal(5, 2) // Annual interest rate
@@ -351,7 +367,7 @@ model Loan {
   collateralValue    Decimal?  @db.Decimal(15, 2)
   collateralDetails  Json?
   
-  // เพิ่มฟิลด์สำหรับการเชื่อมโยงกับระบบที่ดิน
+  // Land account integration
   linkMap            String?   @db.Text
   landAccountId      Int?
   landAccountName    String?   @db.VarChar(200)
@@ -426,7 +442,7 @@ enum PaymentStatus {
 model Payment {
   id              String        @id @default(cuid())
   
-  // Relationships
+  // Relationships (nullable to match schema 2)
   userId          String?
   user            User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   loanId          String?
