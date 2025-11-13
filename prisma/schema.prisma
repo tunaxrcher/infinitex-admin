@@ -22,71 +22,71 @@ enum UserType {
 
 // User authentication and profile (Customer & Agent)
 model User {
-  id          String  @id @default(cuid())
-  phoneNumber String  @unique @db.VarChar(20)
-  pin         String? @db.VarChar(255) // 4-digit PIN (will be replaced by OTP in future)
-
+  id          String   @id @default(cuid())
+  phoneNumber String   @unique @db.VarChar(20)
+  pin         String?  @db.VarChar(255) // 4-digit PIN (will be replaced by OTP in future)
+  
   // OTP fields for future use
-  otpSecret     String?   @db.VarChar(255)
-  otpEnabled    Boolean   @default(false)
+  otpSecret   String?  @db.VarChar(255)
+  otpEnabled  Boolean  @default(false)
   lastOtpSentAt DateTime?
-
-  userType    UserType  @default(CUSTOMER)
-  isActive    Boolean   @default(true)
+  
+  userType    UserType @default(CUSTOMER)
+  isActive    Boolean  @default(true)
   lastLoginAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Profile information
   profile UserProfile?
 
   // Customer relationships
-  loanApplications  LoanApplication[]  @relation("CustomerApplications")
-  loans             Loan[]             @relation("CustomerLoans")
-  payments          Payment[]
-  notifications     Notification[]
-  coinTransactions  CoinTransaction[]
+  loanApplications LoanApplication[] @relation("CustomerApplications")
+  loans            Loan[]           @relation("CustomerLoans")
+  payments         Payment[]
+  notifications    Notification[]
+  coinTransactions CoinTransaction[]
   rewardRedemptions RewardRedemption[]
-  sessions          Session[]
+  sessions         Session[]
 
   // Agent relationships
   agentApplications LoanApplication[] @relation("AgentApplications")
-  agentCustomers    AgentCustomer[]   @relation("AgentRelationships")
-  customerAgents    AgentCustomer[]   @relation("CustomerAgents")
-  managedLoans      Loan[]            @relation("AgentManagedLoans")
+  agentCustomers    AgentCustomer[]  @relation("AgentRelationships")
+  customerAgents    AgentCustomer[]  @relation("CustomerAgents")
+  managedLoans      Loan[]           @relation("AgentManagedLoans")
 
   @@map("users")
 }
 
 // Extended user profile information
 model UserProfile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   // Personal information
-  firstName    String?   @db.VarChar(255)
-  lastName     String?   @db.VarChar(255)
-  idCardNumber String?   @unique @db.VarChar(13)
+  firstName    String?  @db.VarChar(255)
+  lastName     String?  @db.VarChar(255)
+  idCardNumber String?  @unique @db.VarChar(13)
   dateOfBirth  DateTime?
-  address      String?   @db.Text
-
+  address      String?  @db.Text
+  
   // Contact information
-  email  String? @db.VarChar(255)
-  lineId String? @db.VarChar(255)
-
+  email        String?  @db.VarChar(255)
+  lineId       String?  @db.VarChar(255)
+  
   // KYC documents
   idCardFrontImage String? @db.VarChar(500)
   idCardBackImage  String? @db.VarChar(500)
-
+  
   // Preferences
-  preferredLanguage   String  @default("th") @db.VarChar(10)
+  preferredLanguage String @default("th") @db.VarChar(10)
   notificationEnabled Boolean @default(true)
-
+  
   // Coin system
   coinBalance Int @default(0)
-
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -95,12 +95,12 @@ model UserProfile {
 
 // Agent-Customer relationship management
 model AgentCustomer {
-  id         String @id @default(cuid())
+  id         String   @id @default(cuid())
   agentId    String
   customerId String
-  agent      User   @relation("AgentRelationships", fields: [agentId], references: [id], onDelete: Cascade)
-  customer   User   @relation("CustomerAgents", fields: [customerId], references: [id], onDelete: Cascade)
-
+  agent      User     @relation("AgentRelationships", fields: [agentId], references: [id], onDelete: Cascade)
+  customer   User     @relation("CustomerAgents", fields: [customerId], references: [id], onDelete: Cascade)
+  
   assignedAt DateTime @default(now())
   isActive   Boolean  @default(true)
 
@@ -115,11 +115,11 @@ model AgentCustomer {
 // ============================================
 
 enum AdminRole {
-  SUPER_ADMIN // ทำได้ทุกอย่าง
-  LOAN_OFFICER // จัดการสินเชื่อ
+  SUPER_ADMIN      // ทำได้ทุกอย่าง
+  LOAN_OFFICER     // จัดการสินเชื่อ
   CUSTOMER_SERVICE // ดูแลลูกค้า
-  FINANCE // จัดการการเงิน
-  CONTENT_MANAGER // จัดการ Banner/Privilege
+  FINANCE          // จัดการการเงิน
+  CONTENT_MANAGER  // จัดการ Banner/Privilege
 }
 
 enum PermissionCode {
@@ -127,34 +127,34 @@ enum PermissionCode {
   VIEW_APPLICATIONS
   APPROVE_APPLICATIONS
   REJECT_APPLICATIONS
-
+  
   // Loan Management
   VIEW_LOANS
   CREATE_LOANS
   UPDATE_LOANS
   DELETE_LOANS
-
+  
   // User Management
   VIEW_USERS
   CREATE_USERS
   UPDATE_USERS
   DELETE_USERS
   MANAGE_AGENTS
-
+  
   // Payment Management
   VIEW_PAYMENTS
   PROCESS_PAYMENTS
   REFUND_PAYMENTS
-
+  
   // Content Management
   MANAGE_BANNERS
   MANAGE_PRIVILEGES
   MANAGE_REWARDS
-
+  
   // System Configuration
   MANAGE_SYSTEM_CONFIG
   VIEW_AUDIT_LOGS
-
+  
   // Reports & Analytics
   VIEW_REPORTS
   EXPORT_DATA
@@ -162,27 +162,29 @@ enum PermissionCode {
 
 // Admin users (ระบบหลังบ้าน)
 model Admin {
-  id       String @id @default(cuid())
-  email    String @unique @db.VarChar(255)
-  password String @db.VarChar(255) // Hashed password
-
+  id          String    @id @default(cuid())
+  email       String    @unique @db.VarChar(255)
+  password    String    @db.VarChar(255) // Hashed password
+  
   // Admin information
-  firstName String    @db.VarChar(255)
-  lastName  String    @db.VarChar(255)
-  role      AdminRole @default(LOAN_OFFICER)
-
+  firstName   String    @db.VarChar(255)
+  lastName    String    @db.VarChar(255)
+  role        AdminRole @default(LOAN_OFFICER)
+  
   // Status
   isActive    Boolean   @default(true)
   lastLoginAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
   // Relationships
-  permissions          AdminPermission[]
-  sessions             AdminSession[]
-  auditLogs            AuditLog[]
+  permissions AdminPermission[]
+  sessions    AdminSession[]
+  auditLogs   AuditLog[]
   reviewedApplications LoanApplication[] @relation("AdminReviewed")
+  landAccountLogs      LandAccountLog[]
+  landAccountReports   LandAccountReport[]
 
   @@map("admins")
 }
@@ -193,9 +195,9 @@ model AdminPermission {
   adminId    String
   admin      Admin          @relation(fields: [adminId], references: [id], onDelete: Cascade)
   permission PermissionCode
-
-  grantedAt DateTime @default(now())
-  grantedBy String?  @db.VarChar(255) // Admin ID who granted this
+  
+  grantedAt  DateTime       @default(now())
+  grantedBy  String?        @db.VarChar(255) // Admin ID who granted this
 
   @@unique([adminId, permission])
   @@index([adminId])
@@ -204,18 +206,18 @@ model AdminPermission {
 
 // Admin session management (separate from user sessions)
 model AdminSession {
-  id      String @id @default(cuid())
-  adminId String
-  admin   Admin  @relation(fields: [adminId], references: [id], onDelete: Cascade)
-
-  token      String  @unique @db.VarChar(500)
-  deviceInfo String? @db.VarChar(500)
-  ipAddress  String? @db.VarChar(45)
-  userAgent  String? @db.Text
-
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
+  id          String   @id @default(cuid())
+  adminId     String
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  
+  token       String   @unique @db.VarChar(500)
+  deviceInfo  String?  @db.VarChar(500)
+  ipAddress   String?  @db.VarChar(45)
+  userAgent   String?  @db.Text
+  
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  
   @@index([adminId])
   @@index([token])
   @@map("admin_sessions")
@@ -226,9 +228,9 @@ model AdminSession {
 // ============================================
 
 enum LoanType {
-  HOUSE_LAND_MORTGAGE // สินเชื่อจำนองบ้านและโฉนดที่ดิน
-  CAR_REGISTRATION // สินเชื่อทะเบียนรถ (future)
-  FINX_PLUS // สินเชื่อ FinX พลัส (future)
+  HOUSE_LAND_MORTGAGE  // สินเชื่อจำนองบ้านและโฉนดที่ดิน
+  CAR_REGISTRATION     // สินเชื่อทะเบียนรถ (future)
+  FINX_PLUS           // สินเชื่อ FinX พลัส (future)
 }
 
 enum ApplicationStatus {
@@ -242,60 +244,61 @@ enum ApplicationStatus {
 
 // Loan application workflow
 model LoanApplication {
-  id String @id @default(cuid())
-
+  id          String            @id @default(cuid())
+  
   // Relationships
-  customerId String
-  customer   User    @relation("CustomerApplications", fields: [customerId], references: [id], onDelete: Cascade)
-  agentId    String? // Optional: if submitted by agent
-  agent      User?   @relation("AgentApplications", fields: [agentId], references: [id])
-
+  customerId  String
+  customer    User              @relation("CustomerApplications", fields: [customerId], references: [id], onDelete: Cascade)
+  agentId     String?           // Optional: if submitted by agent
+  agent       User?             @relation("AgentApplications", fields: [agentId], references: [id])
+  
   // Application details
-  loanType LoanType          @default(HOUSE_LAND_MORTGAGE)
-  status   ApplicationStatus @default(DRAFT)
-
+  loanType    LoanType          @default(HOUSE_LAND_MORTGAGE)
+  hirePurchase Boolean          @default(false) // เพิ่มฟิลด์สำหรับระบบเช่าซื้อ
+  status      ApplicationStatus @default(DRAFT)
+  
   // Multi-step form tracking
-  currentStep      Int     @default(1)
-  completedSteps   Json    @default("[]") // Array of completed step numbers
-  isNewUser        Boolean @default(false)
-  submittedByAgent Boolean @default(false)
-
+  currentStep       Int       @default(1)
+  completedSteps    Json      @default("[]") // Array of completed step numbers
+  isNewUser         Boolean   @default(false)
+  submittedByAgent  Boolean   @default(false)
+  
   // Step 1: Title deed information
-  titleDeedImage String? @db.VarChar(500)
-  titleDeedData  Json?
-
+  titleDeedImage    String?  @db.VarChar(500)
+  titleDeedData     Json?
+  
   // Step 2: Supporting documents
-  supportingImages Json @default("[]") // Array of image URLs
-
+  supportingImages  Json     @default("[]") // Array of image URLs
+  
   // Step 3: ID Card (for new users)
-  idCardFrontImage String? @db.VarChar(500)
-  idCardBackImage  String? @db.VarChar(500)
-
+  idCardFrontImage  String?  @db.VarChar(500)
+  idCardBackImage   String?  @db.VarChar(500)
+  
   // Step 4: Loan amount
   requestedAmount   Decimal  @default(0) @db.Decimal(15, 2)
   approvedAmount    Decimal? @db.Decimal(15, 2)
   maxApprovedAmount Decimal? @db.Decimal(15, 2) // System calculated maximum
-
+  
   // Property information (from AI processing)
-  propertyType     String?  @db.VarChar(100)
-  propertyValue    Decimal? @db.Decimal(15, 2)
-  propertyArea     String?  @db.VarChar(100)
-  propertyLocation String?  @db.Text
-  landNumber       String?  @db.VarChar(100)
-  ownerName        String?  @db.VarChar(255)
-
+  propertyType      String?  @db.VarChar(100)
+  propertyValue     Decimal? @db.Decimal(15, 2)
+  propertyArea      String?  @db.VarChar(100)
+  propertyLocation  String?  @db.Text
+  landNumber        String?  @db.VarChar(100)
+  ownerName         String?  @db.VarChar(255)
+  
   // Application metadata
-  submittedAt     DateTime?
-  reviewedAt      DateTime?
-  reviewedBy      String? // Admin ID
-  reviewedByAdmin Admin?    @relation("AdminReviewed", fields: [reviewedBy], references: [id])
-  reviewNotes     String?   @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  submittedAt       DateTime?
+  reviewedAt        DateTime?
+  reviewedBy        String?   // Admin ID
+  reviewedByAdmin   Admin?    @relation("AdminReviewed", fields: [reviewedBy], references: [id])
+  reviewNotes       String?   @db.Text
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   // If approved, creates a loan
-  loan Loan?
+  loan              Loan?
 
   @@index([customerId])
   @@index([agentId])
@@ -313,46 +316,52 @@ enum LoanStatus {
 
 // Active loans
 model Loan {
-  id         String @id @default(cuid())
-  loanNumber String @unique @db.VarChar(50)
-
+  id                String     @id @default(cuid())
+  loanNumber        String     @unique @db.VarChar(50)
+  
   // Relationships
-  customerId    String
-  customer      User            @relation("CustomerLoans", fields: [customerId], references: [id], onDelete: Cascade)
-  agentId       String?
-  agent         User?           @relation("AgentManagedLoans", fields: [agentId], references: [id])
-  applicationId String          @unique
-  application   LoanApplication @relation(fields: [applicationId], references: [id])
-
+  customerId        String
+  customer          User       @relation("CustomerLoans", fields: [customerId], references: [id], onDelete: Cascade)
+  agentId           String?
+  agent             User?      @relation("AgentManagedLoans", fields: [agentId], references: [id])
+  applicationId     String     @unique
+  application       LoanApplication @relation(fields: [applicationId], references: [id])
+  
   // Loan details
-  loanType        LoanType
-  status          LoanStatus @default(ACTIVE)
-  principalAmount Decimal    @db.Decimal(15, 2)
-  interestRate    Decimal    @db.Decimal(5, 2) // Annual interest rate
-  termMonths      Int // Loan term in months
-  monthlyPayment  Decimal    @db.Decimal(15, 2)
-
+  loanType          LoanType
+  hirePurchase      Boolean    @default(false) // เพิ่มฟิลด์สำหรับระบบเช่าซื้อ
+  status            LoanStatus @default(ACTIVE)
+  principalAmount   Decimal    @db.Decimal(15, 2)
+  interestRate      Decimal    @db.Decimal(5, 2) // Annual interest rate
+  termMonths        Int        // Loan term in months
+  monthlyPayment    Decimal    @db.Decimal(15, 2)
+  
   // Payment tracking
-  currentInstallment Int      @default(0)
+  currentInstallment Int       @default(0)
   totalInstallments  Int
-  remainingBalance   Decimal  @db.Decimal(15, 2)
+  remainingBalance   Decimal   @db.Decimal(15, 2)
   nextPaymentDate    DateTime
-
+  
   // Contract information
-  contractDate    DateTime
-  expiryDate      DateTime
-  titleDeedNumber String?  @db.VarChar(100)
-
+  contractDate       DateTime
+  expiryDate         DateTime
+  titleDeedNumber    String?   @db.VarChar(100)
+  
   // Collateral information
-  collateralValue   Decimal? @db.Decimal(15, 2)
-  collateralDetails Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  collateralValue    Decimal?  @db.Decimal(15, 2)
+  collateralDetails  Json?
+  
+  // เพิ่มฟิลด์สำหรับการเชื่อมโยงกับระบบที่ดิน
+  linkMap            String?   @db.Text
+  landAccountId      Int?
+  landAccountName    String?   @db.VarChar(200)
+  
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   // Related records
-  payments     Payment[]
-  installments LoanInstallment[]
+  payments           Payment[]
+  installments       LoanInstallment[]
 
   @@index([customerId])
   @@index([agentId])
@@ -363,30 +372,30 @@ model Loan {
 
 // Loan installment schedule
 model LoanInstallment {
-  id     String @id @default(cuid())
-  loanId String
-  loan   Loan   @relation(fields: [loanId], references: [id], onDelete: Cascade)
-
+  id              String   @id @default(cuid())
+  loanId          String
+  loan            Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
   installmentNumber Int
-  dueDate           DateTime
-  principalAmount   Decimal  @db.Decimal(15, 2)
-  interestAmount    Decimal  @db.Decimal(15, 2)
-  totalAmount       Decimal  @db.Decimal(15, 2)
-
-  isPaid     Boolean   @default(false)
-  paidDate   DateTime?
-  paidAmount Decimal?  @db.Decimal(15, 2)
-
+  dueDate         DateTime
+  principalAmount Decimal  @db.Decimal(15, 2)
+  interestAmount  Decimal  @db.Decimal(15, 2)
+  totalAmount     Decimal  @db.Decimal(15, 2)
+  
+  isPaid          Boolean  @default(false)
+  paidDate        DateTime?
+  paidAmount      Decimal? @db.Decimal(15, 2)
+  
   // Late payment tracking
-  isLate   Boolean  @default(false)
-  lateDays Int?
-  lateFee  Decimal? @db.Decimal(15, 2)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  isLate          Boolean  @default(false)
+  lateDays        Int?
+  lateFee         Decimal? @db.Decimal(15, 2)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
   // Relation to payments
-  payments Payment[]
+  payments        Payment[]
 
   @@unique([loanId, installmentNumber])
   @@index([loanId])
@@ -415,47 +424,47 @@ enum PaymentStatus {
 
 // Payment records
 model Payment {
-  id String @id @default(cuid())
-
+  id              String        @id @default(cuid())
+  
   // Relationships
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  loanId String
-  loan   Loan   @relation(fields: [loanId], references: [id], onDelete: Cascade)
-
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loanId          String
+  loan            Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
   // Link to installment
-  installmentId String?
-  installment   LoanInstallment? @relation(fields: [installmentId], references: [id])
-
+  installmentId   String?
+  installment     LoanInstallment? @relation(fields: [installmentId], references: [id])
+  
   // Payment details
-  amount        Decimal       @db.Decimal(15, 2)
-  paymentMethod PaymentMethod
-  status        PaymentStatus @default(PENDING)
-
+  amount          Decimal       @db.Decimal(15, 2)
+  paymentMethod   PaymentMethod
+  status          PaymentStatus @default(PENDING)
+  
   // Payment reference
-  referenceNumber String  @unique @db.VarChar(100)
-  transactionId   String? @db.VarChar(100) // External transaction ID
-
+  referenceNumber String        @unique @db.VarChar(100)
+  transactionId   String?       @db.VarChar(100) // External transaction ID
+  
   // QR/Barcode specific
-  qrCode        String? @db.Text
-  barcodeNumber String? @db.VarChar(50)
-
+  qrCode          String?       @db.Text
+  barcodeNumber   String?       @db.VarChar(50)
+  
   // Bank details
-  bankName      String? @db.VarChar(100)
-  accountNumber String? @db.VarChar(50)
-  accountName   String? @db.VarChar(255)
-
+  bankName        String?       @db.VarChar(100)
+  accountNumber   String?       @db.VarChar(50)
+  accountName     String?       @db.VarChar(255)
+  
   // Timing
-  dueDate  DateTime
-  paidDate DateTime?
-
+  dueDate         DateTime
+  paidDate        DateTime?
+  
   // Breakdown
-  principalAmount Decimal @default(0) @db.Decimal(15, 2)
-  interestAmount  Decimal @default(0) @db.Decimal(15, 2)
-  feeAmount       Decimal @default(0) @db.Decimal(15, 2)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  principalAmount Decimal       @default(0) @db.Decimal(15, 2)
+  interestAmount  Decimal       @default(0) @db.Decimal(15, 2)
+  feeAmount       Decimal       @default(0) @db.Decimal(15, 2)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([userId])
   @@index([loanId])
@@ -480,20 +489,20 @@ enum NotificationType {
 }
 
 model Notification {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type      NotificationType
-  title     String           @db.VarChar(255)
-  message   String           @db.Text
-  actionUrl String?          @db.VarChar(500)
-
-  isRead Boolean   @default(false)
-  readAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        NotificationType
+  title       String       @db.VarChar(255)
+  message     String       @db.Text
+  actionUrl   String?      @db.VarChar(500)
+  
+  isRead      Boolean          @default(false)
+  readAt      DateTime?
+  
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@index([userId])
   @@index([isRead])
@@ -505,28 +514,28 @@ model Notification {
 // ============================================
 
 enum CoinTransactionType {
-  EARNED_SIGNUP // สมัครสมาชิก
+  EARNED_SIGNUP         // สมัครสมาชิก
   EARNED_ON_TIME_PAYMENT // ชำระตรงเวลา
-  EARNED_DAILY_TASK // ภาระรายวัน
-  EARNED_PROMOTION // โปรโมชั่น
-  REDEEMED_REWARD // แลกของรางวัล
-  EXPIRED // หมดอายุ
+  EARNED_DAILY_TASK     // ภาระรายวัน
+  EARNED_PROMOTION      // โปรโมชั่น
+  REDEEMED_REWARD       // แลกของรางวัล
+  EXPIRED               // หมดอายุ
 }
 
 model CoinTransaction {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id          String              @id @default(cuid())
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   type        CoinTransactionType
-  amount      Int // Positive for earning, negative for spending
+  amount      Int                 // Positive for earning, negative for spending
   description String              @db.VarChar(500)
-
+  
   // Related records
-  loanId   String? // If related to loan payment
-  rewardId String? // If related to reward redemption
-
-  createdAt DateTime @default(now())
+  loanId      String?             // If related to loan payment
+  rewardId    String?             // If related to reward redemption
+  
+  createdAt   DateTime            @default(now())
 
   @@index([userId])
   @@index([type])
@@ -535,18 +544,18 @@ model CoinTransaction {
 
 // Reward catalog for coin redemption
 model Reward {
-  id          String  @id @default(cuid())
-  name        String  @db.VarChar(255)
-  description String  @db.Text
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(255)
+  description String   @db.Text
   coinCost    Int
-  imageUrl    String? @db.VarChar(500)
-
-  isActive   Boolean @default(true)
-  stockCount Int? // null = unlimited
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  imageUrl    String?  @db.VarChar(500)
+  
+  isActive    Boolean  @default(true)
+  stockCount  Int?     // null = unlimited
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
   // Track redemptions
   redemptions RewardRedemption[]
 
@@ -562,20 +571,20 @@ enum RedemptionStatus {
 }
 
 model RewardRedemption {
-  id       String @id @default(cuid())
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rewardId String
-  reward   Reward @relation(fields: [rewardId], references: [id])
-
-  coinSpent Int
-  status    RedemptionStatus @default(PENDING)
-
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardId    String
+  reward      Reward           @relation(fields: [rewardId], references: [id])
+  
+  coinSpent   Int
+  status      RedemptionStatus @default(PENDING)
+  
   // Delivery information
-  deliveryAddress String? @db.Text
-  trackingNumber  String? @db.VarChar(100)
-
-  redeemedAt  DateTime  @default(now())
+  deliveryAddress String?      @db.Text
+  trackingNumber  String?      @db.VarChar(100)
+  
+  redeemedAt  DateTime @default(now())
   deliveredAt DateTime?
 
   @@index([userId])
@@ -590,23 +599,23 @@ model RewardRedemption {
 
 // System banners for homepage
 model Banner {
-  id          String  @id @default(cuid())
-  title       String  @db.VarChar(255)
-  description String? @db.Text
-  imageUrl    String  @db.VarChar(500)
-  actionUrl   String? @db.VarChar(500)
-
-  isActive  Boolean @default(true)
-  sortOrder Int     @default(0)
-
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  imageUrl    String   @db.VarChar(500)
+  actionUrl   String?  @db.VarChar(500)
+  
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
   // User targeting - JSON array: ["CUSTOMER", "AGENT"]
   targetUserTypes Json @default("[\"CUSTOMER\", \"AGENT\"]")
-
-  startDate DateTime?
-  endDate   DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  
+  startDate   DateTime?
+  endDate     DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([isActive])
   @@index([sortOrder])
@@ -615,29 +624,161 @@ model Banner {
 
 // Special privileges/offers
 model Privilege {
-  id          String  @id @default(cuid())
-  title       String  @db.VarChar(255)
-  description String  @db.Text
-  imageUrl    String? @db.VarChar(500)
-  actionUrl   String? @db.VarChar(500)
-
-  isActive  Boolean @default(true)
-  sortOrder Int     @default(0)
-
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  imageUrl    String?  @db.VarChar(500)
+  actionUrl   String?  @db.VarChar(500)
+  
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
   // Enhanced fields - JSON array: ["CUSTOMER"]
   targetUserTypes Json    @default("[\"CUSTOMER\"]")
   coinCost        Int?
   requiresLoan    Boolean @default(false)
-
-  validFrom  DateTime?
-  validUntil DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  
+  validFrom   DateTime?
+  validUntil  DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([isActive])
   @@index([sortOrder])
   @@map("privileges")
+}
+
+// ============================================
+// DOCUMENT MANAGEMENT SYSTEM
+// ============================================
+
+enum DocType {
+  RECEIPT          // ใบเสร็จรับเงิน
+  PAYMENT_VOUCHER  // ใบสำคัญจ่าย
+  DISCOUNT_NOTE    // ใบลดหนี้
+  EXPENSE          // ค่าใช้จ่าย
+}
+
+// Document records (receipts, payment vouchers, etc.)
+model Document {
+  id           String    @id @default(cuid())
+  docType      DocType
+  docNumber    String    @db.VarChar(100)
+  docDate      DateTime
+  title        String    @db.Text
+  price        Decimal   @db.Decimal(20, 2)
+  cashFlowName String    @db.VarChar(200)
+  
+  // Employee/Admin reference
+  employeeId   Int       @default(0)
+  username     String?   @db.VarChar(50)
+  
+  // File information
+  docFile      String?   @db.Text
+  docFileDate  DateTime?
+  docFileTime  String?   @db.VarChar(10)
+  docFilePrice Decimal?  @db.Decimal(20, 2)
+  filePath     String?   @db.Text
+  
+  note         String?   @db.Text
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime? // Soft delete
+
+  @@index([docType])
+  @@index([docNumber])
+  @@index([employeeId])
+  @@map("documents")
+}
+
+// Document title templates
+model DocumentTitleList {
+  id        String    @id @default(cuid())
+  docType   DocType
+  title     String    @db.Text
+  note      String?   @db.Text
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  @@index([docType])
+  @@map("document_title_lists")
+}
+
+// ============================================
+// LAND ACCOUNT SYSTEM
+// ============================================
+
+// Land accounts for managing land-related finances
+model LandAccount {
+  id             String    @id @default(cuid())
+  accountName    String    @db.VarChar(200)
+  accountBalance Decimal   @default(0) @db.Decimal(15, 2)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime? // Soft delete
+  
+  // Related records
+  logs           LandAccountLog[]
+  reports        LandAccountReport[]
+
+  @@index([accountName])
+  @@map("land_accounts")
+}
+
+// Land account transaction logs
+model LandAccountLog {
+  id            String       @id @default(cuid())
+  landAccountId String
+  landAccount   LandAccount  @relation(fields: [landAccountId], references: [id], onDelete: Cascade)
+  
+  detail        String       @db.VarChar(200)
+  amount        Decimal      @default(0) @db.Decimal(15, 2)
+  note          String?      @db.VarChar(200)
+  
+  // Admin reference
+  adminId       String?
+  admin         Admin?       @relation(fields: [adminId], references: [id])
+  adminName     String?      @db.VarChar(200)
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?    // Soft delete
+
+  @@index([landAccountId])
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("land_account_logs")
+}
+
+// Land account reports
+model LandAccountReport {
+  id             String       @id @default(cuid())
+  landAccountId  String
+  landAccount    LandAccount  @relation(fields: [landAccountId], references: [id], onDelete: Cascade)
+  
+  detail         String       @db.VarChar(200)
+  amount         Decimal      @default(0) @db.Decimal(15, 2)
+  note           String?      @db.VarChar(200)
+  accountBalance Decimal?     @default(0) @db.Decimal(15, 2)
+  
+  // Admin reference
+  adminId        String?
+  admin          Admin?       @relation(fields: [adminId], references: [id])
+  adminName      String?      @db.VarChar(200)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?    // Soft delete
+
+  @@index([landAccountId])
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("land_account_reports")
 }
 
 // ============================================
@@ -649,8 +790,8 @@ model SystemConfig {
   id    String @id @default(cuid())
   key   String @unique @db.VarChar(255)
   value String @db.Text
-
-  description String?  @db.Text
+  
+  description String? @db.Text
   updatedAt   DateTime @updatedAt
 
   @@index([key])
@@ -659,18 +800,18 @@ model SystemConfig {
 
 // User session management (Customer & Agent)
 model Session {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  token      String  @unique @db.VarChar(500)
-  deviceInfo String? @db.VarChar(500)
-  ipAddress  String? @db.VarChar(45)
-  userAgent  String? @db.Text
-
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token       String   @unique @db.VarChar(500)
+  deviceInfo  String?  @db.VarChar(500)
+  ipAddress   String?  @db.VarChar(45)
+  userAgent   String?  @db.Text
+  
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  
   @@index([userId])
   @@index([token])
   @@map("sessions")
@@ -678,20 +819,20 @@ model Session {
 
 // Audit log for important actions
 model AuditLog {
-  id String @id @default(cuid())
-
+  id        String   @id @default(cuid())
+  
   // Who performed the action (can be admin or system)
-  adminId String? @db.VarChar(255)
-  admin   Admin?  @relation(fields: [adminId], references: [id])
-
-  action    String  @db.VarChar(100)
-  entity    String  @db.VarChar(100) // table name
-  entityId  String  @db.VarChar(255) // record ID
+  adminId   String?  @db.VarChar(255)
+  admin     Admin?   @relation(fields: [adminId], references: [id])
+  
+  action    String   @db.VarChar(100)
+  entity    String   @db.VarChar(100) // table name
+  entityId  String   @db.VarChar(255) // record ID
   oldData   Json?
   newData   Json?
-  ipAddress String? @db.VarChar(45)
-  userAgent String? @db.Text
-
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  
   createdAt DateTime @default(now())
 
   @@index([adminId])
