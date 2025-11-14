@@ -115,3 +115,16 @@ export function formatDateTime(input: Date | string | number): string {
     hour12: true,
   });
 }
+
+export function formatCurrency(
+  value: number | string,
+  currency: string = 'THB',
+): string {
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  return new Intl.NumberFormat('th-TH', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numValue);
+}

@@ -699,7 +699,7 @@ export function ProductDetailsAnalyticsSheet({
                         </CardTitle>
                       </CardHeader>
 
-                      <CardContent className="p-0">
+                      <CardContent className="p-0 max-w-[600px] overflow-y-auto">
                         <div className="overflow-x-auto">
                           <Table>
                             <TableHeader>
