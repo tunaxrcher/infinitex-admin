@@ -45,26 +45,42 @@ export const dashboardService = {
     // กำไรทั้งปี (รวมกำไรทุกเดือน)
     const yearProfit = monthlyData.reduce((sum, data) => sum + data.profit, 0)
 
-    // หายอดรับชำระสูงสุด/ต่ำสุด
-    let highestPaymentMonth = monthlyData[0]
-    let lowestPaymentMonth = monthlyData[0]
+    // หายอดรับชำระสูงสุด/ต่ำสุด (ใช้ interestPayment = ชำระค่างวด)
+    const monthsWithData = monthlyData.filter((d) => d.interestPayment > 0)
+    
+    let highestPaymentMonth = monthsWithData[0] || monthlyData[0]
+    let lowestPaymentMonth = monthsWithData[0] || monthlyData[0]
 
-    monthlyData.forEach((data) => {
-      if (data.totalPayment > highestPaymentMonth.totalPayment) {
+    monthsWithData.forEach((data) => {
+      if (data.interestPayment > highestPaymentMonth.interestPayment) {
         highestPaymentMonth = data
       }
-      if (data.totalPayment < lowestPaymentMonth.totalPayment) {
+      if (data.interestPayment < lowestPaymentMonth.interestPayment) {
         lowestPaymentMonth = data
       }
     })
 
-    // เฉลี่ยต่อเดือน
-    const totalPaymentYear = monthlyData.reduce((sum, data) => sum + data.totalPayment, 0)
-    const averagePaymentPerMonth = totalPaymentYear / 12
+    // ยอดรับชำระทั้งหมด = ยอดชำระค่างวดทั้งหมด
+    const totalPaymentYear = monthlyData.reduce((sum, data) => sum + data.interestPayment, 0)
+    
+    // เฉลี่ยต่อเดือน = เฉลี่ยกำไร
+    const averagePaymentPerMonth = yearProfit / 12
 
-    // คำนวณเปอร์เซ็นต์ยอดรับชำระ (เทียบกับเป้าหมายหรือยอดเปิดสินเชื่อทั้งปี)
+    // คำนวณเปอร์เซ็นต์ยอดรับชำระ (ยอดชำระค่างวดทั้งปี / ยอดเปิดสินเชื่อทั้งปี)
     const totalLoanAmountYear = monthlyData.reduce((sum, data) => sum + data.loanAmount, 0)
     const paymentPercentage = totalLoanAmountYear > 0 ? (totalPaymentYear / totalLoanAmountYear) * 100 : 0
+
+    // Debug summary
+    console.log('=== Dashboard Summary ===')
+    console.log('Current month:', currentMonth)
+    console.log('Current month profit:', currentMonthProfit)
+    console.log('Year profit:', yearProfit)
+    console.log('Total payment year:', totalPaymentYear)
+    console.log('Average payment:', averagePaymentPerMonth)
+    console.log('Total loan year:', totalLoanAmountYear)
+    console.log('Payment percentage:', paymentPercentage)
+    console.log('Highest:', highestPaymentMonth)
+    console.log('Lowest:', lowestPaymentMonth)
 
     return {
       currentMonthLoanAmount,
@@ -74,12 +90,12 @@ export const dashboardService = {
       highestPaymentMonth: {
         month: highestPaymentMonth.month,
         monthName: highestPaymentMonth.monthName,
-        amount: highestPaymentMonth.totalPayment,
+        amount: highestPaymentMonth.interestPayment, // ใช้ interestPayment (ชำระค่างวด)
       },
       lowestPaymentMonth: {
         month: lowestPaymentMonth.month,
         monthName: lowestPaymentMonth.monthName,
-        amount: lowestPaymentMonth.totalPayment,
+        amount: lowestPaymentMonth.interestPayment, // ใช้ interestPayment (ชำระค่างวด)
       },
       averagePaymentPerMonth,
       totalPaymentYear,
@@ -133,11 +149,24 @@ export const dashboardService = {
     const overdueInstallments = await dashboardRepository.getOverdueInstallmentsInMonth(year, month)
     const overduePayment = Number(overdueInstallments._sum.totalAmount || 0)
 
-    // 6. กำไร (ดอกเบี้ย + ค่าธรรมเนียม/ค่าปรับ)
-    const profit = payments.reduce(
-      (sum, payment) => sum + Number(payment.interestAmount || 0) + Number(payment.feeAmount || 0),
-      0,
-    )
+    // 6. กำไร = ยอดชำระค่างวด (มี installmentId = ดอกเบี้ย)
+    // เนื่องจาก interestAmount และ feeAmount ใน database เป็น 0 หมด
+    // ดังนั้นกำไร = ยอดชำระที่มี installmentId (เพราะเป็นดอกเบี้ยทั้งหมด)
+    const profit = interestPayment
+
+    // Debug กำไร
+    if (month === 1 && year === 2025) {
+      console.log(`=== Profit Debug Month ${month} ===`)
+      console.log('Total payments:', payments.length)
+      console.log('interestPayment (profit):', interestPayment)
+      console.log('closeAccountPayment:', closeAccountPayment)
+      console.log('Sample payment:', payments[0] ? {
+        amount: payments[0].amount,
+        installmentId: payments[0].installmentId,
+        interestAmount: payments[0].interestAmount,
+        feeAmount: payments[0].feeAmount,
+      } : 'No payments')
+    }
 
     return {
       month,

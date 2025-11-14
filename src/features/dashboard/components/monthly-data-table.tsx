@@ -31,6 +31,31 @@ export function MonthlyDataTable({ data, year, isLoading }: MonthlyDataTableProp
   const [modalType, setModalType] = useState<'loan' | 'payment' | 'installment'>('payment')
   const [loading, setLoading] = useState(false)
 
+  // Get current month for highlighting
+  const currentMonth = new Date().getMonth() + 1
+  const currentYear = new Date().getFullYear()
+  const isCurrentYear = year === currentYear
+
+  // Calculate totals for footer
+  const totals = data.reduce(
+    (acc, row) => ({
+      loanAmount: acc.loanAmount + row.loanAmount,
+      totalPayment: acc.totalPayment + row.totalPayment,
+      interestPayment: acc.interestPayment + row.interestPayment,
+      closeAccountPayment: acc.closeAccountPayment + row.closeAccountPayment,
+      overduePayment: acc.overduePayment + row.overduePayment,
+      profit: acc.profit + row.profit,
+    }),
+    {
+      loanAmount: 0,
+      totalPayment: 0,
+      interestPayment: 0,
+      closeAccountPayment: 0,
+      overduePayment: 0,
+      profit: 0,
+    },
+  )
+
   const handleCellClick = async (
     month: number,
     type: 'loans' | 'payments' | 'interest-payments' | 'close-payments' | 'overdue',
@@ -83,9 +108,21 @@ export function MonthlyDataTable({ data, year, isLoading }: MonthlyDataTableProp
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.month}>
-                  <TableCell className="font-medium">{row.monthName}</TableCell>
+              {data.map((row) => {
+                const isCurrentMonthRow = isCurrentYear && row.month === currentMonth
+                return (
+                  <TableRow
+                    key={row.month}
+                    className={isCurrentMonthRow ? 'bg-blue-50 hover:bg-blue-100' : ''}
+                  >
+                    <TableCell className="font-medium">
+                      {row.monthName}
+                      {isCurrentMonthRow && (
+                        <span className="ml-2 rounded bg-blue-600 px-2 py-0.5 text-xs text-white">
+                          ปัจจุบัน
+                        </span>
+                      )}
+                    </TableCell>
                   <TableCell
                     className="cursor-pointer text-right underline decoration-dotted hover:bg-blue-50"
                     onClick={() =>
@@ -154,8 +191,25 @@ export function MonthlyDataTable({ data, year, isLoading }: MonthlyDataTableProp
                   <TableCell className="text-right font-semibold text-green-600">
                     {formatCurrency(row.profit)}
                   </TableCell>
-                </TableRow>
-              ))}
+                  </TableRow>
+                )
+              })}
+              {/* Footer Row - Total */}
+              <TableRow className="border-t-2 bg-gray-100 font-semibold">
+                <TableCell className="font-bold">รวม</TableCell>
+                <TableCell className="text-right">{formatCurrency(totals.loanAmount)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(totals.totalPayment)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(totals.interestPayment)}</TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(totals.closeAccountPayment)}
+                </TableCell>
+                <TableCell className="text-right text-red-600">
+                  {formatCurrency(totals.overduePayment)}
+                </TableCell>
+                <TableCell className="text-right text-green-600">
+                  {formatCurrency(totals.profit)}
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>
