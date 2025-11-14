@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
     } else if (type === 'interest-payments') {
       // ดึง payments ที่มี installmentId
       const payments = await dashboardRepository.getPaymentsInMonth(year, month)
+      // console.log('payments', payments)
       data = payments.filter((p) => p.installmentId != null && p.installmentId !== '')
     } else if (type === 'close-payments') {
       // ดึง payments ที่ไม่มี installmentId

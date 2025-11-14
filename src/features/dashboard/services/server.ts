@@ -91,7 +91,7 @@ export const dashboardService = {
     // 1. ยอดเปิดสินเชื่อ (สินเชื่อที่สร้างในเดือนนั้น)
     const loansCreated = await dashboardRepository.getLoansCreatedInMonth(year, month)
     const loanAmount = Number(loansCreated._sum.principalAmount || 0)
-    console.log('loanAmount', loanAmount)
+    // console.log('loanAmount', loanAmount)
 
     // 2. รับชำระ (ยอดชำระทั้งหมดในเดือนนั้น)
     const payments = await dashboardRepository.getPaymentsInMonth(year, month)
@@ -103,21 +103,21 @@ export const dashboardService = {
     )
     
     // Debug: Log for month 1 year 2025
-    if (month === 1 && year === 2025) {
-      console.log('=== DEBUG Month 1, 2025 ===')
-      console.log('Total payments count:', payments.length)
-      console.log('Total payments amount:', totalPayment.toLocaleString())
-      console.log('Payments with installmentId count:', paymentsWithInstallment.length)
-      console.log(
-        'Payments with installmentId amount:',
-        paymentsWithInstallment.reduce((sum, p) => sum + Number(p.amount), 0).toLocaleString(),
-      )
-      console.log('All payments:', payments.map(p => ({
-        amount: Number(p.amount),
-        installmentId: p.installmentId,
-        paidDate: p.paidDate,
-      })))
-    }
+    // if (month === 1 && year === 2025) {
+    //   console.log('=== DEBUG Month 1, 2025 ===')
+    //   console.log('Total payments count:', payments.length)
+    //   console.log('Total payments amount:', totalPayment.toLocaleString())
+    //   console.log('Payments with installmentId count:', paymentsWithInstallment.length)
+    //   console.log(
+    //     'Payments with installmentId amount:',
+    //     paymentsWithInstallment.reduce((sum, p) => sum + Number(p.amount), 0).toLocaleString(),
+    //   )
+    //   console.log('All payments:', payments.map(p => ({
+    //     amount: Number(p.amount),
+    //     installmentId: p.installmentId,
+    //     paidDate: p.paidDate,
+    //   })))
+    // }
     
     const interestPayment = paymentsWithInstallment.reduce(
       (sum, payment) => sum + Number(payment.amount),

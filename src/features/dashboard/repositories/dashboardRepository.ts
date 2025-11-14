@@ -7,15 +7,15 @@ export class DashboardRepository {
    * Get loans created in a specific month and year
    */
   async getLoansCreatedInMonth(year: number, month: number) {
-    const startDate = new Date(year, month - 1, 1)
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     return prisma.loan.aggregate({
       where: {
         status: {
           in: ['ACTIVE', 'COMPLETED'],
         },
-        createdAt: {
+        contractDate: {
           gte: startDate,
           lte: endDate,
         },
@@ -25,14 +25,18 @@ export class DashboardRepository {
       },
       _count: true,
     })
+
+    
   }
 
   /**
    * Get payments completed in a specific month and year
    */
   async getPaymentsInMonth(year: number, month: number) {
-    const startDate = new Date(year, month - 1, 1)
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+    console.log('startDate', startDate)
+    console.log('endDate', endDate)
 
     return prisma.payment.findMany({
       where: {
@@ -48,7 +52,7 @@ export class DashboardRepository {
         loan: {
           select: {
             loanNumber: true,
-            status: true,
+            // status: true,
           },
         },
         user: {
@@ -67,7 +71,7 @@ export class DashboardRepository {
    * Get overdue installments in a specific month
    */
   async getOverdueInstallmentsInMonth(year: number, month: number) {
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     return prisma.loanInstallment.aggregate({
       where: {
@@ -87,8 +91,8 @@ export class DashboardRepository {
    * Get total interest earned in a specific month
    */
   async getInterestEarnedInMonth(year: number, month: number) {
-    const startDate = new Date(year, month - 1, 1)
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     return prisma.payment.aggregate({
       where: {
@@ -109,8 +113,8 @@ export class DashboardRepository {
    * Get loans that were closed (paid off) in a specific month
    */
   async getClosedLoansInMonth(year: number, month: number) {
-    const startDate = new Date(year, month - 1, 1)
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     return prisma.loan.findMany({
       where: {
