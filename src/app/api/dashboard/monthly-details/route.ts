@@ -51,32 +51,40 @@ export async function GET(request: NextRequest) {
       const payments = await dashboardRepository.getPaymentsInMonth(year, month)
       data = payments.filter((p) => !p.installmentId || p.installmentId === '')
     } else if (type === 'overdue') {
-      // ดึงงวดค้างชำระ
-      const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+      // ดึงงวดค้างชำระของเดือนนั้น (เฉพาะสินเชื่อที่ยัง ACTIVE)
+      data = await prisma.$queryRaw`
+        SELECT 
+          li.*,
+          l.loanNumber,
+          l.status as loanStatus,
+          up.firstName,
+          up.lastName
+        FROM loan_installments li
+        INNER JOIN loans l ON li.loanId = l.id
+        LEFT JOIN users u ON l.customerId = u.id
+        LEFT JOIN user_profiles up ON u.id = up.userId
+        WHERE li.isPaid = false
+          AND YEAR(li.dueDate) = ${year}
+          AND MONTH(li.dueDate) = ${month}
+          AND li.dueDate < NOW()
+          AND l.status = 'ACTIVE'
+        ORDER BY li.dueDate ASC
+      `
 
-      data = await prisma.loanInstallment.findMany({
-        where: {
-          isPaid: false,
-          dueDate: {
-            lte: endDate,
-          },
-        },
-        include: {
-          loan: {
-            select: {
-              loanNumber: true,
-              customer: {
-                include: {
-                  profile: true,
-                },
-              },
+      // Transform data to match Prisma structure
+      data = (data as any[]).map((item: any) => ({
+        ...item,
+        loan: {
+          loanNumber: item.loanNumber,
+          status: item.loanStatus,
+          customer: {
+            profile: {
+              firstName: item.firstName,
+              lastName: item.lastName,
             },
           },
         },
-        orderBy: {
-          dueDate: 'asc',
-        },
-      })
+      }))
     }
 
     return NextResponse.json({

@@ -68,23 +68,31 @@ export class DashboardRepository {
   }
 
   /**
-   * Get overdue installments in a specific month
+   * Get overdue installments in a specific month (ค้างชำระของเดือนนั้น)
    */
   async getOverdueInstallmentsInMonth(year: number, month: number) {
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+    // ค้างชำระ = งวดที่ครบกำหนดในเดือนนั้นแต่เลยกำหนดไปแล้ว (ณ วันนี้) และยังไม่ชำระ
+    const result = await prisma.$queryRaw<
+      Array<{ total_amount: number | null; total_count: bigint }>
+    >`
+      SELECT 
+        SUM(li.totalAmount) as total_amount,
+        COUNT(*) as total_count
+      FROM loan_installments li
+      INNER JOIN loans l ON li.loanId = l.id
+      WHERE li.isPaid = false
+        AND YEAR(li.dueDate) = ${year}
+        AND MONTH(li.dueDate) = ${month}
+        AND li.dueDate < NOW()
+        AND l.status = 'ACTIVE'
+    `
 
-    return prisma.loanInstallment.aggregate({
-      where: {
-        isPaid: false,
-        dueDate: {
-          lte: endDate,
-        },
-      },
+    return {
       _sum: {
-        totalAmount: true,
+        totalAmount: result[0]?.total_amount || 0,
       },
-      _count: true,
-    })
+      _count: Number(result[0]?.total_count || 0),
+    }
   }
 
   /**
