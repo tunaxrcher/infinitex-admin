@@ -57,9 +57,7 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
     pageIndex: 0,
     pageSize: 12,
   });
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'month', desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');

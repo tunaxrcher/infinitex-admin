@@ -28,21 +28,27 @@ const ChannelStats = ({
 }: IChannelStatsProps) => {
   const items: IChannelStatsItems = [
     {
-      logo: 'linkedin-2.svg',
+      logo: '',
       info: formatCurrency(currentMonthLoanAmount),
       desc: 'ยอดเปิดสินเชื่อ (เดือนนี้)',
       path: '',
     },
     { 
-      logo: 'youtube-2.svg', 
+      logo: '', 
       info: formatCurrency(currentMonthProfit), 
       desc: 'กำไรเดือนนี้', 
       path: '' 
     },
     {
-      logo: 'instagram-03.svg',
+      logo: '',
       info: formatCurrency(yearProfit),
       desc: 'กำไรปีนี้',
+      path: '',
+    },
+        {
+      logo: '',
+      info: '-',
+      desc: '-',
       path: '',
     },
   ];

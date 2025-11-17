@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@src/shared/components/ui/select';
+import { Container } from '@src/shared/components/common/container';
 import { useGetDashboardSummary } from '../hooks';
 import { DashboardSummary } from './dashboard-summary';
 import { MonthlyDataTable } from './monthly-data-table';
@@ -121,19 +122,48 @@ export function DashboardPage() {
     //   />
     // </div>
 
-    <div className="container grid gap-5 lg:gap-7.5">
-      <div className="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
-        <div className="lg:col-span-1">
-          <div className="grid grid-cols-2 gap-5 lg:gap-7.5 h-full items-stretch">
-            <ChannelStats
-              currentMonthLoanAmount={dashboardData?.currentMonthLoanAmount || 0}
-              currentMonthProfit={dashboardData?.currentMonthProfit || 0}
-              yearProfit={dashboardData?.yearProfit || 0}
+    <Container>
+      <div className="container-fluid space-y-5 lg:space-y-9">
+        <div className="flex items-center flex-wrap dap-2.5 justify-between">
+          <div className="flex flex-col gap-1">
+            <h1 className="gradientText text-xl font-bold text-foreground">
+              พอร์ต
+            </h1>
+            <span className="text-sm text-muted-foreground">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            </span>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
+          <div className="lg:col-span-1">
+            <div className="grid grid-cols-2 gap-5 lg:gap-7.5 h-full items-stretch">
+              <ChannelStats
+                currentMonthLoanAmount={
+                  dashboardData?.currentMonthLoanAmount || 0
+                }
+                currentMonthProfit={dashboardData?.currentMonthProfit || 0}
+                yearProfit={dashboardData?.yearProfit || 0}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-2">
+            <EarningsChart
+              data={dashboardData?.monthlyData || []}
               isLoading={isLoading}
             />
           </div>
         </div>
-        <div className="lg:col-span-2">
+        <div className="grid lg:grid-cols-1 gap-5 lg:gap-7.5 items-stretch">
+          <Teams
+            data={dashboardData?.monthlyData || []}
+            year={parseInt(year)}
+            isLoading={isLoading}
+          />
+        </div>
+
+        <div className="grid lg:grid-cols-1 gap-5 lg:gap-7.5 items-stretch">
           <Highlights
             limit={3}
             totalPaymentYear={dashboardData?.totalPaymentYear || 0}
@@ -156,20 +186,6 @@ export function DashboardPage() {
           />
         </div>
       </div>
-      <div className="grid lg:grid-cols-1 gap-5 lg:gap-7.5 items-stretch">
-        <Teams
-          data={dashboardData?.monthlyData || []}
-          year={parseInt(year)}
-          isLoading={isLoading}
-        />
-      </div>
-
-      <div className="grid lg:grid-cols-1 gap-5 lg:gap-7.5 items-stretch">
-        <EarningsChart
-          data={dashboardData?.monthlyData || []}
-          isLoading={isLoading}
-        />
-      </div>
-    </div>
+    </Container>
   );
 }
