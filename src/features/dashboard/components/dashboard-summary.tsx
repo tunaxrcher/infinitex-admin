@@ -1,91 +1,126 @@
-'use client';
-
-import { formatCurrency } from '@src/shared/lib/helpers';
-import { DollarSign, PiggyBank, TrendingUp } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardHeading,
-} from '@src/shared/components/ui/card';
+import { Fragment } from 'react';
+import { formatCurrency, toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 
-interface DashboardSummaryProps {
-  currentMonthLoanAmount: number;
-  currentMonthProfit: number;
-  yearProfit: number;
+interface IDashboardSummaryItem {
+  logo: string;
+  logoDark?: string;
+  info: string;
+  desc: string;
+  path: string;
+}
+type IDashboardSummaryItems = Array<IDashboardSummaryItem>;
+
+interface IDashboardSummaryProps {
+  currentMonthLoanAmount?: number;
+  currentMonthProfit?: number;
+  yearProfit?: number;
   isLoading?: boolean;
 }
 
-export function DashboardSummary({
-  currentMonthLoanAmount,
-  currentMonthProfit,
-  yearProfit,
-  isLoading,
-}: DashboardSummaryProps) {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <Card key={i}>
-            <CardHeader>
-              <Skeleton className="h-5 w-32" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-40" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  const stats = [
+const DashboardSummary = ({
+  currentMonthLoanAmount = 0,
+  currentMonthProfit = 0,
+  yearProfit = 0,
+  isLoading = false,
+}: IDashboardSummaryProps) => {
+  const items: IDashboardSummaryItems = [
     {
-      title: 'ยอดเปิดสินเชื่อ (เดือนปัจจุบัน)',
-      value: currentMonthLoanAmount,
-      icon: DollarSign,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      logo: '',
+      info: formatCurrency(currentMonthLoanAmount),
+      desc: 'ยอดเปิดสินเชื่อ (เดือนนี้)',
+      path: '',
     },
     {
-      title: 'กำไร (เดือนปัจจุบัน)',
-      value: currentMonthProfit,
-      icon: TrendingUp,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      logo: '',
+      info: formatCurrency(currentMonthProfit),
+      desc: 'กำไร (เดือนนี้)',
+      path: '',
     },
     {
-      title: 'กำไรทั้งปี',
-      value: yearProfit,
-      icon: PiggyBank,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
+      logo: '',
+      info: formatCurrency(yearProfit),
+      desc: 'กำไรปีนี้',
+      path: '',
+    },
+    {
+      logo: '',
+      info: '-',
+      desc: 'in development',
+      path: '',
     },
   ];
 
+  const renderItem = (item: IDashboardSummaryItem, index: number) => {
+    return (
+      <Card key={index}>
+        <CardContent className="p-0 flex flex-col justify-between gap-6 h-full bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat channel-stats-bg">
+          {item.logoDark ? (
+            <>
+              <img
+                src={toAbsoluteUrl(`/images/user.png`)}
+                className="dark:hidden w-7 mt-4 ms-5"
+                alt="image"
+              />
+              <img
+                src={toAbsoluteUrl(`/images/user.png`)}
+                className="light:hidden w-7 mt-4 ms-5"
+                alt="image"
+              />
+            </>
+          ) : (
+            <img
+              src={toAbsoluteUrl(`/images/user.png`)}
+              className="w-7 mt-4 ms-5"
+              alt="image"
+            />
+          )}
+          <div className="flex flex-col gap-1 pb-4 px-5">
+            {isLoading ? (
+              <>
+                <Skeleton className="h-9 w-24" />
+                <Skeleton className="h-4 w-32" />
+              </>
+            ) : (
+              <>
+                <span className="text-2xl font-semibold text-mono">
+                  {item.info}
+                </span>
+                <span className="text-sm font-normal text-muted-forehead">
+                  {item.desc}
+                </span>
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-      {stats.map((stat) => {
-        const Icon = stat.icon;
-        return (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardHeading className="text-sm font-medium text-gray-600">
-                {stat.title}
-              </CardHeading>
-              <div className={`${stat.bgColor} rounded-lg p-2`}>
-                <Icon className={`h-5 w-5 ${stat.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(stat.value)}
-              </div>
-            </CardContent>
-          </Card>
-        );
+    <Fragment>
+      <style>
+        {`
+          .channel-stats-bg {
+            background-image: url('${toAbsoluteUrl('/media/images/2600x1600/bg-3.png')}');
+          }
+          .dark .channel-stats-bg {
+            background-image: url('${toAbsoluteUrl('/media/images/2600x1600/bg-3-dark.png')}');
+          }
+        `}
+      </style>
+
+      {items.map((item, index) => {
+        return renderItem(item, index);
       })}
-    </div>
+    </Fragment>
   );
-}
+};
+
+export {
+  DashboardSummary,
+  type IDashboardSummaryItem,
+  type IDashboardSummaryItems,
+  type IDashboardSummaryProps,
+};

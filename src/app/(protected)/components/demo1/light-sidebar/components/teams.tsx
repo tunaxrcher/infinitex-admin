@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
-import { dashboardApi } from '@src/features/dashboard/api';
-import { DetailModal } from '@src/features/dashboard/components/detail-modal';
-import { DetailModalAdvanced } from '@src/features/dashboard/components/detail-modal-advanced';
-import { formatCurrency } from '@src/shared/lib/helpers';
+import { useMemo, useState } from 'react';
+import {
+  Avatar,
+  AvatarGroup,
+} from '@src/app/components/partials/common/avatar-group';
+import { Rating } from '@src/app/components/partials/common/rating';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -16,8 +17,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { toast } from 'sonner';
-import { Badge } from '@src/shared/components/ui/badge';
+import { Search, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -25,275 +25,337 @@ import {
   CardHeader,
   CardTable,
   CardTitle,
+  CardToolbar,
 } from '@src/shared/components/ui/card';
 import { DataGrid } from '@src/shared/components/ui/data-grid';
 import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
 import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
-import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from '@src/shared/components/ui/data-grid-table';
+import { Input } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 
-interface MonthlyData {
-  month: number;
-  monthName: string;
-  loanAmount: number;
-  totalPayment: number;
-  interestPayment: number;
-  closeAccountPayment: number;
-  overduePayment: number;
-  profit: number;
+interface IData {
+  id: number;
+  name: string;
+  description: string;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+  users: Avatar[];
 }
 
-interface ITeamsProps {
-  data?: MonthlyData[];
-  year?: number;
-  isLoading?: boolean;
-}
+const data: IData[] = [
+  {
+    id: 1,
+    name: 'Product Management',
+    description: 'Product development & lifecycle',
+    rating: 5,
+    created_at: '21 Oct, 2024',
+    updated_at: '21 Oct, 2024',
+    users: [
+      { path: '/media/avatars/300-4.png', fallback: 'PM' }, // Cristian Mitchell
+      { path: '/media/avatars/300-1.png', fallback: 'PM' }, // Grace Mueller
+      { path: '/media/avatars/300-2.png', fallback: 'PM' }, // Ephraim Wilderman
+      { path: '/media/avatars/300-4.png', fallback: 'PM' }, // Colin Balistreri
+    ],
+  },
+  {
+    id: 2,
+    name: 'Marketing Team',
+    description: 'Campaigns & market analysis',
+    rating: 3.5,
+    created_at: '15 Oct, 2024',
+    updated_at: '15 Oct, 2024',
+    users: [
+      { path: '/media/avatars/300-4.png', fallback: 'MT' }, // Keenan Keeling
+      { path: '', fallback: 'MT' }, // Una Goldner
+    ],
+  },
+  {
+    id: 3,
+    name: 'HR Department',
+    description: 'Talent acquisition, employee welfare',
+    rating: 5,
+    created_at: '10 Oct, 2024',
+    updated_at: '10 Oct, 2024',
+    users: [
+      { path: '/media/avatars/300-4.png', fallback: 'HR' }, // Rupert Maggio
+      { path: '/media/avatars/300-1.png', fallback: 'HR' }, // Pattie Morar
+      { path: '/media/avatars/300-2.png', fallback: 'HR' }, // Stuart Hermiston
+    ],
+  },
+  {
+    id: 4,
+    name: 'Sales Division',
+    description: 'Customer relations, sales strategy',
+    rating: 5,
+    created_at: '05 Oct, 2024',
+    updated_at: '05 Oct, 2024',
+    users: [
+      { path: '/media/avatars/300-24.png', fallback: 'SD' }, // Ezequiel Quigley
+      { path: '/media/avatars/300-7.png', fallback: 'SD' }, // Florine Homenick
+    ],
+  },
+  {
+    id: 5,
+    name: 'Development Team',
+    description: 'Software development',
+    rating: 4.5,
+    created_at: '01 Oct, 2024',
+    updated_at: '01 Oct, 2024',
+    users: [
+      { path: '/media/avatars/300-3.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-8.png', fallback: 'DT' }, // Jarrod Kerluke
+      { path: '/media/avatars/300-9.png', fallback: 'DT' }, // Trace Rosenbaum
+    ],
+  },
+  {
+    id: 6,
+    name: 'Quality Assurance',
+    description: 'Product testing',
+    rating: 5,
+    created_at: '25 Sep, 2024',
+    updated_at: '25 Sep, 2024',
+    users: [
+      { path: '/media/avatars/300-6.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-5.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+  {
+    id: 7,
+    name: 'Finance Team',
+    description: 'Financial planning',
+    rating: 4,
+    created_at: '20 Sep, 2024',
+    updated_at: '20 Sep, 2024',
+    users: [
+      { path: '/media/avatars/300-10.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-11.png', fallback: 'DT' }, // Jarrod Kerluke
+      { path: '/media/avatars/300-12.png', fallback: 'DT' }, // Trace Rosenbaum
+    ],
+  },
+  {
+    id: 8,
+    name: 'Customer Support',
+    description: 'Customer service',
+    rating: 3,
+    created_at: '15 Sep, 2024',
+    updated_at: '15 Sep, 2024',
+    users: [
+      { path: '/media/avatars/300-13.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-14.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+  {
+    id: 9,
+    name: 'R&D Team',
+    description: 'Research & development',
+    rating: 5,
+    created_at: '10 Sep, 2024',
+    updated_at: '10 Sep, 2024',
+    users: [
+      { path: '/media/avatars/300-15.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-16.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+  {
+    id: 10,
+    name: 'Operations Team',
+    description: 'Operations management',
+    rating: 4,
+    created_at: '05 Sep, 2024',
+    updated_at: '05 Sep, 2024',
+    users: [
+      { path: '/media/avatars/300-17.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-18.png', fallback: 'DT' }, // Jarrod Kerluke
+      { path: '/media/avatars/300-19.png', fallback: 'DT' }, // Trace Rosenbaum
+    ],
+  },
+  {
+    id: 11,
+    name: 'IT Support',
+    description: 'Technical support',
+    rating: 5,
+    created_at: '01 Sep, 2024',
+    updated_at: '01 Sep, 2024',
+    users: [
+      { path: '/media/avatars/300-20.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-21.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+  {
+    id: 12,
+    name: 'Legal Team',
+    description: 'Legal support',
+    rating: 4,
+    created_at: '25 Aug, 2024',
+    updated_at: '25 Aug, 2024',
+    users: [
+      { path: '/media/avatars/300-22.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-23.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+  {
+    id: 13,
+    name: 'Logistics Team',
+    description: 'Supply chain',
+    rating: 3,
+    created_at: '20 Aug, 2024',
+    updated_at: '20 Aug, 2024',
+    users: [
+      { path: '/media/avatars/300-24.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-25.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+  {
+    id: 14,
+    name: 'Procurement Team',
+    description: 'Supplier management',
+    rating: 5,
+    created_at: '15 Aug, 2024',
+    updated_at: '15 Aug, 2024',
+    users: [
+      { path: '/media/avatars/300-26.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-27.png', fallback: 'DT' }, // Jarrod Kerluke
+      { path: '/media/avatars/300-28.png', fallback: 'DT' }, // Trace Rosenbaum
+    ],
+  },
+  {
+    id: 15,
+    name: 'Training Team',
+    description: 'Employee training',
+    rating: 4,
+    created_at: '10 Aug, 2024',
+    updated_at: '10 Aug, 2024',
+    users: [
+      { path: '/media/avatars/300-29.png', fallback: 'DT' }, // Ubaldo Mosciski
+      { path: '/media/avatars/300-30.png', fallback: 'DT' }, // Jarrod Kerluke
+    ],
+  },
+];
 
-const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
+const Teams = () => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 12,
+    pageSize: 5,
   });
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'updated_at', desc: true },
+  ]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalData, setModalData] = useState<any[]>([]);
-  const [modalType, setModalType] = useState<
-    'loan' | 'payment' | 'installment'
-  >('payment');
-  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Get current month for highlighting
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-  const isCurrentYear = year === currentYear;
+  const filteredData = useMemo(() => {
+    if (!searchQuery) return data;
+    return data.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [searchQuery]);
 
-  const handleCellClick = useCallback(
-    async (
-      month: number,
-      type:
-        | 'loans'
-        | 'payments'
-        | 'interest-payments'
-        | 'close-payments'
-        | 'overdue',
-      title: string,
-      modalType: 'loan' | 'payment' | 'installment',
-    ) => {
-      if (!year) return;
-      setLoading(true);
-      try {
-        const response = await dashboardApi.getMonthlyDetails(
-          year,
-          month,
-          type,
-        );
-        setModalData(response.data || []);
-        setModalTitle(title);
-        setModalType(modalType);
-        setModalOpen(true);
-      } catch (error) {
-        toast.error('ไม่สามารถโหลดข้อมูลได้');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [year],
-  );
-
-  const columns = useMemo<ColumnDef<MonthlyData>[]>(
+  const columns = useMemo<ColumnDef<IData>[]>(
     () => [
       {
-        id: 'monthName',
-        accessorFn: (row) => row.monthName,
+        accessorKey: 'id',
+        accessorFn: (row) => row.id,
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        enableSorting: false,
+        enableHiding: false,
+        enableResizing: false,
+        size: 48,
+        meta: {
+          cellClassName: '',
+        },
+      },
+      {
+        id: 'name',
+        accessorFn: (row) => row.name,
         header: ({ column }) => (
-          <DataGridColumnHeader title="เดือน" column={column} />
+          <DataGridColumnHeader title="Team" column={column} />
         ),
-        cell: ({ row }) => {
-          const isCurrentMonthRow =
-            isCurrentYear && row.original.month === currentMonth;
-          return (
-            <div className="flex items-center gap-2">
-              <span className="leading-none font-medium text-sm text-mono">
-                {row.original.monthName}
-              </span>
-              {isCurrentMonthRow && (
-                <Badge variant="primary" size="sm" className="bg-blue-600">
-                  ปัจจุบัน
-                </Badge>
-              )}
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-2">
+            <span className="leading-none font-medium text-sm text-mono hover:text-primary">
+              {row.original.name}
+            </span>
+            <span className="text-sm text-secondary-foreground font-normal leading-3">
+              {row.original.description}
+            </span>
+          </div>
+        ),
+        enableSorting: true,
+        size: 280,
+        meta: {
+          skeleton: (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-[125px]" />
+              <Skeleton className="h-2.5 w-[90px]" />
             </div>
-          );
-        },
-        enableSorting: true,
-        size: 140,
-        meta: {
-          skeleton: <Skeleton className="h-4 w-[80px]" />,
+          ),
         },
       },
       {
-        id: 'loanAmount',
-        accessorFn: (row) => row.loanAmount,
+        id: 'rating',
+        accessorFn: (row) => row.rating,
         header: ({ column }) => (
-          <DataGridColumnHeader title="ยอดเปิดสินเชื่อ" column={column} />
+          <DataGridColumnHeader title="Rating" column={column} />
         ),
         cell: ({ row }) => (
-          <span
-            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
-            onClick={() =>
-              handleCellClick(
-                row.original.month,
-                'loans',
-                `เปิดสินเชื่อ - ${row.original.monthName}`,
-                'loan',
-              )
-            }
-          >
-            {formatCurrency(row.original.loanAmount)}
-          </span>
+          <Rating
+            rating={Math.floor(row.original.rating)}
+            round={row.original.rating % 1}
+          />
         ),
         enableSorting: true,
-        size: 150,
+        size: 135,
         meta: {
-          skeleton: <Skeleton className="h-4 w-[90px]" />,
+          skeleton: <Skeleton className="h-5 w-[60px]" />,
         },
       },
       {
-        id: 'totalPayment',
-        accessorFn: (row) => row.totalPayment,
+        id: 'updated_at',
+        accessorFn: (row) => row.updated_at,
         header: ({ column }) => (
-          <DataGridColumnHeader title="รับชำระทั้งหมด" column={column} />
+          <DataGridColumnHeader title="Last Modified" column={column} />
         ),
-        cell: ({ row }) => (
-          <span
-            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
-            onClick={() =>
-              handleCellClick(
-                row.original.month,
-                'payments',
-                `รับชำระ - ${row.original.monthName}`,
-                'payment',
-              )
-            }
-          >
-            {formatCurrency(row.original.totalPayment)}
-          </span>
-        ),
+        cell: ({ row }) => row.original.updated_at,
         enableSorting: true,
-        size: 150,
+        size: 135,
         meta: {
-          skeleton: <Skeleton className="h-4 w-[90px]" />,
+          skeleton: <Skeleton className="h-5 w-[70px]" />,
         },
       },
       {
-        id: 'interestPayment',
-        accessorFn: (row) => row.interestPayment,
+        id: 'users',
+        accessorFn: (row) => row.users,
         header: ({ column }) => (
-          <DataGridColumnHeader title="ชำระค่างวด" column={column} />
+          <DataGridColumnHeader title="Members" column={column} />
         ),
         cell: ({ row }) => (
-          <span
-            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
-            onClick={() =>
-              handleCellClick(
-                row.original.month,
-                'interest-payments',
-                `ชำระค่างวด - ${row.original.monthName}`,
-                'payment',
-              )
-            }
-          >
-            {formatCurrency(row.original.interestPayment)}
-          </span>
+          <AvatarGroup group={row.original.users} size="size-8" />
         ),
         enableSorting: true,
-        size: 140,
+        size: 135,
         meta: {
-          skeleton: <Skeleton className="h-4 w-[90px]" />,
-        },
-      },
-      {
-        id: 'closeAccountPayment',
-        accessorFn: (row) => row.closeAccountPayment,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="ปิดบัญชี" column={column} />
-        ),
-        cell: ({ row }) => (
-          <span
-            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
-            onClick={() =>
-              handleCellClick(
-                row.original.month,
-                'close-payments',
-                `ชำระปิดบัญชี - ${row.original.monthName}`,
-                'payment',
-              )
-            }
-          >
-            {formatCurrency(row.original.closeAccountPayment)}
-          </span>
-        ),
-        enableSorting: true,
-        size: 130,
-        meta: {
-          skeleton: <Skeleton className="h-4 w-[90px]" />,
-        },
-      },
-      {
-        id: 'overduePayment',
-        accessorFn: (row) => row.overduePayment,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="ค้างชำระ" column={column} />
-        ),
-        cell: ({ row }) => (
-          <span
-            className="text-sm font-medium text-red-600 cursor-pointer hover:text-red-700 underline decoration-dotted"
-            onClick={() =>
-              handleCellClick(
-                row.original.month,
-                'overdue',
-                `ค้างชำระ - ${row.original.monthName}`,
-                'installment',
-              )
-            }
-          >
-            {formatCurrency(row.original.overduePayment)}
-          </span>
-        ),
-        enableSorting: true,
-        size: 130,
-        meta: {
-          skeleton: <Skeleton className="h-4 w-[90px]" />,
-        },
-      },
-      {
-        id: 'profit',
-        accessorFn: (row) => row.profit,
-        header: ({ column }) => (
-          <DataGridColumnHeader title="กำไร" column={column} />
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm font-medium text-green-600">
-            {formatCurrency(row.original.profit)}
-          </span>
-        ),
-        enableSorting: true,
-        size: 130,
-        meta: {
-          skeleton: <Skeleton className="h-4 w-[90px]" />,
+          skeleton: <Skeleton className="h-6 w-[75px]" />,
         },
       },
     ],
-    [currentMonth, isCurrentYear, handleCellClick],
+    [],
   );
 
   const table = useReactTable({
     columns,
-    data: data,
-    pageCount: Math.ceil((data?.length || 0) / pagination.pageSize),
-    getRowId: (row: MonthlyData) => String(row.month),
+    data: filteredData,
+    pageCount: Math.ceil((filteredData?.length || 0) / pagination.pageSize),
+    getRowId: (row: IData) => String(row.id),
     state: {
       pagination,
       sorting,
@@ -302,7 +364,7 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
     columnResizeMode: 'onChange',
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
-    enableRowSelection: false,
+    enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -311,54 +373,51 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
   });
 
   return (
-    <>
-      <DataGrid
-        table={table}
-        recordCount={data?.length || 0}
-        tableLayout={{
-          columnsPinnable: false,
-          columnsMovable: false,
-          columnsVisibility: false,
-          cellBorder: true,
-        }}
-      >
-        <Card>
-          <CardHeader className="py-3.5">
-            <CardTitle>ข้อมูลรายเดือน</CardTitle>
-          </CardHeader>
-          <CardTable>
-            <ScrollArea>
-              <DataGridTable />
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          </CardTable>
-          <CardFooter>
-            <DataGridPagination />
-          </CardFooter>
-        </Card>
-      </DataGrid>
-
-      {/* Modal for details */}
-      {modalType === 'installment' ? (
-        <DetailModalAdvanced
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          title={modalTitle}
-          data={modalData}
-          loading={loading}
-        />
-      ) : (
-        <DetailModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          title={modalTitle}
-          data={modalData}
-          loading={loading}
-          type={modalType}
-        />
-      )}
-    </>
+    <DataGrid
+      table={table}
+      recordCount={filteredData?.length || 0}
+      tableLayout={{
+        columnsPinnable: true,
+        columnsMovable: true,
+        columnsVisibility: true,
+        cellBorder: true,
+      }}
+    >
+      <Card>
+        <CardHeader className="py-3.5">
+          <CardTitle>Teams</CardTitle>
+          <CardToolbar className="relative">
+            <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
+            <Input
+              placeholder="Search Teams..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="ps-9 w-40"
+            />
+            {searchQuery.length > 0 && (
+              <Button
+                mode="icon"
+                variant="ghost"
+                className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
+                onClick={() => setSearchQuery('')}
+              >
+                <X />
+              </Button>
+            )}
+          </CardToolbar>
+        </CardHeader>
+        <CardTable>
+          <ScrollArea>
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </CardTable>
+        <CardFooter>
+          <DataGridPagination />
+        </CardFooter>
+      </Card>
+    </DataGrid>
   );
 };
 
-export { Teams, type ITeamsProps };
+export { Teams };

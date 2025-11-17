@@ -1,39 +1,66 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { dashboardApi } from '@src/features/dashboard/api';
+import { DetailModal } from '@src/features/dashboard/components/detail-modal';
+import { DetailModalAdvanced } from '@src/features/dashboard/components/detail-modal-advanced';
 import { formatCurrency } from '@src/shared/lib/helpers';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
 import { toast } from 'sonner';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
-  CardContent,
+  CardFooter,
   CardHeader,
-  CardHeading,
+  CardTable,
+  CardTitle,
 } from '@src/shared/components/ui/card';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@src/shared/components/ui/table';
-import { dashboardApi } from '../api';
-import { type MonthlyData } from '../validations';
-import { DetailModal } from './detail-modal';
-import { DetailModalAdvanced } from './detail-modal-advanced';
 
-interface MonthlyDataTableProps {
-  data: MonthlyData[];
-  year: number;
+interface MonthlyData {
+  month: number;
+  monthName: string;
+  loanAmount: number;
+  totalPayment: number;
+  interestPayment: number;
+  closeAccountPayment: number;
+  overduePayment: number;
+  profit: number;
+}
+
+interface IMonthlyDataTableProps {
+  data?: MonthlyData[];
+  year?: number;
   isLoading?: boolean;
 }
 
-export function MonthlyDataTable({
-  data,
+const MonthlyDataTable = ({
+  data = [],
   year,
-  isLoading,
-}: MonthlyDataTableProps) {
+  isLoading = false,
+}: IMonthlyDataTableProps) => {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 12,
+  });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalData, setModalData] = useState<any[]>([]);
@@ -47,206 +74,295 @@ export function MonthlyDataTable({
   const currentYear = new Date().getFullYear();
   const isCurrentYear = year === currentYear;
 
-  // Calculate totals for footer
-  const totals = data.reduce(
-    (acc, row) => ({
-      loanAmount: acc.loanAmount + row.loanAmount,
-      totalPayment: acc.totalPayment + row.totalPayment,
-      interestPayment: acc.interestPayment + row.interestPayment,
-      closeAccountPayment: acc.closeAccountPayment + row.closeAccountPayment,
-      overduePayment: acc.overduePayment + row.overduePayment,
-      profit: acc.profit + row.profit,
-    }),
-    {
-      loanAmount: 0,
-      totalPayment: 0,
-      interestPayment: 0,
-      closeAccountPayment: 0,
-      overduePayment: 0,
-      profit: 0,
+  const handleCellClick = useCallback(
+    async (
+      month: number,
+      type:
+        | 'loans'
+        | 'payments'
+        | 'interest-payments'
+        | 'close-payments'
+        | 'overdue',
+      title: string,
+      modalType: 'loan' | 'payment' | 'installment',
+    ) => {
+      if (!year) return;
+      setLoading(true);
+      try {
+        const response = await dashboardApi.getMonthlyDetails(
+          year,
+          month,
+          type,
+        );
+        setModalData(response.data || []);
+        setModalTitle(title);
+        setModalType(modalType);
+        setModalOpen(true);
+      } catch (error) {
+        toast.error('ไม่สามารถโหลดข้อมูลได้');
+      } finally {
+        setLoading(false);
+      }
     },
+    [year],
   );
 
-  const handleCellClick = async (
-    month: number,
-    type:
-      | 'loans'
-      | 'payments'
-      | 'interest-payments'
-      | 'close-payments'
-      | 'overdue',
-    title: string,
-    modalType: 'loan' | 'payment' | 'installment',
-  ) => {
-    setLoading(true);
-    try {
-      const response = await dashboardApi.getMonthlyDetails(year, month, type);
-      setModalData(response.data || []);
-      setModalTitle(title);
-      setModalType(modalType);
-      setModalOpen(true);
-    } catch (error) {
-      toast.error('ไม่สามารถโหลดข้อมูลได้');
-    } finally {
-      setLoading(false);
-    }
-  };
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[400px] w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const columns = useMemo<ColumnDef<MonthlyData>[]>(
+    () => [
+      {
+        id: 'monthName',
+        accessorFn: (row) => row.monthName,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="เดือน" column={column} />
+        ),
+        cell: ({ row }) => {
+          const isCurrentMonthRow =
+            isCurrentYear && row.original.month === currentMonth;
+          return (
+            <div className="flex items-center gap-2">
+              <span className="leading-none font-medium text-sm text-mono">
+                {row.original.monthName}
+              </span>
+              {isCurrentMonthRow && (
+                <Badge variant="primary" size="sm" className="bg-blue-600">
+                  ปัจจุบัน
+                </Badge>
+              )}
+            </div>
+          );
+        },
+        enableSorting: true,
+        size: 140,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[80px]" />,
+        },
+      },
+      {
+        id: 'loanAmount',
+        accessorFn: (row) => row.loanAmount,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="ยอดเปิดสินเชื่อ" column={column} />
+        ),
+        cell: ({ row }) => (
+          <span
+            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
+            onClick={() =>
+              handleCellClick(
+                row.original.month,
+                'loans',
+                `เปิดสินเชื่อ - ${row.original.monthName}`,
+                'loan',
+              )
+            }
+          >
+            {formatCurrency(row.original.loanAmount)}
+          </span>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[90px]" />,
+        },
+      },
+      {
+        id: 'totalPayment',
+        accessorFn: (row) => row.totalPayment,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="รับชำระทั้งหมด" column={column} />
+        ),
+        cell: ({ row }) => (
+          <span
+            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
+            onClick={() =>
+              handleCellClick(
+                row.original.month,
+                'payments',
+                `รับชำระ - ${row.original.monthName}`,
+                'payment',
+              )
+            }
+          >
+            {formatCurrency(row.original.totalPayment)}
+          </span>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[90px]" />,
+        },
+      },
+      {
+        id: 'interestPayment',
+        accessorFn: (row) => row.interestPayment,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="ชำระค่างวด" column={column} />
+        ),
+        cell: ({ row }) => (
+          <span
+            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
+            onClick={() =>
+              handleCellClick(
+                row.original.month,
+                'interest-payments',
+                `ชำระค่างวด - ${row.original.monthName}`,
+                'payment',
+              )
+            }
+          >
+            {formatCurrency(row.original.interestPayment)}
+          </span>
+        ),
+        enableSorting: true,
+        size: 140,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[90px]" />,
+        },
+      },
+      {
+        id: 'closeAccountPayment',
+        accessorFn: (row) => row.closeAccountPayment,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="ปิดบัญชี" column={column} />
+        ),
+        cell: ({ row }) => (
+          <span
+            className="text-sm font-medium cursor-pointer hover:text-primary underline decoration-dotted"
+            onClick={() =>
+              handleCellClick(
+                row.original.month,
+                'close-payments',
+                `ชำระปิดบัญชี - ${row.original.monthName}`,
+                'payment',
+              )
+            }
+          >
+            {formatCurrency(row.original.closeAccountPayment)}
+          </span>
+        ),
+        enableSorting: true,
+        size: 130,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[90px]" />,
+        },
+      },
+      {
+        id: 'overduePayment',
+        accessorFn: (row) => row.overduePayment,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="ค้างชำระ" column={column} />
+        ),
+        cell: ({ row }) => (
+          <span
+            className="text-sm font-medium text-red-600 cursor-pointer hover:text-red-700 underline decoration-dotted"
+            onClick={() =>
+              handleCellClick(
+                row.original.month,
+                'overdue',
+                `ค้างชำระ - ${row.original.monthName}`,
+                'installment',
+              )
+            }
+          >
+            {formatCurrency(row.original.overduePayment)}
+          </span>
+        ),
+        enableSorting: true,
+        size: 130,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[90px]" />,
+        },
+      },
+      {
+        id: 'profit',
+        accessorFn: (row) => row.profit,
+        header: ({ column }) => (
+          <DataGridColumnHeader title="กำไร" column={column} />
+        ),
+        cell: ({ row }) => (
+          <span className="text-sm font-medium text-green-600">
+            {formatCurrency(row.original.profit)}
+          </span>
+        ),
+        enableSorting: true,
+        size: 130,
+        meta: {
+          skeleton: <Skeleton className="h-4 w-[90px]" />,
+        },
+      },
+    ],
+    [currentMonth, isCurrentYear, handleCellClick],
+  );
+
+  const table = useReactTable({
+    columns,
+    data: data,
+    pageCount: Math.ceil((data?.length || 0) / pagination.pageSize),
+    getRowId: (row: MonthlyData) => String(row.month),
+    state: {
+      pagination,
+      sorting,
+      rowSelection,
+    },
+    columnResizeMode: 'onChange',
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    enableRowSelection: false,
+    onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardHeading>ข้อมูลรายเดือน</CardHeading>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">เดือน</TableHead>
-                <TableHead className="text-right">เปิดสินเชื่อ</TableHead>
-                <TableHead className="text-right">รับชำระ</TableHead>
-                <TableHead className="text-right">ชำระค่างวด</TableHead>
-                <TableHead className="text-right">ชำระปิดบัญชี</TableHead>
-                <TableHead className="text-right">ค้างชำระ</TableHead>
-                <TableHead className="text-right">กำไร</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((row) => {
-                const isCurrentMonthRow =
-                  isCurrentYear && row.month === currentMonth;
-                return (
-                  <TableRow
-                    key={row.month}
-                    className={
-                      isCurrentMonthRow ? 'bg-blue-50 hover:bg-blue-100' : ''
-                    }
-                  >
-                    <TableCell className="font-medium">
-                      {row.monthName}
-                      {isCurrentMonthRow && (
-                        <span className="ml-2 rounded bg-blue-600 px-2 py-0.5 text-xs text-white">
-                          ปัจจุบัน
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell
-                      className="cursor-pointer text-right underline decoration-dotted hover:bg-blue-50"
-                      onClick={() =>
-                        handleCellClick(
-                          row.month,
-                          'loans',
-                          `เปิดสินเชื่อ - ${row.monthName}`,
-                          'loan',
-                        )
-                      }
-                    >
-                      {formatCurrency(row.loanAmount)}
-                    </TableCell>
-                    <TableCell
-                      className="cursor-pointer text-right underline decoration-dotted hover:bg-blue-50"
-                      onClick={() =>
-                        handleCellClick(
-                          row.month,
-                          'payments',
-                          `รับชำระ - ${row.monthName}`,
-                          'payment',
-                        )
-                      }
-                    >
-                      {formatCurrency(row.totalPayment)}
-                    </TableCell>
-                    <TableCell
-                      className="cursor-pointer text-right underline decoration-dotted hover:bg-blue-50"
-                      onClick={() =>
-                        handleCellClick(
-                          row.month,
-                          'interest-payments',
-                          `ชำระค่างวด - ${row.monthName}`,
-                          'payment',
-                        )
-                      }
-                    >
-                      {formatCurrency(row.interestPayment)}
-                    </TableCell>
-                    <TableCell
-                      className="cursor-pointer text-right underline decoration-dotted hover:bg-blue-50"
-                      onClick={() =>
-                        handleCellClick(
-                          row.month,
-                          'close-payments',
-                          `ชำระปิดบัญชี - ${row.monthName}`,
-                          'payment',
-                        )
-                      }
-                    >
-                      {formatCurrency(row.closeAccountPayment)}
-                    </TableCell>
-                    <TableCell
-                      className="cursor-pointer text-right text-red-600 underline decoration-dotted hover:bg-red-50"
-                      onClick={() =>
-                        handleCellClick(
-                          row.month,
-                          'overdue',
-                          `ค้างชำระ - ${row.monthName}`,
-                          'installment',
-                        )
-                      }
-                    >
-                      {formatCurrency(row.overduePayment)}
-                    </TableCell>
-                    <TableCell className="text-right font-semibold text-green-600">
-                      {formatCurrency(row.profit)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {/* Footer Row - Total */}
-              <TableRow className="border-t-2 bg-gray-100 font-semibold">
-                <TableCell className="font-bold">รวม</TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(totals.loanAmount)}
-                </TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(totals.totalPayment)}
-                </TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(totals.interestPayment)}
-                </TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(totals.closeAccountPayment)}
-                </TableCell>
-                <TableCell className="text-right text-red-600">
-                  {formatCurrency(totals.overduePayment)}
-                </TableCell>
-                <TableCell className="text-right text-green-600">
-                  {formatCurrency(totals.profit)}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
+    <>
+      <DataGrid
+        table={table}
+        recordCount={data?.length || 0}
+        tableLayout={{
+          columnsPinnable: false,
+          columnsMovable: false,
+          columnsVisibility: false,
+          cellBorder: true,
+        }}
+      >
+        <Card>
+          <CardHeader className="py-3.5">
+            <CardTitle>ข้อมูลรายเดือน</CardTitle>
+          </CardHeader>
+          <CardTable>
+            <ScrollArea>
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </CardTable>
+          {/* <CardFooter>
+            <DataGridPagination />
+          </CardFooter> */}
+        </Card>
+      </DataGrid>
 
-      <DetailModalAdvanced
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        title={modalTitle}
-        data={modalData}
-        loading={loading}
-      />
-    </Card>
+      {/* Modal for details */}
+      {modalType === 'installment' ? (
+        <DetailModalAdvanced
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          title={modalTitle}
+          data={modalData}
+          loading={loading}
+        />
+      ) : (
+        <DetailModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          title={modalTitle}
+          data={modalData}
+          loading={loading}
+          type={modalType}
+        />
+      )}
+    </>
   );
-}
+};
+
+export { MonthlyDataTable, type IMonthlyDataTableProps };

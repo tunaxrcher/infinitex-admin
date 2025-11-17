@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import { formatCurrency } from '@src/shared/lib/helpers';
 import { format } from 'date-fns';
 import { Search, X } from 'lucide-react';
@@ -356,7 +357,16 @@ export function DetailModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-6xl overflow-hidden">
-        <DialogHeader>
+        <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
           <DialogTitle className="text-xl">{title}</DialogTitle>
         </DialogHeader>
 

@@ -49,79 +49,6 @@ export function DashboardPage() {
   }
 
   return (
-    // Old ui code
-    // <div className="container mx-auto space-y-6 p-6">
-    //   {/* Header with Year Filter */}
-    //   <div className="flex items-center justify-between">
-    //     <h1 className="text-3xl font-bold">Dashboard</h1>
-    //     <div className="flex items-center space-x-2">
-    //       <Label htmlFor="year">ปี:</Label>
-    //       <Select value={year} onValueChange={setYear}>
-    //         <SelectTrigger id="year" className="w-[120px]">
-    //           <SelectValue />
-    //         </SelectTrigger>
-    //         <SelectContent>
-    //           {yearOptions.map((y) => (
-    //             <SelectItem key={y} value={y.toString()}>
-    //               {y + 543}
-    //             </SelectItem>
-    //           ))}
-    //         </SelectContent>
-    //       </Select>
-    //     </div>
-    //   </div>
-
-    //   {/* Summary Cards */}
-    //   <DashboardSummary
-    //     currentMonthLoanAmount={dashboardData?.currentMonthLoanAmount || 0}
-    //     currentMonthProfit={dashboardData?.currentMonthProfit || 0}
-    //     yearProfit={dashboardData?.yearProfit || 0}
-    //     isLoading={isLoading}
-    //   />
-
-    //   {/* Main Content - 2 Columns */}
-    //   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-    //     {/* Left Column */}
-    //     <div className="space-y-6">
-    //       <MonthlyDataTable
-    //         data={dashboardData?.monthlyData || []}
-    //         year={parseInt(year)}
-    //         isLoading={isLoading}
-    //       />
-    //     </div>
-
-    //     {/* Right Column */}
-    //     <div className="space-y-6">
-    //       <PaymentChart
-    //         data={dashboardData?.monthlyData || []}
-    //         isLoading={isLoading}
-    //       />
-    //     </div>
-    //   </div>
-
-    //   {/* Bottom Summary */}
-    //   <ProfitSummary
-    //     highestPaymentMonth={
-    //       dashboardData?.highestPaymentMonth || {
-    //         month: 0,
-    //         monthName: '-',
-    //         amount: 0,
-    //       }
-    //     }
-    //     lowestPaymentMonth={
-    //       dashboardData?.lowestPaymentMonth || {
-    //         month: 0,
-    //         monthName: '-',
-    //         amount: 0,
-    //       }
-    //     }
-    //     averagePaymentPerMonth={dashboardData?.averagePaymentPerMonth || 0}
-    //     totalPaymentYear={dashboardData?.totalPaymentYear || 0}
-    //     paymentPercentage={dashboardData?.paymentPercentage || 0}
-    //     isLoading={isLoading}
-    //   />
-    // </div>
-
     <Container>
       <div className="container-fluid space-y-5 lg:space-y-9">
         <div className="flex items-center flex-wrap gap-2.5 justify-between">
@@ -135,7 +62,7 @@ export function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="year" className="text-sm font-medium">
-              ปี 
+              ปี
             </Label>
             <Select value={year} onValueChange={setYear}>
               <SelectTrigger id="year" className="w-[140px]">
@@ -155,7 +82,7 @@ export function DashboardPage() {
         <div className="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
           <div className="lg:col-span-1">
             <div className="grid grid-cols-2 gap-5 lg:gap-7.5 h-full items-stretch">
-              <ChannelStats
+              <DashboardSummary
                 currentMonthLoanAmount={
                   dashboardData?.currentMonthLoanAmount || 0
                 }
@@ -166,14 +93,14 @@ export function DashboardPage() {
             </div>
           </div>
           <div className="lg:col-span-2">
-            <EarningsChart
+            <PaymentChart
               data={dashboardData?.monthlyData || []}
               isLoading={isLoading}
             />
           </div>
         </div>
         <div className="grid lg:grid-cols-1 gap-5 lg:gap-7.5 items-stretch">
-          <Teams
+          <MonthlyDataTable
             data={dashboardData?.monthlyData || []}
             year={parseInt(year)}
             isLoading={isLoading}
@@ -181,7 +108,7 @@ export function DashboardPage() {
         </div>
 
         <div className="grid lg:grid-cols-1 gap-5 lg:gap-7.5 items-stretch">
-          <Highlights
+          <ProfitSummary
             limit={3}
             totalPaymentYear={dashboardData?.totalPaymentYear || 0}
             averagePaymentPerMonth={dashboardData?.averagePaymentPerMonth || 0}

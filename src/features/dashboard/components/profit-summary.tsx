@@ -1,112 +1,165 @@
-'use client';
-
+import {
+  RemixiconComponentType,
+  RiBankLine,
+  RiFacebookCircleLine,
+  RiGoogleLine,
+  RiInstagramLine,
+  RiStore2Line,
+} from '@remixicon/react';
+import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
 import { formatCurrency } from '@src/shared/lib/helpers';
-import { DollarSign, Percent, TrendingDown, TrendingUp } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  BarChart3,
+  EllipsisVertical,
+  TrendingDown,
+  TrendingUp,
+  type LucideIcon,
+} from 'lucide-react';
+import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
-  CardHeading,
+  CardTitle,
 } from '@src/shared/components/ui/card';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 
-interface ProfitSummaryProps {
-  highestPaymentMonth: {
+interface IProfitSummaryRow {
+  icon: LucideIcon | RemixiconComponentType;
+  text: string;
+  total: string;
+  subtitle?: string;
+}
+type IProfitSummaryRows = Array<IProfitSummaryRow>;
+
+interface IProfitSummaryItem {
+  badgeColor: string;
+  label: string;
+}
+type IProfitSummaryItems = Array<IProfitSummaryItem>;
+
+interface IProfitSummaryProps {
+  limit?: number;
+  totalPaymentYear?: number;
+  averagePaymentPerMonth?: number;
+  highestPaymentMonth?: {
     month: number;
     monthName: string;
     amount: number;
   };
-  lowestPaymentMonth: {
+  lowestPaymentMonth?: {
     month: number;
     monthName: string;
     amount: number;
   };
-  averagePaymentPerMonth: number;
-  totalPaymentYear: number;
-  paymentPercentage: number;
   isLoading?: boolean;
 }
 
-export function ProfitSummary({
-  highestPaymentMonth,
-  lowestPaymentMonth,
-  averagePaymentPerMonth,
-  totalPaymentYear,
-  paymentPercentage,
-  isLoading,
-}: ProfitSummaryProps) {
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-32 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const summaryItems = [
+const ProfitSummary = ({
+  limit,
+  totalPaymentYear = 0,
+  averagePaymentPerMonth = 0,
+  highestPaymentMonth = { month: 0, monthName: '-', amount: 0 },
+  lowestPaymentMonth = { month: 0, monthName: '-', amount: 0 },
+  isLoading = false,
+}: IProfitSummaryProps) => {
+  const rows: IProfitSummaryRows = [
     {
-      label: 'ยอดรับชำระสูงสุด',
-      value: `${highestPaymentMonth.monthName} - ${formatCurrency(highestPaymentMonth.amount)}`,
       icon: TrendingUp,
-      color: 'text-green-600',
+      text: 'เดือนที่รับชำระสูงสุด',
+      total: formatCurrency(highestPaymentMonth.amount),
+      subtitle: highestPaymentMonth.monthName,
     },
     {
-      label: 'ยอดรับชำระน้อยสุด',
-      value: `${lowestPaymentMonth.monthName} - ${formatCurrency(lowestPaymentMonth.amount)}`,
       icon: TrendingDown,
-      color: 'text-red-600',
+      text: 'เดือนที่รับชำระต่ำสุด',
+      total: formatCurrency(lowestPaymentMonth.amount),
+      subtitle: lowestPaymentMonth.monthName,
     },
     {
-      label: 'เฉลี่ยต่อเดือน',
-      value: formatCurrency(averagePaymentPerMonth),
-      icon: DollarSign,
-      color: 'text-blue-600',
-    },
-    {
-      label: 'ยอดรับชำระทั้งหมด',
-      value: formatCurrency(totalPaymentYear),
-      icon: DollarSign,
-      color: 'text-purple-600',
-    },
-    {
-      label: 'เปอร์เซ็นต์ยอดรับชำระ',
-      value: `${paymentPercentage.toFixed(2)}%`,
-      icon: Percent,
-      color: 'text-orange-600',
+      icon: BarChart3,
+      text: 'ค่าเฉลี่ยรับชำระต่อเดือน',
+      total: formatCurrency(averagePaymentPerMonth),
     },
   ];
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardHeading>สรุปภาพรวม</CardHeading>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {summaryItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.label}
-                className="flex flex-col space-y-2 rounded-lg border p-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <Icon className={`h-5 w-5 ${item.color}`} />
-                  <span className="text-sm font-medium text-gray-600">
-                    {item.label}
-                  </span>
-                </div>
-                <div className="text-lg font-bold">{item.value}</div>
-              </div>
-            );
-          })}
+  const renderRow = (row: IProfitSummaryRow, index: number) => {
+    if (isLoading) {
+      return (
+        <div
+          key={index}
+          className="flex items-center justify-between flex-wrap gap-2"
+        >
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="h-5 w-5 rounded" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <Skeleton className="h-5 w-24" />
+            {row.subtitle && <Skeleton className="h-3 w-16" />}
+          </div>
         </div>
+      );
+    }
+
+    return (
+      <div
+        key={index}
+        className="flex items-center justify-between flex-wrap gap-2"
+      >
+        <div className="flex items-center gap-1.5">
+          <row.icon className="size-4.5 text-muted-foreground" />
+          <span className="text-sm font-normal text-mono">{row.text}</span>
+        </div>
+        <div className="flex flex-col items-end gap-0.5">
+          <span className="text-sm font-medium text-foreground">
+            {row.total}
+          </span>
+          {row.subtitle && (
+            <span className="text-xs text-muted-foreground">
+              {row.subtitle}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>สรุปข้อมูล</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4 p-5 lg:p-7.5 lg:pt-4">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-normal text-secondary-foreground">
+            ยอดรับชำระทั้งปี
+          </span>
+          {isLoading ? (
+            <Skeleton className="h-10 w-40" />
+          ) : (
+            <div className="flex items-center gap-2.5">
+              <span className="text-3xl font-semibold text-mono">
+                {formatCurrency(totalPaymentYear)}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="border-b border-input"></div>
+        <div className="grid gap-3">{rows.slice(0, limit).map(renderRow)}</div>
       </CardContent>
     </Card>
   );
-}
+};
+
+export {
+  ProfitSummary,
+  type IProfitSummaryRow,
+  type IProfitSummaryRows,
+  type IProfitSummaryItem,
+  type IProfitSummaryItems,
+  type IProfitSummaryProps,
+};

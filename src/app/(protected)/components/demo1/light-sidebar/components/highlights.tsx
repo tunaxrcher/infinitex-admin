@@ -7,14 +7,10 @@ import {
   RiStore2Line,
 } from '@remixicon/react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
-import { formatCurrency } from '@src/shared/lib/helpers';
 import {
   ArrowDown,
   ArrowUp,
-  BarChart3,
   EllipsisVertical,
-  TrendingDown,
-  TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
@@ -25,13 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { Skeleton } from '@src/shared/components/ui/skeleton';
 
 interface IHighlightsRow {
   icon: LucideIcon | RemixiconComponentType;
   text: string;
-  total: string;
-  subtitle?: string;
+  total: number;
+  stats: number;
+  increase: boolean;
 }
 type IHighlightsRows = Array<IHighlightsRow>;
 
@@ -43,68 +39,48 @@ type IHighlightsItems = Array<IHighlightsItem>;
 
 interface IHighlightsProps {
   limit?: number;
-  totalPaymentYear?: number;
-  averagePaymentPerMonth?: number;
-  highestPaymentMonth?: {
-    month: number;
-    monthName: string;
-    amount: number;
-  };
-  lowestPaymentMonth?: {
-    month: number;
-    monthName: string;
-    amount: number;
-  };
-  isLoading?: boolean;
 }
 
-const Highlights = ({
-  limit,
-  totalPaymentYear = 0,
-  averagePaymentPerMonth = 0,
-  highestPaymentMonth = { month: 0, monthName: '-', amount: 0 },
-  lowestPaymentMonth = { month: 0, monthName: '-', amount: 0 },
-  isLoading = false,
-}: IHighlightsProps) => {
+const Highlights = ({ limit }: IHighlightsProps) => {
   const rows: IHighlightsRows = [
     {
-      icon: TrendingUp,
-      text: 'เดือนที่รับชำระสูงสุด',
-      total: formatCurrency(highestPaymentMonth.amount),
-      subtitle: highestPaymentMonth.monthName,
+      icon: RiStore2Line,
+      text: 'Online Store',
+      total: 172,
+      stats: 3.9,
+      increase: true,
     },
     {
-      icon: TrendingDown,
-      text: 'เดือนที่รับชำระต่ำสุด',
-      total: formatCurrency(lowestPaymentMonth.amount),
-      subtitle: lowestPaymentMonth.monthName,
+      icon: RiFacebookCircleLine,
+      text: 'Facebook',
+      total: 85,
+      stats: 0.7,
+      increase: false,
     },
     {
-      icon: BarChart3,
-      text: 'ค่าเฉลี่ยรับชำระต่อเดือน',
-      total: formatCurrency(averagePaymentPerMonth),
+      icon: RiInstagramLine,
+      text: 'Instagram',
+      total: 36,
+      stats: 8.2,
+      increase: true,
     },
+    {
+      icon: RiGoogleLine,
+      text: 'Google',
+      total: 26,
+      stats: 8.2,
+      increase: true,
+    },
+    { icon: RiBankLine, text: 'Retail', total: 7, stats: 0.7, increase: false },
+  ];
+
+  const items: IHighlightsItems = [
+    { badgeColor: 'bg-green-500', label: 'Metronic' },
+    { badgeColor: 'bg-destructive', label: 'Bundle' },
+    { badgeColor: 'bg-violet-500', label: 'MetronicNest' },
   ];
 
   const renderRow = (row: IHighlightsRow, index: number) => {
-    if (isLoading) {
-      return (
-        <div
-          key={index}
-          className="flex items-center justify-between flex-wrap gap-2"
-        >
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="h-5 w-5 rounded" />
-            <Skeleton className="h-4 w-40" />
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <Skeleton className="h-5 w-24" />
-            {row.subtitle && <Skeleton className="h-3 w-16" />}
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div
         key={index}
@@ -114,16 +90,28 @@ const Highlights = ({
           <row.icon className="size-4.5 text-muted-foreground" />
           <span className="text-sm font-normal text-mono">{row.text}</span>
         </div>
-        <div className="flex flex-col items-end gap-0.5">
-          <span className="text-sm font-medium text-foreground">
-            {row.total}
+        <div className="flex items-center text-sm font-medium text-foreground gap-6">
+          <span className="lg:text-right">${row.total}k</span>
+          <span className="flex items-center justify-end gap-1">
+            {row.increase ? (
+              <ArrowUp className="text-green-500 size-4" />
+            ) : (
+              <ArrowDown className="text-destructive size-4" />
+            )}
+            {row.stats}%
           </span>
-          {row.subtitle && (
-            <span className="text-xs text-muted-foreground">
-              {row.subtitle}
-            </span>
-          )}
         </div>
+      </div>
+    );
+  };
+
+  const renderItem = (item: IHighlightsItem, index: number) => {
+    return (
+      <div key={index} className="flex items-center gap-1.5">
+        <BadgeDot className={item.badgeColor} />
+        <span className="text-sm font-normal text-foreground">
+          {item.label}
+        </span>
       </div>
     );
   };
@@ -131,22 +119,36 @@ const Highlights = ({
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>สรุปข้อมูล</CardTitle>
+        <CardTitle>Highlights</CardTitle>
+        <DropdownMenu4
+          trigger={
+            <Button variant="ghost" mode="icon">
+              <EllipsisVertical />
+            </Button>
+          }
+        />
       </CardHeader>
       <CardContent className="flex flex-col gap-4 p-5 lg:p-7.5 lg:pt-4">
         <div className="flex flex-col gap-0.5">
           <span className="text-sm font-normal text-secondary-foreground">
-            ยอดรับชำระทั้งปี
+            All time sales
           </span>
-          {isLoading ? (
-            <Skeleton className="h-10 w-40" />
-          ) : (
-            <div className="flex items-center gap-2.5">
-              <span className="text-3xl font-semibold text-mono">
-                {formatCurrency(totalPaymentYear)}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2.5">
+            <span className="text-3xl font-semibold text-mono">$295.7k</span>
+            <Badge size="sm" variant="success" appearance="light">
+              +2.7%
+            </Badge>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 mb-1.5">
+          <div className="bg-green-500 h-2 w-full max-w-[60%] rounded-xs"></div>
+          <div className="bg-destructive h-2 w-full max-w-[25%] rounded-xs"></div>
+          <div className="bg-violet-500 h-2 w-full max-w-[15%] rounded-xs"></div>
+        </div>
+        <div className="flex items-center flex-wrap gap-4 mb-1">
+          {items.map((item, index) => {
+            return renderItem(item, index);
+          })}
         </div>
         <div className="border-b border-input"></div>
         <div className="grid gap-3">{rows.slice(0, limit).map(renderRow)}</div>

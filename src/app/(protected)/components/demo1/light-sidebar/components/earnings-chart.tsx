@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ApexOptions } from 'apexcharts';
 import ApexChart from 'react-apexcharts';
 import {
@@ -6,30 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { Label } from '@src/shared/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
 
-interface MonthlyData {
-  month: number;
-  monthName: string;
-  loanAmount: number;
-  totalPayment: number;
-  interestPayment: number;
-  closeAccountPayment: number;
-  overduePayment: number;
-  profit: number;
-}
+// Hardcoded dummy data for the earnings chart
+const dummyChartData: number[] = [
+  58, 64, 52, 45, 42, 38, 45, 53, 56, 65, 75, 85,
+];
 
-interface EarningsChartProps {
-  data?: MonthlyData[];
-  isLoading?: boolean;
-}
-
-const EarningsChart = ({
-  data = [],
-  isLoading = false,
-}: EarningsChartProps) => {
-  // English month names mapping
-  const monthNamesEn = [
+const EarningsChart = () => {
+  const [chartData, setChartData] = useState<number[]>(dummyChartData);
+  const categories: string[] = [
     'Jan',
     'Feb',
     'Mar',
@@ -44,18 +39,16 @@ const EarningsChart = ({
     'Dec',
   ];
 
-  const chartData = data.map((item) => item.profit); // Use actual profit values in Baht
-  const categories = data.map((item) => monthNamesEn[item.month - 1]); // Get English month names
-
-  // Calculate max value for chart scaling
-  const maxProfit = Math.max(...chartData, 0);
-  const chartMax = Math.ceil(maxProfit * 1.2); // 20% more than max for better visualization
+  useEffect(() => {
+    // No need to fetch data, just use the dummy data directly
+    setChartData(dummyChartData);
+  }, []);
 
   const options: ApexOptions = {
     series: [
       {
-        name: 'กำไร',
-        data: chartData,
+        name: 'Earnings',
+        data: chartData ?? [],
       },
     ],
     chart: {
@@ -110,7 +103,7 @@ const EarningsChart = ({
     },
     yaxis: {
       min: 0,
-      max: chartMax || 100,
+      max: 100,
       tickAmount: 5,
       axisTicks: {
         show: false,
@@ -121,24 +114,33 @@ const EarningsChart = ({
           fontSize: '12px',
         },
         formatter: (defaultValue) => {
-          return `฿${(defaultValue / 1000).toFixed(0)}K`;
+          return `$${defaultValue}K`;
         },
       },
     },
     tooltip: {
       enabled: true,
       custom({ series, seriesIndex, dataPointIndex, w }) {
-        const number = parseInt(series[seriesIndex][dataPointIndex]);
+        const number = parseInt(series[seriesIndex][dataPointIndex]) * 1000;
+        const month = w.globals.seriesX[seriesIndex][dataPointIndex];
+        const monthName = categories[month];
+
+        const formatter = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        });
+
+        const formattedNumber = formatter.format(number);
+
         return `
           <div class="flex flex-col gap-2 p-3.5">
-            <div class="font-medium text-sm text-secondary-foreground mb-1">${w.config.xaxis.categories[dataPointIndex]}</div>
+            <div class="font-medium text-sm text-secondary-foreground">${monthName}, 2024 Sales</div>
             <div class="flex items-center gap-1.5">
-              <div class="rounded-full size-1.5 bg-primary"></div>
-              <div class="text-xs text-tertiary-foreground font-medium me-2">กำไร:</div>
-              <div class="text-xs font-semibold text-mono">฿${number.toLocaleString()}</div>
+              <div class="font-semibold text-base text-mono">${formattedNumber}</div>
+              <span class="rounded-full border border-green-200 font-medium dark:border-green-850 text-success-700 bg-green-100 dark:bg-green-950/30 text-[11px] leading-none px-1.25 py-1">+24%</span>
             </div>
           </div>
-        `;
+          `;
       },
     },
     markers: {
@@ -183,23 +185,29 @@ const EarningsChart = ({
     },
   };
 
-  if (isLoading) {
-    return (
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle>กราฟ</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col justify-center items-center h-[250px]">
-          <Skeleton className="h-full w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>กราฟ</CardTitle>
+        <CardTitle>Earnings</CardTitle>
+        <div className="flex gap-5">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="auto-update" className="text-sm">
+              Referrals only
+            </Label>
+            <Switch id="auto-update" defaultChecked size="sm" />
+          </div>
+          <Select defaultValue="1">
+            <SelectTrigger className="w-28">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent className="w-28">
+              <SelectItem value="1">1 month</SelectItem>
+              <SelectItem value="3">3 months</SelectItem>
+              <SelectItem value="6">6 months</SelectItem>
+              <SelectItem value="12">12 months</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent className="flex flex-col justify-end items-stretch grow px-3 py-1">
         <ApexChart
@@ -215,4 +223,4 @@ const EarningsChart = ({
   );
 };
 
-export { EarningsChart, type EarningsChartProps };
+export { EarningsChart };
