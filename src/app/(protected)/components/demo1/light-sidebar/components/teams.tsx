@@ -350,4 +350,4 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
   );
 };
 
-export { Teams, type ITeamsProps, type MonthlyData };
+export { Teams, type ITeamsProps };

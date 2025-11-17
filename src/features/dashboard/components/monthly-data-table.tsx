@@ -220,7 +220,7 @@ export function MonthlyDataTable({ data, year, isLoading }: MonthlyDataTableProp
         onOpenChange={setModalOpen}
         title={modalTitle}
         data={modalData}
-        type={modalType}
+        loading={loading}
       />
     </Card>
   )

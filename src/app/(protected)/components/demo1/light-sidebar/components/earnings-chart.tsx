@@ -199,4 +199,4 @@ const EarningsChart = ({ data = [], isLoading = false }: EarningsChartProps) => 
   );
 };
 
-export { EarningsChart, type EarningsChartProps, type MonthlyData };
+export { EarningsChart, type EarningsChartProps };
