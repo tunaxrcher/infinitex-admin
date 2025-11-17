@@ -70,18 +70,6 @@ export const dashboardService = {
     const totalLoanAmountYear = monthlyData.reduce((sum, data) => sum + data.loanAmount, 0)
     const paymentPercentage = totalLoanAmountYear > 0 ? (totalPaymentYear / totalLoanAmountYear) * 100 : 0
 
-    // Debug summary
-    console.log('=== Dashboard Summary ===')
-    console.log('Current month:', currentMonth)
-    console.log('Current month profit:', currentMonthProfit)
-    console.log('Year profit:', yearProfit)
-    console.log('Total payment year:', totalPaymentYear)
-    console.log('Average payment:', averagePaymentPerMonth)
-    console.log('Total loan year:', totalLoanAmountYear)
-    console.log('Payment percentage:', paymentPercentage)
-    console.log('Highest:', highestPaymentMonth)
-    console.log('Lowest:', lowestPaymentMonth)
-
     return {
       currentMonthLoanAmount,
       currentMonthProfit,
@@ -104,69 +92,34 @@ export const dashboardService = {
   },
 
   async getMonthlyData(year: number, month: number): Promise<MonthlyData> {
-    // 1. ยอดเปิดสินเชื่อ (สินเชื่อที่สร้างในเดือนนั้น)
-    const loansCreated = await dashboardRepository.getLoansCreatedInMonth(year, month)
-    const loanAmount = Number(loansCreated._sum.principalAmount || 0)
-    // console.log('loanAmount', loanAmount)
+    // Query ข้อมูลพร้อมกัน (Parallel)
+    const [loansCreated, payments, overdueInstallments] = await Promise.all([
+      dashboardRepository.getLoansCreatedInMonth(year, month),
+      dashboardRepository.getPaymentsInMonth(year, month),
+      dashboardRepository.getOverdueInstallmentsInMonth(year, month),
+    ])
 
-    // 2. รับชำระ (ยอดชำระทั้งหมดในเดือนนั้น)
-    const payments = await dashboardRepository.getPaymentsInMonth(year, month)
+    // 1. ยอดเปิดสินเชื่อ
+    const loanAmount = Number(loansCreated._sum.principalAmount || 0)
+
+    // 2. รับชำระ
     const totalPayment = payments.reduce((sum, payment) => sum + Number(payment.amount), 0)
 
-    // 3. ชำระค่างวด (มี installmentId ที่ไม่เป็น null/empty = จ่ายดอกเบี้ย)
-    const paymentsWithInstallment = payments.filter(
-      (p) => p.installmentId != null && p.installmentId !== '',
-    )
-    
-    // Debug: Log for month 1 year 2025
-    // if (month === 1 && year === 2025) {
-    //   console.log('=== DEBUG Month 1, 2025 ===')
-    //   console.log('Total payments count:', payments.length)
-    //   console.log('Total payments amount:', totalPayment.toLocaleString())
-    //   console.log('Payments with installmentId count:', paymentsWithInstallment.length)
-    //   console.log(
-    //     'Payments with installmentId amount:',
-    //     paymentsWithInstallment.reduce((sum, p) => sum + Number(p.amount), 0).toLocaleString(),
-    //   )
-    //   console.log('All payments:', payments.map(p => ({
-    //     amount: Number(p.amount),
-    //     installmentId: p.installmentId,
-    //     paidDate: p.paidDate,
-    //   })))
-    // }
-    
-    const interestPayment = paymentsWithInstallment.reduce(
-      (sum, payment) => sum + Number(payment.amount),
-      0,
-    )
-
-    // 4. ชำระปิดบัญชี (ไม่มี installmentId หรือเป็น null/empty = จ่ายเงินต้น)
-    const closeAccountPayment = payments
-      .filter((p) => !p.installmentId || p.installmentId === '') // ไม่มี installmentId หรือเป็น null/empty
+    // 3. ชำระค่างวด (มี installmentId = ดอกเบี้ย)
+    const interestPayment = payments
+      .filter((p) => p.installmentId != null && p.installmentId !== '')
       .reduce((sum, payment) => sum + Number(payment.amount), 0)
 
-    // 5. ค้างชำระ (งวดที่เลยกำหนดชำระแล้วแต่ยังไม่ได้ชำระ)
-    const overdueInstallments = await dashboardRepository.getOverdueInstallmentsInMonth(year, month)
+    // 4. ชำระปิดบัญชี (ไม่มี installmentId = เงินต้น)
+    const closeAccountPayment = payments
+      .filter((p) => !p.installmentId || p.installmentId === '')
+      .reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+    // 5. ค้างชำระ
     const overduePayment = Number(overdueInstallments._sum.totalAmount || 0)
 
-    // 6. กำไร = ยอดชำระค่างวด (มี installmentId = ดอกเบี้ย)
-    // เนื่องจาก interestAmount และ feeAmount ใน database เป็น 0 หมด
-    // ดังนั้นกำไร = ยอดชำระที่มี installmentId (เพราะเป็นดอกเบี้ยทั้งหมด)
+    // 6. กำไร = ยอดชำระค่างวด (เนื่องจาก interestAmount/feeAmount เป็น 0)
     const profit = interestPayment
-
-    // Debug กำไร
-    if (month === 1 && year === 2025) {
-      console.log(`=== Profit Debug Month ${month} ===`)
-      console.log('Total payments:', payments.length)
-      console.log('interestPayment (profit):', interestPayment)
-      console.log('closeAccountPayment:', closeAccountPayment)
-      console.log('Sample payment:', payments[0] ? {
-        amount: payments[0].amount,
-        installmentId: payments[0].installmentId,
-        interestAmount: payments[0].interestAmount,
-        feeAmount: payments[0].feeAmount,
-      } : 'No payments')
-    }
 
     return {
       month,

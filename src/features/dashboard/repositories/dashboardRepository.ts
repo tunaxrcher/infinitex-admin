@@ -25,18 +25,14 @@ export class DashboardRepository {
       },
       _count: true,
     })
-
-    
   }
 
   /**
    * Get payments completed in a specific month and year
    */
   async getPaymentsInMonth(year: number, month: number) {
-    const startDate = new Date(Date.UTC(year, month - 1, 1));
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
-    console.log('startDate', startDate)
-    console.log('endDate', endDate)
+    const startDate = new Date(Date.UTC(year, month - 1, 1))
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999))
 
     return prisma.payment.findMany({
       where: {
@@ -52,7 +48,7 @@ export class DashboardRepository {
         loan: {
           select: {
             loanNumber: true,
-            // status: true,
+            status: true,
           },
         },
         user: {
@@ -95,58 +91,6 @@ export class DashboardRepository {
     }
   }
 
-  /**
-   * Get total interest earned in a specific month
-   */
-  async getInterestEarnedInMonth(year: number, month: number) {
-    const startDate = new Date(Date.UTC(year, month - 1, 1));
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
-
-    return prisma.payment.aggregate({
-      where: {
-        status: 'COMPLETED',
-        paidDate: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
-      _sum: {
-        interestAmount: true,
-        feeAmount: true,
-      },
-    })
-  }
-
-  /**
-   * Get loans that were closed (paid off) in a specific month
-   */
-  async getClosedLoansInMonth(year: number, month: number) {
-    const startDate = new Date(Date.UTC(year, month - 1, 1));
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
-
-    return prisma.loan.findMany({
-      where: {
-        status: 'COMPLETED',
-        updatedAt: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
-      include: {
-        payments: {
-          where: {
-            paidDate: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          orderBy: {
-            paidDate: 'desc',
-          },
-        },
-      },
-    })
-  }
 }
 
 export const dashboardRepository = new DashboardRepository()
