@@ -44,18 +44,47 @@ export const loanService = {
       },
     };
 
+    // Search filter
     if (search) {
-      where.OR = [
+      const searchConditions: Prisma.LoanApplicationWhereInput[] = [
+        // ค้นหาจากชื่อลูกค้า
         { customer: { profile: { firstName: { contains: search } } } },
         { customer: { profile: { lastName: { contains: search } } } },
+        // ค้นหาจากที่ตั้งทรัพย์สิน
         { propertyLocation: { contains: search } },
         { ownerName: { contains: search } },
       ];
-    }
 
-    // กรองตาม status ของ loan (ถ้ามี) หรือ application status
-    if (status) {
-      // ถ้ามีการระบุ status ให้กรองจาก loan.status
+      // ค้นหาจากเลขที่สินเชื่อ (ใน loan) - รวม status filter ด้วยถ้ามี
+      const loanSearchCondition: Prisma.LoanWhereInput = {
+        loanNumber: { contains: search },
+      };
+      if (status) {
+        loanSearchCondition.status = status;
+      }
+      searchConditions.push({ loan: loanSearchCondition });
+
+      // ถ้า search เป็นตัวเลข ให้ค้นหาจากยอดเงินด้วย
+      const searchNumber = parseFloat(search.replace(/,/g, ''));
+      if (!isNaN(searchNumber)) {
+        searchConditions.push(
+          { requestedAmount: { equals: searchNumber } },
+          { approvedAmount: { equals: searchNumber } },
+        );
+
+        // ค้นหาจาก principal amount ใน loan - รวม status filter ด้วยถ้ามี
+        const amountSearchCondition: Prisma.LoanWhereInput = {
+          principalAmount: { equals: searchNumber },
+        };
+        if (status) {
+          amountSearchCondition.status = status;
+        }
+        searchConditions.push({ loan: amountSearchCondition });
+      }
+
+      where.OR = searchConditions;
+    } else if (status) {
+      // ถ้าไม่มี search แต่มี status filter
       where.loan = {
         status: status,
       };
@@ -103,48 +132,71 @@ export const loanService = {
       prisma.loanApplication.count({ where }),
     ]);
 
-    // แปลงข้อมูลให้เป็นรูปแบบเดียวกับ Loan
-    const transformedData = applications.map((app) => {
-      // ถ้ามี loan ให้ใช้ข้อมูลจาก loan
-      if (app.loan) {
-        return {
-          ...app.loan,
-          application: app,
-          customer: app.customer,
-        };
-      }
+    // แปลงข้อมูลให้เป็นรูปแบบเดียวกับ Loan และตรวจสอบ overdue
+    const transformedData = await Promise.all(
+      applications.map(async (app) => {
+        // ถ้ามี loan ให้ใช้ข้อมูลจาก loan
+        if (app.loan) {
+          // ตรวจสอบว่ามีงวดค้างชำระหรือไม่
+          const overdueInstallments = await prisma.loanInstallment.findMany({
+            where: {
+              loanId: app.loan.id,
+              isPaid: false,
+              dueDate: {
+                lt: new Date(),
+              },
+            },
+            orderBy: {
+              dueDate: 'asc',
+            },
+          });
 
-      // ถ้ายังไม่มี loan ให้สร้างข้อมูลจาก application
-      return {
-        id: app.id,
-        loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`, // ใช้ application ID เป็น temporary loan number
-        customerId: app.customerId,
-        customer: app.customer,
-        agentId: app.agentId,
-        agent: app.agent,
-        applicationId: app.id,
-        application: app,
-        loanType: app.loanType,
-        status: app.status as any, // ใช้ application status แทน
-        principalAmount: app.approvedAmount || app.requestedAmount || 0,
-        interestRate: 0, // ยังไม่มีข้อมูล
-        termMonths: 0,
-        monthlyPayment: 0,
-        currentInstallment: 0,
-        totalInstallments: 0,
-        remainingBalance: app.approvedAmount || app.requestedAmount || 0,
-        nextPaymentDate: new Date(),
-        contractDate: app.createdAt,
-        expiryDate: app.createdAt,
-        titleDeedNumber: app.landNumber,
-        collateralValue: app.propertyValue,
-        collateralDetails: null,
-        createdAt: app.createdAt,
-        updatedAt: app.updatedAt,
-        payments: [],
-        installments: [],
-      };
-    });
+          return {
+            ...app.loan,
+            application: app,
+            customer: app.customer,
+            // เพิ่มข้อมูล overdue
+            hasOverdueInstallments: overdueInstallments.length > 0,
+            overdueCount: overdueInstallments.length,
+            oldestOverdueDate: overdueInstallments[0]?.dueDate || null,
+          };
+        }
+
+        // ถ้ายังไม่มี loan ให้สร้างข้อมูลจาก application
+        return {
+          id: app.id,
+          loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`, // ใช้ application ID เป็น temporary loan number
+          customerId: app.customerId,
+          customer: app.customer,
+          agentId: app.agentId,
+          agent: app.agent,
+          applicationId: app.id,
+          application: app,
+          loanType: app.loanType,
+          status: app.status as any, // ใช้ application status แทน
+          principalAmount: app.approvedAmount || app.requestedAmount || 0,
+          interestRate: 0, // ยังไม่มีข้อมูล
+          termMonths: 0,
+          monthlyPayment: 0,
+          currentInstallment: 0,
+          totalInstallments: 0,
+          remainingBalance: app.approvedAmount || app.requestedAmount || 0,
+          nextPaymentDate: new Date(),
+          contractDate: app.createdAt,
+          expiryDate: app.createdAt,
+          titleDeedNumber: app.landNumber,
+          collateralValue: app.propertyValue,
+          collateralDetails: null,
+          createdAt: app.createdAt,
+          updatedAt: app.updatedAt,
+          payments: [],
+          installments: [],
+          hasOverdueInstallments: false,
+          overdueCount: 0,
+          oldestOverdueDate: null,
+        };
+      }),
+    );
 
     return {
       data: transformedData,

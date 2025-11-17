@@ -123,11 +123,21 @@ export function ProductListTable({
   displaySheet,
 }: ProductListProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 25, // Default 25 rows per page
   });
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Fetch data from API - ดึงทั้งหมดมาครั้งเดียว ไม่ส่ง status filter
   const {
@@ -138,7 +148,7 @@ export function ProductListTable({
   } = useGetLoanList({
     page: 1,
     limit: 1000, // ดึงทั้งหมด (ปรับตามจำนวนข้อมูลจริง)
-    search: searchQuery || undefined,
+    search: debouncedSearch || undefined,
     // ไม่ส่ง status filter - จะกรองฝั่ง client แทน
   });
 
@@ -185,13 +195,20 @@ export function ProductListTable({
       // กำหนดสถานะตาม loan.status หรือ application.status
       const loanStatus = loanData.status as string;
       const appStatus = application?.status as string;
+      const hasOverdueInstallments = loanData.hasOverdueInstallments as boolean;
       let statusLabel = 'รออนุมัติ';
       let statusVariant = 'warning';
 
       // ตรวจสอบสถานะจาก loan.status ก่อน (ถ้ามี)
       if (loanStatus === 'ACTIVE') {
-        statusLabel = 'ยังไม่ถึงกำหนด';
-        statusVariant = 'success';
+        // ถ้ามีงวดค้างชำระ แสดงว่าเกินกำหนด
+        if (hasOverdueInstallments) {
+          statusLabel = 'เกินกำหนดชำระ';
+          statusVariant = 'destructive';
+        } else {
+          statusLabel = 'ยังไม่ถึงกำหนด';
+          statusVariant = 'success';
+        }
       } else if (loanStatus === 'COMPLETED') {
         statusLabel = 'ปิดบัญชี';
         statusVariant = 'info';
@@ -250,15 +267,18 @@ export function ProductListTable({
       if (loanStatus === 'ACTIVE' || loanStatus === 'DEFAULTED') {
         const nextPaymentDate = new Date(loanData.nextPaymentDate as string);
         const today = new Date();
-        const diffTime = today.getTime() - nextPaymentDate.getTime();
-        overdueDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
         paymentDay = nextPaymentDate.getDate();
 
-        // คำนวณ outstanding balance (ยอดค้างชำระ) - ถ้าเลยกำหนดชำระ
-        const isOverdue = loanStatus === 'DEFAULTED' || overdueDays > 0;
-        outstandingBalance = isOverdue
-          ? Number(loanData.monthlyPayment || 0)
-          : 0;
+        // ใช้ข้อมูล overdue จาก backend
+        if (hasOverdueInstallments && loanData.oldestOverdueDate) {
+          const oldestOverdueDate = new Date(loanData.oldestOverdueDate as string);
+          const diffTime = today.getTime() - oldestOverdueDate.getTime();
+          overdueDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+          
+          // คำนวณ outstanding balance จาก overdueCount
+          const overdueCount = (loanData.overdueCount as number) || 0;
+          outstandingBalance = overdueCount * Number(loanData.monthlyPayment || 0);
+        }
       }
 
       // ใช้ข้อมูลจาก application ถ้ายังไม่มี loan
@@ -747,7 +767,7 @@ export function ProductListTable({
     [], // Same columns for all tabs
   );
 
-  // Apply search, tab, and last moved filters
+  // Apply tab filter only (search is handled by API)
   const filteredData = useMemo(() => {
     let result = [...data];
 
@@ -764,18 +784,11 @@ export function ProductListTable({
       result = result.filter((item) => item.status.label === 'ปิดบัญชี');
     }
 
-    // Apply search filter - search in loan number and customer name
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (item) =>
-          item.loanNumber.toLowerCase().includes(query) ||
-          item.customerName.toLowerCase().includes(query),
-      );
-    }
+    // Note: Search filtering is handled by API (server-side)
+    // No need to filter here again as data is already filtered
 
     return result;
-  }, [data, activeTab, searchQuery]);
+  }, [data, activeTab]);
 
   useEffect(() => {
     const selectedRowIds = Object.keys(rowSelection);
@@ -809,7 +822,7 @@ export function ProductListTable({
       ...prev,
       pageIndex: 0,
     }));
-  }, [activeTab, searchQuery, selectedLastMoved]);
+  }, [activeTab, debouncedSearch, selectedLastMoved]);
 
   // Sync inputValue with searchQuery when searchQuery changes externally
   useEffect(() => {
@@ -822,7 +835,7 @@ export function ProductListTable({
     state: {
       pagination: {
         pageIndex: pagination.pageIndex,
-        pageSize: 10, // Fixed 10 items per page
+        pageSize: pagination.pageSize, // Use dynamic pageSize from state
       },
       sorting,
       rowSelection,
@@ -833,11 +846,7 @@ export function ProductListTable({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
+    manualPagination: false, // Let react-table handle pagination
   });
 
   const tabs = [
