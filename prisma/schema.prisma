@@ -391,6 +391,13 @@ model LoanInstallment {
   lateDays Int?
   lateFee  Decimal? @db.Decimal(15, 2)
 
+  // Payment proof & additional information
+  paymentProofUrl        String?   @db.VarChar(500)
+  paymentProofUploadedAt DateTime? @db.DateTime(0)
+  refNo                  String?   @db.VarChar(100)
+  filePayload            Json?
+  note                   String?   @db.Text
+
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @updatedAt @db.DateTime(0)
 
