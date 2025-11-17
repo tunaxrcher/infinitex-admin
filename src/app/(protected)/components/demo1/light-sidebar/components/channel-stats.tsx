@@ -1,6 +1,8 @@
 import { Fragment } from 'react';
 import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Card, CardContent } from '@src/shared/components/ui/card';
+import { formatCurrency } from '@src/shared/lib/helpers';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
 
 interface IChannelStatsItem {
   logo: string;
@@ -11,21 +13,36 @@ interface IChannelStatsItem {
 }
 type IChannelStatsItems = Array<IChannelStatsItem>;
 
-const ChannelStats = () => {
+interface IChannelStatsProps {
+  currentMonthLoanAmount?: number;
+  currentMonthProfit?: number;
+  yearProfit?: number;
+  isLoading?: boolean;
+}
+
+const ChannelStats = ({ 
+  currentMonthLoanAmount = 0,
+  currentMonthProfit = 0,
+  yearProfit = 0,
+  isLoading = false
+}: IChannelStatsProps) => {
   const items: IChannelStatsItems = [
-    { logo: 'linkedin-2.svg', info: '9.3k', desc: 'Amazing mates', path: '' },
-    { logo: 'youtube-2.svg', info: '24k', desc: 'Lessons Views', path: '' },
     {
-      logo: 'instagram-03.svg',
-      info: '608',
-      desc: 'New subscribers',
+      logo: 'linkedin-2.svg',
+      info: formatCurrency(currentMonthLoanAmount),
+      desc: 'ยอดเปิดสินเชื่อ (เดือนนี้)',
       path: '',
     },
+    { 
+      logo: 'youtube-2.svg', 
+      info: formatCurrency(currentMonthProfit), 
+      desc: 'กำไรเดือนนี้', 
+      path: '' 
+    },
     {
-      logo: 'tiktok.svg',
-      logoDark: 'tiktok-dark.svg',
-      info: '2.5k',
-      desc: 'Stream audience',
+      logo: 'instagram-03.svg',
+      info: formatCurrency(yearProfit),
+      desc: 'กำไรปีนี้',
       path: '',
     },
   ];
@@ -55,12 +72,21 @@ const ChannelStats = () => {
             />
           )}
           <div className="flex flex-col gap-1 pb-4 px-5">
-            <span className="text-3xl font-semibold text-mono">
-              {item.info}
-            </span>
-            <span className="text-sm font-normal text-muted-forehead">
-              {item.desc}
-            </span>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-9 w-24" />
+                <Skeleton className="h-4 w-32" />
+              </>
+            ) : (
+              <>
+                <span className="text-3xl font-semibold text-mono">
+                  {item.info}
+                </span>
+                <span className="text-sm font-normal text-muted-forehead">
+                  {item.desc}
+                </span>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -87,4 +113,4 @@ const ChannelStats = () => {
   );
 };
 
-export { ChannelStats, type IChannelStatsItem, type IChannelStatsItems };
+export { ChannelStats, type IChannelStatsItem, type IChannelStatsItems, type IChannelStatsProps };

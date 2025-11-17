@@ -33,7 +33,7 @@ interface DetailModalAdvancedProps {
   onOpenChange: (open: boolean) => void
   title: string
   data: any[]
-  type: 'loan' | 'payment' | 'installment'
+  loading?: boolean
 }
 
 export function DetailModalAdvanced({
@@ -41,8 +41,17 @@ export function DetailModalAdvanced({
   onOpenChange,
   title,
   data,
-  type,
+  loading,
 }: DetailModalAdvancedProps) {
+  // Auto-detect type based on data structure
+  const type: 'loan' | 'payment' | 'installment' = 
+    data.length > 0 
+      ? data[0].loanNumber 
+        ? 'loan' 
+        : data[0].installmentId !== undefined
+          ? 'payment'
+          : 'installment'
+      : 'payment'
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Define columns based on type

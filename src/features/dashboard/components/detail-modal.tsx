@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip'
+import { Input } from '@src/shared/components/ui/input'
+import { Button } from '@src/shared/components/ui/button'
+import { Search, X } from 'lucide-react'
 import { formatCurrency } from '@src/shared/lib/helpers'
 import { format } from 'date-fns'
 
@@ -30,9 +34,40 @@ interface DetailModalProps {
   title: string
   data: any[]
   type: 'loan' | 'payment' | 'installment'
+  loading?: boolean
 }
 
-export function DetailModal({ open, onOpenChange, title, data, type }: DetailModalProps) {
+export function DetailModal({ open, onOpenChange, title, data, type, loading }: DetailModalProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Filter data based on search query
+  const filteredData = useMemo(() => {
+    if (!searchQuery || !data) return data
+
+    const query = searchQuery.toLowerCase()
+    
+    return data.filter((item) => {
+      if (type === 'loan') {
+        const customerName = `${item.customer?.profile?.firstName || ''} ${item.customer?.profile?.lastName || ''}`.trim().toLowerCase()
+        const loanNumber = (item.loanNumber || '').toLowerCase()
+        return loanNumber.includes(query) || customerName.includes(query)
+      }
+      
+      if (type === 'payment') {
+        const customerName = `${item.user?.profile?.firstName || ''} ${item.user?.profile?.lastName || ''}`.trim().toLowerCase()
+        const loanNumber = (item.loan?.loanNumber || '').toLowerCase()
+        return loanNumber.includes(query) || customerName.includes(query)
+      }
+      
+      if (type === 'installment') {
+        const customerName = `${item.loan?.customer?.profile?.firstName || ''} ${item.loan?.customer?.profile?.lastName || ''}`.trim().toLowerCase()
+        const loanNumber = (item.loan?.loanNumber || '').toLowerCase()
+        return loanNumber.includes(query) || customerName.includes(query)
+      }
+      
+      return true
+    })
+  }, [data, searchQuery, type])
   // Helper function to truncate text with tooltip
   const TruncatedText = ({ text, maxLength = 30 }: { text: string; maxLength?: number }) => {
     if (!text || text.length <= maxLength) {
@@ -56,10 +91,10 @@ export function DetailModal({ open, onOpenChange, title, data, type }: DetailMod
   }
 
   const renderContent = () => {
-    if (!data || data.length === 0) {
+    if (!filteredData || filteredData.length === 0) {
       return (
         <div className="py-10 text-center text-gray-500">
-          ไม่มีข้อมูล
+          {searchQuery ? 'ไม่พบข้อมูลที่ค้นหา' : 'ไม่มีข้อมูล'}
         </div>
       )
     }
@@ -78,7 +113,7 @@ export function DetailModal({ open, onOpenChange, title, data, type }: DetailMod
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((loan: any) => {
+              {filteredData.map((loan: any) => {
                 const customerName = `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim()
                 return (
                   <TableRow key={loan.id}>
@@ -133,7 +168,7 @@ export function DetailModal({ open, onOpenChange, title, data, type }: DetailMod
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((payment: any) => {
+              {filteredData.map((payment: any) => {
                 const customerName = `${payment.user?.profile?.firstName || ''} ${payment.user?.profile?.lastName || ''}`.trim()
                 return (
                   <TableRow key={payment.id}>
@@ -197,7 +232,7 @@ export function DetailModal({ open, onOpenChange, title, data, type }: DetailMod
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((installment: any) => {
+              {filteredData.map((installment: any) => {
                 const daysLate = installment.dueDate
                   ? Math.floor(
                       (new Date().getTime() - new Date(installment.dueDate).getTime()) /
@@ -246,14 +281,14 @@ export function DetailModal({ open, onOpenChange, title, data, type }: DetailMod
     return null
   }
 
-  // คำนวณยอดรวม
+  // คำนวณยอดรวม (จากข้อมูลที่ filter แล้ว)
   const totalAmount =
     type === 'loan'
-      ? data.reduce((sum, item) => sum + Number(item.principalAmount || 0), 0)
+      ? filteredData.reduce((sum, item) => sum + Number(item.principalAmount || 0), 0)
       : type === 'payment'
-        ? data.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+        ? filteredData.reduce((sum, item) => sum + Number(item.amount || 0), 0)
         : type === 'installment'
-          ? data.reduce((sum, item) => sum + Number(item.totalAmount || 0), 0)
+          ? filteredData.reduce((sum, item) => sum + Number(item.totalAmount || 0), 0)
           : 0
 
   return (
@@ -262,11 +297,39 @@ export function DetailModal({ open, onOpenChange, title, data, type }: DetailMod
         <DialogHeader>
           <DialogTitle className="text-xl">{title}</DialogTitle>
         </DialogHeader>
-        <div className="max-h-[calc(90vh-180px)] overflow-y-auto">
+        
+        {/* Search Box */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="ค้นหาเลขที่สินเชื่อ หรือชื่อลูกค้า..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 pr-10"
+          />
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+              onClick={() => setSearchQuery('')}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        <div className="max-h-[calc(90vh-260px)] overflow-y-auto">
           {renderContent()}
         </div>
         <div className="mt-4 flex items-center justify-between border-t pt-4">
-          <div className="text-sm text-gray-500">รวมทั้งหมด {data?.length || 0} รายการ</div>
+          <div className="text-sm text-gray-500">
+            {searchQuery ? (
+              <>พบ {filteredData?.length || 0} จาก {data?.length || 0} รายการ</>
+            ) : (
+              <>รวมทั้งหมด {data?.length || 0} รายการ</>
+            )}
+          </div>
           <div className="text-lg font-semibold">
             ยอดรวม: <span className="text-blue-600">{formatCurrency(totalAmount)}</span>
           </div>
