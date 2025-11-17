@@ -24,13 +24,29 @@ interface EarningsChartProps {
   isLoading?: boolean;
 }
 
-const EarningsChart = ({ data = [], isLoading = false }: EarningsChartProps) => {
+const EarningsChart = ({
+  data = [],
+  isLoading = false,
+}: EarningsChartProps) => {
   // English month names mapping
-  const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
-  const chartData = data.map(item => item.profit); // Use actual profit values in Baht
-  const categories = data.map(item => monthNamesEn[item.month - 1]); // Get English month names
-  
+  const monthNamesEn = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const chartData = data.map((item) => item.profit); // Use actual profit values in Baht
+  const categories = data.map((item) => monthNamesEn[item.month - 1]); // Get English month names
+
   // Calculate max value for chart scaling
   const maxProfit = Math.max(...chartData, 0);
   const chartMax = Math.ceil(maxProfit * 1.2); // 20% more than max for better visualization
@@ -171,7 +187,7 @@ const EarningsChart = ({ data = [], isLoading = false }: EarningsChartProps) => 
     return (
       <Card className="h-full">
         <CardHeader>
-          <CardTitle>กำไรรายเดือน</CardTitle>
+          <CardTitle>กราฟ</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col justify-center items-center h-[250px]">
           <Skeleton className="h-full w-full" />
@@ -183,7 +199,7 @@ const EarningsChart = ({ data = [], isLoading = false }: EarningsChartProps) => 
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>กำไรรายเดือน</CardTitle>
+        <CardTitle>กราฟ</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col justify-end items-stretch grow px-3 py-1">
         <ApexChart

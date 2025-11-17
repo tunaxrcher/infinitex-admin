@@ -1,7 +1,5 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardHeading } from '@src/shared/components/ui/card'
-import { Skeleton } from '@src/shared/components/ui/skeleton'
 import {
   Area,
   AreaChart,
@@ -10,12 +8,19 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
-import { type MonthlyData } from '../validations'
+} from 'recharts';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardHeading,
+} from '@src/shared/components/ui/card';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { type MonthlyData } from '../validations';
 
 interface PaymentChartProps {
-  data: MonthlyData[]
-  isLoading?: boolean
+  data: MonthlyData[];
+  isLoading?: boolean;
 }
 
 export function PaymentChart({ data, isLoading }: PaymentChartProps) {
@@ -29,13 +34,13 @@ export function PaymentChart({ data, isLoading }: PaymentChartProps) {
           <Skeleton className="h-[400px] w-full" />
         </CardContent>
       </Card>
-    )
+    );
   }
 
   const chartData = data.map((item) => ({
     month: item.monthName,
     payment: item.interestPayment,
-  }))
+  }));
 
   return (
     <Card>
@@ -89,6 +94,5 @@ export function PaymentChart({ data, isLoading }: PaymentChartProps) {
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
-

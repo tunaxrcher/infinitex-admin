@@ -124,14 +124,31 @@ export function DashboardPage() {
 
     <Container>
       <div className="container-fluid space-y-5 lg:space-y-9">
-        <div className="flex items-center flex-wrap dap-2.5 justify-between">
+        <div className="flex items-center flex-wrap gap-2.5 justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="gradientText text-xl font-bold text-foreground">
               พอร์ต
             </h1>
             <span className="text-sm text-muted-foreground">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              ข้อมูลสรุปรายปีและรายเดือนของพอร์ตสินเชื่อ
             </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="year" className="text-sm font-medium">
+              ปี:
+            </Label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger id="year" className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {yearOptions.map((y) => (
+                  <SelectItem key={y} value={y.toString()}>
+                    {y + 543}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

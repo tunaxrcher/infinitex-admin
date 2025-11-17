@@ -1,25 +1,30 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardHeading } from '@src/shared/components/ui/card'
-import { Skeleton } from '@src/shared/components/ui/skeleton'
-import { formatCurrency } from '@src/shared/lib/helpers'
-import { TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react'
+import { formatCurrency } from '@src/shared/lib/helpers';
+import { DollarSign, Percent, TrendingDown, TrendingUp } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardHeading,
+} from '@src/shared/components/ui/card';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
 
 interface ProfitSummaryProps {
   highestPaymentMonth: {
-    month: number
-    monthName: string
-    amount: number
-  }
+    month: number;
+    monthName: string;
+    amount: number;
+  };
   lowestPaymentMonth: {
-    month: number
-    monthName: string
-    amount: number
-  }
-  averagePaymentPerMonth: number
-  totalPaymentYear: number
-  paymentPercentage: number
-  isLoading?: boolean
+    month: number;
+    monthName: string;
+    amount: number;
+  };
+  averagePaymentPerMonth: number;
+  totalPaymentYear: number;
+  paymentPercentage: number;
+  isLoading?: boolean;
 }
 
 export function ProfitSummary({
@@ -40,7 +45,7 @@ export function ProfitSummary({
           <Skeleton className="h-32 w-full" />
         </CardContent>
       </Card>
-    )
+    );
   }
 
   const summaryItems = [
@@ -74,7 +79,7 @@ export function ProfitSummary({
       icon: Percent,
       color: 'text-orange-600',
     },
-  ]
+  ];
 
   return (
     <Card>
@@ -84,7 +89,7 @@ export function ProfitSummary({
       <CardContent>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
           {summaryItems.map((item) => {
-            const Icon = item.icon
+            const Icon = item.icon;
             return (
               <div
                 key={item.label}
@@ -92,15 +97,16 @@ export function ProfitSummary({
               >
                 <div className="flex items-center space-x-2">
                   <Icon className={`h-5 w-5 ${item.color}`} />
-                  <span className="text-sm font-medium text-gray-600">{item.label}</span>
+                  <span className="text-sm font-medium text-gray-600">
+                    {item.label}
+                  </span>
                 </div>
                 <div className="text-lg font-bold">{item.value}</div>
               </div>
-            )
+            );
           })}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

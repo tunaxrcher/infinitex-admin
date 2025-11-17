@@ -7,13 +7,14 @@ import {
   RiStore2Line,
 } from '@remixicon/react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
+import { formatCurrency } from '@src/shared/lib/helpers';
 import {
   ArrowDown,
   ArrowUp,
-  EllipsisVertical,
-  TrendingUp,
-  TrendingDown,
   BarChart3,
+  EllipsisVertical,
+  TrendingDown,
+  TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
@@ -24,7 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
-import { formatCurrency } from '@src/shared/lib/helpers';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 
 interface IHighlightsRow {
@@ -58,13 +58,13 @@ interface IHighlightsProps {
   isLoading?: boolean;
 }
 
-const Highlights = ({ 
+const Highlights = ({
   limit,
   totalPaymentYear = 0,
   averagePaymentPerMonth = 0,
   highestPaymentMonth = { month: 0, monthName: '-', amount: 0 },
   lowestPaymentMonth = { month: 0, monthName: '-', amount: 0 },
-  isLoading = false
+  isLoading = false,
 }: IHighlightsProps) => {
   const rows: IHighlightsRows = [
     {
@@ -115,9 +115,13 @@ const Highlights = ({
           <span className="text-sm font-normal text-mono">{row.text}</span>
         </div>
         <div className="flex flex-col items-end gap-0.5">
-          <span className="text-sm font-medium text-foreground">{row.total}</span>
+          <span className="text-sm font-medium text-foreground">
+            {row.total}
+          </span>
           {row.subtitle && (
-            <span className="text-xs text-muted-foreground">{row.subtitle}</span>
+            <span className="text-xs text-muted-foreground">
+              {row.subtitle}
+            </span>
           )}
         </div>
       </div>

@@ -1100,7 +1100,7 @@ export const paymentService = {
 
     // Use customer ID from loan as the payer
     const payerUserId = userId || loan.customerId;
-    
+
     if (!payerUserId) {
       throw new Error('ไม่พบข้อมูลผู้ชำระเงิน');
     }
@@ -1233,7 +1233,7 @@ export const paymentService = {
 
     // Use customer ID from loan as the payer
     const payerUserId = userId || loan.customerId;
-    
+
     if (!payerUserId) {
       throw new Error('ไม่พบข้อมูลผู้ชำระเงิน');
     }

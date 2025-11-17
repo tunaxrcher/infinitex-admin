@@ -1,15 +1,20 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardHeading } from '@src/shared/components/ui/card'
-import { Skeleton } from '@src/shared/components/ui/skeleton'
-import { formatCurrency } from '@src/shared/lib/helpers'
-import { TrendingUp, DollarSign, PiggyBank } from 'lucide-react'
+import { formatCurrency } from '@src/shared/lib/helpers';
+import { DollarSign, PiggyBank, TrendingUp } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardHeading,
+} from '@src/shared/components/ui/card';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
 
 interface DashboardSummaryProps {
-  currentMonthLoanAmount: number
-  currentMonthProfit: number
-  yearProfit: number
-  isLoading?: boolean
+  currentMonthLoanAmount: number;
+  currentMonthProfit: number;
+  yearProfit: number;
+  isLoading?: boolean;
 }
 
 export function DashboardSummary({
@@ -32,7 +37,7 @@ export function DashboardSummary({
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   const stats = [
@@ -57,12 +62,12 @@ export function DashboardSummary({
       color: 'text-purple-600',
       bgColor: 'bg-purple-100',
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {stats.map((stat) => {
-        const Icon = stat.icon
+        const Icon = stat.icon;
         return (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -74,12 +79,13 @@ export function DashboardSummary({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stat.value)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(stat.value)}
+              </div>
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
-

@@ -1,6 +1,6 @@
 // src/features/dashboard/repositories/dashboardRepository.ts
-import { prisma } from '@src/shared/lib/db'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client';
+import { prisma } from '@src/shared/lib/db';
 
 export class DashboardRepository {
   /**
@@ -24,15 +24,15 @@ export class DashboardRepository {
         principalAmount: true,
       },
       _count: true,
-    })
+    });
   }
 
   /**
    * Get payments completed in a specific month and year
    */
   async getPaymentsInMonth(year: number, month: number) {
-    const startDate = new Date(Date.UTC(year, month - 1, 1))
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999))
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
     return prisma.payment.findMany({
       where: {
@@ -60,7 +60,7 @@ export class DashboardRepository {
       orderBy: {
         paidDate: 'desc',
       },
-    })
+    });
   }
 
   /**
@@ -81,17 +81,15 @@ export class DashboardRepository {
         AND MONTH(li.dueDate) = ${month}
         AND li.dueDate < NOW()
         AND l.status = 'ACTIVE'
-    `
+    `;
 
     return {
       _sum: {
         totalAmount: result[0]?.total_amount || 0,
       },
       _count: Number(result[0]?.total_count || 0),
-    }
+    };
   }
-
 }
 
-export const dashboardRepository = new DashboardRepository()
-
+export const dashboardRepository = new DashboardRepository();

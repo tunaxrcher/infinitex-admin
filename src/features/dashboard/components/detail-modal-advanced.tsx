@@ -1,6 +1,7 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react';
+import { formatCurrency } from '@src/shared/lib/helpers';
 import {
   ColumnDef,
   flexRender,
@@ -9,31 +10,35 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { ArrowUpDown, Search, X } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@src/shared/components/ui/dialog'
-import { Input, InputWrapper } from '@src/shared/components/ui/input'
-import { Button } from '@src/shared/components/ui/button'
+} from '@tanstack/react-table';
+import { format } from 'date-fns';
+import { ArrowUpDown, Search, X } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardFooter,
   CardHeader,
   CardTable,
   CardToolbar,
-} from '@src/shared/components/ui/card'
-import { DataGrid } from '@src/shared/components/ui/data-grid'
-import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination'
-import { DataGridTable } from '@src/shared/components/ui/data-grid-table'
-import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area'
-import { formatCurrency } from '@src/shared/lib/helpers'
+} from '@src/shared/components/ui/card';
+import { DataGrid } from '@src/shared/components/ui/data-grid';
+import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@src/shared/components/ui/dialog';
+import { Input, InputWrapper } from '@src/shared/components/ui/input';
+import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 
 interface DetailModalAdvancedProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  title: string
-  data: any[]
-  loading?: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  data: any[];
+  loading?: boolean;
 }
 
 export function DetailModalAdvanced({
@@ -44,15 +49,15 @@ export function DetailModalAdvanced({
   loading,
 }: DetailModalAdvancedProps) {
   // Auto-detect type based on data structure
-  const type: 'loan' | 'payment' | 'installment' = 
-    data.length > 0 
-      ? data[0].loanNumber 
-        ? 'loan' 
+  const type: 'loan' | 'payment' | 'installment' =
+    data.length > 0
+      ? data[0].loanNumber
+        ? 'loan'
         : data[0].installmentId !== undefined
           ? 'payment'
           : 'installment'
-      : 'payment'
-  const [globalFilter, setGlobalFilter] = useState('')
+      : 'payment';
+  const [globalFilter, setGlobalFilter] = useState('');
 
   // Define columns based on type
   const columns = useMemo<ColumnDef<any>[]>(() => {
@@ -64,14 +69,18 @@ export function DetailModalAdvanced({
             return (
               <Button
                 variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
               >
                 เลขที่สินเชื่อ
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
-            )
+            );
           },
-          cell: ({ row }) => <div className="font-medium">{row.getValue('loanNumber')}</div>,
+          cell: ({ row }) => (
+            <div className="font-medium">{row.getValue('loanNumber')}</div>
+          ),
         },
         {
           accessorFn: (row) =>
@@ -86,13 +95,15 @@ export function DetailModalAdvanced({
             return (
               <Button
                 variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
                 className="ml-auto"
               >
                 ยอดเงินต้น
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
-            )
+            );
           },
           cell: ({ row }) => (
             <div className="text-right tabular-nums">
@@ -113,7 +124,7 @@ export function DetailModalAdvanced({
           accessorKey: 'status',
           header: 'สถานะ',
           cell: ({ row }) => {
-            const status = row.getValue('status') as string
+            const status = row.getValue('status') as string;
             return (
               <span
                 className={`rounded px-2 py-1 text-xs ${
@@ -126,10 +137,10 @@ export function DetailModalAdvanced({
               >
                 {status}
               </span>
-            )
+            );
           },
         },
-      ]
+      ];
     }
 
     if (type === 'payment') {
@@ -138,7 +149,9 @@ export function DetailModalAdvanced({
           accessorFn: (row) => row.loan?.loanNumber || '-',
           id: 'loanNumber',
           header: 'เลขที่สินเชื่อ',
-          cell: ({ row }) => <div className="font-medium">{row.getValue('loanNumber')}</div>,
+          cell: ({ row }) => (
+            <div className="font-medium">{row.getValue('loanNumber')}</div>
+          ),
         },
         {
           accessorFn: (row) =>
@@ -180,13 +193,15 @@ export function DetailModalAdvanced({
             return (
               <Button
                 variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
                 className="ml-auto"
               >
                 ยอดชำระ
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
-            )
+            );
           },
           cell: ({ row }) => (
             <div className="text-right font-semibold tabular-nums">
@@ -198,19 +213,21 @@ export function DetailModalAdvanced({
           accessorKey: 'paidDate',
           header: 'วันที่ชำระ',
           cell: ({ row }) => {
-            const paidDate = row.getValue('paidDate')
+            const paidDate = row.getValue('paidDate');
             return (
               <div className="whitespace-nowrap">
-                {paidDate ? format(new Date(paidDate as string), 'dd/MM/yyyy HH:mm') : '-'}
+                {paidDate
+                  ? format(new Date(paidDate as string), 'dd/MM/yyyy HH:mm')
+                  : '-'}
               </div>
-            )
+            );
           },
         },
         {
           accessorKey: 'installmentId',
           header: 'ประเภท',
           cell: ({ row }) => {
-            const installmentId = row.getValue('installmentId')
+            const installmentId = row.getValue('installmentId');
             return installmentId ? (
               <span className="whitespace-nowrap rounded bg-blue-100 px-2 py-1 text-xs text-blue-800">
                 ชำระค่างวด
@@ -219,10 +236,10 @@ export function DetailModalAdvanced({
               <span className="whitespace-nowrap rounded bg-purple-100 px-2 py-1 text-xs text-purple-800">
                 ปิดบัญชี
               </span>
-            )
+            );
           },
         },
-      ]
+      ];
     }
 
     // type === 'installment'
@@ -231,7 +248,9 @@ export function DetailModalAdvanced({
         accessorFn: (row) => row.loan?.loanNumber || '-',
         id: 'loanNumber',
         header: 'เลขที่สินเชื่อ',
-        cell: ({ row }) => <div className="font-medium">{row.getValue('loanNumber')}</div>,
+        cell: ({ row }) => (
+          <div className="font-medium">{row.getValue('loanNumber')}</div>
+        ),
       },
       {
         accessorFn: (row) =>
@@ -244,7 +263,9 @@ export function DetailModalAdvanced({
         accessorKey: 'installmentNumber',
         header: 'งวดที่',
         cell: ({ row }) => (
-          <div className="whitespace-nowrap">งวดที่ {row.getValue('installmentNumber')}</div>
+          <div className="whitespace-nowrap">
+            งวดที่ {row.getValue('installmentNumber')}
+          </div>
         ),
       },
       {
@@ -271,13 +292,15 @@ export function DetailModalAdvanced({
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }
               className="ml-auto"
             >
               ยอดค้างชำระ
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
-          )
+          );
         },
         cell: ({ row }) => (
           <div className="text-right font-semibold tabular-nums text-red-600">
@@ -297,10 +320,11 @@ export function DetailModalAdvanced({
       {
         id: 'daysLate',
         accessorFn: (row) => {
-          if (!row.dueDate) return 0
+          if (!row.dueDate) return 0;
           return Math.floor(
-            (new Date().getTime() - new Date(row.dueDate).getTime()) / (1000 * 60 * 60 * 24),
-          )
+            (new Date().getTime() - new Date(row.dueDate).getTime()) /
+              (1000 * 60 * 60 * 24),
+          );
         },
         header: 'เลยกำหนด',
         cell: ({ row }) => (
@@ -309,8 +333,8 @@ export function DetailModalAdvanced({
           </span>
         ),
       },
-    ]
-  }, [type])
+    ];
+  }, [type]);
 
   const table = useReactTable({
     data,
@@ -328,18 +352,26 @@ export function DetailModalAdvanced({
         pageSize: 10,
       },
     },
-  })
+  });
 
   // คำนวณยอดรวม (จากข้อมูลที่กรองแล้ว)
-  const filteredData = table.getFilteredRowModel().rows.map((row) => row.original)
+  const filteredData = table
+    .getFilteredRowModel()
+    .rows.map((row) => row.original);
   const totalAmount =
     type === 'loan'
-      ? filteredData.reduce((sum, item) => sum + Number(item.principalAmount || 0), 0)
+      ? filteredData.reduce(
+          (sum, item) => sum + Number(item.principalAmount || 0),
+          0,
+        )
       : type === 'payment'
         ? filteredData.reduce((sum, item) => sum + Number(item.amount || 0), 0)
         : type === 'installment'
-          ? filteredData.reduce((sum, item) => sum + Number(item.totalAmount || 0), 0)
-          : 0
+          ? filteredData.reduce(
+              (sum, item) => sum + Number(item.totalAmount || 0),
+              0,
+            )
+          : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -351,7 +383,9 @@ export function DetailModalAdvanced({
         <Card>
           <CardHeader className="flex-nowrap py-3">
             <div className="flex w-full items-center justify-between">
-              <h3 className="leading-0 text-base font-semibold text-foreground">รายละเอียด</h3>
+              <h3 className="leading-0 text-base font-semibold text-foreground">
+                รายละเอียด
+              </h3>
               <CardToolbar className="flex items-center gap-2">
                 {/* Search */}
                 <div className="w-full max-w-[250px]">
@@ -395,7 +429,10 @@ export function DetailModalAdvanced({
                 <DataGridPagination />
                 <div className="flex items-center justify-end border-t pt-4">
                   <div className="text-base font-semibold">
-                    ยอดรวม: <span className="text-primary">{formatCurrency(totalAmount)}</span>
+                    ยอดรวม:{' '}
+                    <span className="text-primary">
+                      {formatCurrency(totalAmount)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -404,6 +441,5 @@ export function DetailModalAdvanced({
         </Card>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

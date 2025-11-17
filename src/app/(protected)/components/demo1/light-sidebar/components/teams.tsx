@@ -1,6 +1,10 @@
 'use client';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { dashboardApi } from '@src/features/dashboard/api';
+import { DetailModal } from '@src/features/dashboard/components/detail-modal';
+import { DetailModalAdvanced } from '@src/features/dashboard/components/detail-modal-advanced';
+import { formatCurrency } from '@src/shared/lib/helpers';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -12,6 +16,8 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { toast } from 'sonner';
+import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -23,17 +29,9 @@ import {
 import { DataGrid } from '@src/shared/components/ui/data-grid';
 import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
 import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
-import {
-  DataGridTable,
-} from '@src/shared/components/ui/data-grid-table';
+import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { formatCurrency } from '@src/shared/lib/helpers';
-import { dashboardApi } from '@src/features/dashboard/api';
-import { DetailModal } from '@src/features/dashboard/components/detail-modal';
-import { DetailModalAdvanced } from '@src/features/dashboard/components/detail-modal-advanced';
-import { toast } from 'sonner';
-import { Badge } from '@src/shared/components/ui/badge';
 
 interface MonthlyData {
   month: number;
@@ -62,7 +60,9 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalData, setModalData] = useState<any[]>([]);
-  const [modalType, setModalType] = useState<'loan' | 'payment' | 'installment'>('payment');
+  const [modalType, setModalType] = useState<
+    'loan' | 'payment' | 'installment'
+  >('payment');
   const [loading, setLoading] = useState(false);
 
   // Get current month for highlighting
@@ -70,26 +70,38 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
   const currentYear = new Date().getFullYear();
   const isCurrentYear = year === currentYear;
 
-  const handleCellClick = useCallback(async (
-    month: number,
-    type: 'loans' | 'payments' | 'interest-payments' | 'close-payments' | 'overdue',
-    title: string,
-    modalType: 'loan' | 'payment' | 'installment',
-  ) => {
-    if (!year) return;
-    setLoading(true);
-    try {
-      const response = await dashboardApi.getMonthlyDetails(year, month, type);
-      setModalData(response.data || []);
-      setModalTitle(title);
-      setModalType(modalType);
-      setModalOpen(true);
-    } catch (error) {
-      toast.error('ไม่สามารถโหลดข้อมูลได้');
-    } finally {
-      setLoading(false);
-    }
-  }, [year]);
+  const handleCellClick = useCallback(
+    async (
+      month: number,
+      type:
+        | 'loans'
+        | 'payments'
+        | 'interest-payments'
+        | 'close-payments'
+        | 'overdue',
+      title: string,
+      modalType: 'loan' | 'payment' | 'installment',
+    ) => {
+      if (!year) return;
+      setLoading(true);
+      try {
+        const response = await dashboardApi.getMonthlyDetails(
+          year,
+          month,
+          type,
+        );
+        setModalData(response.data || []);
+        setModalTitle(title);
+        setModalType(modalType);
+        setModalOpen(true);
+      } catch (error) {
+        toast.error('ไม่สามารถโหลดข้อมูลได้');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [year],
+  );
 
   const columns = useMemo<ColumnDef<MonthlyData>[]>(
     () => [
@@ -100,7 +112,8 @@ const Teams = ({ data = [], year, isLoading = false }: ITeamsProps) => {
           <DataGridColumnHeader title="เดือน" column={column} />
         ),
         cell: ({ row }) => {
-          const isCurrentMonthRow = isCurrentYear && row.original.month === currentMonth;
+          const isCurrentMonthRow =
+            isCurrentYear && row.original.month === currentMonth;
           return (
             <div className="flex items-center gap-2">
               <span className="leading-none font-medium text-sm text-mono">

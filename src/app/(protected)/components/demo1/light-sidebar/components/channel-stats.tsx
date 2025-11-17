@@ -35,7 +35,7 @@ const ChannelStats = ({
     {
       logo: '',
       info: formatCurrency(currentMonthProfit),
-      desc: 'กำไรเดือนนี้',
+      desc: 'กำไร (เดือนนี้)',
       path: '',
     },
     {
@@ -47,7 +47,7 @@ const ChannelStats = ({
     {
       logo: '',
       info: '-',
-      desc: '-',
+      desc: 'in development',
       path: '',
     },
   ];
