@@ -789,7 +789,7 @@ export const MENU_MEGA: MenuConfig = [
     ],
   },
   {
-    title: 'สินเชื่อ',
+    title: 'Apps',
     children: [
       // {
       //   title: 'In development',

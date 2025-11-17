@@ -135,7 +135,7 @@ export function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="year" className="text-sm font-medium">
-              ปี:
+              ปี 
             </Label>
             <Select value={year} onValueChange={setYear}>
               <SelectTrigger id="year" className="w-[140px]">
