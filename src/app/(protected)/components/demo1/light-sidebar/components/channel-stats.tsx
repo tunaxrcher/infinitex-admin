@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { formatCurrency, toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { Card, CardContent } from '@src/shared/components/ui/card';
-import { formatCurrency } from '@src/shared/lib/helpers';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 
 interface IChannelStatsItem {
@@ -20,11 +19,11 @@ interface IChannelStatsProps {
   isLoading?: boolean;
 }
 
-const ChannelStats = ({ 
+const ChannelStats = ({
   currentMonthLoanAmount = 0,
   currentMonthProfit = 0,
   yearProfit = 0,
-  isLoading = false
+  isLoading = false,
 }: IChannelStatsProps) => {
   const items: IChannelStatsItems = [
     {
@@ -33,11 +32,11 @@ const ChannelStats = ({
       desc: 'ยอดเปิดสินเชื่อ (เดือนนี้)',
       path: '',
     },
-    { 
-      logo: '', 
-      info: formatCurrency(currentMonthProfit), 
-      desc: 'กำไรเดือนนี้', 
-      path: '' 
+    {
+      logo: '',
+      info: formatCurrency(currentMonthProfit),
+      desc: 'กำไรเดือนนี้',
+      path: '',
     },
     {
       logo: '',
@@ -45,7 +44,7 @@ const ChannelStats = ({
       desc: 'กำไรปีนี้',
       path: '',
     },
-        {
+    {
       logo: '',
       info: '-',
       desc: '-',
@@ -119,4 +118,9 @@ const ChannelStats = ({
   );
 };
 
-export { ChannelStats, type IChannelStatsItem, type IChannelStatsItems, type IChannelStatsProps };
+export {
+  ChannelStats,
+  type IChannelStatsItem,
+  type IChannelStatsItems,
+  type IChannelStatsProps,
+};
