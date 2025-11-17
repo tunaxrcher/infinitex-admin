@@ -123,6 +123,31 @@ export function ProductDetailsAnalyticsSheet({
   // Get installments from loan data
   const installments = loan?.installments || [];
 
+  // Check if there are overdue installments
+  const hasOverdueInstallments = installments.some(
+    (inst: any) => !inst.isPaid && new Date(inst.dueDate) < new Date(),
+  );
+
+  // Calculate overdue days from oldest overdue installment
+  const overdueInstallments = installments.filter(
+    (inst: any) => !inst.isPaid && new Date(inst.dueDate) < new Date(),
+  );
+  const oldestOverdueInstallment =
+    overdueInstallments.length > 0
+      ? overdueInstallments.reduce((oldest: any, current: any) =>
+          new Date(current.dueDate) < new Date(oldest.dueDate)
+            ? current
+            : oldest,
+        )
+      : null;
+  const overdueDays = oldestOverdueInstallment
+    ? Math.floor(
+        (new Date().getTime() -
+          new Date(oldestOverdueInstallment.dueDate).getTime()) /
+          (1000 * 60 * 60 * 24),
+      )
+    : 0;
+
   // Calculate remaining interest for display
   const calculateRemainingInterest = (installmentNumber: number) => {
     const remainingInstallments =
@@ -268,27 +293,38 @@ export function ProductDetailsAnalyticsSheet({
                         'ไม่ระบุ'
                       : 'ไม่ระบุ'}
                 </span>
-                <Badge
-                  size="sm"
-                  variant={
-                    loan?.status === 'ACTIVE'
-                      ? 'success'
-                      : loan?.status === 'COMPLETED'
-                        ? 'info'
-                        : loan?.status === 'DEFAULTED'
+                <div className="flex flex-col gap-1">
+                  <Badge
+                    size="sm"
+                    variant={
+                      loan?.status === 'ACTIVE'
+                        ? hasOverdueInstallments
                           ? 'destructive'
-                          : 'warning'
-                  }
-                  appearance="light"
-                >
-                  {loan?.status === 'ACTIVE'
-                    ? 'ยังไม่ถึงกำหนด'
-                    : loan?.status === 'COMPLETED'
-                      ? 'ปิดบัญชี'
-                      : loan?.status === 'DEFAULTED'
+                          : 'success'
+                        : loan?.status === 'COMPLETED'
+                          ? 'info'
+                          : loan?.status === 'DEFAULTED'
+                            ? 'destructive'
+                            : 'warning'
+                    }
+                    appearance="light"
+                  >
+                    {loan?.status === 'ACTIVE'
+                      ? hasOverdueInstallments
                         ? 'เกินกำหนดชำระ'
-                        : 'รออนุมัติ'}
-                </Badge>
+                        : 'ยังไม่ถึงกำหนด'
+                      : loan?.status === 'COMPLETED'
+                        ? 'ปิดบัญชี'
+                        : loan?.status === 'DEFAULTED'
+                          ? 'เกินกำหนดชำระ'
+                          : 'รออนุมัติ'}
+                  </Badge>
+                  {/* {hasOverdueInstallments && overdueDays > 0 && (
+                    <span className="text-xs text-destructive font-medium">
+                      เกินกำหนด {overdueDays} วัน
+                    </span>
+                  )} */}
+                </div>
               </div>
               <div className="flex items-center flex-wrap gap-1.5 text-2sm">
                 <span className="font-normal text-muted-foreground">
@@ -423,26 +459,39 @@ export function ProductDetailsAnalyticsSheet({
                               สถานะ
                             </span>
                             <span className="text-2sm font-medium text-foreground">
-                              <Badge
-                                variant={
-                                  loan?.status === 'ACTIVE'
-                                    ? 'success'
-                                    : loan?.status === 'COMPLETED'
-                                      ? 'info'
-                                      : loan?.status === 'DEFAULTED'
+                              <div className="flex flex-col gap-1">
+                                <Badge
+                                  variant={
+                                    loan?.status === 'ACTIVE'
+                                      ? hasOverdueInstallments
                                         ? 'destructive'
-                                        : 'warning'
-                                }
-                                appearance="light"
-                              >
-                                {loan?.status === 'ACTIVE'
-                                  ? 'ยังไม่ถึงกำหนด'
-                                  : loan?.status === 'COMPLETED'
-                                    ? 'ปิดบัญชี'
-                                    : loan?.status === 'DEFAULTED'
-                                      ? 'เกินกำหนดชำระ'
-                                      : 'รออนุมัติ'}
-                              </Badge>
+                                        : 'success'
+                                      : loan?.status === 'COMPLETED'
+                                        ? 'info'
+                                        : loan?.status === 'DEFAULTED'
+                                          ? 'destructive'
+                                          : 'warning'
+                                  }
+                                  appearance="light"
+                                >
+                                  {loan?.status === 'ACTIVE'
+                                    ? hasOverdueInstallments
+                                      ? 'เกินกำหนดชำระ ' + overdueDays + ' วัน'
+                                      : 'ยังไม่ถึงกำหนด'
+                                    : loan?.status === 'COMPLETED'
+                                      ? 'ปิดบัญชี'
+                                      : loan?.status === 'DEFAULTED'
+                                        ? 'เกินกำหนดชำระ ' +
+                                          overdueDays +
+                                          ' วัน'
+                                        : 'รออนุมัติ'}
+                                </Badge>
+                                {hasOverdueInstallments && overdueDays > 0 && (
+                                  <span className="text-xs text-destructive font-medium">
+                                    เกินกำหนด {overdueDays} วัน
+                                  </span>
+                                )}
+                              </div>
                             </span>
                           </div>
                           <div className="flex flex-col gap-1.5">

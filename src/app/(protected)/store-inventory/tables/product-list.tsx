@@ -271,13 +271,19 @@ export function ProductListTable({
 
         // ใช้ข้อมูล overdue จาก backend
         if (hasOverdueInstallments && loanData.oldestOverdueDate) {
-          const oldestOverdueDate = new Date(loanData.oldestOverdueDate as string);
+          const oldestOverdueDate = new Date(
+            loanData.oldestOverdueDate as string,
+          );
           const diffTime = today.getTime() - oldestOverdueDate.getTime();
-          overdueDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-          
+          overdueDays = Math.max(
+            0,
+            Math.floor(diffTime / (1000 * 60 * 60 * 24)),
+          );
+
           // คำนวณ outstanding balance จาก overdueCount
           const overdueCount = (loanData.overdueCount as number) || 0;
-          outstandingBalance = overdueCount * Number(loanData.monthlyPayment || 0);
+          outstandingBalance =
+            overdueCount * Number(loanData.monthlyPayment || 0);
         }
       }
 
@@ -606,19 +612,28 @@ export function ProductListTable({
         ),
         cell: (info) => {
           const status = info.row.original.status;
+          const overdueDays = info.row.original.overdueDays;
           const variant = status.variant as keyof BadgeProps['variant'];
+
           return (
-            <Badge
-              variant={variant}
-              appearance="light"
-              className="rounded-full"
-            >
-              {status.label}
-            </Badge>
+            <div className="flex flex-col gap-1">
+              <Badge
+                variant={variant}
+                appearance="light"
+                className="rounded-full"
+              >
+                {status.label}
+              </Badge>
+              {overdueDays > 0 && status.label === 'เกินกำหนดชำระ' && (
+                <span className="text-xs text-destructive font-medium">
+                  เกิน {overdueDays} วัน
+                </span>
+              )}
+            </div>
           );
         },
         enableSorting: true,
-        size: 140,
+        size: 160,
         meta: {
           cellClassName: '',
         },
