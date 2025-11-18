@@ -181,7 +181,7 @@ export const landAccountService = {
       await tx.landAccountLog.create({
         data: {
           landAccountId: fromAccountId,
-          detail: 'โอนเงินออก',
+          detail: 'โอนเงินออก 💸',
           amount: amount,
           note: note || `โอนไปยัง ${toAccount.accountName}`,
           ...(adminId && { adminId }),
@@ -192,7 +192,7 @@ export const landAccountService = {
       await tx.landAccountLog.create({
         data: {
           landAccountId: toAccountId,
-          detail: 'โอนเงินเข้า',
+          detail: 'โอนเงินเข้า 💰',
           amount: amount,
           note: note || `รับโอนจาก ${fromAccount.accountName}`,
           ...(adminId && { adminId }),
@@ -232,7 +232,7 @@ export const landAccountService = {
       await tx.landAccountLog.create({
         data: {
           landAccountId: accountId,
-          detail: 'เพิ่มเงิน',
+          detail: 'เพิ่มเงิน 📈',
           amount: amount,
           note: note || 'เพิ่มเงินเข้าบัญชี',
           ...(adminId && { adminId }),
@@ -273,7 +273,7 @@ export const landAccountService = {
       await tx.landAccountLog.create({
         data: {
           landAccountId: accountId,
-          detail: 'ลดเงิน',
+          detail: 'ลดเงิน 📉',
           amount: amount,
           note: note || 'ถอนเงินออกจากบัญชี',
           ...(adminId && { adminId }),
