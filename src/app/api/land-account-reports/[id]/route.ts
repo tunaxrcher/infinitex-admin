@@ -4,10 +4,11 @@ import { landAccountReportService } from '@src/features/land-account-reports/ser
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const result = await landAccountReportService.getById(params.id);
+    const { id } = await params;
+    const result = await landAccountReportService.getById(id);
     return NextResponse.json({
       success: true,
       message: 'สำเร็จ',

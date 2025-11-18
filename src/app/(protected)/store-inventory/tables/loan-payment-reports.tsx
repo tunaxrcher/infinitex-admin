@@ -104,11 +104,14 @@ export function LoanPaymentReportsTable() {
         cell: ({ row }) => {
           const detail = row.getValue('detail') as string;
           // เปิดสินเชื่อ, อนุมัติสินเชื่อ หรือ ปิดสินเชื่อ (ชำระปิดสินเชื่อ) ใช้ gradientText
-          const isOpenOrCloseLoan = detail.includes('เปิดสินเชื่อ') || 
-                                    detail.includes('อนุมัติสินเชื่อ') || 
-                                    detail.includes('ชำระปิดสินเชื่อ');
+          const isOpenOrCloseLoan =
+            detail.includes('เปิดสินเชื่อ') ||
+            detail.includes('อนุมัติสินเชื่อ') ||
+            detail.includes('ชำระปิดสินเชื่อ');
           // ชำระสินเชื่อ (ที่ไม่ใช่ปิดสินเชื่อ - คือชำระงวดปกติ) ใช้สีเขียว
-          const isPayment = detail.includes('ชำระสินเชื่อ') && !detail.includes('ชำระปิดสินเชื่อ');
+          const isPayment =
+            detail.includes('ชำระสินเชื่อ') &&
+            !detail.includes('ชำระปิดสินเชื่อ');
 
           return (
             <div
@@ -135,7 +138,9 @@ export function LoanPaymentReportsTable() {
           const amount = row.getValue('amount') as number;
           const detail = row.getValue('detail') as string;
           // เปิดสินเชื่อ/อนุมัติสินเชื่อ = เงินออก (สีแดง)
-          const isOpenLoan = detail.includes('เปิดสินเชื่อ') || detail.includes('อนุมัติสินเชื่อ');
+          const isOpenLoan =
+            detail.includes('เปิดสินเชื่อ') ||
+            detail.includes('อนุมัติสินเชื่อ');
           // ชำระสินเชื่อ (ทั้งงวดปกติและปิดสินเชื่อ) = เงินเข้า (สีเขียว)
           const isPayment = detail.includes('ชำระสินเชื่อ');
 
@@ -150,8 +155,8 @@ export function LoanPaymentReportsTable() {
               }`}
             >
               {isOpenLoan && '- '}
-              {isPayment && '+ '}
-              ฿{amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+              {isPayment && '+ '}฿
+              {amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
             </div>
           );
         },

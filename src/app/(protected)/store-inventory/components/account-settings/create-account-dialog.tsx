@@ -37,7 +37,7 @@ export function CreateAccountDialog({
 }: CreateAccountDialogProps) {
   const createMutation = useCreateLandAccount();
 
-  const form = useForm<LandAccountCreateSchema>({
+  const form = useForm({
     resolver: zodResolver(landAccountCreateSchema),
     defaultValues: {
       accountName: '',
@@ -45,7 +45,7 @@ export function CreateAccountDialog({
     },
   });
 
-  const onSubmit = (data: LandAccountCreateSchema) => {
+  const onSubmit = (data: any) => {
     createMutation.mutate(data, {
       onSuccess: () => {
         form.reset();
@@ -91,9 +91,11 @@ export function CreateAccountDialog({
                       type="number"
                       placeholder="0.00"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value) || 0)
-                      }
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val ? parseFloat(val) : undefined);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

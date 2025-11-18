@@ -94,7 +94,7 @@ export const landAccountService = {
     // Create log if balance changed
     if (
       data.accountBalance !== undefined &&
-      data.accountBalance !== account.accountBalance
+      data.accountBalance !== Number(account.accountBalance)
     ) {
       const diff = data.accountBalance - Number(account.accountBalance);
       await landAccountLogRepository.create({

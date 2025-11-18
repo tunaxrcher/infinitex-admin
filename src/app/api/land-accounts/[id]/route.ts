@@ -6,17 +6,19 @@ import { getToken } from 'next-auth/jwt';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const result = await landAccountService.getById(params.id);
+    const { id } = await params;
+    const result = await landAccountService.getById(id);
     return NextResponse.json({
       success: true,
       message: 'สำเร็จ',
       data: result,
     });
   } catch (error: any) {
-    console.error('[API Error] GET /api/land-accounts/[id]:', error);
+    const { id } = await params;
+    console.error(`[API Error] GET /api/land-accounts/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
@@ -30,9 +32,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
 
     // Validate request body
@@ -47,7 +50,7 @@ export async function PUT(
     const adminName = token?.name as string | undefined;
 
     const result = await landAccountService.update(
-      params.id,
+      id,
       validatedData,
       adminId,
       adminName,
@@ -58,7 +61,8 @@ export async function PUT(
       data: result,
     });
   } catch (error: any) {
-    console.error('[API Error] PUT /api/land-accounts/[id]:', error);
+    const { id } = await params;
+    console.error(`[API Error] PUT /api/land-accounts/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
@@ -72,9 +76,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     // Get admin info from session
     const token = await getToken({
       req: request,
@@ -83,13 +88,14 @@ export async function DELETE(
     const adminId = token?.id as string | undefined;
     const adminName = token?.name as string | undefined;
 
-    await landAccountService.delete(params.id, adminId, adminName);
+    await landAccountService.delete(id, adminId, adminName);
     return NextResponse.json({
       success: true,
       message: 'ลบบัญชีสำเร็จ',
     });
   } catch (error: any) {
-    console.error('[API Error] DELETE /api/land-accounts/[id]:', error);
+    const { id } = await params;
+    console.error(`[API Error] DELETE /api/land-accounts/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
