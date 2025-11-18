@@ -101,9 +101,30 @@ export function LoanPaymentReportsTable() {
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title="รายการ" />
         ),
-        cell: ({ row }) => (
-          <div className="font-medium">{row.getValue('detail')}</div>
-        ),
+        cell: ({ row }) => {
+          const detail = row.getValue('detail') as string;
+          // เปิดสินเชื่อ, อนุมัติสินเชื่อ หรือ ปิดสินเชื่อ (ชำระปิดสินเชื่อ) ใช้ gradientText
+          const isOpenOrCloseLoan = detail.includes('เปิดสินเชื่อ') || 
+                                    detail.includes('อนุมัติสินเชื่อ') || 
+                                    detail.includes('ชำระปิดสินเชื่อ');
+          // ชำระสินเชื่อ (ที่ไม่ใช่ปิดสินเชื่อ - คือชำระงวดปกติ) ใช้สีเขียว
+          const isPayment = detail.includes('ชำระสินเชื่อ') && !detail.includes('ชำระปิดสินเชื่อ');
+
+          return (
+            <div
+              className={`${
+                isOpenOrCloseLoan
+                  ? 'gradientText font-semibold'
+                  : isPayment
+                    ? 'text-green-600 dark:text-green-400 font-semibold'
+                    : 'font-medium'
+              }`}
+            >
+              {detail}
+            </div>
+          );
+        },
+        size: 240,
       },
       {
         accessorKey: 'amount',
@@ -112,12 +133,29 @@ export function LoanPaymentReportsTable() {
         ),
         cell: ({ row }) => {
           const amount = row.getValue('amount') as number;
+          const detail = row.getValue('detail') as string;
+          // เปิดสินเชื่อ/อนุมัติสินเชื่อ = เงินออก (สีแดง)
+          const isOpenLoan = detail.includes('เปิดสินเชื่อ') || detail.includes('อนุมัติสินเชื่อ');
+          // ชำระสินเชื่อ (ทั้งงวดปกติและปิดสินเชื่อ) = เงินเข้า (สีเขียว)
+          const isPayment = detail.includes('ชำระสินเชื่อ');
+
           return (
-            <div className="text-right font-medium">
+            <div
+              className={`text-right font-semibold ${
+                isOpenLoan
+                  ? 'text-red-600 dark:text-red-400'
+                  : isPayment
+                    ? 'text-green-600 dark:text-green-400'
+                    : ''
+              }`}
+            >
+              {isOpenLoan && '- '}
+              {isPayment && '+ '}
               ฿{amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
             </div>
           );
         },
+        size: 120,
       },
       {
         accessorKey: 'note',
@@ -125,10 +163,11 @@ export function LoanPaymentReportsTable() {
           <DataGridColumnHeader column={column} title="รายละเอียด" />
         ),
         cell: ({ row }) => (
-          <div className="max-w-[300px] truncate">
+          <div className="max-w-[300px] truncate text-muted-foreground font-light text-sm">
             {row.getValue('note') || '-'}
           </div>
         ),
+        size: 240,
       },
       {
         accessorKey: 'adminName',
@@ -136,6 +175,7 @@ export function LoanPaymentReportsTable() {
           <DataGridColumnHeader column={column} title="ผู้ทำรายการ" />
         ),
         cell: ({ row }) => <div>{row.getValue('adminName')}</div>,
+        size: 140,
       },
       {
         accessorKey: 'accountName',
