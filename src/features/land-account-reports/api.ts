@@ -12,7 +12,9 @@ export const landAccountReportApi = {
       }
     });
 
-    const response = await apiFetch(`/api/land-account-reports?${searchParams}`);
+    const response = await apiFetch(
+      `/api/land-account-reports?${searchParams}`,
+    );
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'เกิดข้อผิดพลาด');
@@ -29,4 +31,3 @@ export const landAccountReportApi = {
     return response.json();
   },
 };
-

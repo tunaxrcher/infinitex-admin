@@ -1,8 +1,8 @@
 'use client';
 
 import { Container } from '@src/shared/components/common/container';
-import { LandAccountsSection } from '../components/account-settings/land-accounts-section';
 import { AccountLogsSection } from '../components/account-settings/account-logs-section';
+import { LandAccountsSection } from '../components/account-settings/land-accounts-section';
 
 export default function AccountSettingsPage() {
   return (
@@ -26,4 +26,3 @@ export default function AccountSettingsPage() {
     </Container>
   );
 }
-

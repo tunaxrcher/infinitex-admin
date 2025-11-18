@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { landAccountService } from '@src/features/land-accounts/services/server';
 import { landAccountUpdateSchema } from '@src/features/land-accounts/validations';
+import { getToken } from 'next-auth/jwt';
 
 export async function GET(
   request: NextRequest,
@@ -37,11 +38,20 @@ export async function PUT(
     // Validate request body
     const validatedData = landAccountUpdateSchema.parse(body);
 
-    // TODO: Get admin info from session
-    const adminId = undefined;
-    const adminName = undefined;
+    // Get admin info from session
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    const adminId = token?.id as string | undefined;
+    const adminName = token?.name as string | undefined;
 
-    const result = await landAccountService.update(params.id, validatedData, adminId, adminName);
+    const result = await landAccountService.update(
+      params.id,
+      validatedData,
+      adminId,
+      adminName,
+    );
     return NextResponse.json({
       success: true,
       message: 'แก้ไขบัญชีสำเร็จ',
@@ -65,9 +75,13 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    // TODO: Get admin info from session
-    const adminId = undefined;
-    const adminName = undefined;
+    // Get admin info from session
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    const adminId = token?.id as string | undefined;
+    const adminName = token?.name as string | undefined;
 
     await landAccountService.delete(params.id, adminId, adminName);
     return NextResponse.json({
@@ -86,4 +100,3 @@ export async function DELETE(
     );
   }
 }
-

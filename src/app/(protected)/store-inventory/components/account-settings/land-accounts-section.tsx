@@ -20,6 +20,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { Edit, MoreVertical, Plus, Search, Trash } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@src/shared/components/ui/alert-dialog';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -41,20 +51,10 @@ import {
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { CreateAccountDialog } from './create-account-dialog';
+import { DepositDialog } from './deposit-dialog';
 import { EditAccountDialog } from './edit-account-dialog';
 import { TransferDialog } from './transfer-dialog';
-import { DepositDialog } from './deposit-dialog';
 import { WithdrawDialog } from './withdraw-dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@src/shared/components/ui/alert-dialog';
 
 interface IAccountData {
   id: string;
@@ -78,7 +78,9 @@ export function LandAccountsSection() {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<IAccountData | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<IAccountData | null>(
+    null,
+  );
 
   // Debounce search query
   useEffect(() => {
@@ -292,10 +294,7 @@ export function LandAccountsSection() {
       </Card>
 
       {/* Dialogs */}
-      <CreateAccountDialog
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
-      />
+      <CreateAccountDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
       <EditAccountDialog
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
@@ -324,8 +323,8 @@ export function LandAccountsSection() {
           <AlertDialogHeader>
             <AlertDialogTitle>ยืนยันการลบบัญชี</AlertDialogTitle>
             <AlertDialogDescription>
-              คุณแน่ใจหรือไม่ที่จะลบบัญชี &quot;{selectedAccount?.accountName}&quot;?
-              การกระทำนี้ไม่สามารถย้อนกลับได้
+              คุณแน่ใจหรือไม่ที่จะลบบัญชี &quot;{selectedAccount?.accountName}
+              &quot;? การกระทำนี้ไม่สามารถย้อนกลับได้
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -342,4 +341,3 @@ export function LandAccountsSection() {
     </>
   );
 }
-

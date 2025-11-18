@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchCustomers } from '@src/features/customers/hooks';
+import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import {
   useCreateLoan,
   useGetLoanById,
   useUpdateLoan,
 } from '@src/features/loans/hooks';
-import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import { cn } from '@src/shared/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
@@ -265,6 +265,12 @@ export function ProductFormSheet({
     // ตรวจสอบ form validation
     if (formRef.current && !formRef.current.checkValidity()) {
       formRef.current.reportValidity();
+      return;
+    }
+
+    // ตรวจสอบบัญชี
+    if (!landAccountId) {
+      alert('กรุณาเลือกบัญชีสำหรับจ่ายสินเชื่อ');
       return;
     }
 
@@ -589,9 +595,14 @@ export function ProductFormSheet({
                               </SelectTrigger>
                               <SelectContent>
                                 {landAccountsData?.data?.map((account: any) => (
-                                  <SelectItem key={account.id} value={account.id}>
+                                  <SelectItem
+                                    key={account.id}
+                                    value={account.id}
+                                  >
                                     {account.accountName} (฿
-                                    {Number(account.accountBalance).toLocaleString('th-TH', {
+                                    {Number(
+                                      account.accountBalance,
+                                    ).toLocaleString('th-TH', {
                                       minimumFractionDigits: 2,
                                     })}
                                     )

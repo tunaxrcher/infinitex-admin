@@ -192,7 +192,7 @@ export function LoanPaymentReportsTable() {
   return (
     <Card>
       <CardHeader className="py-3 flex-nowrap">
-        <div className='m-0 p-0 w-full'></div>
+        <div className="m-0 p-0 w-full"></div>
         <CardToolbar className="flex items-center gap-2">
           {/* Search */}
           <div className="w-full max-w-[200px]">

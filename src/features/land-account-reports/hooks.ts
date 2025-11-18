@@ -10,7 +10,9 @@ export const landAccountReportKeys = {
   detail: (id: string) => ['landAccountReports', 'detail', id] as const,
 };
 
-export const useGetLandAccountReportList = (filters: LandAccountReportFiltersSchema) => {
+export const useGetLandAccountReportList = (
+  filters: LandAccountReportFiltersSchema,
+) => {
   return useQuery({
     queryKey: landAccountReportKeys.list(filters),
     queryFn: () => landAccountReportApi.getList(filters),
@@ -29,4 +31,3 @@ export const useGetLandAccountReportById = (id: string) => {
     enabled: !!id,
   });
 };
-

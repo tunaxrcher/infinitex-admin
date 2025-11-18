@@ -1,11 +1,11 @@
 // src/features/loans/services/server.ts
 import 'server-only';
 import { Prisma } from '@prisma/client';
+import { landAccountReportService } from '@src/features/land-account-reports/services/server';
 import { prisma } from '@src/shared/lib/db';
 import { installmentRepository } from '../repositories/installmentRepository';
 import { loanRepository } from '../repositories/loanRepository';
 import { paymentRepository } from '../repositories/paymentRepository';
-import { landAccountReportService } from '@src/features/land-account-reports/services/server';
 import {
   type CloseLoanSchema,
   type LoanCreateSchema,
@@ -309,7 +309,7 @@ export const loanService = {
     };
   },
 
-  async create(data: LoanCreateSchema) {
+  async create(data: LoanCreateSchema, adminId?: string, adminName?: string) {
     // สร้างหมายเลขสินเชื่อ
     const loanNumber = generateLoanNumber();
 
@@ -501,6 +501,8 @@ export const loanService = {
             amount: loanAmount,
             note: `เปิดสินเชื่อให้ ${data.fullName} จำนวน ${loanAmount.toLocaleString()} บาท`,
             accountBalance: updatedAccount.accountBalance,
+            ...(adminId && { adminId }),
+            adminName: adminName || undefined,
           },
         });
 
@@ -511,6 +513,8 @@ export const loanService = {
             detail: 'เปิดสินเชื่อ',
             amount: loanAmount,
             note: `เปิดสินเชื่อ ${loanNumber} ให้ ${data.fullName}`,
+            ...(adminId && { adminId }),
+            adminName: adminName || undefined,
           },
         });
       }
@@ -690,7 +694,12 @@ export const loanService = {
     });
   },
 
-  async approve(id: string, landAccountId: string) {
+  async approve(
+    id: string,
+    landAccountId: string,
+    adminId?: string,
+    adminName?: string,
+  ) {
     // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
     let application = await prisma.loanApplication.findUnique({
       where: { id },
@@ -867,6 +876,8 @@ export const loanService = {
               amount: loanAmount,
               note: `อนุมัติสินเชื่อให้ ${application.customer?.profile?.firstName || ''} ${application.customer?.profile?.lastName || ''} จำนวน ${loanAmount.toLocaleString()} บาท`,
               accountBalance: updatedAccount.accountBalance,
+              ...(adminId && { adminId }),
+              adminName: adminName || undefined,
             },
           });
 
@@ -877,6 +888,8 @@ export const loanService = {
               detail: 'อนุมัติสินเชื่อ',
               amount: loanAmount,
               note: `อนุมัติสินเชื่อ ${loanNumber}`,
+              ...(adminId && { adminId }),
+              adminName: adminName || undefined,
             },
           });
         }
@@ -1230,7 +1243,12 @@ export const paymentService = {
   /**
    * Pay a specific installment
    */
-  async payInstallment(data: PayInstallmentSchema, userId?: string) {
+  async payInstallment(
+    data: PayInstallmentSchema,
+    userId?: string,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const loan = await loanRepository.findById(data.loanId, {
       installments: true,
     });
@@ -1379,6 +1397,8 @@ export const paymentService = {
             amount: data.amount,
             note: `รับชำระสินเชื่อ ${loan.loanNumber} งวดที่ ${installment.installmentNumber}`,
             accountBalance: updatedAccount.accountBalance,
+            ...(adminId && { adminId }),
+            adminName: adminName || undefined,
           },
         });
 
@@ -1389,6 +1409,8 @@ export const paymentService = {
             detail: 'รับชำระสินเชื่อ',
             amount: data.amount,
             note: `รับชำระสินเชื่อ ${loan.loanNumber} งวดที่ ${installment.installmentNumber}`,
+            ...(adminId && { adminId }),
+            adminName: adminName || undefined,
           },
         });
       });
@@ -1407,7 +1429,12 @@ export const paymentService = {
   /**
    * Close/Payoff the entire loan
    */
-  async closeLoan(data: CloseLoanSchema, userId?: string) {
+  async closeLoan(
+    data: CloseLoanSchema,
+    userId?: string,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const loan = await loanRepository.findById(data.loanId, {
       installments: true,
     });
@@ -1516,6 +1543,8 @@ export const paymentService = {
             amount: totalPayoffAmount,
             note: `รับชำระปิดสินเชื่อ ${loan.loanNumber} ทั้งหมด ${unpaidInstallments.length} งวด`,
             accountBalance: updatedAccount.accountBalance,
+            ...(adminId && { adminId }),
+            adminName: adminName || undefined,
           },
         });
 
@@ -1526,6 +1555,8 @@ export const paymentService = {
             detail: 'ปิดสินเชื่อ',
             amount: totalPayoffAmount,
             note: `รับชำระปิดสินเชื่อ ${loan.loanNumber}`,
+            ...(adminId && { adminId }),
+            adminName: adminName || undefined,
           },
         });
       });

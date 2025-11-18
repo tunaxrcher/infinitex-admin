@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { paymentService } from '@src/features/loans/services/server';
 import { payInstallmentSchema } from '@src/features/loans/validations';
+import { getToken } from 'next-auth/jwt';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,8 +11,21 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const validatedData = payInstallmentSchema.parse(body);
 
-    // userId is optional - service will use loan.customerId by default
-    const result = await paymentService.payInstallment(validatedData);
+    // Get admin info from session
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    const userId = undefined; // Optional - service will use loan.customerId by default
+    const adminId = token?.id as string | undefined;
+    const adminName = token?.name as string | undefined;
+
+    const result = await paymentService.payInstallment(
+      validatedData,
+      userId,
+      adminId,
+      adminName,
+    );
 
     return NextResponse.json({
       success: true,

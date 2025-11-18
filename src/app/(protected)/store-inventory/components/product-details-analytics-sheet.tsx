@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import {
   useCloseLoan,
   useDeleteLoan,
@@ -9,7 +10,6 @@ import {
   useGetLoanById,
   usePayInstallment,
 } from '@src/features/loans/hooks';
-import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
@@ -1231,35 +1231,7 @@ export function ProductDetailsAnalyticsSheet({
                           placeholder="ระบุผู้รับชำระ"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="landAccount">
-                          บัญชีรับชำระ <span className="text-destructive">*</span>
-                        </Label>
-                        <Select
-                          value={paymentForm.landAccountId}
-                          onValueChange={(value) =>
-                            setPaymentForm({
-                              ...paymentForm,
-                              landAccountId: value,
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="เลือกบัญชี" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {landAccountsData?.data?.map((account: any) => (
-                              <SelectItem key={account.id} value={account.id}>
-                                {account.accountName} (฿
-                                {Number(account.accountBalance).toLocaleString('th-TH', {
-                                  minimumFractionDigits: 2,
-                                })}
-                                )
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="installment">งวดที่</Label>
                         <Input
@@ -1289,20 +1261,7 @@ export function ProductDetailsAnalyticsSheet({
                           </span>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="paymentDate">วันที่ชำระ</Label>
-                        <Input
-                          id="paymentDate"
-                          type="date"
-                          value={paymentForm.paymentDate}
-                          onChange={(e) =>
-                            setPaymentForm({
-                              ...paymentForm,
-                              paymentDate: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="paymentMethod">
                           ช่องทางการชำระ{' '}
@@ -1332,6 +1291,53 @@ export function ProductDetailsAnalyticsSheet({
                             </SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="landAccount">
+                          บัญชีรับชำระ{' '}
+                          <span className="text-destructive">*</span>
+                        </Label>
+                        <Select
+                          value={paymentForm.landAccountId}
+                          onValueChange={(value) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              landAccountId: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="เลือกบัญชี" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {landAccountsData?.data?.map((account: any) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                {account.accountName} (฿
+                                {Number(account.accountBalance).toLocaleString(
+                                  'th-TH',
+                                  {
+                                    minimumFractionDigits: 2,
+                                  },
+                                )}
+                                )
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="paymentDate">วันที่ชำระ</Label>
+                        <Input
+                          id="paymentDate"
+                          type="date"
+                          value={paymentForm.paymentDate}
+                          onChange={(e) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              paymentDate: e.target.value,
+                            })
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1488,35 +1494,6 @@ export function ProductDetailsAnalyticsSheet({
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
-                        <Label htmlFor="closeLandAccount">
-                          บัญชีรับชำระ <span className="text-destructive">*</span>
-                        </Label>
-                        <Select
-                          value={closeLoanForm.landAccountId}
-                          onValueChange={(value) =>
-                            setCloseLoanForm({
-                              ...closeLoanForm,
-                              landAccountId: value,
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="เลือกบัญชี" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {landAccountsData?.data?.map((account: any) => (
-                              <SelectItem key={account.id} value={account.id}>
-                                {account.accountName} (฿
-                                {Number(account.accountBalance).toLocaleString('th-TH', {
-                                  minimumFractionDigits: 2,
-                                })}
-                                )
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
                         <Label htmlFor="closeTotalAmount">
                           ยอดชำระทั้งหมด{' '}
                           <span className="text-destructive">*</span>
@@ -1535,20 +1512,6 @@ export function ProductDetailsAnalyticsSheet({
                             บาท
                           </span>
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="closePaymentDate">วันที่ชำระ</Label>
-                        <Input
-                          id="closePaymentDate"
-                          type="date"
-                          value={closeLoanForm.paymentDate}
-                          onChange={(e) =>
-                            setCloseLoanForm({
-                              ...closeLoanForm,
-                              paymentDate: e.target.value,
-                            })
-                          }
-                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="closePaymentMethod">
@@ -1579,6 +1542,54 @@ export function ProductDetailsAnalyticsSheet({
                             </SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="closeLandAccount">
+                          บัญชีรับชำระ{' '}
+                          <span className="text-destructive">*</span>
+                        </Label>
+                        <Select
+                          value={closeLoanForm.landAccountId}
+                          onValueChange={(value) =>
+                            setCloseLoanForm({
+                              ...closeLoanForm,
+                              landAccountId: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="เลือกบัญชี" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {landAccountsData?.data?.map((account: any) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                {account.accountName} (฿
+                                {Number(account.accountBalance).toLocaleString(
+                                  'th-TH',
+                                  {
+                                    minimumFractionDigits: 2,
+                                  },
+                                )}
+                                )
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="closePaymentDate">วันที่ชำระ</Label>
+                        <Input
+                          id="closePaymentDate"
+                          type="date"
+                          value={closeLoanForm.paymentDate}
+                          onChange={(e) =>
+                            setCloseLoanForm({
+                              ...closeLoanForm,
+                              paymentDate: e.target.value,
+                            })
+                          }
+                        />
                       </div>
                     </div>
                   </div>

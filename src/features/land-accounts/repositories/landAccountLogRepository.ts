@@ -70,4 +70,3 @@ export class LandAccountLogRepository {
 }
 
 export const landAccountLogRepository = new LandAccountLogRepository();
-

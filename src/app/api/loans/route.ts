@@ -6,6 +6,7 @@ import {
   loanFiltersSchema,
 } from '@src/features/loans/validations';
 import { storage } from '@src/shared/lib/storage';
+import { getToken } from 'next-auth/jwt';
 
 export async function GET(request: NextRequest) {
   try {
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
         ) {
           data[key] = parseFloat(value as string);
         } else {
+          // Keep empty strings as-is for validation to catch them
           data[key] = value;
         }
       }
@@ -154,7 +156,15 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const validatedData = loanCreateSchema.parse(data);
 
-    const result = await loanService.create(validatedData);
+    // Get admin info from session
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    const adminId = token?.id as string | undefined;
+    const adminName = token?.name as string | undefined;
+
+    const result = await loanService.create(validatedData, adminId, adminName);
     return NextResponse.json({
       success: true,
       message: 'สร้างสินเชื่อสำเร็จ',

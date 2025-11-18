@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWithdrawLandAccount } from '@src/features/land-accounts/hooks';
 import {
   accountWithdrawSchema,
   type AccountWithdrawSchema,
 } from '@src/features/land-accounts/validations';
+import { useForm } from 'react-hook-form';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -95,7 +95,9 @@ export function WithdrawDialog({
                       type="number"
                       placeholder="0.00"
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -135,4 +137,3 @@ export function WithdrawDialog({
     </Dialog>
   );
 }
-

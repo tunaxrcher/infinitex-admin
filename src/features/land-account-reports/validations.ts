@@ -16,5 +16,6 @@ export const landAccountReportFiltersSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).optional(),
 });
 
-export type LandAccountReportFiltersSchema = z.infer<typeof landAccountReportFiltersSchema>;
-
+export type LandAccountReportFiltersSchema = z.infer<
+  typeof landAccountReportFiltersSchema
+>;

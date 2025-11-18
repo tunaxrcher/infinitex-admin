@@ -11,6 +11,8 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { format } from 'date-fns';
+import { th } from 'date-fns/locale';
 import { Search } from 'lucide-react';
 import {
   Card,
@@ -25,8 +27,6 @@ import { DataGridPagination } from '@src/shared/components/ui/data-grid-paginati
 import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
 import { Input, InputWrapper } from '@src/shared/components/ui/input';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
-import { format } from 'date-fns';
-import { th } from 'date-fns/locale';
 
 interface ILogData {
   id: string;
@@ -78,7 +78,10 @@ export function AccountLogsSection() {
       detail: log.detail || '-',
       amount: Number(log.amount) || 0,
       note: log.note,
-      adminName: log.adminName || log.admin?.firstName + ' ' + log.admin?.lastName || '-',
+      adminName:
+        log.adminName ||
+        log.admin?.firstName + ' ' + log.admin?.lastName ||
+        '-',
       accountName: log.landAccount?.accountName || '-',
       createdAt: new Date(log.createdAt),
     })) as ILogData[];
@@ -123,7 +126,9 @@ export function AccountLogsSection() {
           <DataGridColumnHeader column={column} title="หมายเหตุ" />
         ),
         cell: ({ row }) => (
-          <div className="max-w-[300px] truncate">{row.getValue('note') || '-'}</div>
+          <div className="max-w-[300px] truncate">
+            {row.getValue('note') || '-'}
+          </div>
         ),
       },
       {
@@ -140,11 +145,7 @@ export function AccountLogsSection() {
         ),
         cell: ({ row }) => {
           const date = row.getValue('createdAt') as Date;
-          return (
-            <div>
-              {format(date, 'dd MMM yyyy HH:mm', { locale: th })}
-            </div>
-          );
+          return <div>{format(date, 'dd MMM yyyy HH:mm', { locale: th })}</div>;
         },
       },
     ],
@@ -214,4 +215,3 @@ export function AccountLogsSection() {
     </Card>
   );
 }
-

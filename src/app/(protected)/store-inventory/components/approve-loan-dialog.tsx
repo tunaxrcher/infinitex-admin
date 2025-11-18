@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -89,7 +89,10 @@ export function ApproveLoanDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>บัญชีสำหรับจ่ายสินเชื่อ</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="เลือกบัญชี" />
@@ -99,9 +102,12 @@ export function ApproveLoanDialog({
                       {landAccountsData?.data?.map((account: any) => (
                         <SelectItem key={account.id} value={account.id}>
                           {account.accountName} (฿
-                          {Number(account.accountBalance).toLocaleString('th-TH', {
-                            minimumFractionDigits: 2,
-                          })}
+                          {Number(account.accountBalance).toLocaleString(
+                            'th-TH',
+                            {
+                              minimumFractionDigits: 2,
+                            },
+                          )}
                           )
                         </SelectItem>
                       ))}
@@ -131,4 +137,3 @@ export function ApproveLoanDialog({
     </Dialog>
   );
 }
-

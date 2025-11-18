@@ -14,9 +14,11 @@ import {
 
 export const landAccountKeys = {
   all: () => ['landAccounts'] as const,
-  list: (filters?: LandAccountFiltersSchema) => ['landAccounts', 'list', filters] as const,
+  list: (filters?: LandAccountFiltersSchema) =>
+    ['landAccounts', 'list', filters] as const,
   detail: (id: string) => ['landAccounts', 'detail', id] as const,
-  logs: (filters?: LandAccountLogFiltersSchema) => ['landAccounts', 'logs', filters] as const,
+  logs: (filters?: LandAccountLogFiltersSchema) =>
+    ['landAccounts', 'logs', filters] as const,
 };
 
 export const useGetLandAccountList = (filters: LandAccountFiltersSchema) => {
@@ -61,7 +63,9 @@ export const useUpdateLandAccount = () => {
       landAccountApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['landAccounts', 'list'] });
-      queryClient.invalidateQueries({ queryKey: landAccountKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: landAccountKeys.detail(variables.id),
+      });
       queryClient.refetchQueries({ queryKey: ['landAccounts', 'list'] });
       toast.success('แก้ไขบัญชีสำเร็จ');
     },
@@ -143,4 +147,3 @@ export const useGetLandAccountLogs = (filters: LandAccountLogFiltersSchema) => {
     retry: 1,
   });
 };
-

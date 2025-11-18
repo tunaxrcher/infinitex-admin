@@ -50,7 +50,11 @@ export const landAccountService = {
     return account;
   },
 
-  async create(data: LandAccountCreateSchema, adminId?: string, adminName?: string) {
+  async create(
+    data: LandAccountCreateSchema,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const account = await landAccountRepository.create({
       accountName: data.accountName,
       accountBalance: data.accountBalance || 0,
@@ -71,17 +75,27 @@ export const landAccountService = {
     return account;
   },
 
-  async update(id: string, data: LandAccountUpdateSchema, adminId?: string, adminName?: string) {
+  async update(
+    id: string,
+    data: LandAccountUpdateSchema,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const account = await this.getById(id);
 
     const updatedAccount = await landAccountRepository.update(id, {
       ...(data.accountName && { accountName: data.accountName }),
-      ...(data.accountBalance !== undefined && { accountBalance: data.accountBalance }),
+      ...(data.accountBalance !== undefined && {
+        accountBalance: data.accountBalance,
+      }),
       updatedAt: new Date(),
     });
 
     // Create log if balance changed
-    if (data.accountBalance !== undefined && data.accountBalance !== account.accountBalance) {
+    if (
+      data.accountBalance !== undefined &&
+      data.accountBalance !== account.accountBalance
+    ) {
       const diff = data.accountBalance - Number(account.accountBalance);
       await landAccountLogRepository.create({
         landAccount: { connect: { id: account.id } },
@@ -117,7 +131,11 @@ export const landAccountService = {
     });
   },
 
-  async transfer(data: AccountTransferSchema, adminId?: string, adminName?: string) {
+  async transfer(
+    data: AccountTransferSchema,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const { fromAccountId, toAccountId, amount, note } = data;
 
     if (fromAccountId === toAccountId) {
@@ -189,7 +207,11 @@ export const landAccountService = {
     });
   },
 
-  async deposit(data: AccountDepositSchema, adminId?: string, adminName?: string) {
+  async deposit(
+    data: AccountDepositSchema,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const { accountId, amount, note } = data;
 
     return prisma.$transaction(async (tx) => {
@@ -222,7 +244,11 @@ export const landAccountService = {
     });
   },
 
-  async withdraw(data: AccountWithdrawSchema, adminId?: string, adminName?: string) {
+  async withdraw(
+    data: AccountWithdrawSchema,
+    adminId?: string,
+    adminName?: string,
+  ) {
     const { accountId, amount, note } = data;
 
     return prisma.$transaction(async (tx) => {
@@ -315,4 +341,3 @@ export const landAccountService = {
     });
   },
 };
-

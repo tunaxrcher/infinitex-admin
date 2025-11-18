@@ -140,4 +140,3 @@ export const landAccountApi = {
     return response.json();
   },
 };
-

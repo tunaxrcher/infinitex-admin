@@ -77,4 +77,3 @@ export class LandAccountRepository {
 }
 
 export const landAccountRepository = new LandAccountRepository();
-

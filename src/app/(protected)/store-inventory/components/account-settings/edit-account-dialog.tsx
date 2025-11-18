@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateLandAccount } from '@src/features/land-accounts/hooks';
 import {
   landAccountUpdateSchema,
   type LandAccountUpdateSchema,
 } from '@src/features/land-accounts/validations';
+import { useForm } from 'react-hook-form';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -76,9 +76,7 @@ export function EditAccountDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>แก้ไขบัญชี</DialogTitle>
-          <DialogDescription>
-            แก้ไขข้อมูลบัญชีและยอดเงิน
-          </DialogDescription>
+          <DialogDescription>แก้ไขข้อมูลบัญชีและยอดเงิน</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -108,7 +106,9 @@ export function EditAccountDialog({
                       type="number"
                       placeholder="0.00"
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -134,4 +134,3 @@ export function EditAccountDialog({
     </Dialog>
   );
 }
-

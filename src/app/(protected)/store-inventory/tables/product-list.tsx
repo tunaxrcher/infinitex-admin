@@ -70,11 +70,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@src/shared/components/ui/tooltip';
+import { ApproveLoanDialog } from '../components/approve-loan-dialog';
 import { ManageVariantsSheet } from '../components/manage-variants';
 import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
 import { ProductFormSheet } from '../components/product-form-sheet';
 import { RejectLoanDialog } from '../components/reject-loan-dialog';
-import { ApproveLoanDialog } from '../components/approve-loan-dialog';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;

@@ -1,6 +1,7 @@
 // src/app/api/loans/[id]/approve/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { loanService } from '@src/features/loans/services/server';
+import { getToken } from 'next-auth/jwt';
 
 export async function POST(
   request: NextRequest,
@@ -21,7 +22,20 @@ export async function POST(
       );
     }
 
-    const result = await loanService.approve(id, landAccountId);
+    // Get admin info from session
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    const adminId = token?.id as string | undefined;
+    const adminName = token?.name as string | undefined;
+
+    const result = await loanService.approve(
+      id,
+      landAccountId,
+      adminId,
+      adminName,
+    );
     return NextResponse.json({
       success: true,
       message: 'อนุมัติสินเชื่อสำเร็จ',

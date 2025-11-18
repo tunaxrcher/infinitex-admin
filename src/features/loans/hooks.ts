@@ -97,11 +97,18 @@ export const useDeleteLoan = () => {
 export const useApproveLoan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ loanId, landAccountId }: { loanId: string; landAccountId: string }) =>
-      loanApi.approve(loanId, landAccountId),
+    mutationFn: ({
+      loanId,
+      landAccountId,
+    }: {
+      loanId: string;
+      landAccountId: string;
+    }) => loanApi.approve(loanId, landAccountId),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['loans', 'list'] });
-      queryClient.invalidateQueries({ queryKey: loanKeys.detail(variables.loanId) });
+      queryClient.invalidateQueries({
+        queryKey: loanKeys.detail(variables.loanId),
+      });
       queryClient.invalidateQueries({ queryKey: ['landAccounts'] });
       queryClient.invalidateQueries({ queryKey: ['landAccountReports'] });
       queryClient.refetchQueries({ queryKey: ['loans', 'list'] });

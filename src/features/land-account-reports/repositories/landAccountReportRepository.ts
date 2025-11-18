@@ -62,4 +62,3 @@ export class LandAccountReportRepository {
 }
 
 export const landAccountReportRepository = new LandAccountReportRepository();
-
