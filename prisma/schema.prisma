@@ -847,3 +847,14 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
+
+model RealInvestment {
+  id         String  @id @default(cuid())
+  investment Decimal @db.Decimal(20, 2)
+
+  createdAt DateTime  @default(now()) @db.DateTime(0)
+  updatedAt DateTime  @updatedAt @db.DateTime(0)
+  deletedAt DateTime? @db.DateTime(0) // Soft delete 
+
+  @@map("real_investment")
+}

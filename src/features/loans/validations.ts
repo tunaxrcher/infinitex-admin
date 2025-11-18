@@ -54,6 +54,9 @@ export const loanCreateSchema = z.object({
   otherFee: z.number().min(0).optional().default(0),
   note: z.string().optional(),
 
+  // บัญชีสำหรับการจ่ายสินเชื่อ
+  landAccountId: z.string().min(1, 'กรุณาเลือกบัญชีสำหรับจ่ายสินเชื่อ'),
+
   // ไฟล์อัพโหลด
   titleDeedImages: z.array(z.string()).optional(), // URL ของรูปโฉนดทั้งหมด
   existingImageUrls: z.array(z.string()).optional(), // URL ของรูปโฉนดที่มีอยู่แล้ว
@@ -102,6 +105,9 @@ export const payInstallmentSchema = z.object({
     },
   ),
 
+  // บัญชีสำหรับรับชำระ
+  landAccountId: z.string().min(1, 'กรุณาเลือกบัญชีรับชำระ'),
+
   // Optional fields based on payment method
   bankName: z.string().optional(),
   accountNumber: z.string().optional(),
@@ -127,6 +133,9 @@ export const closeLoanSchema = z.object({
       errorMap: () => ({ message: 'กรุณาเลือกช่องทางการชำระเงิน' }),
     },
   ),
+
+  // บัญชีสำหรับรับชำระ
+  landAccountId: z.string().min(1, 'กรุณาเลือกบัญชีรับชำระ'),
 
   // Optional fields based on payment method
   bankName: z.string().optional(),

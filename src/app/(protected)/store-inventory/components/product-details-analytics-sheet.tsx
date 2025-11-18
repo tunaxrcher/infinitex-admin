@@ -9,6 +9,7 @@ import {
   useGetLoanById,
   usePayInstallment,
 } from '@src/features/loans/hooks';
+import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
@@ -243,6 +244,12 @@ export function ProductDetailsAnalyticsSheet({
   } | null>(null);
   const [paymentTab, setPaymentTab] = useState('partial'); // 'partial' or 'full'
 
+  // Fetch land accounts for selection
+  const { data: landAccountsData } = useGetLandAccountList({
+    page: 1,
+    limit: 1000,
+  });
+
   // Payment form state
   const [paymentForm, setPaymentForm] = useState({
     installmentNumber: '',
@@ -250,11 +257,13 @@ export function ProductDetailsAnalyticsSheet({
     paymentDate: new Date().toISOString().split('T')[0],
     paymentMethod: '',
     receiver: '',
+    landAccountId: '',
   });
 
   // Close loan form state
   const [closeLoanForm, setCloseLoanForm] = useState({
     paymentDate: new Date().toISOString().split('T')[0],
+    landAccountId: '',
     paymentMethod: '',
     receiver: '',
   });
@@ -1223,6 +1232,35 @@ export function ProductDetailsAnalyticsSheet({
                         />
                       </div>
                       <div className="space-y-2">
+                        <Label htmlFor="landAccount">
+                          บัญชีรับชำระ <span className="text-destructive">*</span>
+                        </Label>
+                        <Select
+                          value={paymentForm.landAccountId}
+                          onValueChange={(value) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              landAccountId: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="เลือกบัญชี" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {landAccountsData?.data?.map((account: any) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                {account.accountName} (฿
+                                {Number(account.accountBalance).toLocaleString('th-TH', {
+                                  minimumFractionDigits: 2,
+                                })}
+                                )
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
                         <Label htmlFor="installment">งวดที่</Label>
                         <Input
                           id="installment"
@@ -1366,6 +1404,11 @@ export function ProductDetailsAnalyticsSheet({
                           return;
                         }
 
+                        if (!paymentForm.landAccountId) {
+                          alert('กรุณาเลือกบัญชีรับชำระ');
+                          return;
+                        }
+
                         // Submit installment payment
                         if (paymentTab === 'partial') {
                           payInstallment.mutate(
@@ -1374,6 +1417,7 @@ export function ProductDetailsAnalyticsSheet({
                               installmentId: selectedInstallment.id,
                               amount: selectedInstallment.totalAmount,
                               paymentMethod: paymentForm.paymentMethod as any,
+                              landAccountId: paymentForm.landAccountId,
                               includeLateFee: true,
                             },
                             {
@@ -1388,6 +1432,7 @@ export function ProductDetailsAnalyticsSheet({
                                     .split('T')[0],
                                   paymentMethod: '',
                                   receiver: '',
+                                  landAccountId: '',
                                 });
                                 setSelectedInstallment(null);
                               },
@@ -1441,6 +1486,35 @@ export function ProductDetailsAnalyticsSheet({
                           }
                           placeholder="ระบุผู้รับชำระ"
                         />
+                      </div>
+                      <div className="space-y-2 col-span-2">
+                        <Label htmlFor="closeLandAccount">
+                          บัญชีรับชำระ <span className="text-destructive">*</span>
+                        </Label>
+                        <Select
+                          value={closeLoanForm.landAccountId}
+                          onValueChange={(value) =>
+                            setCloseLoanForm({
+                              ...closeLoanForm,
+                              landAccountId: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="เลือกบัญชี" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {landAccountsData?.data?.map((account: any) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                {account.accountName} (฿
+                                {Number(account.accountBalance).toLocaleString('th-TH', {
+                                  minimumFractionDigits: 2,
+                                })}
+                                )
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="closeTotalAmount">
@@ -1573,11 +1647,17 @@ export function ProductDetailsAnalyticsSheet({
                           return;
                         }
 
+                        if (!closeLoanForm.landAccountId) {
+                          alert('กรุณาเลือกบัญชีรับชำระ');
+                          return;
+                        }
+
                         // Submit close loan payment
                         closeLoan.mutate(
                           {
                             loanId: loanId,
                             paymentMethod: closeLoanForm.paymentMethod as any,
+                            landAccountId: closeLoanForm.landAccountId,
                             discountAmount: 0,
                             additionalFees: 0,
                             notes: `ปิดสินเชื่อ - รับชำระโดย ${closeLoanForm.receiver}`,
@@ -1592,6 +1672,7 @@ export function ProductDetailsAnalyticsSheet({
                                   .split('T')[0],
                                 paymentMethod: '',
                                 receiver: '',
+                                landAccountId: '',
                               });
                             },
                           },

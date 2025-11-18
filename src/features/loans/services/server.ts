@@ -5,6 +5,7 @@ import { prisma } from '@src/shared/lib/db';
 import { installmentRepository } from '../repositories/installmentRepository';
 import { loanRepository } from '../repositories/loanRepository';
 import { paymentRepository } from '../repositories/paymentRepository';
+import { landAccountReportService } from '@src/features/land-account-reports/services/server';
 import {
   type CloseLoanSchema,
   type LoanCreateSchema,
@@ -468,6 +469,52 @@ export const loanService = {
         data: installmentsData,
       });
 
+      // Step 6: หักเงินจากบัญชีและสร้างรายงาน
+      if (data.landAccountId) {
+        // ตรวจสอบบัญชี
+        const account = await tx.landAccount.findUnique({
+          where: { id: data.landAccountId, deletedAt: null },
+        });
+
+        if (!account) {
+          throw new Error('ไม่พบบัญชีที่เลือก');
+        }
+
+        if (Number(account.accountBalance) < loanAmount) {
+          throw new Error('ยอดเงินในบัญชีไม่เพียงพอ');
+        }
+
+        // หักเงินจากบัญชี
+        const updatedAccount = await tx.landAccount.update({
+          where: { id: data.landAccountId },
+          data: {
+            accountBalance: { decrement: loanAmount },
+            updatedAt: new Date(),
+          },
+        });
+
+        // สร้างรายงานใน land_account_reports
+        await tx.landAccountReport.create({
+          data: {
+            landAccountId: data.landAccountId,
+            detail: `เปิดสินเชื่อ(${loanNumber})`,
+            amount: loanAmount,
+            note: `เปิดสินเชื่อให้ ${data.fullName} จำนวน ${loanAmount.toLocaleString()} บาท`,
+            accountBalance: updatedAccount.accountBalance,
+          },
+        });
+
+        // สร้าง log ใน land_account_logs
+        await tx.landAccountLog.create({
+          data: {
+            landAccountId: data.landAccountId,
+            detail: 'เปิดสินเชื่อ',
+            amount: loanAmount,
+            note: `เปิดสินเชื่อ ${loanNumber} ให้ ${data.fullName}`,
+          },
+        });
+      }
+
       return newLoan;
     });
 
@@ -643,7 +690,7 @@ export const loanService = {
     });
   },
 
-  async approve(id: string) {
+  async approve(id: string, landAccountId: string) {
     // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
     let application = await prisma.loanApplication.findUnique({
       where: { id },
@@ -787,6 +834,52 @@ export const loanService = {
         await tx.loanInstallment.createMany({
           data: installmentsData,
         });
+
+        // หักเงินจากบัญชีและสร้างรายงาน
+        if (landAccountId) {
+          // ตรวจสอบบัญชี
+          const account = await tx.landAccount.findUnique({
+            where: { id: landAccountId, deletedAt: null },
+          });
+
+          if (!account) {
+            throw new Error('ไม่พบบัญชีที่เลือก');
+          }
+
+          if (Number(account.accountBalance) < loanAmount) {
+            throw new Error('ยอดเงินในบัญชีไม่เพียงพอ');
+          }
+
+          // หักเงินจากบัญชี
+          const updatedAccount = await tx.landAccount.update({
+            where: { id: landAccountId },
+            data: {
+              accountBalance: { decrement: loanAmount },
+              updatedAt: new Date(),
+            },
+          });
+
+          // สร้างรายงานใน land_account_reports
+          await tx.landAccountReport.create({
+            data: {
+              landAccountId: landAccountId,
+              detail: `อนุมัติสินเชื่อ(${loanNumber})`,
+              amount: loanAmount,
+              note: `อนุมัติสินเชื่อให้ ${application.customer?.profile?.firstName || ''} ${application.customer?.profile?.lastName || ''} จำนวน ${loanAmount.toLocaleString()} บาท`,
+              accountBalance: updatedAccount.accountBalance,
+            },
+          });
+
+          // สร้าง log ใน land_account_logs
+          await tx.landAccountLog.create({
+            data: {
+              landAccountId: landAccountId,
+              detail: 'อนุมัติสินเชื่อ',
+              amount: loanAmount,
+              note: `อนุมัติสินเชื่อ ${loanNumber}`,
+            },
+          });
+        }
       }
 
       return { success: true };
@@ -1257,6 +1350,50 @@ export const paymentService = {
       });
     }
 
+    // เพิ่มเงินเข้าบัญชีและสร้างรายงาน
+    if (data.landAccountId) {
+      await prisma.$transaction(async (tx) => {
+        // ตรวจสอบบัญชี
+        const account = await tx.landAccount.findUnique({
+          where: { id: data.landAccountId, deletedAt: null },
+        });
+
+        if (!account) {
+          throw new Error('ไม่พบบัญชีที่เลือก');
+        }
+
+        // เพิ่มเงินเข้าบัญชี
+        const updatedAccount = await tx.landAccount.update({
+          where: { id: data.landAccountId },
+          data: {
+            accountBalance: { increment: data.amount },
+            updatedAt: new Date(),
+          },
+        });
+
+        // สร้างรายงานใน land_account_reports
+        await tx.landAccountReport.create({
+          data: {
+            landAccountId: data.landAccountId,
+            detail: `ชำระสินเชื่อ ${loan.loanNumber}(งวดที่ ${installment.installmentNumber})`,
+            amount: data.amount,
+            note: `รับชำระสินเชื่อ ${loan.loanNumber} งวดที่ ${installment.installmentNumber}`,
+            accountBalance: updatedAccount.accountBalance,
+          },
+        });
+
+        // สร้าง log ใน land_account_logs
+        await tx.landAccountLog.create({
+          data: {
+            landAccountId: data.landAccountId,
+            detail: 'รับชำระสินเชื่อ',
+            amount: data.amount,
+            note: `รับชำระสินเชื่อ ${loan.loanNumber} งวดที่ ${installment.installmentNumber}`,
+          },
+        });
+      });
+    }
+
     return {
       payment,
       message: 'ชำระเงินสำเร็จ',
@@ -1349,6 +1486,50 @@ export const paymentService = {
       remainingBalance: 0,
       currentInstallment: loan.totalInstallments,
     });
+
+    // เพิ่มเงินเข้าบัญชีและสร้างรายงาน
+    if (data.landAccountId) {
+      await prisma.$transaction(async (tx) => {
+        // ตรวจสอบบัญชี
+        const account = await tx.landAccount.findUnique({
+          where: { id: data.landAccountId, deletedAt: null },
+        });
+
+        if (!account) {
+          throw new Error('ไม่พบบัญชีที่เลือก');
+        }
+
+        // เพิ่มเงินเข้าบัญชี
+        const updatedAccount = await tx.landAccount.update({
+          where: { id: data.landAccountId },
+          data: {
+            accountBalance: { increment: totalPayoffAmount },
+            updatedAt: new Date(),
+          },
+        });
+
+        // สร้างรายงานใน land_account_reports
+        await tx.landAccountReport.create({
+          data: {
+            landAccountId: data.landAccountId,
+            detail: `ชำระสินเชื่อ ${loan.loanNumber}(ชำระปิดสินเชื่อ)`,
+            amount: totalPayoffAmount,
+            note: `รับชำระปิดสินเชื่อ ${loan.loanNumber} ทั้งหมด ${unpaidInstallments.length} งวด`,
+            accountBalance: updatedAccount.accountBalance,
+          },
+        });
+
+        // สร้าง log ใน land_account_logs
+        await tx.landAccountLog.create({
+          data: {
+            landAccountId: data.landAccountId,
+            detail: 'ปิดสินเชื่อ',
+            amount: totalPayoffAmount,
+            note: `รับชำระปิดสินเชื่อ ${loan.loanNumber}`,
+          },
+        });
+      });
+    }
 
     return {
       payment,

@@ -74,6 +74,7 @@ import { ManageVariantsSheet } from '../components/manage-variants';
 import { ProductDetailsAnalyticsSheet } from '../components/product-details-analytics-sheet';
 import { ProductFormSheet } from '../components/product-form-sheet';
 import { RejectLoanDialog } from '../components/reject-loan-dialog';
+import { ApproveLoanDialog } from '../components/approve-loan-dialog';
 
 interface IColumnFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -159,6 +160,10 @@ export function ProductListTable({
   // Reject dialog state
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [rejectingLoanId, setRejectingLoanId] = useState<string | undefined>();
+
+  // Approve dialog state
+  const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
+  const [approvingLoanId, setApprovingLoanId] = useState<string | undefined>();
 
   // Log API response for debugging
   useEffect(() => {
@@ -406,8 +411,22 @@ export function ProductListTable({
 
   // Handle approve loan
   const handleApproveLoan = (loanId: string) => {
-    if (confirm('คุณต้องการอนุมัติสินเชื่อนี้ใช่หรือไม่?')) {
-      approveLoan.mutate(loanId);
+    setApprovingLoanId(loanId);
+    setIsApproveDialogOpen(true);
+  };
+
+  // Confirm approve loan with account selection
+  const confirmApproveLoan = (landAccountId: string) => {
+    if (approvingLoanId) {
+      approveLoan.mutate(
+        { loanId: approvingLoanId, landAccountId },
+        {
+          onSuccess: () => {
+            setIsApproveDialogOpen(false);
+            setApprovingLoanId(undefined);
+          },
+        },
+      );
     }
   };
 
@@ -1062,6 +1081,14 @@ export function ProductListTable({
         onOpenChange={setIsRejectDialogOpen}
         onConfirm={handleConfirmReject}
         isLoading={rejectLoan.isPending}
+      />
+
+      {/* Approve Loan Dialog */}
+      <ApproveLoanDialog
+        open={isApproveDialogOpen}
+        onOpenChange={setIsApproveDialogOpen}
+        onConfirm={confirmApproveLoan}
+        isPending={approveLoan.isPending}
       />
     </div>
   );

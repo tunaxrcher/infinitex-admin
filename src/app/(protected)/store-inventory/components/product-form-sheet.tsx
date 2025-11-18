@@ -8,6 +8,7 @@ import {
   useGetLoanById,
   useUpdateLoan,
 } from '@src/features/loans/hooks';
+import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import { cn } from '@src/shared/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
@@ -105,6 +106,13 @@ export function ProductFormSheet({
   const [loanAmount, setLoanAmount] = useState<number>(0);
   const [loanStartDate, setLoanStartDate] = useState(getTodayDate());
   const [loanDueDate, setLoanDueDate] = useState(getNextMonthDate());
+  const [landAccountId, setLandAccountId] = useState('');
+
+  // Fetch land accounts for selection
+  const { data: landAccountsData } = useGetLandAccountList({
+    page: 1,
+    limit: 1000,
+  });
 
   // Form state - Section 2: ข้อมูลลูกค้า
   const [fullName, setFullName] = useState('');
@@ -283,6 +291,7 @@ export function ProductFormSheet({
         transferFee,
         otherFee,
         note,
+        landAccountId, // บัญชีสำหรับจ่ายสินเชื่อ
         titleDeedFiles: uploadedFiles, // ส่งไฟล์โฉนดใหม่ที่จะอัปโหลด
         existingImageUrls: existingImages, // ส่ง URL ของรูปโฉนดที่มีอยู่แล้ว
         supportingFiles: supportingFiles, // ส่งไฟล์เพิ่มเติมใหม่ที่จะอัปโหลด
@@ -311,6 +320,7 @@ export function ProductFormSheet({
     setLoanAmount(0);
     setLoanStartDate(getTodayDate());
     setLoanDueDate(getNextMonthDate());
+    setLandAccountId('');
     setFullName('');
     setPhoneNumber('');
     setIdCard('');
@@ -562,6 +572,33 @@ export function ProductFormSheet({
                                 บาท
                               </span>
                             </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 md:col-span-2">
+                            <Label className="text-xs">
+                              บัญชีสำหรับจ่ายสินเชื่อ{' '}
+                              <span className="text-destructive">*</span>
+                            </Label>
+                            <Select
+                              value={landAccountId}
+                              onValueChange={setLandAccountId}
+                              required
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="เลือกบัญชี" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {landAccountsData?.data?.map((account: any) => (
+                                  <SelectItem key={account.id} value={account.id}>
+                                    {account.accountName} (฿
+                                    {Number(account.accountBalance).toLocaleString('th-TH', {
+                                      minimumFractionDigits: 2,
+                                    })}
+                                    )
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
                       </CardContent>

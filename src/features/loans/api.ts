@@ -151,9 +151,13 @@ export const loanApi = {
     return response.json();
   },
 
-  approve: async (id: string) => {
+  approve: async (id: string, landAccountId: string) => {
     const response = await apiFetch(`/api/loans/${id}/approve`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ landAccountId }),
     });
     if (!response.ok) {
       const error = await response.json();

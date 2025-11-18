@@ -146,6 +146,10 @@ export const MENU_SIDEBAR: MenuConfig = [
         title: 'Settings(Modal View)',
         path: '/store-inventory/settings-modal',
       },
+      {
+        title: 'Account Settings',
+        path: '/store-inventory/account-settings',
+      },
     ],
   },
 ];

@@ -1,0 +1,28 @@
+// src/app/api/land-account-reports/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { landAccountReportService } from '@src/features/land-account-reports/services/server';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const result = await landAccountReportService.getById(params.id);
+    return NextResponse.json({
+      success: true,
+      message: 'สำเร็จ',
+      data: result,
+    });
+  } catch (error: any) {
+    console.error('[API Error] GET /api/land-account-reports/[id]:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || 'เกิดข้อผิดพลาด',
+        errors: error,
+      },
+      { status: 500 },
+    );
+  }
+}
+

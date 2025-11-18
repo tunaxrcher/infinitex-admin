@@ -8,7 +8,20 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const result = await loanService.approve(id);
+    const body = await request.json();
+    const { landAccountId } = body;
+
+    if (!landAccountId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'กรุณาเลือกบัญชีสำหรับจ่ายสินเชื่อ',
+        },
+        { status: 400 },
+      );
+    }
+
+    const result = await loanService.approve(id, landAccountId);
     return NextResponse.json({
       success: true,
       message: 'อนุมัติสินเชื่อสำเร็จ',
