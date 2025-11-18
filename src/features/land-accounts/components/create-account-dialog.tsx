@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateLandAccount } from '@src/features/land-accounts/hooks';
 import {
@@ -57,11 +58,23 @@ export function CreateAccountDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>เพิ่มบัญชีใหม่</DialogTitle>
+        <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <DialogTitle className="text-center text-xl gradientText">
+            เพิ่มบัญชีใหม่
+          </DialogTitle>
           <DialogDescription>
             กรอกข้อมูลบัญชีที่ต้องการเพิ่มเข้าระบบ
           </DialogDescription>
+          <hr className="w-full border-border" />
         </DialogHeader>
 
         <Form {...form}>
@@ -109,7 +122,11 @@ export function CreateAccountDialog({
               >
                 ยกเลิก
               </Button>
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button
+                type="submit"
+                className="gradientButton"
+                disabled={createMutation.isPending}
+              >
                 {createMutation.isPending ? 'กำลังบันทึก...' : 'บันทึก'}
               </Button>
             </DialogFooter>

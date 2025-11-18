@@ -104,7 +104,36 @@ export function AccountLogsSection() {
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title="รายการ" />
         ),
-        cell: ({ row }) => <div>{row.getValue('detail')}</div>,
+        cell: ({ row }) => {
+          const detail = row.getValue('detail') as string;
+          // กำหนดสีตามประเภทรายการ - เงินออก (สีแดง), เงินเข้า (สีเขียว)
+          const isDebit = [
+            'เปิดสินเชื่อ',
+            'อนุมัติสินเชื่อ',
+            'ลดเงิน',
+            'โอนเงินออก',
+          ].some((type) => detail.includes(type));
+          const isCredit = [
+            'รับชำระสินเชื่อ',
+            'เพิ่มเงิน',
+            'โอนเงินเข้า',
+            'ปิดสินเชื่อ',
+          ].some((type) => detail.includes(type));
+
+          return (
+            <div
+              className={`font-medium ${
+                isDebit
+                  ? 'text-red-600 dark:text-red-400'
+                  : isCredit
+                    ? 'text-green-600 dark:text-green-400'
+                    : ''
+              }`}
+            >
+              {detail}
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'amount',
@@ -113,9 +142,34 @@ export function AccountLogsSection() {
         ),
         cell: ({ row }) => {
           const amount = row.getValue('amount') as number;
+          const detail = row.getValue('detail') as string;
+          // กำหนดสีตามประเภทรายการ
+          const isDebit = [
+            'เปิดสินเชื่อ',
+            'อนุมัติสินเชื่อ',
+            'ลดเงิน',
+            'โอนเงินออก',
+          ].some((type) => detail.includes(type));
+          const isCredit = [
+            'รับชำระสินเชื่อ',
+            'เพิ่มเงิน',
+            'โอนเงินเข้า',
+            'ปิดสินเชื่อ',
+          ].some((type) => detail.includes(type));
+
           return (
-            <div className="text-right font-medium">
-              ฿{amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+            <div
+              className={`text-right font-semibold ${
+                isDebit
+                  ? 'text-red-600 dark:text-red-400'
+                  : isCredit
+                    ? 'text-green-600 dark:text-green-400'
+                    : ''
+              }`}
+            >
+              {isDebit && '- '}
+              {isCredit && '+ '}฿
+              {amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
             </div>
           );
         },
@@ -126,7 +180,7 @@ export function AccountLogsSection() {
           <DataGridColumnHeader column={column} title="หมายเหตุ" />
         ),
         cell: ({ row }) => (
-          <div className="max-w-[300px] truncate">
+          <div className="max-w-[300px] truncate text-muted-foreground font-light text-sm">
             {row.getValue('note') || '-'}
           </div>
         ),

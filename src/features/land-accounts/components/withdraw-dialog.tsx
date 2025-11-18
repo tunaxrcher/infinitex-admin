@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWithdrawLandAccount } from '@src/features/land-accounts/hooks';
 import {
@@ -71,15 +72,28 @@ export function WithdrawDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>ลดเงินออกจากบัญชี</DialogTitle>
+        <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <DialogTitle className="text-center text-xl gradientText">
+            ลดเงินออกจากบัญชี
+          </DialogTitle>
           <DialogDescription>
+            {' '}
             ลดเงินออกจากบัญชี: {account?.accountName} (คงเหลือ: ฿
             {account?.accountBalance.toLocaleString('th-TH', {
               minimumFractionDigits: 2,
             })}
             )
           </DialogDescription>
+          <hr className="w-full border-border" />
         </DialogHeader>
 
         <Form {...form}>
@@ -127,7 +141,11 @@ export function WithdrawDialog({
               >
                 ยกเลิก
               </Button>
-              <Button type="submit" disabled={withdrawMutation.isPending}>
+              <Button
+                type="submit"
+                className="gradientButton"
+                disabled={withdrawMutation.isPending}
+              >
                 {withdrawMutation.isPending ? 'กำลังบันทึก...' : 'ลดเงิน'}
               </Button>
             </DialogFooter>

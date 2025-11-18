@@ -156,7 +156,7 @@ export function LandAccountsSection() {
                   setIsDepositOpen(true);
                 }}
               >
-                เพิ่มเงิน
+                เพิ่มเงิน 📈
               </Button>
               <Button
                 variant="outline"
@@ -166,7 +166,7 @@ export function LandAccountsSection() {
                   setIsWithdrawOpen(true);
                 }}
               >
-                ลดเงิน
+                ลดเงิน 📉
               </Button>
               <Button
                 variant="outline"
@@ -176,7 +176,7 @@ export function LandAccountsSection() {
                   setIsTransferOpen(true);
                 }}
               >
-                โอนเงิน
+                โอนเงิน 🔁
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

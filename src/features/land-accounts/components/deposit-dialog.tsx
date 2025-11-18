@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDepositLandAccount } from '@src/features/land-accounts/hooks';
 import {
@@ -71,11 +72,23 @@ export function DepositDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>เพิ่มเงินเข้าบัญชี</DialogTitle>
+        <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <DialogTitle className="text-center text-xl gradientText">
+            เพิ่มเงินเข้าบัญชี
+          </DialogTitle>
           <DialogDescription>
             เพิ่มเงินเข้าบัญชี: {account?.accountName}
           </DialogDescription>
+          <hr className="w-full border-border" />
         </DialogHeader>
 
         <Form {...form}>
@@ -123,7 +136,11 @@ export function DepositDialog({
               >
                 ยกเลิก
               </Button>
-              <Button type="submit" disabled={depositMutation.isPending}>
+              <Button
+                type="submit"
+                className="gradientButton"
+                disabled={depositMutation.isPending}
+              >
                 {depositMutation.isPending ? 'กำลังบันทึก...' : 'เพิ่มเงิน'}
               </Button>
             </DialogFooter>

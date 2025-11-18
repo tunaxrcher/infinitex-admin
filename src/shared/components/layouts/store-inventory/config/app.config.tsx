@@ -148,7 +148,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       },
       {
         title: 'Account Settings',
-        path: '/store-inventory/account-settings',
+        path: '/store-inventory/settings/accounts',
       },
     ],
   },

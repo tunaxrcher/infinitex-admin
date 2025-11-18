@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransferLandAccount } from '@src/features/land-accounts/hooks';
 import {
@@ -82,11 +83,23 @@ export function TransferDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>โอนเงินระหว่างบัญชี</DialogTitle>
+        <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <DialogTitle className="text-center text-xl gradientText">
+            โอนเงินระหว่างบัญชี
+          </DialogTitle>
           <DialogDescription>
             โอนเงินจากบัญชีหนึ่งไปยังอีกบัญชีหนึ่ง
           </DialogDescription>
+          <hr className="w-full border-border" />
         </DialogHeader>
 
         <Form {...form}>
@@ -193,7 +206,11 @@ export function TransferDialog({
               >
                 ยกเลิก
               </Button>
-              <Button type="submit" disabled={transferMutation.isPending}>
+              <Button
+                type="submit"
+                className="gradientButton"
+                disabled={transferMutation.isPending}
+              >
                 {transferMutation.isPending ? 'กำลังโอน...' : 'โอนเงิน'}
               </Button>
             </DialogFooter>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateLandAccount } from '@src/features/land-accounts/hooks';
 import {
@@ -74,9 +75,21 @@ export function EditAccountDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>แก้ไขบัญชี</DialogTitle>
+        <DialogHeader className="flex flex-col items-center gap-4 pb-4">
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <DialogTitle className="text-center text-xl gradientText">
+            แก้ไขบัญชี
+          </DialogTitle>
           <DialogDescription>แก้ไขข้อมูลบัญชีและยอดเงิน</DialogDescription>
+          <hr className="w-full border-border" />
         </DialogHeader>
 
         <Form {...form}>
@@ -124,7 +137,11 @@ export function EditAccountDialog({
               >
                 ยกเลิก
               </Button>
-              <Button type="submit" disabled={updateMutation.isPending}>
+              <Button
+                type="submit"
+                className="gradientButton"
+                disabled={updateMutation.isPending}
+              >
                 {updateMutation.isPending ? 'กำลังบันทึก...' : 'บันทึก'}
               </Button>
             </DialogFooter>

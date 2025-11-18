@@ -1,12 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { AccountLogsSection } from '@src/features/land-accounts/components/account-logs-section';
 import { CreateAccountDialog } from '@src/features/land-accounts/components/create-account-dialog';
 import { LandAccountsSection } from '@src/features/land-accounts/components/land-accounts-section';
 import { Plus } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
-import { useState } from 'react';
 
 export default function AccountSettingsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -24,7 +24,7 @@ export default function AccountSettingsPage() {
             </span>
           </div>
           <div className="flex items-center gap-3">
-             <Button
+            <Button
               variant="mono"
               className="gap-2 gradientButton"
               onClick={() => setIsCreateOpen(true)}
