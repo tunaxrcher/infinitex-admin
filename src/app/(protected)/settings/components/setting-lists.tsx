@@ -11,6 +11,7 @@ interface ICard1Item {
   brand: string;
   action: 'navigate' | 'dialog';
   path?: string;
+  disabled?: boolean;
 }
 type ICard1Items = Array<ICard1Item>;
 
@@ -26,14 +27,16 @@ export function SettingLists() {
       path: '/settings/accounts',
     },
     { logo: 'setting2.png', brand: 'ตั้งค่าทุน', action: 'dialog' },
-    { logo: 'setting3.png', brand: 'demo', action: 'navigate' },
-    { logo: 'setting3.png', brand: 'demo', action: 'navigate' },
-    { logo: 'setting3.png', brand: 'demo', action: 'navigate' },
-    { logo: 'setting3.png', brand: 'demo', action: 'navigate' },
-    { logo: 'setting3.png', brand: 'demo', action: 'navigate' },
+    { logo: 'setting3.png', brand: 'demo', action: 'navigate', disabled: true },
+    { logo: 'setting3.png', brand: 'demo', action: 'navigate', disabled: true },
+    { logo: 'setting3.png', brand: 'demo', action: 'navigate', disabled: true },
+    { logo: 'setting3.png', brand: 'demo', action: 'navigate', disabled: true },
+    { logo: 'setting3.png', brand: 'demo', action: 'navigate', disabled: true },
   ];
 
   const handleItemClick = (item: ICard1Item) => {
+    if (item.disabled) return;
+    
     if (item.action === 'navigate' && item.path) {
       router.push(item.path);
     } else if (item.action === 'dialog' && item.brand === 'ตั้งค่าทุน') {
@@ -42,18 +45,24 @@ export function SettingLists() {
   };
 
   const renderItem = (item: ICard1Item, index: number) => (
-    <Card key={index}>
+    <Card key={index} className={item.disabled ? 'opacity-40' : ''}>
       <CardContent className="flex flex-col items-center justify-center pb-0">
         <div
           onClick={() => handleItemClick(item)}
-          className="hover:text-primary text-sm font-medium text-mono cursor-pointer"
+          className={`text-sm font-medium text-mono ${
+            item.disabled
+              ? 'cursor-not-allowed'
+              : 'hover:text-primary cursor-pointer'
+          }`}
         >
           {item.brand}
         </div>
 
         <img
           src={toAbsoluteUrl(`/images/${item.logo}`)}
-          className="cursor-pointer h-[100px] shrink-0"
+          className={`h-[100px] shrink-0 ${
+            item.disabled ? 'cursor-not-allowed' : 'cursor-pointer'
+          }`}
           alt="image"
           onClick={() => handleItemClick(item)}
         />

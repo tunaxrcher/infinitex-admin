@@ -9,7 +9,7 @@ import { Card2 } from '../special-offers/card2';
 
 export function PopularSettings() {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 opacity-40 pointer-events-none">
       <div className="flex items-center justify-between gap-4">
         <span className="text-lg font-medium text-mono">ใช้งานล่าสุด</span>
 {/* 

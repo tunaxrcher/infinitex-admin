@@ -25,7 +25,7 @@ export function Card1() {
           </h3>
 
           <span className="text-sm font-normal text-foreground mb-5 leading-5.5">
-            รายละเอียดเบื้องต้น
+            รายละเอียด Logs
           </span>
 
           {/* <div className="flex items-center gap-4">
