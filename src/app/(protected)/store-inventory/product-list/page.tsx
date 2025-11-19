@@ -17,6 +17,11 @@ export default function ProductList() {
     <>
       <Container>
         <div className="container-fluid space-y-5 lg:space-y-9 pb-20 lg:pb-5">
+          {/* Section 1: Financial Summary */}
+          <div id="financial-summary" className="scroll-mt-20">
+            <FinancialSummaryCards />
+          </div>
+
           <div className="flex items-center flex-wrap dap-2.5 justify-between">
             <div className="flex flex-col gap-1">
               <h1 className="gradientText text-xl font-bold text-foreground">
@@ -36,11 +41,6 @@ export default function ProductList() {
                 เพิ่มสินเชื่อ
               </Button>
             </div>
-          </div>
-
-          {/* Section 1: Financial Summary */}
-          <div id="financial-summary" className="scroll-mt-20">
-            <FinancialSummaryCards />
           </div>
 
           {/* Section 2: Product List Table */}
