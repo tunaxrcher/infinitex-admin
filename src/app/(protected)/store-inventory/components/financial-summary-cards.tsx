@@ -7,8 +7,10 @@ import {
   Wallet,
   CheckCircle2,
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { CountingNumber } from '@src/shared/components/ui/counting-number';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
 import { useGetFinancialSummary } from '@src/features/financial-summary/hooks';
 
@@ -93,22 +95,38 @@ export function FinancialSummaryCards() {
 
   const renderRow = (row: IFinancialRow, index: number) => {
     return (
-      <div
+      <motion.div
         key={index}
         className="flex items-center justify-between flex-wrap gap-2"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.2 + index * 0.1, duration: 0.3 }}
       >
         <div className="flex items-center gap-1.5">
-          <row.icon className={`size-4.5 ${row.color || 'text-muted-foreground'}`} />
+          <motion.div
+            initial={{ rotate: 0, scale: 0.8 }}
+            animate={{ rotate: 360, scale: 1 }}
+            transition={{ delay: 1.2 + index * 0.1, duration: 0.5 }}
+          >
+            <row.icon className={`size-4.5 ${row.color || 'text-muted-foreground'}`} />
+          </motion.div>
           <span className="text-sm font-normal text-mono">{row.text}</span>
         </div>
         <div className="flex items-center text-sm font-medium text-foreground gap-6">
           {isLoading ? (
             <Skeleton className="h-5 w-24" />
           ) : (
-            <span className="lg:text-right">฿{formatCurrency(row.amount)}</span>
+            <span className="lg:text-right">
+              ฿<CountingNumber
+                to={row.amount}
+                duration={1.5}
+                delay={1.3 + index * 0.1}
+                format={(value) => formatCurrency(value)}
+              />
+            </span>
           )}
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -133,17 +151,27 @@ export function FinancialSummaryCards() {
           ) : (
             <div className="flex items-center gap-2.5">
               <span className="text-3xl font-semibold text-mono">
-                ฿{formatCurrencyWithDecimals(netAssets)}
+                ฿<CountingNumber
+                  to={netAssets}
+                  duration={2}
+                  format={(value) => formatCurrencyWithDecimals(value)}
+                />
               </span>
               {investmentAmount > 0 && (
-                <Badge 
-                  size="sm" 
-                  variant={isPositiveROI ? "success" : "destructive"} 
-                  appearance="light"
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, duration: 0.3 }}
                 >
-                  <TrendingUp className="size-3 mr-1" />
-                  {isPositiveROI ? '+' : ''}{roi.toFixed(1)}%
-                </Badge>
+                  <Badge 
+                    size="sm" 
+                    variant={isPositiveROI ? "success" : "destructive"} 
+                    appearance="light"
+                  >
+                    <TrendingUp className="size-3 mr-1" />
+                    {isPositiveROI ? '+' : ''}{roi.toFixed(1)}%
+                  </Badge>
+                </motion.div>
               )}
             </div>
           )}
@@ -151,40 +179,66 @@ export function FinancialSummaryCards() {
 
         {!isLoading && !isError && totalAssets > 0 && (
           <>
-            <div className="flex items-center gap-1 mb-1.5">
-              <div
+            <div className="flex items-center gap-1 mb-1.5 overflow-hidden">
+              <motion.div
                 className="bg-blue-500 h-2 rounded-xs"
-                style={{ width: `${investmentPercent}%` }}
-              ></div>
-              <div
+                initial={{ width: 0 }}
+                animate={{ width: `${investmentPercent}%` }}
+                transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+              />
+              <motion.div
                 className="bg-green-500 h-2 rounded-xs"
-                style={{ width: `${cashPercent}%` }}
-              ></div>
-              <div
+                initial={{ width: 0 }}
+                animate={{ width: `${cashPercent}%` }}
+                transition={{ duration: 1, ease: 'easeOut', delay: 0.4 }}
+              />
+              <motion.div
                 className="bg-violet-500 h-2 rounded-xs"
-                style={{ width: `${completedPercent}%` }}
-              ></div>
+                initial={{ width: 0 }}
+                animate={{ width: `${completedPercent}%` }}
+                transition={{ duration: 1, ease: 'easeOut', delay: 0.6 }}
+              />
             </div>
-            <div className="flex items-center flex-wrap gap-4 mb-1">
+            <motion.div
+              className="flex items-center flex-wrap gap-4 mb-1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.4 }}
+            >
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-blue-500"></div>
+                <motion.div 
+                  className="size-2 rounded-full bg-blue-500"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.9, duration: 0.3 }}
+                />
                 <span className="text-sm font-normal text-foreground">
                   เงินลงทุน ({investmentPercent.toFixed(1)}%)
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-green-500"></div>
+                <motion.div 
+                  className="size-2 rounded-full bg-green-500"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1, duration: 0.3 }}
+                />
                 <span className="text-sm font-normal text-foreground">
                   เงินสด ({cashPercent.toFixed(1)}%)
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-violet-500"></div>
+                <motion.div 
+                  className="size-2 rounded-full bg-violet-500"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1.1, duration: 0.3 }}
+                />
                 <span className="text-sm font-normal text-foreground">
                   ปิดบัญชี ({completedPercent.toFixed(1)}%)
                 </span>
               </div>
-            </div>
+            </motion.div>
           </>
         )}
 
