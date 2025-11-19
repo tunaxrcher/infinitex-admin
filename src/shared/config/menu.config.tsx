@@ -119,7 +119,7 @@ export const MENU_SIDEBAR: MenuConfig = [
   { title: 'ใบสำคัญรับ', icon: Theater, disabled: true },
   { title: 'ใบสำคัญจ่าย', icon: Theater, disabled: true },
   { heading: 'ตั้งค่า' },
-  { title: 'ตั้งค่า', icon: Settings, path: '/settings/accounts' },
+  { title: 'ตั้งค่า', icon: Settings, path: '/settings' },
   // { heading: 'Finx' },
   // { title: 'รายการสินเชื่อ', icon: Theater, disabled: true },
   // { title: 'รายงานสินเชื่อ', icon: Theater, disabled: true },

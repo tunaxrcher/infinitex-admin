@@ -1,8 +1,9 @@
 import { RiCheckboxCircleFill } from '@remixicon/react';
+import { SystemLog } from '@src/app/models/system';
+import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
 import { Row } from '@tanstack/react-table';
 import { Ellipsis } from 'lucide-react';
 import { toast } from 'sonner';
-import { useCopyToClipboard } from '@src/shared/hooks/use-copy-to-clipboard';
 import { Alert, AlertIcon, AlertTitle } from '@src/shared/components/ui/alert';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -11,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@src/shared/components/ui/dropdown-menu';
-import { SystemLog } from '@src/app/models/system';
 
 export const LogActionsCell = ({ row }: { row: Row<SystemLog> }) => {
   const { copyToClipboard } = useCopyToClipboard();

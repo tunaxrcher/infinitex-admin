@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { SystemLog } from '@src/app/models/system';
+import { User } from '@src/app/models/user';
+import { formatDateTime, getInitials } from '@src/shared/lib/helpers';
+import { cn } from '@src/shared/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import {
   ColumnDef,
@@ -15,13 +19,20 @@ import {
 import { format } from 'date-fns';
 import { CalendarIcon, Search, X } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
-import { formatDateTime, getInitials } from '@src/shared/lib/helpers';
-import { cn } from '@src/shared/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@src/shared/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Calendar } from '@src/shared/components/ui/calendar';
-import { Card, CardFooter, CardHeader, CardTable } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardFooter,
+  CardHeader,
+  CardTable,
+} from '@src/shared/components/ui/card';
 import {
   DataGrid,
   DataGridApiFetchParams,
@@ -38,8 +49,6 @@ import {
 } from '@src/shared/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { SystemLog } from '@src/app/models/system';
-import { User } from '@src/app/models/user';
 import { LogActionsCell } from './log-actions-cell';
 
 const ActivityLogList = () => {
