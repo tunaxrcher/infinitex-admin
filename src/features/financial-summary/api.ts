@@ -11,4 +11,3 @@ export const financialSummaryApi = {
     return response.json();
   },
 };
-

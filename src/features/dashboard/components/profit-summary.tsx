@@ -8,7 +8,6 @@ import {
   RiInstagramLine,
   RiStore2Line,
 } from '@remixicon/react';
-import { motion } from 'motion/react';
 import { DropdownMenu4 } from '@src/app/components/partials/dropdown-menu/dropdown-menu-4';
 import { formatCurrency } from '@src/shared/lib/helpers';
 import {
@@ -20,6 +19,7 @@ import {
   TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {

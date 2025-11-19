@@ -10,4 +10,3 @@ export const financialSummaryFiltersSchema = z.object({
 export type FinancialSummaryFiltersSchema = z.infer<
   typeof financialSummaryFiltersSchema
 >;
-

@@ -1,18 +1,23 @@
 'use client';
 
+import { useGetFinancialSummary } from '@src/features/financial-summary/hooks';
 import {
   Banknote,
+  CheckCircle2,
   CircleDollarSign,
   TrendingUp,
   Wallet,
-  CheckCircle2,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Badge } from '@src/shared/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@src/shared/components/ui/card';
 import { CountingNumber } from '@src/shared/components/ui/counting-number';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { useGetFinancialSummary } from '@src/features/financial-summary/hooks';
 
 interface IFinancialRow {
   icon: React.ComponentType<{ className?: string }>;
@@ -77,21 +82,25 @@ export function FinancialSummaryCards() {
 
   // Calculate ROI (Return on Investment)
   // ROI = (ทรัพย์สินสุทธิ - เงินลงทุนเริ่มต้น) / เงินลงทุนเริ่มต้น × 100
-  const roi = investmentAmount > 0
-    ? ((netAssets - investmentAmount) / investmentAmount) * 100
-    : 0;
+  const roi =
+    investmentAmount > 0
+      ? ((netAssets - investmentAmount) / investmentAmount) * 100
+      : 0;
   const isPositiveROI = roi >= 0;
 
   // Calculate percentages for progress bar
-  const investmentPercent = totalAssets > 0
-    ? ((financialData?.investmentAmount || 0) / totalAssets) * 100
-    : 0;
-  const cashPercent = totalAssets > 0
-    ? ((financialData?.cashInAccounts || 0) / totalAssets) * 100
-    : 0;
-  const completedPercent = totalAssets > 0
-    ? ((financialData?.totalCompletedLoanAmount || 0) / totalAssets) * 100
-    : 0;
+  const investmentPercent =
+    totalAssets > 0
+      ? ((financialData?.investmentAmount || 0) / totalAssets) * 100
+      : 0;
+  const cashPercent =
+    totalAssets > 0
+      ? ((financialData?.cashInAccounts || 0) / totalAssets) * 100
+      : 0;
+  const completedPercent =
+    totalAssets > 0
+      ? ((financialData?.totalCompletedLoanAmount || 0) / totalAssets) * 100
+      : 0;
 
   const renderRow = (row: IFinancialRow, index: number) => {
     return (
@@ -108,7 +117,9 @@ export function FinancialSummaryCards() {
             animate={{ rotate: 360, scale: 1 }}
             transition={{ delay: 1.2 + index * 0.1, duration: 0.5 }}
           >
-            <row.icon className={`size-4.5 ${row.color || 'text-muted-foreground'}`} />
+            <row.icon
+              className={`size-4.5 ${row.color || 'text-muted-foreground'}`}
+            />
           </motion.div>
           <span className="text-sm font-normal text-mono">{row.text}</span>
         </div>
@@ -117,7 +128,8 @@ export function FinancialSummaryCards() {
             <Skeleton className="h-5 w-24" />
           ) : (
             <span className="lg:text-right">
-              ฿<CountingNumber
+              ฿
+              <CountingNumber
                 to={row.amount}
                 duration={1.5}
                 delay={1.3 + index * 0.1}
@@ -151,7 +163,8 @@ export function FinancialSummaryCards() {
           ) : (
             <div className="flex items-center gap-2.5">
               <span className="text-3xl font-semibold text-mono">
-                ฿<CountingNumber
+                ฿
+                <CountingNumber
                   to={netAssets}
                   duration={2}
                   format={(value) => formatCurrencyWithDecimals(value)}
@@ -163,13 +176,14 @@ export function FinancialSummaryCards() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5, duration: 0.3 }}
                 >
-                  <Badge 
-                    size="sm" 
-                    variant={isPositiveROI ? "success" : "destructive"} 
+                  <Badge
+                    size="sm"
+                    variant={isPositiveROI ? 'success' : 'destructive'}
                     appearance="light"
                   >
                     <TrendingUp className="size-3 mr-1" />
-                    {isPositiveROI ? '+' : ''}{roi.toFixed(1)}%
+                    {isPositiveROI ? '+' : ''}
+                    {roi.toFixed(1)}%
                   </Badge>
                 </motion.div>
               )}
@@ -206,7 +220,7 @@ export function FinancialSummaryCards() {
               transition={{ delay: 0.8, duration: 0.4 }}
             >
               <div className="flex items-center gap-1.5">
-                <motion.div 
+                <motion.div
                   className="size-2 rounded-full bg-blue-500"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -217,7 +231,7 @@ export function FinancialSummaryCards() {
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <motion.div 
+                <motion.div
                   className="size-2 rounded-full bg-green-500"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -228,7 +242,7 @@ export function FinancialSummaryCards() {
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <motion.div 
+                <motion.div
                   className="size-2 rounded-full bg-violet-500"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -258,4 +272,3 @@ export function FinancialSummaryCards() {
     </Card>
   );
 }
-

@@ -1,8 +1,8 @@
 'use client';
 
 import { Fragment } from 'react';
-import { motion } from 'motion/react';
 import { formatCurrency, toAbsoluteUrl } from '@src/shared/lib/helpers';
+import { motion } from 'motion/react';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { CountingNumber } from '@src/shared/components/ui/counting-number';
 import { Skeleton } from '@src/shared/components/ui/skeleton';

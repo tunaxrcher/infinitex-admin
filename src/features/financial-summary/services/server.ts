@@ -1,8 +1,7 @@
 // src/features/financial-summary/services/server.ts
 import 'server-only';
-
-import { prisma } from '@src/shared/lib/db';
 import { Prisma } from '@prisma/client';
+import { prisma } from '@src/shared/lib/db';
 
 export const financialSummaryService = {
   async getSummary() {
@@ -84,4 +83,3 @@ export const financialSummaryService = {
     }
   },
 };
-

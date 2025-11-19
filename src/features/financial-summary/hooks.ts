@@ -1,6 +1,5 @@
 // src/features/financial-summary/hooks.ts
 import { useQuery } from '@tanstack/react-query';
-
 import { financialSummaryApi } from './api';
 
 export const financialSummaryKeys = {
@@ -18,4 +17,3 @@ export const useGetFinancialSummary = () => {
     retry: 1,
   });
 };
-
