@@ -92,7 +92,8 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
         </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
           <Link
-            href="/account/home/user-profile"
+            // href="/account/home/user-profile"
+            href="#"
             className="flex items-center gap-2"
           >
             <User />
@@ -109,7 +110,8 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
           <DropdownMenuSubContent className="w-48">
             <DropdownMenuItem asChild>
               <Link
-                href="/account/home/get-started"
+                // href="/account/home/get-started"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <Coffee />
@@ -118,7 +120,8 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href="/account/home/user-profile"
+                // href="/account/home/user-profile"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <FileText />
@@ -136,7 +139,8 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             </DropdownMenuItem> */}
             <DropdownMenuItem asChild>
               <Link
-                href="/account/security/overview"
+                // href="/account/security/overview"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <Shield />

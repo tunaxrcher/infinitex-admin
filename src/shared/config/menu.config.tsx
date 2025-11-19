@@ -101,10 +101,10 @@ export const MENU_SIDEBAR: MenuConfig = [
         title: 'รายการสินเชื่อ/เปิดสินเชื่อ',
         path: '/store-inventory/product-list',
       },
-      {
-        title: 'รายงานสินเชื่อ',
-        path: '/test1',
-      },
+      // {
+      //   title: 'รายงานสินเชื่อ',
+      //   path: '/test1',
+      // },
       {
         title: 'รายงานรายรับ/รายจ่าย',
         path: '/test2',

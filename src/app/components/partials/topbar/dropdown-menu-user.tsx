@@ -94,10 +94,7 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link
-            href="/account/home/user-profile"
-            className="flex items-center gap-2"
-          >
+          <Link href="#" className="flex items-center gap-2">
             <User />
             My Profile
           </Link>
@@ -111,17 +108,15 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="w-48">
             <DropdownMenuItem asChild>
-              <Link
-                href="/account/home/get-started"
-                className="flex items-center gap-2"
-              >
+              <Link href="#" className="flex items-center gap-2">
                 <Coffee />
                 Get Started
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href="/account/home/user-profile"
+                // href="/account/home/user-profile"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <FileText />
@@ -130,7 +125,8 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href="/account/billing/basic"
+                // href="/account/billing/basic"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <CreditCard />
@@ -139,7 +135,8 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href="/account/security/overview"
+                // href="/account/security/overview"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <Shield />
@@ -148,7 +145,8 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href="/account/members/teams"
+                // href="/account/members/teams"
+                href="#"
                 className="flex items-center gap-2"
               >
                 <Users />
