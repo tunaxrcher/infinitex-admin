@@ -7,6 +7,7 @@ import { Container } from '@src/shared/components/common/container';
 import { ProductFormSheet } from '../components/product-form-sheet';
 import { LoanPaymentReportsTable } from '../tables/loan-payment-reports';
 import { ProductListTable } from '../tables/product-list';
+import { FinancialSummaryCards } from '../components/financial-summary-cards';
 
 export default function ProductList() {
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
@@ -34,6 +35,9 @@ export default function ProductList() {
             </Button>
           </div>
         </div>
+
+        {/* Financial Summary Cards */}
+        <FinancialSummaryCards />
 
         {/* Product List Table */}
         <ProductListTable />
