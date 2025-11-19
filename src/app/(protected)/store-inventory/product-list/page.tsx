@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { PlusIcon, Upload } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
+import { FinancialSummaryCards } from '../components/financial-summary-cards';
 import { ProductFormSheet } from '../components/product-form-sheet';
 import { LoanPaymentReportsTable } from '../tables/loan-payment-reports';
 import { ProductListTable } from '../tables/product-list';
-import { FinancialSummaryCards } from '../components/financial-summary-cards';
 
 export default function ProductList() {
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
@@ -15,6 +15,9 @@ export default function ProductList() {
   return (
     <Container>
       <div className="container-fluid space-y-5 lg:space-y-9">
+        {/* Financial Summary Cards */}
+        <FinancialSummaryCards />
+
         <div className="flex items-center flex-wrap dap-2.5 justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="gradientText text-xl font-bold text-foreground">
@@ -35,9 +38,6 @@ export default function ProductList() {
             </Button>
           </div>
         </div>
-
-        {/* Financial Summary Cards */}
-        <FinancialSummaryCards />
 
         {/* Product List Table */}
         <ProductListTable />

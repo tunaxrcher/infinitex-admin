@@ -1,17 +1,24 @@
 'use client';
 
-import { Fragment } from 'react';
-import { Card, CardContent } from '@src/shared/components/ui/card';
+import {
+  Banknote,
+  CircleDollarSign,
+  TrendingUp,
+  Wallet,
+  CheckCircle2,
+} from 'lucide-react';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
-import { toAbsoluteUrl } from '@src/shared/lib/helpers';
 import { useGetFinancialSummary } from '@src/features/financial-summary/hooks';
 
-interface IFinancialCard {
-  logo: string;
-  info: string;
-  desc: string;
+interface IFinancialRow {
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
+  amount: number;
+  color?: string;
 }
-type IFinancialCards = Array<IFinancialCard>;
+type IFinancialRows = Array<IFinancialRow>;
 
 export function FinancialSummaryCards() {
   const { data, isLoading, isError } = useGetFinancialSummary();
@@ -20,98 +27,169 @@ export function FinancialSummaryCards() {
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('th-TH', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatCurrencyWithDecimals = (amount: number) => {
+    return new Intl.NumberFormat('th-TH', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
   };
 
-  const items: IFinancialCards = [
+  const rows: IFinancialRows = [
     {
-      logo: 'user.png',
-      info: `฿${formatCurrency(financialData?.investmentAmount || 0)}`,
-      desc: 'เงินลงทุนจริง',
+      icon: Banknote,
+      text: 'เงินลงทุนจริง',
+      amount: financialData?.investmentAmount || 0,
+      color: 'text-blue-500',
     },
     {
-      logo: 'loan.png',
-      info: `฿${formatCurrency(financialData?.totalActiveLoanAmount || 0)}`,
-      desc: 'ยอดวงเงินกู้รวม',
+      icon: CircleDollarSign,
+      text: 'ยอดวงเงินกู้รวม',
+      amount: financialData?.totalActiveLoanAmount || 0,
+      color: 'text-orange-500',
     },
     {
-      logo: '2.png',
-      info: `฿${formatCurrency(financialData?.cashInAccounts || 0)}`,
-      desc: 'เงินสดในบัญชี',
+      icon: Wallet,
+      text: 'เงินสดในบัญชี',
+      amount: financialData?.cashInAccounts || 0,
+      color: 'text-green-500',
     },
     {
-      logo: 'reward.png',
-      info: `฿${formatCurrency(financialData?.totalCompletedLoanAmount || 0)}`,
-      desc: 'วงเงินที่ปิดบัญชีแล้ว',
-    },
-    {
-      logo: 'user.png',
-      info: `฿${formatCurrency(financialData?.netAssets || 0)}`,
-      desc: 'ทรัพย์สินสุทธิ',
+      icon: CheckCircle2,
+      text: 'วงเงินที่ปิดบัญชีแล้ว',
+      amount: financialData?.totalCompletedLoanAmount || 0,
+      color: 'text-violet-500',
     },
   ];
 
-  const renderItem = (item: IFinancialCard, index: number) => {
+  const netAssets = financialData?.netAssets || 0;
+  const totalAssets =
+    (financialData?.investmentAmount || 0) +
+    (financialData?.cashInAccounts || 0) +
+    (financialData?.totalCompletedLoanAmount || 0);
+
+  // Calculate percentages for progress bar
+  const investmentPercent = totalAssets > 0
+    ? ((financialData?.investmentAmount || 0) / totalAssets) * 100
+    : 0;
+  const cashPercent = totalAssets > 0
+    ? ((financialData?.cashInAccounts || 0) / totalAssets) * 100
+    : 0;
+  const completedPercent = totalAssets > 0
+    ? ((financialData?.totalCompletedLoanAmount || 0) / totalAssets) * 100
+    : 0;
+
+  const renderRow = (row: IFinancialRow, index: number) => {
     return (
-      <Card key={index}>
-        <CardContent className="p-0 flex flex-col justify-between gap-6 h-full bg-cover rtl:bg-[left_top_-1.7rem] bg-[right_top_-1.7rem] bg-no-repeat financial-stats-bg">
-          <img
-            src={toAbsoluteUrl(`/images/${item.logo}`)}
-            className="w-7 mt-4 ms-5"
-            alt="image"
-          />
-          <div className="flex flex-col gap-1 pb-4 px-5">
-            {isLoading ? (
-              <>
-                <Skeleton className="h-9 w-24" />
-                <Skeleton className="h-4 w-32" />
-              </>
-            ) : isError ? (
-              <>
-                <span className="text-2xl font-semibold text-destructive">
-                  Error
-                </span>
-                <span className="text-sm font-normal text-muted-foreground">
-                  {item.desc}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-2xl font-semibold text-mono">
-                  {item.info}
-                </span>
-                <span className="text-sm font-normal text-muted-foreground">
-                  {item.desc}
-                </span>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <div
+        key={index}
+        className="flex items-center justify-between flex-wrap gap-2"
+      >
+        <div className="flex items-center gap-1.5">
+          <row.icon className={`size-4.5 ${row.color || 'text-muted-foreground'}`} />
+          <span className="text-sm font-normal text-mono">{row.text}</span>
+        </div>
+        <div className="flex items-center text-sm font-medium text-foreground gap-6">
+          {isLoading ? (
+            <Skeleton className="h-5 w-24" />
+          ) : (
+            <span className="lg:text-right">฿{formatCurrency(row.amount)}</span>
+          )}
+        </div>
+      </div>
     );
   };
 
   return (
-    <>
-      <style>
-        {`
-          .financial-stats-bg {
-            background-image: url('${toAbsoluteUrl('/media/images/2600x1600/bg-3.png')}');
-          }
-          .dark .financial-stats-bg {
-            background-image: url('${toAbsoluteUrl('/media/images/2600x1600/bg-3-dark.png')}');
-          }
-        `}
-      </style>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>ข้อมูลทางการเงินของ InfiniteX</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4 p-5 lg:p-7.5 lg:pt-4">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-normal text-secondary-foreground">
+            ทรัพย์สินสุทธิ
+          </span>
+          {isLoading ? (
+            <Skeleton className="h-10 w-48" />
+          ) : isError ? (
+            <div className="flex items-center gap-2.5">
+              <span className="text-3xl font-semibold text-destructive">
+                Error
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2.5">
+              <span className="text-3xl font-semibold text-mono">
+                ฿{formatCurrencyWithDecimals(netAssets)}
+              </span>
+              {netAssets > 0 && (
+                <Badge size="sm" variant="success" appearance="light">
+                  <TrendingUp className="size-3 mr-1" />
+                  Active
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 lg:gap-7.5">
-        {items.map((item, index) => {
-          return renderItem(item, index);
-        })}
-      </div>
-    </>
+        {!isLoading && !isError && totalAssets > 0 && (
+          <>
+            <div className="flex items-center gap-1 mb-1.5">
+              <div
+                className="bg-blue-500 h-2 rounded-xs"
+                style={{ width: `${investmentPercent}%` }}
+              ></div>
+              <div
+                className="bg-green-500 h-2 rounded-xs"
+                style={{ width: `${cashPercent}%` }}
+              ></div>
+              <div
+                className="bg-violet-500 h-2 rounded-xs"
+                style={{ width: `${completedPercent}%` }}
+              ></div>
+            </div>
+            <div className="flex items-center flex-wrap gap-4 mb-1">
+              <div className="flex items-center gap-1.5">
+                <div className="size-2 rounded-full bg-blue-500"></div>
+                <span className="text-sm font-normal text-foreground">
+                  เงินลงทุน ({investmentPercent.toFixed(1)}%)
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="size-2 rounded-full bg-green-500"></div>
+                <span className="text-sm font-normal text-foreground">
+                  เงินสด ({cashPercent.toFixed(1)}%)
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="size-2 rounded-full bg-violet-500"></div>
+                <span className="text-sm font-normal text-foreground">
+                  ปิดบัญชี ({completedPercent.toFixed(1)}%)
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="border-b border-input"></div>
+        <div className="grid gap-3">
+          {isLoading ? (
+            <>
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-8 w-full" />
+              ))}
+            </>
+          ) : (
+            rows.map(renderRow)
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
