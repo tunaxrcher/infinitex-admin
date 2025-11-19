@@ -37,4 +37,3 @@ export class RealInvestmentRepository {
 }
 
 export const realInvestmentRepository = new RealInvestmentRepository();
-

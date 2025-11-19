@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import { Card1 } from '../special-offers/card1';
@@ -12,7 +11,7 @@ export function PopularSettings() {
     <div className="space-y-5 opacity-40 pointer-events-none">
       <div className="flex items-center justify-between gap-4">
         <span className="text-lg font-medium text-mono">ใช้งานล่าสุด</span>
-{/* 
+        {/* 
         <Button mode="link" asChild>
           <Link href="/account/home/get-started" className="text-xs">
             See All <ChevronRight />

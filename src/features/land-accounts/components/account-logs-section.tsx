@@ -111,6 +111,7 @@ export function AccountLogsSection() {
             'เปิดสินเชื่อ',
             'อนุมัติสินเชื่อ',
             'ลดเงิน',
+            'ลบเงินออกจากบัญชี',
             'โอนเงินออก',
           ].some((type) => detail.includes(type));
           const isCredit = [
@@ -148,6 +149,7 @@ export function AccountLogsSection() {
             'เปิดสินเชื่อ',
             'อนุมัติสินเชื่อ',
             'ลดเงิน',
+            'ลบเงินออกจากบัญชี',
             'โอนเงินออก',
           ].some((type) => detail.includes(type));
           const isCredit = [

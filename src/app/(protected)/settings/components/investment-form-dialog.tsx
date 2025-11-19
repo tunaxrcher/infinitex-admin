@@ -1,6 +1,7 @@
 'use client';
-import Image from 'next/image';
+
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useGetCurrentInvestment,
@@ -88,7 +89,6 @@ export function InvestmentFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-
         <DialogHeader className="flex flex-col items-center gap-4 pb-4">
           <div className="flex justify-center">
             <Image
@@ -100,10 +100,10 @@ export function InvestmentFormDialog({
             />
           </div>
           <DialogTitle className="text-center text-xl gradientText">
-          ตั้งค่าทุน
+            ตั้งค่าทุน
           </DialogTitle>
           <DialogDescription>
-          ทุนปัจจุบัน:{' '}
+            ทุนปัจจุบัน:{' '}
             <span className="font-semibold text-mono">
               {isLoading ? '...' : `฿${formatNumber(currentInvestment)}`}
             </span>
@@ -189,7 +189,11 @@ export function InvestmentFormDialog({
               >
                 ยกเลิก
               </Button> */}
-              <Button type="submit" className="gradientButton w-full" disabled={updateInvestment.isPending}>
+              <Button
+                type="submit"
+                className="gradientButton w-full"
+                disabled={updateInvestment.isPending}
+              >
                 {updateInvestment.isPending ? 'กำลังบันทึก...' : 'บันทึก'}
               </Button>
             </DialogFooter>
@@ -199,4 +203,3 @@ export function InvestmentFormDialog({
     </Dialog>
   );
 }
-

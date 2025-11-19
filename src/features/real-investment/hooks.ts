@@ -1,7 +1,6 @@
 // src/features/real-investment/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-
 import { realInvestmentApi } from './api';
 import { type InvestmentUpdateSchema } from './validations';
 
@@ -24,7 +23,8 @@ export const useGetCurrentInvestment = () => {
 export const useUpdateInvestment = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: InvestmentUpdateSchema) => realInvestmentApi.update(data),
+    mutationFn: (data: InvestmentUpdateSchema) =>
+      realInvestmentApi.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: realInvestmentKeys.all() });
       queryClient.refetchQueries({ queryKey: realInvestmentKeys.current() });
@@ -35,4 +35,3 @@ export const useUpdateInvestment = () => {
     },
   });
 };
-

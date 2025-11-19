@@ -27,4 +27,3 @@ export const realInvestmentApi = {
     return response.json();
   },
 };
-

@@ -1,6 +1,5 @@
 // src/features/real-investment/services/server.ts
 import 'server-only';
-
 import { realInvestmentRepository } from '../repositories/realInvestmentRepository';
 import { type InvestmentUpdateSchema } from '../validations';
 
@@ -33,4 +32,3 @@ export const realInvestmentService = {
     return await realInvestmentRepository.update(current.id, newInvestment);
   },
 };
-

@@ -36,7 +36,7 @@ export function SettingLists() {
 
   const handleItemClick = (item: ICard1Item) => {
     if (item.disabled) return;
-    
+
     if (item.action === 'navigate' && item.path) {
       router.push(item.path);
     } else if (item.action === 'dialog' && item.brand === 'ตั้งค่าทุน') {

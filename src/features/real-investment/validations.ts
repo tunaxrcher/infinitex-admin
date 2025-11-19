@@ -13,4 +13,3 @@ export const investmentUpdateSchema = z.object({
 });
 
 export type InvestmentUpdateSchema = z.infer<typeof investmentUpdateSchema>;
-
