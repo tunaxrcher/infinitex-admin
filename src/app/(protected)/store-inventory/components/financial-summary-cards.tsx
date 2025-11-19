@@ -67,10 +67,18 @@ export function FinancialSummaryCards() {
   ];
 
   const netAssets = financialData?.netAssets || 0;
+  const investmentAmount = financialData?.investmentAmount || 0;
   const totalAssets =
     (financialData?.investmentAmount || 0) +
     (financialData?.cashInAccounts || 0) +
     (financialData?.totalCompletedLoanAmount || 0);
+
+  // Calculate ROI (Return on Investment)
+  // ROI = (ทรัพย์สินสุทธิ - เงินลงทุนเริ่มต้น) / เงินลงทุนเริ่มต้น × 100
+  const roi = investmentAmount > 0
+    ? ((netAssets - investmentAmount) / investmentAmount) * 100
+    : 0;
+  const isPositiveROI = roi >= 0;
 
   // Calculate percentages for progress bar
   const investmentPercent = totalAssets > 0
@@ -127,10 +135,14 @@ export function FinancialSummaryCards() {
               <span className="text-3xl font-semibold text-mono">
                 ฿{formatCurrencyWithDecimals(netAssets)}
               </span>
-              {netAssets > 0 && (
-                <Badge size="sm" variant="success" appearance="light">
+              {investmentAmount > 0 && (
+                <Badge 
+                  size="sm" 
+                  variant={isPositiveROI ? "success" : "destructive"} 
+                  appearance="light"
+                >
                   <TrendingUp className="size-3 mr-1" />
-                  Active
+                  {isPositiveROI ? '+' : ''}{roi.toFixed(1)}%
                 </Badge>
               )}
             </div>
