@@ -1,14 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  ChannelStats,
-  EarningsChart,
-  EntryCallout,
-  Highlights,
-  TeamMeeting,
-  Teams,
-} from '@src/app/(protected)/components/demo1';
+import { DashboardSummary } from '@src/features/dashboard/components/dashboard-summary';
+import { MonthlyDataTable } from '@src/features/dashboard/components/monthly-data-table';
+import { PaymentChart } from '@src/features/dashboard/components/payment-chart';
+import { ProfitSummary } from '@src/features/dashboard/components/profit-summary';
+import { useGetDashboardSummary } from '@src/features/dashboard/hooks';
 import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
@@ -18,11 +15,6 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Container } from '@src/shared/components/common/container';
-import { useGetDashboardSummary } from '../hooks';
-import { DashboardSummary } from './dashboard-summary';
-import { MonthlyDataTable } from './monthly-data-table';
-import { PaymentChart } from './payment-chart';
-import { ProfitSummary } from './profit-summary';
 
 export function DashboardPage() {
   const currentYear = new Date().getFullYear();
