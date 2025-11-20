@@ -5,7 +5,7 @@ import {
   landAccountCreateSchema,
   landAccountFiltersSchema,
 } from '@src/features/land-accounts/validations';
-import { getToken } from 'next-auth/jwt';
+import { getAdminFromToken } from '@src/shared/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,23 +38,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-
-    // Validate request body
     const validatedData = landAccountCreateSchema.parse(body);
-
-    // Get admin info from session
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-    const adminId = token?.id as string | undefined;
-    const adminName = token?.name as string | undefined;
+    const { adminId, adminName } = await getAdminFromToken(request);
 
     const result = await landAccountService.create(
       validatedData,
       adminId,
       adminName,
     );
+
     return NextResponse.json({
       success: true,
       message: 'สร้างบัญชีสำเร็จ',

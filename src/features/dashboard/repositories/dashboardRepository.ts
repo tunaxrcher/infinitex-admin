@@ -90,6 +90,66 @@ export class DashboardRepository {
       _count: Number(result[0]?.total_count || 0),
     };
   }
+
+  /**
+   * Get loans created in a specific month with full details
+   */
+  async getLoansCreatedInMonthDetails(year: number, month: number) {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+    return prisma.loan.findMany({
+      where: {
+        status: { in: ['ACTIVE', 'COMPLETED'] },
+        contractDate: { gte: startDate, lte: endDate },
+      },
+      include: {
+        customer: {
+          include: { profile: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Get overdue installments in a specific month with full details
+   */
+  async getOverdueInstallmentsInMonthDetails(year: number, month: number) {
+    const result = await prisma.$queryRaw<any[]>`
+      SELECT 
+        li.*,
+        l.loanNumber,
+        l.status as loanStatus,
+        up.firstName,
+        up.lastName
+      FROM loan_installments li
+      INNER JOIN loans l ON li.loanId = l.id
+      LEFT JOIN users u ON l.customerId = u.id
+      LEFT JOIN user_profiles up ON u.id = up.userId
+      WHERE li.isPaid = false
+        AND YEAR(li.dueDate) = ${year}
+        AND MONTH(li.dueDate) = ${month}
+        AND li.dueDate < NOW()
+        AND l.status = 'ACTIVE'
+      ORDER BY li.dueDate ASC
+    `;
+
+    // Transform data to match Prisma structure
+    return result.map((item: any) => ({
+      ...item,
+      loan: {
+        loanNumber: item.loanNumber,
+        status: item.loanStatus,
+        customer: {
+          profile: {
+            firstName: item.firstName,
+            lastName: item.lastName,
+          },
+        },
+      },
+    }));
+  }
 }
 
 export const dashboardRepository = new DashboardRepository();

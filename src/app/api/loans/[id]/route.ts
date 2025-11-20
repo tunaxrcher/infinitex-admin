@@ -4,6 +4,114 @@ import { loanService } from '@src/features/loans/services/server';
 import { loanUpdateSchema } from '@src/features/loans/validations';
 import { storage } from '@src/shared/lib/storage';
 
+// ============================================
+// Helper Functions
+// ============================================
+
+/**
+ * Parse FormData and extract fields and files
+ */
+function parseFormDataFields(formData: FormData) {
+  const data: any = {};
+  const titleDeedFiles: File[] = [];
+  const supportingFiles: File[] = [];
+
+  for (const [key, value] of formData.entries()) {
+    if (key === 'titleDeedFiles' && value instanceof File) {
+      titleDeedFiles.push(value);
+    } else if (key === 'supportingFiles' && value instanceof File) {
+      supportingFiles.push(value);
+    } else if (
+      key === 'existingImageUrls' ||
+      key === 'existingSupportingImageUrls'
+    ) {
+      try {
+        data[key] = JSON.parse(value as string);
+      } catch {
+        data[key] = [];
+      }
+    } else {
+      if (value === 'undefined' || value === 'null') {
+        data[key] = undefined;
+      } else if (
+        [
+          'loanAmount',
+          'loanYears',
+          'interestRate',
+          'operationFee',
+          'transferFee',
+          'otherFee',
+        ].includes(key)
+      ) {
+        data[key] = parseFloat(value as string);
+      } else {
+        data[key] = value;
+      }
+    }
+  }
+
+  return { data, titleDeedFiles, supportingFiles };
+}
+
+/**
+ * Upload files to storage
+ */
+async function uploadFilesToStorage(
+  files: File[],
+  folder: string,
+): Promise<string[]> {
+  const urls: string[] = [];
+
+  if (files.length > 0) {
+    console.log(`[API] Uploading ${files.length} files to ${folder}...`);
+
+    for (const file of files) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const result = await storage.uploadFile(buffer, file.type, {
+          folder,
+          filename: file.name,
+        });
+
+        urls.push(result.url);
+        console.log(`[API] Uploaded: ${file.name} -> ${result.url}`);
+      } catch (uploadError) {
+        console.error(`[API] Failed to upload ${file.name}:`, uploadError);
+        throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
+      }
+    }
+  }
+
+  return urls;
+}
+
+/**
+ * Process images for update (replace if new, keep existing otherwise)
+ */
+function processImagesForUpdate(
+  newUrls: string[],
+  existingUrls: string[],
+  imageType: string,
+): string[] {
+  const finalUrls = newUrls.length > 0 ? newUrls : existingUrls;
+
+  console.log(`[API Update] Processing ${imageType}:`, {
+    hasNewImages: newUrls.length > 0,
+    existingCount: existingUrls.length,
+    newCount: newUrls.length,
+    finalCount: finalUrls.length,
+    action: newUrls.length > 0 ? 'Using NEW images only' : 'Using existing images',
+  });
+
+  return finalUrls;
+}
+
+// ============================================
+// API Routes
+// ============================================
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -16,15 +124,13 @@ export async function GET(
       message: 'สำเร็จ',
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     const { id } = await params;
-    const errorMessage =
-      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
     console.error(`[API Error] GET /api/loans/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
-        message: errorMessage,
+        message: error.message || 'เกิดข้อผิดพลาด',
         errors: error,
       },
       { status: 500 },
@@ -40,166 +146,47 @@ export async function PUT(
     const { id } = await params;
     const formData = await request.formData();
 
-    // Extract form fields
-    const data: any = {};
-    const titleDeedFiles: File[] = [];
-    const supportingFiles: File[] = [];
-
     // Parse form data
-    for (const [key, value] of formData.entries()) {
-      if (key === 'titleDeedFiles') {
-        // Collect all title deed files
-        if (value instanceof File) {
-          titleDeedFiles.push(value);
-        }
-      } else if (key === 'supportingFiles') {
-        // Collect all supporting files
-        if (value instanceof File) {
-          supportingFiles.push(value);
-        }
-      } else if (
-        key === 'existingImageUrls' ||
-        key === 'existingSupportingImageUrls'
-      ) {
-        // Parse existing image URLs from JSON
-        try {
-          data[key] = JSON.parse(value as string);
-        } catch {
-          data[key] = [];
-        }
-      } else {
-        // Parse other fields
-        if (value === 'undefined' || value === 'null') {
-          data[key] = undefined;
-        } else if (
-          key === 'loanAmount' ||
-          key === 'loanYears' ||
-          key === 'interestRate' ||
-          key === 'operationFee' ||
-          key === 'transferFee' ||
-          key === 'otherFee'
-        ) {
-          data[key] = parseFloat(value as string);
-        } else {
-          data[key] = value;
-        }
-      }
-    }
+    const { data, titleDeedFiles, supportingFiles } =
+      parseFormDataFields(formData);
 
-    // Upload new title deed images
-    const newImageUrls: string[] = [];
-    if (titleDeedFiles.length > 0) {
-      console.log(
-        `[API] Uploading ${titleDeedFiles.length} title deed images...`,
-      );
+    // Upload files
+    const [newTitleDeedUrls, newSupportingUrls] = await Promise.all([
+      uploadFilesToStorage(titleDeedFiles, 'title-deeds'),
+      uploadFilesToStorage(supportingFiles, 'supporting-images'),
+    ]);
 
-      for (const file of titleDeedFiles) {
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
+    // Process images (replace if new, keep existing otherwise)
+    const existingTitleDeedUrls = data.existingImageUrls || [];
+    const existingSupportingUrls = data.existingSupportingImageUrls || [];
 
-          const result = await storage.uploadFile(buffer, file.type, {
-            folder: 'title-deeds',
-            filename: file.name,
-          });
+    data.titleDeedImages = processImagesForUpdate(
+      newTitleDeedUrls,
+      existingTitleDeedUrls,
+      'title deed images',
+    );
+    data.supportingImages = processImagesForUpdate(
+      newSupportingUrls,
+      existingSupportingUrls,
+      'supporting images',
+    );
 
-          newImageUrls.push(result.url);
-          console.log(`[API] Uploaded: ${file.name} -> ${result.url}`);
-        } catch (uploadError) {
-          console.error(`[API] Failed to upload ${file.name}:`, uploadError);
-          throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
-        }
-      }
-    }
-
-    // Upload supporting images
-    const supportingImageUrls: string[] = [];
-    if (supportingFiles.length > 0) {
-      console.log(
-        `[API] Uploading ${supportingFiles.length} supporting images...`,
-      );
-
-      for (const file of supportingFiles) {
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-
-          const result = await storage.uploadFile(buffer, file.type, {
-            folder: 'supporting-images',
-            filename: file.name,
-          });
-
-          supportingImageUrls.push(result.url);
-          console.log(
-            `[API] Uploaded supporting: ${file.name} -> ${result.url}`,
-          );
-        } catch (uploadError) {
-          console.error(`[API] Failed to upload ${file.name}:`, uploadError);
-          throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
-        }
-      }
-    }
-
-    // Replace title deed images
-    // - ถ้ามีรูปใหม่: ใช้เฉพาะรูปใหม่ (ทิ้งรูปเก่าทั้งหมด)
-    // - ถ้าไม่มีรูปใหม่: ใช้รูปเก่าที่ยังเลือกไว้
-    const existingImages = data.existingImageUrls || [];
-    const allImageUrls =
-      newImageUrls.length > 0 ? newImageUrls : existingImages;
-
-    console.log('[API Update] Replacing title deed images:', {
-      hasNewImages: newImageUrls.length > 0,
-      existingCount: existingImages.length,
-      newCount: newImageUrls.length,
-      finalCount: allImageUrls.length,
-      action:
-        newImageUrls.length > 0
-          ? 'Using NEW images only'
-          : 'Using existing images',
-      images: allImageUrls,
-    });
-
-    data.titleDeedImages = allImageUrls;
-
-    // Replace supporting images
-    // - ถ้ามีรูปใหม่: ใช้เฉพาะรูปใหม่ (ทิ้งรูปเก่าทั้งหมด)
-    // - ถ้าไม่มีรูปใหม่: ใช้รูปเก่าที่ยังเลือกไว้
-    const existingSupporting = data.existingSupportingImageUrls || [];
-    const allSupportingUrls =
-      supportingImageUrls.length > 0 ? supportingImageUrls : existingSupporting;
-
-    console.log('[API Update] Replacing supporting images:', {
-      hasNewImages: supportingImageUrls.length > 0,
-      existingCount: existingSupporting.length,
-      newCount: supportingImageUrls.length,
-      finalCount: allSupportingUrls.length,
-      action:
-        supportingImageUrls.length > 0
-          ? 'Using NEW images only'
-          : 'Using existing images',
-      images: allSupportingUrls,
-    });
-
-    data.supportingImages = allSupportingUrls;
-
-    // Validate request body
+    // Validate and update
     const validatedData = loanUpdateSchema.parse(data);
-
     const result = await loanService.update(id, validatedData);
+
     return NextResponse.json({
       success: true,
       message: 'แก้ไขสินเชื่อสำเร็จ',
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     const { id } = await params;
-    const errorMessage =
-      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
     console.error(`[API Error] PUT /api/loans/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
-        message: errorMessage,
+        message: error.message || 'เกิดข้อผิดพลาด',
         errors: error,
       },
       { status: 500 },
@@ -218,15 +205,13 @@ export async function DELETE(
       success: true,
       message: 'ลบสินเชื่อสำเร็จ',
     });
-  } catch (error) {
+  } catch (error: any) {
     const { id } = await params;
-    const errorMessage =
-      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
     console.error(`[API Error] DELETE /api/loans/${id}:`, error);
     return NextResponse.json(
       {
         success: false,
-        message: errorMessage,
+        message: error.message || 'เกิดข้อผิดพลาด',
         errors: error,
       },
       { status: 500 },

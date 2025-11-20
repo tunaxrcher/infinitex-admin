@@ -1,44 +1,26 @@
 // src/app/api/customers/search/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@src/shared/lib/db';
+import { customerService } from '@src/features/customers/services/server';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get('query') || '';
+    const limit = parseInt(searchParams.get('limit') || '10');
 
-    // ค้นหาลูกค้าจาก phoneNumber, firstName, lastName
-    const customers = await prisma.user.findMany({
-      where: {
-        userType: 'CUSTOMER',
-        OR: [
-          { phoneNumber: { contains: query } },
-          { profile: { firstName: { contains: query } } },
-          { profile: { lastName: { contains: query } } },
-        ],
-      },
-      include: {
-        profile: true,
-      },
-      take: 10, // จำกัดผลลัพธ์ 10 รายการ
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    const customers = await customerService.searchCustomers(query, limit);
 
     return NextResponse.json({
       success: true,
       message: 'สำเร็จ',
       data: customers,
     });
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+  } catch (error: any) {
     console.error('[API Error] GET /api/customers/search:', error);
     return NextResponse.json(
       {
         success: false,
-        message: errorMessage,
+        message: error.message || 'เกิดข้อผิดพลาด',
         errors: error,
       },
       { status: 500 },

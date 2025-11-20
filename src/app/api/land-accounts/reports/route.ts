@@ -1,4 +1,4 @@
-// src/app/api/land-account-reports/route.ts
+// src/app/api/land-accounts/reports/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { landAccountReportService } from '@src/features/land-account-reports/services/server';
 import { landAccountReportFiltersSchema } from '@src/features/land-account-reports/validations';
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       meta: result.meta,
     });
   } catch (error: any) {
-    console.error('[API Error] GET /api/land-account-reports:', error);
+    console.error('[API Error] GET /api/land-accounts/reports:', error);
     return NextResponse.json(
       {
         success: false,
@@ -30,3 +30,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

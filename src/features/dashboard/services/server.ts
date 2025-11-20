@@ -149,4 +149,63 @@ export const dashboardService = {
       profit,
     };
   },
+
+  /**
+   * Get monthly details by type
+   */
+  async getMonthlyDetails(
+    year: number,
+    month: number,
+    type:
+      | 'loans'
+      | 'payments'
+      | 'interest-payments'
+      | 'close-payments'
+      | 'overdue',
+  ): Promise<any[]> {
+    switch (type) {
+      case 'loans': {
+        // ดึงสินเชื่อที่สร้างในเดือนนั้น
+        return dashboardRepository.getLoansCreatedInMonthDetails(year, month);
+      }
+
+      case 'payments': {
+        // ดึง payments ทั้งหมด
+        return dashboardRepository.getPaymentsInMonth(year, month);
+      }
+
+      case 'interest-payments': {
+        // ดึง payments แล้วกรองตาม type (มี installmentId)
+        const payments = await dashboardRepository.getPaymentsInMonth(
+          year,
+          month,
+        );
+        return payments.filter(
+          (p) => p.installmentId != null && p.installmentId !== '',
+        );
+      }
+
+      case 'close-payments': {
+        // ดึง payments แล้วกรองตาม type (ไม่มี installmentId)
+        const payments = await dashboardRepository.getPaymentsInMonth(
+          year,
+          month,
+        );
+        return payments.filter(
+          (p) => !p.installmentId || p.installmentId === '',
+        );
+      }
+
+      case 'overdue': {
+        // ดึงงวดค้างชำระของเดือนนั้น
+        return dashboardRepository.getOverdueInstallmentsInMonthDetails(
+          year,
+          month,
+        );
+      }
+
+      default:
+        throw new Error('Invalid type parameter');
+    }
+  },
 };

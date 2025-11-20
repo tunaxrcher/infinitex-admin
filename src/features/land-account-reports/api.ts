@@ -13,7 +13,7 @@ export const landAccountReportApi = {
     });
 
     const response = await apiFetch(
-      `/api/land-account-reports?${searchParams}`,
+      `/api/land-accounts/reports?${searchParams}`,
     );
     if (!response.ok) {
       const error = await response.json();
@@ -23,7 +23,7 @@ export const landAccountReportApi = {
   },
 
   getById: async (id: string) => {
-    const response = await apiFetch(`/api/land-account-reports/${id}`);
+    const response = await apiFetch(`/api/land-accounts/reports/${id}`);
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'เกิดข้อผิดพลาด');

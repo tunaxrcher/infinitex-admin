@@ -1,4 +1,4 @@
-// src/app/api/land-account-reports/[id]/route.ts
+// src/app/api/land-accounts/reports/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { landAccountReportService } from '@src/features/land-account-reports/services/server';
 
@@ -15,7 +15,7 @@ export async function GET(
       data: result,
     });
   } catch (error: any) {
-    console.error('[API Error] GET /api/land-account-reports/[id]:', error);
+    console.error('[API Error] GET /api/land-accounts/reports/[id]:', error);
     return NextResponse.json(
       {
         success: false,
@@ -26,3 +26,4 @@ export async function GET(
     );
   }
 }
+

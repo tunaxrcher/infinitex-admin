@@ -2,24 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { paymentService } from '@src/features/loans/services/server';
 import { closeLoanSchema } from '@src/features/loans/validations';
-import { getToken } from 'next-auth/jwt';
+import { getAdminFromToken } from '@src/shared/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-
-    // Validate request body
     const validatedData = closeLoanSchema.parse(body);
+    const { adminId, adminName } = await getAdminFromToken(request);
 
-    // Get admin info from session
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
     const userId = undefined; // Optional - service will use loan.customerId by default
-    const adminId = token?.id as string | undefined;
-    const adminName = token?.name as string | undefined;
-
     const result = await paymentService.closeLoan(
       validatedData,
       userId,

@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 import { prisma } from './db';
 
 export const authOptions: NextAuthOptions = {
@@ -198,3 +200,22 @@ export const authOptions: NextAuthOptions = {
   // Secret for JWT
   secret: process.env.NEXTAUTH_SECRET,
 };
+
+// ============================================
+// Helper Functions
+// ============================================
+
+/**
+ * Get admin info from session token
+ */
+export async function getAdminFromToken(request: NextRequest) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  return {
+    adminId: token?.id as string | undefined,
+    adminName: token?.name as string | undefined,
+  };
+}
