@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { PlusIcon, Upload } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
-import { Container } from '@src/shared/components/common/container';
 import { FinancialSummaryCards } from '@src/features/loans/components/financial-summary-cards';
 import { ProductFormSheet } from '@src/features/loans/components/product-form-sheet';
 import { SectionNavigation } from '@src/features/loans/components/section-navigation';
-import { ProductListTable } from '@src/features/loans/tables/product-list';
 import { LoanPaymentReportsTable } from '@src/features/loans/tables/loan-payment-reports';
+import { ProductListTable } from '@src/features/loans/tables/product-list';
+import { PlusIcon, Upload } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
 
 export default function ProductList() {
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
