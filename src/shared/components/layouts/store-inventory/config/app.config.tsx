@@ -63,7 +63,7 @@ export const MENU_SIDEBAR: MenuConfig = [
     children: [
       {
         title: 'Product List',
-        path: '/store-inventory/product-list',
+        path: '/loan/product-list',
       },
       {
         title: 'Product Details',

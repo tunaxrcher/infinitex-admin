@@ -466,19 +466,19 @@ export function ProductListTable({
 
   const columns = useMemo<ColumnDef<IData>[]>(
     () => [
-      {
-        accessorKey: 'id',
-        accessorFn: (row) => row.id,
-        header: () => <DataGridTableRowSelectAll />,
-        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
-        enableSorting: false,
-        enableHiding: false,
-        enableResizing: false,
-        size: 50,
-        meta: {
-          cellClassName: '',
-        },
-      },
+      // {
+      //   accessorKey: 'id',
+      //   accessorFn: (row) => row.id,
+      //   header: () => <DataGridTableRowSelectAll />,
+      //   cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+      //   enableSorting: false,
+      //   enableHiding: false,
+      //   enableResizing: false,
+      //   size: 50,
+      //   meta: {
+      //     cellClassName: '',
+      //   },
+      // },
       {
         id: 'loanNumber',
         accessorFn: (row) => row.loanNumber,

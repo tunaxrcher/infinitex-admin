@@ -36,7 +36,7 @@ export default function NotFound() {
         {/* Back to Home Button */}
         <div className="pt-4">
           <Link
-            href="/store-inventory/product-list"
+            href="/loan/product-list"
             className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             <svg
