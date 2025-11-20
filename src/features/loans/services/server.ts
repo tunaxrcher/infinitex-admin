@@ -1,7 +1,7 @@
 // src/features/loans/services/server.ts
 import 'server-only';
 import { Prisma } from '@prisma/client';
-import { landAccountReportService } from '@src/features/land-account-reports/services/server';
+import { landAccountReportService } from '@src/features/land-accounts/services/server';
 import { prisma } from '@src/shared/lib/db';
 import { installmentRepository } from '../repositories/installmentRepository';
 import { loanRepository } from '../repositories/loanRepository';

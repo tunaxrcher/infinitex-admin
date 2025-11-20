@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useGetLandAccountReportList } from '@src/features/land-account-reports/hooks';
+import { useGetLandAccountReportList } from '@src/features/land-accounts/hooks';
 import { cn } from '@src/shared/lib/utils';
 import {
   ColumnDef,

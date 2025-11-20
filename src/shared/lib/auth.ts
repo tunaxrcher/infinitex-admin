@@ -1,9 +1,9 @@
+import { NextRequest } from 'next/server';
 import bcrypt from 'bcrypt';
 import { NextAuthOptions } from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 import { prisma } from './db';
 
 export const authOptions: NextAuthOptions = {

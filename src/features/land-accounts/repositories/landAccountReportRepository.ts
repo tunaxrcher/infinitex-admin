@@ -1,4 +1,4 @@
-// src/features/land-account-reports/repositories/landAccountReportRepository.ts
+// src/features/land-accounts/repositories/landAccountReportRepository.ts
 import { Prisma } from '@prisma/client';
 import { prisma } from '@src/shared/lib/db';
 

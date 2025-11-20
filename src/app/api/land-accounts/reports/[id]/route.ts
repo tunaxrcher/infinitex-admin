@@ -1,6 +1,6 @@
 // src/app/api/land-accounts/reports/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { landAccountReportService } from '@src/features/land-account-reports/services/server';
+import { landAccountReportService } from '@src/features/land-accounts/services/server';
 
 export async function GET(
   request: NextRequest,
@@ -26,4 +26,3 @@ export async function GET(
     );
   }
 }
-

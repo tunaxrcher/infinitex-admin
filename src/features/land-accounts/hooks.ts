@@ -1,7 +1,7 @@
 // src/features/land-accounts/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { landAccountApi } from './api';
+import { landAccountApi, landAccountReportApi } from './api';
 import {
   type AccountDepositSchema,
   type AccountTransferSchema,
@@ -9,6 +9,7 @@ import {
   type LandAccountCreateSchema,
   type LandAccountFiltersSchema,
   type LandAccountLogFiltersSchema,
+  type LandAccountReportFiltersSchema,
   type LandAccountUpdateSchema,
 } from './validations';
 
@@ -145,5 +146,38 @@ export const useGetLandAccountLogs = (filters: LandAccountLogFiltersSchema) => {
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,
+  });
+};
+
+// ============================================
+// LAND ACCOUNT REPORT HOOKS
+// ============================================
+
+export const landAccountReportKeys = {
+  all: () => ['landAccountReports'] as const,
+  list: (filters?: LandAccountReportFiltersSchema) =>
+    ['landAccountReports', 'list', filters] as const,
+  detail: (id: string) => ['landAccountReports', 'detail', id] as const,
+};
+
+export const useGetLandAccountReportList = (
+  filters: LandAccountReportFiltersSchema,
+) => {
+  return useQuery({
+    queryKey: landAccountReportKeys.list(filters),
+    queryFn: () => landAccountReportApi.getList(filters),
+    placeholderData: (previousData) => previousData,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+};
+
+export const useGetLandAccountReportById = (id: string) => {
+  return useQuery({
+    queryKey: landAccountReportKeys.detail(id),
+    queryFn: () => landAccountReportApi.getById(id),
+    enabled: !!id,
   });
 };

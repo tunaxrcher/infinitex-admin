@@ -102,7 +102,8 @@ function processImagesForUpdate(
     existingCount: existingUrls.length,
     newCount: newUrls.length,
     finalCount: finalUrls.length,
-    action: newUrls.length > 0 ? 'Using NEW images only' : 'Using existing images',
+    action:
+      newUrls.length > 0 ? 'Using NEW images only' : 'Using existing images',
   });
 
   return finalUrls;

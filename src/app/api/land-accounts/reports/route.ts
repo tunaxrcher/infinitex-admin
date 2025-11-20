@@ -1,7 +1,7 @@
 // src/app/api/land-accounts/reports/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { landAccountReportService } from '@src/features/land-account-reports/services/server';
-import { landAccountReportFiltersSchema } from '@src/features/land-account-reports/validations';
+import { landAccountReportService } from '@src/features/land-accounts/services/server';
+import { landAccountReportFiltersSchema } from '@src/features/land-accounts/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,4 +30,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

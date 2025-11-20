@@ -7,6 +7,7 @@ import {
   type LandAccountCreateSchema,
   type LandAccountFiltersSchema,
   type LandAccountLogFiltersSchema,
+  type LandAccountReportFiltersSchema,
   type LandAccountUpdateSchema,
 } from './validations';
 
@@ -133,6 +134,40 @@ export const landAccountApi = {
     });
 
     const response = await apiFetch(`/api/land-accounts/logs?${searchParams}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+};
+
+// ============================================
+// LAND ACCOUNT REPORT APIs
+// ============================================
+
+export const landAccountReportApi = {
+  getList: async (filters: LandAccountReportFiltersSchema) => {
+    const searchParams = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        searchParams.append(key, value.toString());
+      }
+    });
+
+    const response = await apiFetch(
+      `/api/land-accounts/reports?${searchParams}`,
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  getById: async (id: string) => {
+    const response = await apiFetch(`/api/land-accounts/reports/${id}`);
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'เกิดข้อผิดพลาด');

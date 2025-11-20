@@ -9,4 +9,3 @@ export const customerService = {
     return customerRepository.searchCustomers(query, limit);
   },
 };
-
