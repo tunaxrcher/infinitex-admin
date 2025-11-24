@@ -14,12 +14,8 @@ export const financialSummaryService = {
       } = await financialSummaryRepository.getAllFinancialData();
 
       // Calculate net assets
-      // Formula: Real Investment + Cash in Accounts + Completed Loans - Active Loans
-      const netAssets =
-        investmentAmount +
-        cashInAccounts +
-        totalCompletedLoanAmount -
-        totalActiveLoanAmount;
+      // Formula: Total Active Loan Amount + Cash in Accounts
+      const netAssets = totalActiveLoanAmount + cashInAccounts;
 
       return {
         investmentAmount,
