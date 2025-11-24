@@ -69,6 +69,13 @@ export const loanApi = {
       ) {
         // Append existing supporting image URLs as JSON array
         formData.append('existingSupportingImageUrls', JSON.stringify(value));
+      } else if (
+        key === 'titleDeedData' &&
+        value !== undefined &&
+        value !== null
+      ) {
+        // Append titleDeedData as JSON string
+        formData.append('titleDeedData', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }
@@ -123,6 +130,13 @@ export const loanApi = {
       ) {
         // Append existing supporting image URLs as JSON array
         formData.append('existingSupportingImageUrls', JSON.stringify(value));
+      } else if (
+        key === 'titleDeedData' &&
+        value !== undefined &&
+        value !== null
+      ) {
+        // Append titleDeedData as JSON string
+        formData.append('titleDeedData', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }

@@ -36,7 +36,7 @@ export function AddLoanMenu({ onManualAdd, onAIAdd }: AddLoanMenuProps) {
         <DropdownMenuItem onClick={onAIAdd} className="cursor-pointer">
           <Sparkles className="h-4 w-4 mr-2 text-primary" />
           <div className="flex flex-col">
-            <span className="font-medium ai-gradient-text">กรอกโดย AI</span>
+            <span className="font-medium ai-gradient-text">AI</span>
             <span className="text-xs text-muted-foreground">
               อัพโหลดโฉนดให้ AI วิเคราะห์
             </span>

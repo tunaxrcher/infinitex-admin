@@ -737,11 +737,11 @@ export const MENU_MEGA: MenuConfig = [
           {
             children: [
               {
-                title: 'ตั้งค่าบัญชี',
+                title: 'บัญชี',
                 path: '/settings/accounts',
               },
               {
-                title: 'ตั้งค่าทุน',
+                title: 'เงินลงทุน',
                 path: '/settings',
               },
               // {

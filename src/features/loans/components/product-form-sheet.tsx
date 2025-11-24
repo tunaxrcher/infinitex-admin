@@ -201,8 +201,9 @@ export function ProductFormSheet({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      setUploadedFiles((prev) => [...prev, ...Array.from(files)]);
+    if (files && files[0]) {
+      // แทนที่ไฟล์เดิม (เลือกได้แค่ไฟล์เดียว)
+      setUploadedFiles([files[0]]);
     }
   };
 
@@ -1225,7 +1226,6 @@ export function ProductFormSheet({
                             type="file"
                             accept="image/*,.pdf"
                             className="hidden"
-                            multiple
                             onChange={handleFileChange}
                           />
 
