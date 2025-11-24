@@ -480,7 +480,7 @@ export function TitleDeedManualInputModal({
             <Button
               onClick={handleConfirm}
               disabled={!canConfirm}
-              className="flex-1 animate-in slide-in-from-right-2 duration-300"
+              className="flex-1 animate-in slide-in-from-right-2 duration-300 gradientButton"
             >
               {isLoading ? (
                 <>

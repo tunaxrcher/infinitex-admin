@@ -266,7 +266,7 @@ export function TitleDeedUploadDialog({
             <Button
               onClick={handleUpload}
               disabled={!selectedFile || isUploading}
-              className="flex-1"
+              className="flex-1 gradientButton"
             >
               <Sparkles className="h-4 w-4 mr-2" />
               วิเคราะห์ด้วย AI
