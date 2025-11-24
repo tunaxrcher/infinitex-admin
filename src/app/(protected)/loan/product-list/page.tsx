@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import amphurData from '@src/data/amphur.json';
 import provinceData from '@src/data/province.json';
-import { AddLoanMenu } from '@src/features/loans/components/add-loan-menu';
+import { AddLoanMethodModal } from '@src/features/loans/components/add-loan-method-modal';
 import { FinancialSummaryCards } from '@src/features/loans/components/financial-summary-cards';
 import { ProductFormSheet } from '@src/features/loans/components/product-form-sheet';
 import { SectionNavigation } from '@src/features/loans/components/section-navigation';
@@ -12,8 +12,11 @@ import { TitleDeedUploadDialog } from '@src/features/loans/components/title-deed
 import { LoanPaymentReportsTable } from '@src/features/loans/tables/loan-payment-reports';
 import { ProductListTable } from '@src/features/loans/tables/product-list';
 import { Container } from '@src/shared/components/common/container';
+import { Button } from '@src/shared/components/ui/button';
+import { PlusIcon } from 'lucide-react';
 
 export default function ProductList() {
+  const [isMethodModalOpen, setIsMethodModalOpen] = useState(false);
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
   const [isTitleDeedUploadOpen, setIsTitleDeedUploadOpen] = useState(false);
   const [isManualInputOpen, setIsManualInputOpen] = useState(false);
@@ -144,10 +147,14 @@ export default function ProductList() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <AddLoanMenu
-                onManualAdd={handleManualAdd}
-                onAIAdd={handleAIAdd}
-              />
+              <Button
+                variant="mono"
+                className="gap-2 gradientButton"
+                onClick={() => setIsMethodModalOpen(true)}
+              >
+                <PlusIcon className="h-4 w-4" />
+                เพิ่มสินเชื่อ
+              </Button>
             </div>
           </div>
 
@@ -170,6 +177,14 @@ export default function ProductList() {
             </div>
             <LoanPaymentReportsTable />
           </div>
+
+          {/* Add Loan Method Modal */}
+          <AddLoanMethodModal
+            isOpen={isMethodModalOpen}
+            onClose={() => setIsMethodModalOpen(false)}
+            onManualAdd={handleManualAdd}
+            onAIAdd={handleAIAdd}
+          />
 
           {/* Create Product Modal */}
           <ProductFormSheet
