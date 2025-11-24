@@ -207,3 +207,12 @@ export type PaymentCreateSchema = z.infer<typeof paymentCreateSchema>;
 export const paymentUpdateSchema = paymentCreateSchema.partial();
 
 export type PaymentUpdateSchema = z.infer<typeof paymentUpdateSchema>;
+
+// Manual lookup schema
+export const manualLookupSchema = z.object({
+  pvCode: z.string().min(1, 'กรุณาเลือกจังหวัด'),
+  amCode: z.string().min(1, 'กรุณาเลือกอำเภอ'),
+  parcelNo: z.string().min(1, 'กรุณากรอกเลขโฉนด'),
+});
+
+export type ManualLookupSchema = z.infer<typeof manualLookupSchema>;
