@@ -62,6 +62,9 @@ export const loanCreateSchema = z.object({
   existingImageUrls: z.array(z.string()).optional(), // URL ของรูปโฉนดที่มีอยู่แล้ว
   supportingImages: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมทั้งหมด
   existingSupportingImageUrls: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
+
+  // ข้อมูลโฉนดจาก API (จาก LandsMaps)
+  titleDeedData: z.any().optional(), // ข้อมูลโฉนดทั้งชุดจาก API
 });
 
 export type LoanCreateSchema = z.infer<typeof loanCreateSchema>;

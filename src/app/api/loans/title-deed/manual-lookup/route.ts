@@ -1,41 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loanService } from '@src/features/loans/services/server';
-import { manualLookupSchema } from '@src/features/loans/validations';
 
 export async function POST(request: NextRequest) {
   try {
     console.log('[API] Manual title deed lookup started');
 
     const body = await request.json();
+    const { pvCode, amCode, parcelNo } = body;
 
-    // Validate request body
-    const validatedData = manualLookupSchema.parse(body);
-
-    console.log('[API] Manual lookup params:', validatedData);
-
-    // Call service layer
-    const result = await loanService.manualTitleDeedLookup(validatedData);
-
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error('[API] Manual title deed lookup failed:', error);
-
-    if (error instanceof Error && error.name === 'ZodError') {
+    if (!pvCode || !amCode || !parcelNo) {
       return NextResponse.json(
-        {
-          error: 'ข้อมูลไม่ถูกต้อง',
-          details: error.message,
-        },
+        { error: 'กรุณาระบุข้อมูลให้ครบถ้วน' },
         { status: 400 },
       );
     }
 
+    console.log('[API] Lookup params:', { pvCode, amCode, parcelNo });
+
+    // Call service layer
+    const result = await loanService.manualTitleDeedLookup({
+      pvCode,
+      amCode,
+      parcelNo,
+    });
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('[API] Manual lookup failed:', error);
     return NextResponse.json(
       {
         error:
           error instanceof Error
             ? error.message
-            : 'เกิดข้อผิดพลาดในการค้นหาข้อมูลโฉนด',
+            : 'เกิดข้อผิดพลาดในการค้นหาข้อมูล',
       },
       { status: 500 },
     );

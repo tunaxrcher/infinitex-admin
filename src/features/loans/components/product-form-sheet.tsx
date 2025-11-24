@@ -69,11 +69,15 @@ export function ProductFormSheet({
   open,
   onOpenChange,
   loanId,
+  initialTitleDeedData,
+  initialTitleDeedImage,
 }: {
   mode: 'new' | 'edit';
   open: boolean;
   onOpenChange: (open: boolean) => void;
   loanId?: string;
+  initialTitleDeedData?: any;
+  initialTitleDeedImage?: string | null;
 }) {
   const isNewMode = mode === 'new';
 
@@ -130,6 +134,9 @@ export function ProductFormSheet({
   const [transferFee, setTransferFee] = useState<number>(0);
   const [otherFee, setOtherFee] = useState<number>(0);
   const [note, setNote] = useState('');
+
+  // Title deed data from AI
+  const [titleDeedData, setTitleDeedData] = useState<any>(null);
 
   // File upload - Title Deed Images
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // ไฟล์โฉนดใหม่ที่จะอัปโหลด
@@ -302,6 +309,7 @@ export function ProductFormSheet({
         existingImageUrls: existingImages, // ส่ง URL ของรูปโฉนดที่มีอยู่แล้ว
         supportingFiles: supportingFiles, // ส่งไฟล์เพิ่มเติมใหม่ที่จะอัปโหลด
         existingSupportingImageUrls: existingSupportingImages, // ส่ง URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
+        titleDeedData: titleDeedData, // ส่งข้อมูลโฉนดทั้งชุดจาก API
       };
 
       if (isNewMode) {
@@ -402,10 +410,67 @@ export function ProductFormSheet({
     }
   }, [mode, loanData, open, loanId]);
 
+  // Load initial title deed data from AI
+  useEffect(() => {
+    if (initialTitleDeedData && open && mode === 'new') {
+      console.log(
+        '[ProductFormSheet] Loading title deed data:',
+        initialTitleDeedData,
+      );
+      setTitleDeedData(initialTitleDeedData);
+
+      // Auto-fill form from title deed data
+      if (
+        initialTitleDeedData.result &&
+        initialTitleDeedData.result.length > 0
+      ) {
+        const data = initialTitleDeedData.result[0];
+
+        // Set land information
+        setLandNumber(data.parcelno || data.landno || '');
+
+        // Calculate land area (convert from rai, ngan, wa to string format)
+        if (
+          data.rai !== undefined &&
+          data.ngan !== undefined &&
+          data.wa !== undefined
+        ) {
+          setLandArea(`${data.rai}-${data.ngan}-${data.wa}`);
+        }
+
+        // Set place name from tambon and amphur
+        if (data.tumbolname || data.amphurname) {
+          setPlaceName(
+            `${data.tumbolname || ''} ${data.amphurname || ''}`.trim(),
+          );
+        }
+
+        // Set owner name if available
+        if (data.lands_owner) {
+          // Note: lands_owner structure may vary, adjust as needed
+          console.log('[ProductFormSheet] Owner data available');
+        }
+      }
+    }
+  }, [initialTitleDeedData, open, mode]);
+
+  // Load initial title deed image from upload
+  useEffect(() => {
+    if (initialTitleDeedImage && open && mode === 'new') {
+      console.log(
+        '[ProductFormSheet] Loading title deed image:',
+        initialTitleDeedImage,
+      );
+      // Add the uploaded image to existing images
+      setExistingImages([initialTitleDeedImage]);
+    }
+  }, [initialTitleDeedImage, open, mode]);
+
   // Reset form when closing
   useEffect(() => {
     if (!open) {
       resetForm();
+      setTitleDeedData(null);
     }
   }, [open]);
 
@@ -1106,10 +1171,25 @@ export function ProductFormSheet({
                       <CardHeader className="min-h-[38px] bg-accent/50">
                         <CardTitle className="text-2sm">
                           อัพโหลดโฉนด (ไม่บังคับ)
+                          {initialTitleDeedImage && (
+                            <span className="text-xs text-green-600 font-normal ml-2">
+                              ✓ โฉนดถูกอัพโหลดแล้ว
+                            </span>
+                          )}
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4">
                         <div className="space-y-4">
+                          {/* Show message if image was uploaded via AI */}
+                          {initialTitleDeedImage && (
+                            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                              <p className="text-xs text-blue-700 dark:text-blue-300">
+                                ✓ ระบบได้นำเข้ารูปโฉนดที่คุณอัพโหลดให้ AI
+                                วิเคราะห์แล้ว คุณสามารถเพิ่มรูปโฉนดเพิ่มเติมได้
+                              </p>
+                            </div>
+                          )}
+
                           <div
                             className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
                             onClick={handleFileClick}
@@ -1131,7 +1211,9 @@ export function ProductFormSheet({
                                 </svg>
                               </div>
                               <div className="text-sm font-medium text-foreground">
-                                คลิกเพื่ออัพโหลดรูปโฉนด
+                                {initialTitleDeedImage
+                                  ? 'คลิกเพื่ออัพโหลดรูปโฉนดเพิ่มเติม'
+                                  : 'คลิกเพื่ออัพโหลดรูปโฉนด'}
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 รองรับไฟล์ JPG, PNG, PDF (สูงสุด 10MB)
@@ -1152,77 +1234,91 @@ export function ProductFormSheet({
                           uploadedFiles.length > 0 ? (
                             <div className="grid grid-cols-2 gap-2">
                               {/* รูปที่มีอยู่แล้ว */}
-                              {existingImages.map((imageUrl, index) => (
-                                <div
-                                  key={`existing-${index}`}
-                                  className="relative group aspect-square rounded-lg overflow-hidden border-2 border-green-500 bg-green-50 dark:bg-green-950/20"
-                                >
-                                  <img
-                                    src={imageUrl}
-                                    alt={`รูปโฉนด ${index + 1}`}
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                    <Button
-                                      type="button"
-                                      variant="secondary"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() =>
-                                        window.open(imageUrl, '_blank')
-                                      }
-                                      title="ดูรูปภาพ"
-                                    >
-                                      <svg
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                              {existingImages.map((imageUrl, index) => {
+                                const isFromAI =
+                                  initialTitleDeedImage === imageUrl;
+                                return (
+                                  <div
+                                    key={`existing-${index}`}
+                                    className={`relative group aspect-square rounded-lg overflow-hidden border-2 ${
+                                      isFromAI
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
+                                        : 'border-green-500 bg-green-50 dark:bg-green-950/20'
+                                    }`}
+                                  >
+                                    <img
+                                      src={imageUrl}
+                                      alt={`รูปโฉนด ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                      <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={() =>
+                                          window.open(imageUrl, '_blank')
+                                        }
+                                        title="ดูรูปภาพ"
                                       >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                        />
-                                      </svg>
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="destructive"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() =>
-                                        handleRemoveExistingImage(index)
-                                      }
-                                      title="ลบรูปภาพ"
-                                    >
-                                      <svg
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                                        <svg
+                                          className="w-4 h-4"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                          />
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                          />
+                                        </svg>
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={() =>
+                                          handleRemoveExistingImage(index)
+                                        }
+                                        title="ลบรูปภาพ"
                                       >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M6 18L18 6M6 6l12 12"
-                                        />
-                                      </svg>
-                                    </Button>
+                                        <svg
+                                          className="w-4 h-4"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M6 18L18 6M6 6l12 12"
+                                          />
+                                        </svg>
+                                      </Button>
+                                    </div>
+                                    <div
+                                      className={`absolute top-1 left-1 ${
+                                        isFromAI
+                                          ? 'bg-blue-600'
+                                          : 'bg-green-600'
+                                      } text-white text-xs px-2 py-0.5 rounded`}
+                                    >
+                                      {isFromAI ? 'จาก AI' : 'บันทึกแล้ว'}
+                                    </div>
                                   </div>
-                                  <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">
-                                    บันทึกแล้ว
-                                  </div>
-                                </div>
-                              ))}
+                                );
+                              })}
 
                               {/* ไฟล์ใหม่ที่จะอัปโหลด */}
                               {uploadedFiles.map((file, index) => (

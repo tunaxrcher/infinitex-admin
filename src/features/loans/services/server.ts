@@ -1,6 +1,8 @@
 // src/features/loans/services/server.ts
 import 'server-only';
 import { Prisma } from '@prisma/client';
+import amphurData from '@src/data/amphur.json';
+import provinceData from '@src/data/province.json';
 import { landAccountReportService } from '@src/features/land-accounts/services/server';
 import { aiService } from '@src/shared/lib/ai-services';
 import { prisma } from '@src/shared/lib/db';
@@ -410,6 +412,8 @@ export const loanService = {
             data.titleDeedImages && data.titleDeedImages.length > 0
               ? data.titleDeedImages[0]
               : null,
+          // บันทึกข้อมูลโฉนดทั้งชุดจาก API (ถ้ามี)
+          titleDeedData: data.titleDeedData || null,
           // บันทึกภาพเพิ่มเติม (supporting images)
           supportingImages: data.supportingImages || [],
         },
@@ -1177,7 +1181,7 @@ export const loanService = {
    * Process title deed analysis result
    */
   async processTitleDeedAnalysis(analysisResult: any, uploadResult: any) {
-    let finalResult = {
+    const finalResult = {
       imageUrl: uploadResult.url,
       imageKey: uploadResult.key,
       analysisResult,

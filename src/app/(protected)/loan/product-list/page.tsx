@@ -1,17 +1,129 @@
 'use client';
 
 import { useState } from 'react';
+import amphurData from '@src/data/amphur.json';
+import provinceData from '@src/data/province.json';
+import { AddLoanMenu } from '@src/features/loans/components/add-loan-menu';
 import { FinancialSummaryCards } from '@src/features/loans/components/financial-summary-cards';
 import { ProductFormSheet } from '@src/features/loans/components/product-form-sheet';
 import { SectionNavigation } from '@src/features/loans/components/section-navigation';
+import { TitleDeedManualInputModal } from '@src/features/loans/components/title-deed-manual-input-modal';
+import { TitleDeedUploadDialog } from '@src/features/loans/components/title-deed-upload-dialog';
 import { LoanPaymentReportsTable } from '@src/features/loans/tables/loan-payment-reports';
 import { ProductListTable } from '@src/features/loans/tables/product-list';
-import { PlusIcon, Upload } from 'lucide-react';
-import { Button } from '@src/shared/components/ui/button';
 import { Container } from '@src/shared/components/common/container';
 
 export default function ProductList() {
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
+  const [isTitleDeedUploadOpen, setIsTitleDeedUploadOpen] = useState(false);
+  const [isManualInputOpen, setIsManualInputOpen] = useState(false);
+  const [titleDeedAnalysisResult, setTitleDeedAnalysisResult] =
+    useState<any>(null);
+  const [finalTitleDeedData, setFinalTitleDeedData] = useState<any>(null);
+  const [uploadedTitleDeedImage, setUploadedTitleDeedImage] = useState<
+    string | null
+  >(null);
+
+  // Handle menu selection
+  const handleManualAdd = () => {
+    setIsCreateProductOpen(true);
+  };
+
+  const handleAIAdd = () => {
+    setIsTitleDeedUploadOpen(true);
+  };
+
+  // Handle upload complete from AI
+  const handleUploadComplete = (result: any) => {
+    console.log('[ProductList] Upload complete:', result);
+    setTitleDeedAnalysisResult(result);
+    setIsTitleDeedUploadOpen(false);
+
+    // Store the uploaded image URL
+    if (result.imageUrl) {
+      setUploadedTitleDeedImage(result.imageUrl);
+    }
+
+    // Check if needs manual input
+    if (result.needsManualInput) {
+      setIsManualInputOpen(true);
+    } else if (result.titleDeedData) {
+      // Directly open form with data
+      setFinalTitleDeedData(result.titleDeedData);
+      setIsCreateProductOpen(true);
+    }
+  };
+
+  // Handle skip from upload dialog
+  const handleSkipUpload = () => {
+    setIsTitleDeedUploadOpen(false);
+    setIsCreateProductOpen(true);
+  };
+
+  // Handle skip from manual input modal
+  const handleSkipManualInput = () => {
+    setIsManualInputOpen(false);
+    setIsCreateProductOpen(true);
+  };
+
+  // Handle confirm from manual input modal
+  const handleConfirmManualInput = async (data: {
+    pvCode: string;
+    amCode: string;
+    parcelNo: string;
+  }) => {
+    console.log('[ProductList] Manual input confirmed:', data);
+
+    try {
+      const response = await fetch('/api/loans/title-deed/manual-lookup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'เกิดข้อผิดพลาดในการค้นหาข้อมูล');
+      }
+
+      const result = await response.json();
+      console.log('[ProductList] Manual lookup result:', result);
+
+      if (result.success && result.titleDeedData) {
+        // Replace parcelno with user input (because API returns masked value like xxxx98)
+        const enrichedData = {
+          ...result.titleDeedData,
+          result: result.titleDeedData.result?.map((item: any) => ({
+            ...item,
+            parcelno: data.parcelNo, // Use user input instead of masked value
+          })),
+          userInputParcelNo: data.parcelNo, // Store original user input
+        };
+
+        setFinalTitleDeedData(enrichedData);
+        setIsManualInputOpen(false);
+        setIsCreateProductOpen(true);
+      } else {
+        throw new Error('ไม่พบข้อมูลโฉนดที่ดิน');
+      }
+    } catch (error: any) {
+      console.error('[ProductList] Manual lookup failed:', error);
+      alert(error.message || 'เกิดข้อผิดพลาดในการค้นหาข้อมูล');
+    }
+  };
+
+  // Handle form close
+  const handleFormClose = (open: boolean) => {
+    setIsCreateProductOpen(open);
+    if (!open) {
+      // Reset all states when form closes
+      setTitleDeedAnalysisResult(null);
+      setFinalTitleDeedData(null);
+      setUploadedTitleDeedImage(null);
+    }
+  };
 
   return (
     <>
@@ -32,14 +144,10 @@ export default function ProductList() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                variant="mono"
-                className="gap-2 gradientButton"
-                onClick={() => setIsCreateProductOpen(true)}
-              >
-                <PlusIcon className="h-4 w-4" />
-                เพิ่มสินเชื่อ
-              </Button>
+              <AddLoanMenu
+                onManualAdd={handleManualAdd}
+                onAIAdd={handleAIAdd}
+              />
             </div>
           </div>
 
@@ -67,8 +175,36 @@ export default function ProductList() {
           <ProductFormSheet
             mode="new"
             open={isCreateProductOpen}
-            onOpenChange={setIsCreateProductOpen}
+            onOpenChange={handleFormClose}
+            initialTitleDeedData={finalTitleDeedData}
+            initialTitleDeedImage={uploadedTitleDeedImage}
           />
+
+          {/* Title Deed Upload Dialog */}
+          <TitleDeedUploadDialog
+            isOpen={isTitleDeedUploadOpen}
+            onClose={() => setIsTitleDeedUploadOpen(false)}
+            onUploadComplete={handleUploadComplete}
+            onSkip={handleSkipUpload}
+          />
+
+          {/* Manual Input Modal */}
+          {titleDeedAnalysisResult && (
+            <TitleDeedManualInputModal
+              isOpen={isManualInputOpen}
+              onClose={() => setIsManualInputOpen(false)}
+              onSkip={handleSkipManualInput}
+              onConfirm={handleConfirmManualInput}
+              initialData={{
+                pvCode: titleDeedAnalysisResult.analysisResult?.pvCode,
+                amCode: titleDeedAnalysisResult.analysisResult?.amCode,
+                parcelNo: titleDeedAnalysisResult.analysisResult?.parcelNo,
+              }}
+              errorMessage={titleDeedAnalysisResult.errorMessage}
+              provinces={provinceData}
+              amphurs={amphurData}
+            />
+          )}
         </div>
       </Container>
 
