@@ -137,6 +137,7 @@ export function ProductFormSheet({
 
   // Title deed data from AI
   const [titleDeedData, setTitleDeedData] = useState<any>(null);
+  const [showTitleDeedDetails, setShowTitleDeedDetails] = useState(false);
 
   // File upload - Title Deed Images
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // ไฟล์โฉนดใหม่ที่จะอัปโหลด
@@ -553,11 +554,23 @@ export function ProductFormSheet({
                       <CardContent className="pt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="flex flex-col gap-2 md:col-span-2">
-                            <Label className="text-xs">ชื่อสถานที่</Label>
+                            <Label className="text-xs">
+                              ชื่อสถานที่
+                              {initialTitleDeedData && placeName && (
+                                <span className="text-xs text-blue-600 font-normal ml-2">
+                                  ✨ AI ใส่ให้
+                                </span>
+                              )}
+                            </Label>
                             <Input
                               placeholder="กรอกชื่อสถานที่"
                               value={placeName}
                               onChange={(e) => setPlaceName(e.target.value)}
+                              className={
+                                initialTitleDeedData && placeName
+                                  ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                  : ''
+                              }
                             />
                           </div>
 
@@ -565,11 +578,21 @@ export function ProductFormSheet({
                             <Label className="text-xs">
                               เลขที่ดิน{' '}
                               <span className="text-destructive">*</span>
+                              {initialTitleDeedData && landNumber && (
+                                <span className="text-xs text-blue-600 font-normal ml-2">
+                                  ✨ AI ใส่ให้
+                                </span>
+                              )}
                             </Label>
                             <Input
                               placeholder="กรอกเลขที่ดิน"
                               value={landNumber}
                               onChange={(e) => setLandNumber(e.target.value)}
+                              className={
+                                initialTitleDeedData && landNumber
+                                  ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                  : ''
+                              }
                               required
                             />
                           </div>
@@ -578,11 +601,21 @@ export function ProductFormSheet({
                             <Label className="text-xs">
                               เนื้อที่{' '}
                               <span className="text-destructive">*</span>
+                              {initialTitleDeedData && landArea && (
+                                <span className="text-xs text-blue-600 font-normal ml-2">
+                                  ✨ AI ใส่ให้
+                                </span>
+                              )}
                             </Label>
                             <Input
                               placeholder="เช่น 0.0.40"
                               value={landArea}
                               onChange={(e) => setLandArea(e.target.value)}
+                              className={
+                                initialTitleDeedData && landArea
+                                  ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                  : ''
+                              }
                               required
                             />
                           </div>
@@ -1182,14 +1215,14 @@ export function ProductFormSheet({
                       <CardContent className="pt-4">
                         <div className="space-y-4">
                           {/* Show message if image was uploaded via AI */}
-                          {initialTitleDeedImage && (
+                          {/* {initialTitleDeedImage && (
                             <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                               <p className="text-xs text-blue-700 dark:text-blue-300">
                                 ✓ ระบบได้นำเข้ารูปโฉนดที่คุณอัพโหลดให้ AI
                                 วิเคราะห์แล้ว คุณสามารถเพิ่มรูปโฉนดเพิ่มเติมได้
                               </p>
                             </div>
-                          )}
+                          )} */}
 
                           <div
                             className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
@@ -1548,6 +1581,188 @@ export function ProductFormSheet({
                         </div>
                       </CardContent>
                     </Card>
+
+                    {/* ข้อมูลโฉนดจาก API */}
+                    {titleDeedData && titleDeedData.result && (
+                      <Card className="rounded-md border-blue-200 dark:border-blue-800">
+                        <CardHeader className="min-h-[38px] bg-blue-50 dark:bg-blue-950/20">
+                          <CardTitle className="text-2sm flex items-center justify-between">
+                            <span className="text-blue-700 dark:text-blue-300">
+                              ข้อมูลโฉนดจาก API
+                            </span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setShowTitleDeedDetails(!showTitleDeedDetails)
+                              }
+                              className="h-6 text-xs"
+                            >
+                              {showTitleDeedDetails
+                                ? 'ซ่อน'
+                                : 'คลิกดูรายละเอียด'}
+                            </Button>
+                          </CardTitle>
+                        </CardHeader>
+                        {showTitleDeedDetails && (
+                          <CardContent className="pt-4">
+                            <div className="space-y-3 text-xs">
+                              {titleDeedData.result[0] && (
+                                <>
+                                  {/* ข้อมูลที่ตั้ง */}
+                                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                                    <p className="font-semibold text-sm">
+                                      ที่ตั้ง
+                                    </p>
+                                    <div className="space-y-1">
+                                      {titleDeedData.result[0].tumbolname && (
+                                        <p>
+                                          ตำบล:{' '}
+                                          <span className="font-medium">
+                                            {titleDeedData.result[0].tumbolname}
+                                          </span>
+                                        </p>
+                                      )}
+                                      {titleDeedData.result[0].amphurname && (
+                                        <p>
+                                          อำเภอ:{' '}
+                                          <span className="font-medium">
+                                            {titleDeedData.result[0].amphurname}
+                                          </span>
+                                        </p>
+                                      )}
+                                      {titleDeedData.result[0].provname && (
+                                        <p>
+                                          จังหวัด:{' '}
+                                          <span className="font-medium">
+                                            {titleDeedData.result[0].provname}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* ข้อมูลโฉนด */}
+                                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                                    <p className="font-semibold text-sm">
+                                      ข้อมูลโฉนด
+                                    </p>
+                                    <div className="space-y-1">
+                                      {titleDeedData.result[0].parcel_type && (
+                                        <p>
+                                          ประเภท:{' '}
+                                          <span className="font-medium">
+                                            {
+                                              titleDeedData.result[0]
+                                                .parcel_type
+                                            }
+                                          </span>
+                                        </p>
+                                      )}
+                                      {titleDeedData.result[0].parcelno && (
+                                        <p>
+                                          เลขที่:{' '}
+                                          <span className="font-medium">
+                                            {titleDeedData.result[0].parcelno}
+                                          </span>
+                                        </p>
+                                      )}
+                                      {(titleDeedData.result[0].rai !==
+                                        undefined ||
+                                        titleDeedData.result[0].ngan !==
+                                          undefined ||
+                                        titleDeedData.result[0].wa !==
+                                          undefined) && (
+                                        <p>
+                                          เนื้อที่:{' '}
+                                          <span className="font-medium">
+                                            {titleDeedData.result[0].rai || 0}-
+                                            {titleDeedData.result[0].ngan || 0}-
+                                            {titleDeedData.result[0].wa || 0}{' '}
+                                            (ไร่-งาน-วา)
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* ข้อมูลสำนักงาน */}
+                                  {titleDeedData.result[0].landoffice && (
+                                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                                      <p className="font-semibold text-sm">
+                                        สำนักงานที่ดิน
+                                      </p>
+                                      <p className="font-medium">
+                                        {titleDeedData.result[0].landoffice}
+                                      </p>
+                                      {titleDeedData.result[0].org_tel && (
+                                        <p>
+                                          โทร:{' '}
+                                          <span className="font-medium">
+                                            {titleDeedData.result[0].org_tel}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* พิกัด */}
+                                  {(titleDeedData.result[0].parcellat ||
+                                    titleDeedData.result[0].parcellon) && (
+                                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                                      <p className="font-semibold text-sm">
+                                        พิกัด
+                                      </p>
+                                      <div className="space-y-1">
+                                        {titleDeedData.result[0].parcellat && (
+                                          <p>
+                                            ละติจูด:{' '}
+                                            <span className="font-medium">
+                                              {
+                                                titleDeedData.result[0]
+                                                  .parcellat
+                                              }
+                                            </span>
+                                          </p>
+                                        )}
+                                        {titleDeedData.result[0].parcellon && (
+                                          <p>
+                                            ลองจิจูด:{' '}
+                                            <span className="font-medium">
+                                              {
+                                                titleDeedData.result[0]
+                                                  .parcellon
+                                              }
+                                            </span>
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* QR Code Link */}
+                                  {titleDeedData.result[0].qrcode_link && (
+                                    <div className="pt-2">
+                                      <a
+                                        href={
+                                          titleDeedData.result[0].qrcode_link
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline text-xs"
+                                      >
+                                        🔗 ดูข้อมูลบนเว็บกรมที่ดิน
+                                      </a>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </CardContent>
+                        )}
+                      </Card>
+                    )}
                   </div>
                 </div>
               </ScrollArea>
