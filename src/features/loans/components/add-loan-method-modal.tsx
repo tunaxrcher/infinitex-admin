@@ -143,7 +143,7 @@ export function AddLoanMethodModal({
 
                   <div className="flex items-center gap-2 mb-3">
                     <h3 className="text-2xl font-bold ai-gradient-text">
-                      กรอกโดย AI
+                      ใช้ AI
                     </h3>
                     <span className="text-xs font-semibold px-2 py-1 rounded-full bg-primary/10 text-primary">
                       แนะนำ
