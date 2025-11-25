@@ -322,16 +322,10 @@ export const loanService = {
     // คำนวณข้อมูลสินเชื่อ
     const { loanAmount, loanYears, interestRate } = data;
     const termMonths = loanYears * 12;
-    const r = interestRate / 100 / 12; // อัตราดอกเบี้ยต่อเดือน
-    const n = termMonths;
 
-    // คำนวณงวดชำระรายเดือน (PMT formula)
-    let monthlyPayment = 0;
-    if (interestRate > 0) {
-      monthlyPayment = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
-    } else {
-      monthlyPayment = loanAmount / n;
-    }
+    // คำนวณงวดชำระรายเดือน (ดอกเบี้ยอย่างเดียว ไม่รวมเงินต้น)
+    // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
+    const monthlyPayment = (loanAmount * (interestRate / 100)) / 12;
 
     const contractDate = new Date(data.loanStartDate);
     const expiryDate = new Date(data.loanDueDate);
@@ -407,6 +401,12 @@ export const loanService = {
           propertyType: data.propertyType || 'ที่ดิน', // ค่า default
           propertyValue: data.propertyValue ?? loanAmount * 2, // ค่า default = 2 เท่าของยอดกู้
           customerId: customer.id,
+          // บันทึกข้อมูลการคำนวณ
+          interestRate: interestRate,
+          termMonths: termMonths,
+          operationFee: data.operationFee || 0,
+          transferFee: data.transferFee || 0,
+          otherFee: data.otherFee || 0,
           // บันทึกภาพโฉนด (ใช้ภาพแรกเป็นหลัก)
           titleDeedImage:
             data.titleDeedImages && data.titleDeedImages.length > 0
@@ -419,117 +419,19 @@ export const loanService = {
           // บันทึกภาพบัตรประชาชน
           idCardFrontImage: data.idCardImage || null,
         },
-      });
-
-      // Step 4: สร้าง Loan (สถานะ ACTIVE)
-      const newLoan = await tx.loan.create({
-        data: {
-          loanNumber,
-          loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'ACTIVE', // เริ่มเป็น ACTIVE (ยังไม่ถึงกำหนด)
-          principalAmount: loanAmount,
-          interestRate: interestRate,
-          termMonths,
-          monthlyPayment,
-          currentInstallment: 0,
-          totalInstallments: termMonths,
-          remainingBalance: loanAmount * (1 + interestRate / 100),
-          nextPaymentDate,
-          contractDate,
-          expiryDate,
-          titleDeedNumber: data.landNumber,
-          customerId: customer.id,
-          applicationId: application.id,
-        },
         include: {
           customer: {
             include: {
               profile: true,
             },
           },
-          application: true,
         },
       });
 
-      // Step 5: สร้างตารางผ่อนชำระ (LoanInstallments)
-      const totalLoanAmount = loanAmount * (1 + interestRate / 100);
-      const installmentsData = [];
+      // ไม่สร้าง Loan record, installments, และไม่หักเงินจากบัญชี
+      // ทั้งหมดนี้จะถูกสร้างตอนกดอนุมัติ (approve function)
 
-      for (let i = 1; i <= termMonths; i++) {
-        const dueDate = new Date(contractDate);
-        dueDate.setMonth(dueDate.getMonth() + i);
-
-        // คำนวณดอกเบี้ยและเงินต้นในแต่ละงวด
-        const interestAmount = (loanAmount * interestRate) / 100 / termMonths;
-        const principalAmount = monthlyPayment - interestAmount;
-
-        installmentsData.push({
-          loanId: newLoan.id,
-          installmentNumber: i,
-          dueDate,
-          principalAmount,
-          interestAmount,
-          totalAmount: monthlyPayment,
-          isPaid: false,
-          isLate: false,
-        });
-      }
-
-      await tx.loanInstallment.createMany({
-        data: installmentsData,
-      });
-
-      // Step 6: หักเงินจากบัญชีและสร้างรายงาน
-      if (data.landAccountId) {
-        // ตรวจสอบบัญชี
-        const account = await tx.landAccount.findUnique({
-          where: { id: data.landAccountId, deletedAt: null },
-        });
-
-        if (!account) {
-          throw new Error('ไม่พบบัญชีที่เลือก');
-        }
-
-        if (Number(account.accountBalance) < loanAmount) {
-          throw new Error('ยอดเงินในบัญชีไม่เพียงพอ');
-        }
-
-        // หักเงินจากบัญชี
-        const updatedAccount = await tx.landAccount.update({
-          where: { id: data.landAccountId },
-          data: {
-            accountBalance: { decrement: loanAmount },
-            updatedAt: new Date(),
-          },
-        });
-
-        // สร้างรายงานใน land_account_reports
-        await tx.landAccountReport.create({
-          data: {
-            landAccountId: data.landAccountId,
-            detail: `เปิดสินเชื่อ(${loanNumber})`,
-            amount: loanAmount,
-            note: `เปิดสินเชื่อให้ ${data.fullName} จำนวน ${loanAmount.toLocaleString()} บาท`,
-            accountBalance: updatedAccount.accountBalance,
-            ...(adminId && { adminId }),
-            adminName: adminName || undefined,
-          },
-        });
-
-        // สร้าง log ใน land_account_logs
-        await tx.landAccountLog.create({
-          data: {
-            landAccountId: data.landAccountId,
-            detail: 'เปิดสินเชื่อ',
-            amount: loanAmount,
-            note: `เปิดสินเชื่อ ${loanNumber} ให้ ${data.fullName}`,
-            ...(adminId && { adminId }),
-            adminName: adminName || undefined,
-          },
-        });
-      }
-
-      return newLoan;
+      return application;
     });
 
     return loan;
@@ -553,14 +455,9 @@ export const loanService = {
       const interestRate = data.interestRate ?? Number(existing.interestRate);
 
       termMonths = loanYears * 12;
-      const r = interestRate / 100 / 12;
-      const n = termMonths;
 
-      if (interestRate > 0) {
-        monthlyPayment = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
-      } else {
-        monthlyPayment = loanAmount / n;
-      }
+      // คำนวณงวดชำระรายเดือน (ดอกเบี้ยอย่างเดียว ไม่รวมเงินต้น)
+      monthlyPayment = (loanAmount * (interestRate / 100)) / 12;
 
       remainingBalance = loanAmount * (1 + interestRate / 100);
     }
@@ -785,19 +682,14 @@ export const loanService = {
         // ถ้ายังไม่มี loan ให้สร้างใหม่
         const loanNumber = generateLoanNumber();
         const loanAmount = Number(application.requestedAmount || 0);
-        const interestRate = 1; // ดอกเบี้ย default 1%
-        const loanYears = 4; // ระยะเวลา default 4 ปี
-        const termMonths = loanYears * 12;
-        const r = interestRate / 100 / 12;
-        const n = termMonths;
+        // ใช้ข้อมูลจาก application ที่บันทึกไว้
+        const interestRate = Number(application.interestRate || 1); // ดอกเบี้ยจาก application
+        const termMonths = application.termMonths || 48; // จำนวนเดือนจาก application
+        const loanYears = termMonths / 12;
 
-        // คำนวณงวดชำระรายเดือน
-        let monthlyPayment = 0;
-        if (interestRate > 0) {
-          monthlyPayment = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
-        } else {
-          monthlyPayment = loanAmount / n;
-        }
+        // คำนวณงวดชำระรายเดือน (ดอกเบี้ยอย่างเดียว ไม่รวมเงินต้น)
+        // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
+        const monthlyPayment = (loanAmount * (interestRate / 100)) / 12;
 
         const contractDate = new Date();
         const expiryDate = new Date();
@@ -835,8 +727,9 @@ export const loanService = {
           const dueDate = new Date(contractDate);
           dueDate.setMonth(dueDate.getMonth() + i);
 
-          const interestAmount = (loanAmount * interestRate) / 100 / termMonths;
-          const principalAmount = monthlyPayment - interestAmount;
+          // คำนวณดอกเบี้ยต่อเดือนอย่างเดียว (ไม่รวมเงินต้น)
+          const interestAmount = monthlyPayment; // monthlyPayment คือดอกเบี้ยต่อเดือนแล้ว
+          const principalAmount = 0; // ไม่ผ่อนเงินต้น
 
           installmentsData.push({
             loanId: newLoan.id,
@@ -1092,9 +985,9 @@ export const loanService = {
       const dueDate = new Date(contractDate);
       dueDate.setMonth(dueDate.getMonth() + i);
 
-      // คำนวณดอกเบี้ยและเงินต้นในแต่ละงวด
-      const interestAmount = (loanAmount * interestRate) / 100 / termMonths;
-      const principalAmount = monthlyPayment - interestAmount;
+      // คำนวณดอกเบี้ยต่อเดือนอย่างเดียว (ไม่รวมเงินต้น)
+      const interestAmount = monthlyPayment; // monthlyPayment คือดอกเบี้ยต่อเดือนแล้ว
+      const principalAmount = 0; // ไม่ผ่อนเงินต้น
 
       installmentsData.push({
         loanId: id,

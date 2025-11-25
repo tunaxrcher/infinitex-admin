@@ -279,6 +279,15 @@ model LoanApplication {
   approvedAmount    Decimal? @db.Decimal(15, 2)
   maxApprovedAmount Decimal? @db.Decimal(15, 2) // System calculated maximum
 
+  // Loan terms (from admin input)
+  interestRate Decimal? @db.Decimal(5, 2) // ดอกเบี้ยต่อปี (%)
+  termMonths   Int?     @default(48) // จำนวนเดือน default 48 เดือน (4 ปี)
+
+  // Fees
+  operationFee Decimal? @default(0) @db.Decimal(15, 2)
+  transferFee  Decimal? @default(0) @db.Decimal(15, 2)
+  otherFee     Decimal? @default(0) @db.Decimal(15, 2)
+
   // Property information (from AI processing)
   propertyType     String?  @db.VarChar(100)
   propertyValue    Decimal? @db.Decimal(15, 2)

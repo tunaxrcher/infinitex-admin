@@ -174,6 +174,8 @@ export function ProductFormSheet({
     // คำนวณดอกเบี้ยต่อเดือน (ไม่รวมเงินต้น)
     // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
     const monthlyInterest = (loanAmount * (interestRate / 100)) / 12;
+    console.log('loanAmount', loanAmount);
+    console.log('interestRate', interestRate);
     return monthlyInterest;
   }, [loanAmount, interestRate]);
 
