@@ -365,6 +365,11 @@ model Loan {
   landAccountId   Int?
   landAccountName String? @db.VarChar(200)
 
+  // Property valuation (AI assessment)
+  valuationResult Json? // เก็บผลการประเมินจาก AI
+  valuationDate   DateTime? @db.DateTime(0) // วันที่ทำการประเมิน
+  estimatedValue  Decimal?  @db.Decimal(15, 2) // มูลค่าประเมินที่บันทึก
+
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @updatedAt @db.DateTime(0)
 
