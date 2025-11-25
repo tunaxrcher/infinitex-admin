@@ -44,6 +44,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -271,20 +272,25 @@ export function ProductDetailsAnalyticsSheet({
     receiver: '',
   });
 
-  // Prevent auto-focus when sheet opens
+  // Prevent auto-focus when sheet opens and reset tab
   useEffect(() => {
     if (open) {
+      // Reset to details tab when opening
+      setActiveTab('details');
+
       // Blur any focused element when sheet opens
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
     }
-  }, [open]);
+  }, [open, loanId]); // Add loanId to dependencies to reset when viewing different loan
 
   // Load existing valuation result
   useEffect(() => {
     if (loan?.valuationResult) {
       setValuationResult(loan.valuationResult);
+    } else {
+      setValuationResult(null); // Clear previous result
     }
   }, [loan]);
 
@@ -410,104 +416,123 @@ export function ProductDetailsAnalyticsSheet({
 
         <SheetBody className="p-0 grow">
           <div className="flex justify-between gap-2 border-b border-border px-5 py-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2.5">
-                <span className="lg:text-[22px] font-semibold text-foreground leading-none">
-                  {isLoading
-                    ? 'กำลังโหลด...'
-                    : loan
-                      ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim() ||
-                        'ไม่ระบุ'
-                      : 'ไม่ระบุ'}
-                </span>
-                <div className="flex flex-col gap-1">
-                  <Badge
-                    size="sm"
-                    variant={
-                      loan?.status === 'ACTIVE'
-                        ? hasOverdueInstallments
-                          ? 'destructive'
-                          : 'success'
-                        : loan?.status === 'COMPLETED'
-                          ? 'info'
-                          : loan?.status === 'DEFAULTED'
-                            ? 'destructive'
-                            : 'warning'
-                    }
-                    appearance="light"
-                  >
-                    {loan?.status === 'ACTIVE'
-                      ? hasOverdueInstallments
-                        ? 'เกินกำหนดชำระ'
-                        : 'ยังไม่ถึงกำหนด'
-                      : loan?.status === 'COMPLETED'
-                        ? 'ปิดบัญชี'
-                        : loan?.status === 'DEFAULTED'
-                          ? 'เกินกำหนดชำระ'
-                          : 'รออนุมัติ'}
-                  </Badge>
-                  {/* {hasOverdueInstallments && overdueDays > 0 && (
-                    <span className="text-xs text-destructive font-medium">
-                      เกินกำหนด {overdueDays} วัน
-                    </span>
-                  )} */}
+            {isLoading ? (
+              <>
+                <div className="flex flex-col gap-3 flex-1">
+                  <div className="flex items-center gap-2.5">
+                    <Skeleton className="h-7 w-48" />
+                    <Skeleton className="h-6 w-24" />
+                  </div>
+                  <div className="flex items-center flex-wrap gap-1.5">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center flex-wrap gap-1.5 text-2sm">
-                <span className="font-normal text-muted-foreground">
-                  เลขที่สินเชื่อ
-                </span>
-                <span className="font-medium text-foreground/80">
-                  {loan?.loanNumber || '-'}
-                </span>
-                <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
-                <span className="font-normal text-muted-foreground">
-                  วันที่ออกสินเชื่อ
-                </span>
-                <span className="font-medium text-foreground/80">
-                  {loan?.contractDate
-                    ? new Date(loan.contractDate).toLocaleDateString('th-TH', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })
-                    : '-'}
-                </span>
-                <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
-                <span className="font-normal text-muted-foreground">
-                  อัปเดตล่าสุด
-                </span>
-                <span className="font-medium text-foreground/80">
-                  {loan?.updatedAt
-                    ? new Date(loan.updatedAt).toLocaleDateString('th-TH', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })
-                    : '-'}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              {/* <Button variant="ghost">พิมพ์เอกสาร</Button> */}
-              <Button
-                variant="outline"
-                onClick={handleDelete}
-                disabled={deleteLoan.isPending}
-              >
-                {deleteLoan.isPending ? 'กำลังลบ...' : 'ลบ'}
-              </Button>
-              <Button
-                variant="mono"
-                className="gradientButton"
-                onClick={() => {
-                  onOpenChange(false);
-                  onEdit?.();
-                }}
-              >
-                แก้ไขข้อมูล
-              </Button>
-            </div>
+                <div className="flex items-center gap-2.5">
+                  <Skeleton className="h-9 w-20" />
+                  <Skeleton className="h-9 w-28" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="lg:text-[22px] font-semibold text-foreground leading-none">
+                      {loan
+                        ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim() ||
+                          'ไม่ระบุ'
+                        : 'ไม่ระบุ'}
+                    </span>
+                    <div className="flex flex-col gap-1">
+                      <Badge
+                        size="sm"
+                        variant={
+                          loan?.status === 'ACTIVE'
+                            ? hasOverdueInstallments
+                              ? 'destructive'
+                              : 'success'
+                            : loan?.status === 'COMPLETED'
+                              ? 'info'
+                              : loan?.status === 'DEFAULTED'
+                                ? 'destructive'
+                                : 'warning'
+                        }
+                        appearance="light"
+                      >
+                        {loan?.status === 'ACTIVE'
+                          ? hasOverdueInstallments
+                            ? 'เกินกำหนดชำระ'
+                            : 'ยังไม่ถึงกำหนด'
+                          : loan?.status === 'COMPLETED'
+                            ? 'ปิดบัญชี'
+                            : loan?.status === 'DEFAULTED'
+                              ? 'เกินกำหนดชำระ'
+                              : 'รออนุมัติ'}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex items-center flex-wrap gap-1.5 text-2sm">
+                    <span className="font-normal text-muted-foreground">
+                      เลขที่สินเชื่อ
+                    </span>
+                    <span className="font-medium text-foreground/80">
+                      {loan?.loanNumber || '-'}
+                    </span>
+                    <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
+                    <span className="font-normal text-muted-foreground">
+                      วันที่ออกสินเชื่อ
+                    </span>
+                    <span className="font-medium text-foreground/80">
+                      {loan?.contractDate
+                        ? new Date(loan.contractDate).toLocaleDateString(
+                            'th-TH',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            },
+                          )
+                        : '-'}
+                    </span>
+                    <BadgeDot className="bg-muted-foreground/60 size-1 mx-1" />
+                    <span className="font-normal text-muted-foreground">
+                      อัปเดตล่าสุด
+                    </span>
+                    <span className="font-medium text-foreground/80">
+                      {loan?.updatedAt
+                        ? new Date(loan.updatedAt).toLocaleDateString('th-TH', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })
+                        : '-'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  {/* <Button variant="ghost">พิมพ์เอกสาร</Button> */}
+                  <Button
+                    variant="outline"
+                    onClick={handleDelete}
+                    disabled={deleteLoan.isPending}
+                  >
+                    {deleteLoan.isPending ? 'กำลังลบ...' : 'ลบ'}
+                  </Button>
+                  <Button
+                    variant="mono"
+                    className="gradientButton"
+                    onClick={() => {
+                      onOpenChange(false);
+                      onEdit?.();
+                    }}
+                  >
+                    แก้ไขข้อมูล
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
 
           <Tabs
@@ -583,474 +608,563 @@ export function ProductDetailsAnalyticsSheet({
                 className="flex flex-col h-[calc(100dvh-21.5rem)] mx-1.5"
                 viewportClassName="[&>div]:h-full [&>div>div]:h-full"
               >
-                <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
-                  <div className="grow lg:border-e border-border lg:pe-5 space-y-5 py-5">
-                    {/* Loan Summary */}
-                    <Card className="rounded-md">
-                      <CardHeader className="min-h-[34px] bg-accent/50">
-                        <CardTitle className="text-2sm">สรุปสินเชื่อ</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-start flex-wrap lg:gap-10 gap-5">
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-2sm font-normal text-secondary-foreground">
-                              สถานะ
-                            </span>
-                            <span className="text-2sm font-medium text-foreground">
-                              <div className="flex flex-col gap-1">
-                                <Badge
-                                  variant={
-                                    loan?.status === 'ACTIVE'
-                                      ? hasOverdueInstallments
-                                        ? 'destructive'
-                                        : 'success'
-                                      : loan?.status === 'COMPLETED'
-                                        ? 'info'
-                                        : loan?.status === 'DEFAULTED'
+                {isLoading ? (
+                  <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
+                    <div className="grow lg:border-e border-border lg:pe-5 space-y-5 py-5">
+                      {/* Loan Summary Skeleton */}
+                      <Card className="rounded-md">
+                        <CardHeader className="min-h-[34px] bg-accent/50">
+                          <Skeleton className="h-4 w-24" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-start flex-wrap lg:gap-10 gap-5">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <div key={i} className="flex flex-col gap-1.5">
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-5 w-24" />
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Analytics Skeleton */}
+                      <Card className="rounded-md">
+                        <CardHeader className="min-h-[34px] bg-accent/50">
+                          <Skeleton className="h-4 w-40" />
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-6 w-32" />
+                            <Skeleton className="h-[100px] w-full" />
+                          </div>
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-6 w-32" />
+                            <Skeleton className="h-[100px] w-full" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="w-full shrink-0 lg:w-[420px] py-5 lg:ps-5">
+                      {/* Image Skeleton */}
+                      <div className="mb-5">
+                        <Skeleton className="h-[250px] w-full rounded-md mb-5" />
+                        <div className="grid grid-cols-5 gap-4">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <Skeleton
+                              key={i}
+                              className="h-[50px] w-full rounded-md"
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Details Skeleton */}
+                      <Skeleton className="h-16 w-full mb-5" />
+                      <hr className="my-5 border-border" />
+                      <div className="space-y-3">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                          <div key={i} className="flex items-center gap-5">
+                            <Skeleton className="h-4 w-[90px]" />
+                            <Skeleton className="h-4 w-32" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap lg:flex-nowrap px-3.5 grow">
+                    <div className="grow lg:border-e border-border lg:pe-5 space-y-5 py-5">
+                      {/* Loan Summary */}
+                      <Card className="rounded-md">
+                        <CardHeader className="min-h-[34px] bg-accent/50">
+                          <CardTitle className="text-2sm">
+                            สรุปสินเชื่อ
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-start flex-wrap lg:gap-10 gap-5">
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-2sm font-normal text-secondary-foreground">
+                                สถานะ
+                              </span>
+                              <span className="text-2sm font-medium text-foreground">
+                                <div className="flex flex-col gap-1">
+                                  <Badge
+                                    variant={
+                                      loan?.status === 'ACTIVE'
+                                        ? hasOverdueInstallments
                                           ? 'destructive'
-                                          : 'warning'
-                                  }
-                                  appearance="light"
-                                >
-                                  {loan?.status === 'ACTIVE'
-                                    ? hasOverdueInstallments
-                                      ? 'เกินกำหนดชำระ ' + overdueDays + ' วัน'
-                                      : 'ยังไม่ถึงกำหนด'
-                                    : loan?.status === 'COMPLETED'
-                                      ? 'ปิดบัญชี'
-                                      : loan?.status === 'DEFAULTED'
+                                          : 'success'
+                                        : loan?.status === 'COMPLETED'
+                                          ? 'info'
+                                          : loan?.status === 'DEFAULTED'
+                                            ? 'destructive'
+                                            : 'warning'
+                                    }
+                                    appearance="light"
+                                  >
+                                    {loan?.status === 'ACTIVE'
+                                      ? hasOverdueInstallments
                                         ? 'เกินกำหนดชำระ ' +
                                           overdueDays +
                                           ' วัน'
-                                        : 'รออนุมัติ'}
-                                </Badge>
-                                {hasOverdueInstallments && overdueDays > 0 && (
-                                  <span className="text-xs text-destructive font-medium">
-                                    เกินกำหนด {overdueDays} วัน
-                                  </span>
-                                )}
-                              </div>
-                            </span>
-                          </div>
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-2sm font-normal text-secondary-foreground">
-                              วงเงิน
-                            </span>
-                            <span className="text-2sm font-medium text-foreground">
-                              ฿
-                              {loan
-                                ? Number(loan.principalAmount).toLocaleString()
-                                : '0'}
-                            </span>
-                          </div>
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-2sm font-normal text-secondary-foreground">
-                              ยอดคงเหลือ
-                            </span>
-                            <span className="text-2sm font-medium text-foreground">
-                              ฿
-                              {loan
-                                ? Number(loan.remainingBalance).toLocaleString()
-                                : '0'}
-                            </span>
-                          </div>
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-2sm font-normal text-secondary-foreground">
-                              งวดที่ชำระ
-                            </span>
-                            <span className="text-2sm font-medium text-foreground">
-                              <Badge variant="info" appearance="light">
+                                        : 'ยังไม่ถึงกำหนด'
+                                      : loan?.status === 'COMPLETED'
+                                        ? 'ปิดบัญชี'
+                                        : loan?.status === 'DEFAULTED'
+                                          ? 'เกินกำหนดชำระ ' +
+                                            overdueDays +
+                                            ' วัน'
+                                          : 'รออนุมัติ'}
+                                  </Badge>
+                                  {hasOverdueInstallments &&
+                                    overdueDays > 0 && (
+                                      <span className="text-xs text-destructive font-medium">
+                                        เกินกำหนด {overdueDays} วัน
+                                      </span>
+                                    )}
+                                </div>
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-2sm font-normal text-secondary-foreground">
+                                วงเงิน
+                              </span>
+                              <span className="text-2sm font-medium text-foreground">
+                                ฿
                                 {loan
-                                  ? `${loan.currentInstallment}/${loan.totalInstallments}`
-                                  : '0/0'}
-                              </Badge>
-                            </span>
+                                  ? Number(
+                                      loan.principalAmount,
+                                    ).toLocaleString()
+                                  : '0'}
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-2sm font-normal text-secondary-foreground">
+                                ยอดคงเหลือ
+                              </span>
+                              <span className="text-2sm font-medium text-foreground">
+                                ฿
+                                {loan
+                                  ? Number(
+                                      loan.remainingBalance,
+                                    ).toLocaleString()
+                                  : '0'}
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-2sm font-normal text-secondary-foreground">
+                                งวดที่ชำระ
+                              </span>
+                              <span className="text-2sm font-medium text-foreground">
+                                <Badge variant="info" appearance="light">
+                                  {loan
+                                    ? `${loan.currentInstallment}/${loan.totalInstallments}`
+                                    : '0/0'}
+                                </Badge>
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-2sm font-normal text-secondary-foreground">
+                                ดอกเบี้ย
+                              </span>
+                              <span className="text-2sm font-medium text-foreground">
+                                {loan
+                                  ? Number(loan.interestRate).toFixed(2)
+                                  : '0'}
+                                %
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-2sm font-normal text-secondary-foreground">
-                              ดอกเบี้ย
-                            </span>
-                            <span className="text-2sm font-medium text-foreground">
+                        </CardContent>
+                      </Card>
+
+                      {/* Analytics */}
+                      <Card className="rounded-md">
+                        <CardHeader className="min-h-[34px] bg-accent/50">
+                          <CardTitle className="text-2sm">
+                            การวิเคราะห์ (In development)
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
+                          <div className="space-y-1">
+                            <div className="text-2sm font-normal text-secondary-foreground">
+                              Demo...
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-lg font-semibold text-foreground">
+                                $0,000,000.00
+                              </span>
+                              <Badge
+                                size="xs"
+                                variant="success"
+                                appearance="light"
+                              >
+                                <TrendingUp />
+                                3.5%
+                              </Badge>
+                            </div>
+
+                            {/* Recharts Area Chart */}
+                            <div className="relative">
+                              <div className="h-[100px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <AreaChart
+                                    data={salesPriceData}
+                                    margin={{
+                                      top: 5,
+                                      right: 5,
+                                      left: 5,
+                                      bottom: 5,
+                                    }}
+                                  >
+                                    <defs>
+                                      <linearGradient
+                                        id="salesPriceGradient"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                      >
+                                        <stop
+                                          offset="0%"
+                                          stopColor="#4921EA"
+                                          stopOpacity={0.15}
+                                        />
+                                        <stop
+                                          offset="100%"
+                                          stopColor="#4921EA"
+                                          stopOpacity={0.02}
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                    <Tooltip
+                                      cursor={{
+                                        stroke: '#4921EA',
+                                        strokeWidth: 1,
+                                        strokeDasharray: '2 2',
+                                      }}
+                                      content={({ active, payload }) => {
+                                        if (
+                                          active &&
+                                          payload &&
+                                          payload.length
+                                        ) {
+                                          const value = payload[0]
+                                            .value as number;
+                                          return (
+                                            <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                              <p className="text-sm font-semibold text-foreground">
+                                                ${value}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+                                        return null;
+                                      }}
+                                    />
+                                    <Area
+                                      type="monotone"
+                                      dataKey="value"
+                                      stroke="#4921EA"
+                                      fill="url(#salesPriceGradient)"
+                                      strokeWidth={1}
+                                      dot={false}
+                                      activeDot={{
+                                        r: 4,
+                                        fill: '#4921EA',
+                                        stroke: 'white',
+                                        strokeWidth: 2,
+                                      }}
+                                    />
+                                  </AreaChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="text-2sm font-normal text-secondary-foreground">
+                              Demo..
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-lg font-semibold text-foreground">
+                                0,000.00
+                              </span>
+                              <Badge
+                                size="xs"
+                                variant="success"
+                                appearance="light"
+                              >
+                                <TrendingUp />
+                                18%
+                              </Badge>
+                              {/* <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
+                          0,000,000.00
+                        </span> */}
+                            </div>
+
+                            {/* Recharts Area Chart */}
+                            <div className="relative">
+                              <div className="h-[100px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <AreaChart
+                                    data={salesData}
+                                    margin={{
+                                      top: 5,
+                                      right: 5,
+                                      left: 5,
+                                      bottom: 5,
+                                    }}
+                                  >
+                                    <defs>
+                                      <linearGradient
+                                        id="salesGradient"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                      >
+                                        <stop
+                                          offset="0%"
+                                          stopColor="#4921EA"
+                                          stopOpacity={0.15}
+                                        />
+                                        <stop
+                                          offset="100%"
+                                          stopColor="#4921EA"
+                                          stopOpacity={0.02}
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                    <Tooltip
+                                      cursor={{
+                                        stroke: '#4921EA',
+                                        strokeWidth: 1,
+                                        strokeDasharray: '2 2',
+                                      }}
+                                      content={({ active, payload }) => {
+                                        if (
+                                          active &&
+                                          payload &&
+                                          payload.length
+                                        ) {
+                                          const value = payload[0]
+                                            .value as number;
+                                          return (
+                                            <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
+                                              <p className="text-sm font-semibold text-foreground">
+                                                {value}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+                                        return null;
+                                      }}
+                                    />
+                                    <Area
+                                      type="monotone"
+                                      dataKey="value"
+                                      stroke="#4921EA"
+                                      fill="url(#salesGradient)"
+                                      strokeWidth={1}
+                                      dot={false}
+                                      activeDot={{
+                                        r: 4,
+                                        fill: '#4921EA',
+                                        stroke: 'white',
+                                        strokeWidth: 2,
+                                      }}
+                                    />
+                                  </AreaChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="w-full shrink-0 lg:w-[420px] py-5 lg:ps-5">
+                      <div className="mb-5">
+                        <Card className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 mb-5">
+                          <img
+                            src={
+                              allImages[selectedImageIndex] ||
+                              '/images/loan.png'
+                            }
+                            className="h-[250px] shrink-0 object-cover w-full rounded-md"
+                            alt="รูปหลักประกัน/โฉนด"
+                          />
+                        </Card>
+
+                        <ToggleGroup
+                          className="grid grid-cols-5 gap-4"
+                          type="single"
+                          value={selectedImageIndex.toString()}
+                          onValueChange={(newValue) => {
+                            if (newValue)
+                              setSelectedImageIndex(parseInt(newValue));
+                          }}
+                        >
+                          {allImages.slice(0, 5).map((image, index) => (
+                            <ToggleGroupItem
+                              key={index}
+                              value={index.toString()}
+                              className="rounded-md border border-border shrink-0 h-[50px] p-0 bg-accent/50 hover:bg-accent/50 data-[state=on]:border-zinc-950 dark:data-[state=on]:border-zinc-50"
+                            >
+                              <img
+                                src={image || '/images/loan.png'}
+                                className="h-[50px] w-[50px] object-cover rounded-md"
+                                alt={`รูปที่ ${index + 1}`}
+                              />
+                            </ToggleGroupItem>
+                          ))}
+                        </ToggleGroup>
+                      </div>
+                      <p className="text-2sm font-normal text-secondary-foreground leading-5 mb-5">
+                        รายละเอียด (In development): Lorem ipsum dolor sit amet
+                        consectetur adipisicing elit. Hic dolorum voluptatum
+                        temporibus officia.
+                      </p>
+
+                      <hr className="my-5 border-border" />
+
+                      <div className="space-y-3">
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            ประเภทสินเชื่อ
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.loanType === 'HOUSE_LAND_MORTGAGE'
+                              ? 'จำนองบ้านและที่ดิน'
+                              : 'เงินสด'}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            ระยะเวลา
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan
+                              ? `${loan.termMonths / 12} ปี (${loan.termMonths} งวด)`
+                              : '-'}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            อัตราดอกเบี้ย
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="primary" appearance="light">
                               {loan
                                 ? Number(loan.interestRate).toFixed(2)
                                 : '0'}
-                              %
-                            </span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Analytics */}
-                    <Card className="rounded-md">
-                      <CardHeader className="min-h-[34px] bg-accent/50">
-                        <CardTitle className="text-2sm">
-                          การวิเคราะห์ (In development)
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
-                        <div className="space-y-1">
-                          <div className="text-2sm font-normal text-secondary-foreground">
-                            Demo...
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-lg font-semibold text-foreground">
-                              $0,000,000.00
-                            </span>
-                            <Badge
-                              size="xs"
-                              variant="success"
-                              appearance="light"
-                            >
-                              <TrendingUp />
-                              3.5%
+                              % ต่อปี
                             </Badge>
                           </div>
-
-                          {/* Recharts Area Chart */}
-                          <div className="relative">
-                            <div className="h-[100px] w-full">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                  data={salesPriceData}
-                                  margin={{
-                                    top: 5,
-                                    right: 5,
-                                    left: 5,
-                                    bottom: 5,
-                                  }}
-                                >
-                                  <defs>
-                                    <linearGradient
-                                      id="salesPriceGradient"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1"
-                                    >
-                                      <stop
-                                        offset="0%"
-                                        stopColor="#4921EA"
-                                        stopOpacity={0.15}
-                                      />
-                                      <stop
-                                        offset="100%"
-                                        stopColor="#4921EA"
-                                        stopOpacity={0.02}
-                                      />
-                                    </linearGradient>
-                                  </defs>
-                                  <Tooltip
-                                    cursor={{
-                                      stroke: '#4921EA',
-                                      strokeWidth: 1,
-                                      strokeDasharray: '2 2',
-                                    }}
-                                    content={({ active, payload }) => {
-                                      if (active && payload && payload.length) {
-                                        const value = payload[0]
-                                          .value as number;
-                                        return (
-                                          <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                            <p className="text-sm font-semibold text-foreground">
-                                              ${value}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                      return null;
-                                    }}
-                                  />
-                                  <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke="#4921EA"
-                                    fill="url(#salesPriceGradient)"
-                                    strokeWidth={1}
-                                    dot={false}
-                                    activeDot={{
-                                      r: 4,
-                                      fill: '#4921EA',
-                                      stroke: 'white',
-                                      strokeWidth: 2,
-                                    }}
-                                  />
-                                </AreaChart>
-                              </ResponsiveContainer>
-                            </div>
-                          </div>
                         </div>
-
-                        <div className="space-y-1">
-                          <div className="text-2sm font-normal text-secondary-foreground">
-                            Demo..
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            ความเสี่ยง
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-lg font-semibold text-foreground">
-                              0,000.00
-                            </span>
-                            <Badge
-                              size="xs"
-                              variant="success"
-                              appearance="light"
-                            >
-                              <TrendingUp />
-                              18%
+                          <div className="flex items-center gap-3.5">
+                            <Badge variant="warning" appearance="outline">
+                              ความเสี่ยงปานกลาง
                             </Badge>
-                            {/* <span className="text-2sm font-normal text-secondary-foreground ps-2.5">
-                          0,000,000.00
-                        </span> */}
                           </div>
-
-                          {/* Recharts Area Chart */}
-                          <div className="relative">
-                            <div className="h-[100px] w-full">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                  data={salesData}
-                                  margin={{
-                                    top: 5,
-                                    right: 5,
-                                    left: 5,
-                                    bottom: 5,
-                                  }}
-                                >
-                                  <defs>
-                                    <linearGradient
-                                      id="salesGradient"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1"
-                                    >
-                                      <stop
-                                        offset="0%"
-                                        stopColor="#4921EA"
-                                        stopOpacity={0.15}
-                                      />
-                                      <stop
-                                        offset="100%"
-                                        stopColor="#4921EA"
-                                        stopOpacity={0.02}
-                                      />
-                                    </linearGradient>
-                                  </defs>
-                                  <Tooltip
-                                    cursor={{
-                                      stroke: '#4921EA',
-                                      strokeWidth: 1,
-                                      strokeDasharray: '2 2',
-                                    }}
-                                    content={({ active, payload }) => {
-                                      if (active && payload && payload.length) {
-                                        const value = payload[0]
-                                          .value as number;
-                                        return (
-                                          <div className="bg-background/95 backdrop-blur-sm border border-border shadow-lg rounded-lg p-2 pointer-events-none">
-                                            <p className="text-sm font-semibold text-foreground">
-                                              {value}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                      return null;
-                                    }}
-                                  />
-                                  <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke="#4921EA"
-                                    fill="url(#salesGradient)"
-                                    strokeWidth={1}
-                                    dot={false}
-                                    activeDot={{
-                                      r: 4,
-                                      fill: '#4921EA',
-                                      stroke: 'white',
-                                      strokeWidth: 2,
-                                    }}
-                                  />
-                                </AreaChart>
-                              </ResponsiveContainer>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            สถานที่
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.application?.propertyLocation || '-'}
+                            {loan?.application?.propertyArea
+                              ? ` (${loan.application.propertyArea})`
+                              : ''}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            ประเภททรัพย์
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.application?.propertyType || '-'}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            มูลค่าประเมิน
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.application?.propertyValue
+                              ? `฿${Number(loan.application.propertyValue).toLocaleString()}`
+                              : '-'}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            โฉนด
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.titleDeedNumber ||
+                              loan?.application?.landNumber ||
+                              '-'}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            เจ้าของ
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.application?.ownerName || '-'}
+                          </div>
+                        </div>
+                        <div className="flex items-center lg:gap-13 gap-5">
+                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                            วงเงินที่ขอ
+                          </div>
+                          <div className="text-2sm text-secondary-foreground font-medium">
+                            {loan?.application?.requestedAmount
+                              ? `฿${Number(loan.application.requestedAmount).toLocaleString()}`
+                              : '-'}
+                          </div>
+                        </div>
+                        {loan?.application?.approvedAmount && (
+                          <div className="flex items-center lg:gap-13 gap-5">
+                            <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                              วงเงินอนุมัติ
+                            </div>
+                            <div className="text-2sm text-secondary-foreground font-medium">
+                              ฿
+                              {Number(
+                                loan.application.approvedAmount,
+                              ).toLocaleString()}
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <div className="w-full shrink-0 lg:w-[420px] py-5 lg:ps-5">
-                    <div className="mb-5">
-                      <Card className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 mb-5">
-                        <img
-                          src={
-                            allImages[selectedImageIndex] || '/images/loan.png'
-                          }
-                          className="h-[250px] shrink-0 object-cover w-full rounded-md"
-                          alt="รูปหลักประกัน/โฉนด"
-                        />
-                      </Card>
-
-                      <ToggleGroup
-                        className="grid grid-cols-5 gap-4"
-                        type="single"
-                        value={selectedImageIndex.toString()}
-                        onValueChange={(newValue) => {
-                          if (newValue)
-                            setSelectedImageIndex(parseInt(newValue));
-                        }}
-                      >
-                        {allImages.slice(0, 5).map((image, index) => (
-                          <ToggleGroupItem
-                            key={index}
-                            value={index.toString()}
-                            className="rounded-md border border-border shrink-0 h-[50px] p-0 bg-accent/50 hover:bg-accent/50 data-[state=on]:border-zinc-950 dark:data-[state=on]:border-zinc-50"
-                          >
-                            <img
-                              src={image || '/images/loan.png'}
-                              className="h-[50px] w-[50px] object-cover rounded-md"
-                              alt={`รูปที่ ${index + 1}`}
-                            />
-                          </ToggleGroupItem>
-                        ))}
-                      </ToggleGroup>
-                    </div>
-                    <p className="text-2sm font-normal text-secondary-foreground leading-5 mb-5">
-                      รายละเอียด (In development): Lorem ipsum dolor sit amet
-                      consectetur adipisicing elit. Hic dolorum voluptatum
-                      temporibus officia.
-                    </p>
-
-                    <hr className="my-5 border-border" />
-
-                    <div className="space-y-3">
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          ประเภทสินเชื่อ
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.loanType === 'HOUSE_LAND_MORTGAGE'
-                            ? 'จำนองบ้านและที่ดิน'
-                            : 'เงินสด'}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          ระยะเวลา
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan
-                            ? `${loan.termMonths / 12} ปี (${loan.termMonths} งวด)`
-                            : '-'}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          อัตราดอกเบี้ย
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="primary" appearance="light">
-                            {loan ? Number(loan.interestRate).toFixed(2) : '0'}%
-                            ต่อปี
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          ความเสี่ยง
-                        </div>
-                        <div className="flex items-center gap-3.5">
-                          <Badge variant="warning" appearance="outline">
-                            ความเสี่ยงปานกลาง
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          สถานที่
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.application?.propertyLocation || '-'}
-                          {loan?.application?.propertyArea
-                            ? ` (${loan.application.propertyArea})`
-                            : ''}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          ประเภททรัพย์
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.application?.propertyType || '-'}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          มูลค่าประเมิน
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.application?.propertyValue
-                            ? `฿${Number(loan.application.propertyValue).toLocaleString()}`
-                            : '-'}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          โฉนด
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.titleDeedNumber ||
-                            loan?.application?.landNumber ||
-                            '-'}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          เจ้าของ
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.application?.ownerName || '-'}
-                        </div>
-                      </div>
-                      <div className="flex items-center lg:gap-13 gap-5">
-                        <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                          วงเงินที่ขอ
-                        </div>
-                        <div className="text-2sm text-secondary-foreground font-medium">
-                          {loan?.application?.requestedAmount
-                            ? `฿${Number(loan.application.requestedAmount).toLocaleString()}`
-                            : '-'}
-                        </div>
-                      </div>
-                      {loan?.application?.approvedAmount && (
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            วงเงินอนุมัติ
+                        )}
+                        {loan?.application?.maxApprovedAmount && (
+                          <div className="flex items-center lg:gap-13 gap-5">
+                            <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                              วงเงินสูงสุด
+                            </div>
+                            <div className="text-2sm text-secondary-foreground font-medium">
+                              ฿
+                              {Number(
+                                loan.application.maxApprovedAmount,
+                              ).toLocaleString()}
+                            </div>
                           </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            ฿
-                            {Number(
-                              loan.application.approvedAmount,
-                            ).toLocaleString()}
-                          </div>
-                        </div>
-                      )}
-                      {loan?.application?.maxApprovedAmount && (
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            วงเงินสูงสุด
-                          </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            ฿
-                            {Number(
-                              loan.application.maxApprovedAmount,
-                            ).toLocaleString()}
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </ScrollArea>
             </TabsContent>
 
@@ -1135,7 +1249,40 @@ export function ProductDetailsAnalyticsSheet({
                       </TableHeader>
 
                       <TableBody>
-                        {paymentSchedule.length > 0 ? (
+                        {isLoading ? (
+                          // Skeleton rows
+                          Array.from({ length: 5 }).map((_, index) => (
+                            <TableRow
+                              key={index}
+                              className={`text-secondary-foreground font-normal text-2sm ${index % 2 === 0 ? 'bg-accent/50' : ''}`}
+                            >
+                              <TableCell className="py-2 border-e border-border ps-5">
+                                <Skeleton className="h-4 w-8" />
+                              </TableCell>
+                              <TableCell className="py-2 border-e border-border">
+                                <Skeleton className="h-4 w-16" />
+                              </TableCell>
+                              <TableCell className="py-2 border-e border-border">
+                                <Skeleton className="h-4 w-20 ml-auto" />
+                              </TableCell>
+                              <TableCell className="py-2 border-e border-border">
+                                <Skeleton className="h-4 w-20 ml-auto" />
+                              </TableCell>
+                              <TableCell className="py-2 border-e border-border">
+                                <Skeleton className="h-4 w-24" />
+                              </TableCell>
+                              <TableCell className="py-2 border-e border-border">
+                                <Skeleton className="h-4 w-24" />
+                              </TableCell>
+                              <TableCell className="py-2 border-e border-border">
+                                <Skeleton className="h-6 w-20" />
+                              </TableCell>
+                              <TableCell className="text-center py-2">
+                                <Skeleton className="h-8 w-24 mx-auto" />
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : paymentSchedule.length > 0 ? (
                           paymentSchedule.map(
                             (
                               payment: {
