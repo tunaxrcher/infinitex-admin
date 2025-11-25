@@ -9,7 +9,7 @@ import {
   useUpdateLoan,
 } from '@src/features/loans/hooks';
 import { cn } from '@src/shared/lib/utils';
-import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { Check, ChevronsUpDown, Dices, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -49,6 +49,12 @@ import {
   SheetTitle,
 } from '@src/shared/components/ui/sheet';
 import { Textarea } from '@src/shared/components/ui/textarea';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 
 // Helper functions for date calculations
 const getTodayDate = () => {
@@ -785,141 +791,137 @@ export function ProductFormSheet({
                         <CardTitle className="text-2sm">ข้อมูลลูกค้า</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4">
-                      <div className="grid gap-2 grid-cols-[1fr_auto]">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="flex flex-col gap-2 md:col-span-2">
                             <Label className="text-xs">
                               เบอร์ติดต่อ{' '}
                               <span className="text-destructive">*</span>
                             </Label>
-                            <Popover
-                              open={openCustomerCombo}
-                              onOpenChange={setOpenCustomerCombo}
-                            >
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  aria-expanded={openCustomerCombo}
-                                  className="w-full justify-between font-normal"
-                                >
-                                  {phoneNumber ||
-                                    'ค้นหาเบอร์โทรลูกค้า หรือเพิ่มลูกค้าใหม่...'}
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-full p-0"
-                                align="start"
+                            <div className="flex gap-2">
+                              <Popover
+                                open={openCustomerCombo}
+                                onOpenChange={setOpenCustomerCombo}
                               >
-                                <Command>
-                                  <CommandInput
-                                    placeholder="พิมพ์เบอร์โทรหรือชื่อลูกค้า..."
-                                    value={customerSearchQuery}
-                                    onValueChange={setCustomerSearchQuery}
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>
-                                      <div className="py-6 text-center text-sm">
-                                        <p className="text-muted-foreground">
-                                          ไม่พบลูกค้า
-                                        </p>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          className="mt-2 text-primary"
-                                          onClick={() => {
-                                            setPhoneNumber(customerSearchQuery);
-                                            setOpenCustomerCombo(false);
-                                          }}
-                                        >
-                                          ใช้เบอร์ "{customerSearchQuery}"
-                                          สำหรับลูกค้าใหม่
-                                        </Button>
-                                      </div>
-                                    </CommandEmpty>
-                                    <CommandGroup heading="ลูกค้าที่พบ">
-                                      {customersData?.data?.map(
-                                        (customer: {
-                                          id: string;
-                                          phoneNumber: string;
-                                          profile?: {
-                                            firstName?: string | null;
-                                            lastName?: string | null;
-                                          } | null;
-                                        }) => {
-                                          const displayName =
-                                            `${customer.profile?.firstName || ''} ${customer.profile?.lastName || ''}`.trim();
-                                          return (
-                                            <CommandItem
-                                              key={customer.id}
-                                              value={customer.phoneNumber}
-                                              onSelect={() =>
-                                                handleSelectCustomer(customer)
-                                              }
-                                            >
-                                              <Check
-                                                className={cn(
-                                                  'mr-2 h-4 w-4',
-                                                  phoneNumber ===
-                                                    customer.phoneNumber
-                                                    ? 'opacity-100'
-                                                    : 'opacity-0',
-                                                )}
-                                              />
-                                              <div className="flex flex-col">
-                                                <span className="font-medium">
-                                                  {customer.phoneNumber}
-                                                </span>
-                                                {displayName && (
-                                                  <span className="text-xs text-muted-foreground">
-                                                    {displayName}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </CommandItem>
-                                          );
-                                        },
-                                      )}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-
-                          {/* Generate Phone Button */}
-                          <div className="flex flex-col gap-2 md:col-span-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={handleGeneratePhone}
-                              disabled={isGeneratingPhone}
-                              className="w-full"
-                            >
-                              {isGeneratingPhone ? (
-                                <>
-                                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                  กำลังสร้างเบอร์...
-                                </>
-                              ) : (
-                                <>
-                                  <svg
-                                    className="mr-2 h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openCustomerCombo}
+                                    className="flex-1 justify-between font-normal"
                                   >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M12 4v16m8-8H4"
+                                    {phoneNumber ||
+                                      'ค้นหาเบอร์โทรลูกค้า หรือเพิ่มลูกค้าใหม่...'}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-full p-0"
+                                  align="start"
+                                >
+                                  <Command>
+                                    <CommandInput
+                                      placeholder="พิมพ์เบอร์โทรหรือชื่อลูกค้า..."
+                                      value={customerSearchQuery}
+                                      onValueChange={setCustomerSearchQuery}
                                     />
-                                  </svg>
-                                  Generate เบอร์อัตโนมัติ (สำหรับลูกค้าที่ไม่ยอมให้เบอร์)
-                                </>
-                              )}
-                            </Button>
+                                    <CommandList>
+                                      <CommandEmpty>
+                                        <div className="py-6 text-center text-sm">
+                                          <p className="text-muted-foreground">
+                                            ไม่พบลูกค้า
+                                          </p>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="mt-2 text-primary"
+                                            onClick={() => {
+                                              setPhoneNumber(
+                                                customerSearchQuery,
+                                              );
+                                              setOpenCustomerCombo(false);
+                                            }}
+                                          >
+                                            ใช้เบอร์ "{customerSearchQuery}"
+                                            สำหรับลูกค้าใหม่
+                                          </Button>
+                                        </div>
+                                      </CommandEmpty>
+                                      <CommandGroup heading="ลูกค้าที่พบ">
+                                        {customersData?.data?.map(
+                                          (customer: {
+                                            id: string;
+                                            phoneNumber: string;
+                                            profile?: {
+                                              firstName?: string | null;
+                                              lastName?: string | null;
+                                            } | null;
+                                          }) => {
+                                            const displayName =
+                                              `${customer.profile?.firstName || ''} ${customer.profile?.lastName || ''}`.trim();
+                                            return (
+                                              <CommandItem
+                                                key={customer.id}
+                                                value={customer.phoneNumber}
+                                                onSelect={() =>
+                                                  handleSelectCustomer(customer)
+                                                }
+                                              >
+                                                <Check
+                                                  className={cn(
+                                                    'mr-2 h-4 w-4',
+                                                    phoneNumber ===
+                                                      customer.phoneNumber
+                                                      ? 'opacity-100'
+                                                      : 'opacity-0',
+                                                  )}
+                                                />
+                                                <div className="flex flex-col">
+                                                  <span className="font-medium">
+                                                    {customer.phoneNumber}
+                                                  </span>
+                                                  {displayName && (
+                                                    <span className="text-xs text-muted-foreground">
+                                                      {displayName}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              </CommandItem>
+                                            );
+                                          },
+                                        )}
+                                      </CommandGroup>
+                                    </CommandList>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+
+                              {/* Generate Phone Button with Dice Icon */}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      onClick={handleGeneratePhone}
+                                      disabled={isGeneratingPhone}
+                                    >
+                                      {isGeneratingPhone ? (
+                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                      ) : (
+                                        <Dices className="h-4 w-4" />
+                                      )}
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Generate เบอร์อัตโนมัติ</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      สำหรับลูกค้าที่ไม่ยอมให้เบอร์
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
                           </div>
 
                           {/* แสดง input อื่นๆ เฉพาะเมื่อใส่เบอร์โทรแล้ว */}
