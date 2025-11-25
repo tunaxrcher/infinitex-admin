@@ -11,9 +11,9 @@ import { TitleDeedManualInputModal } from '@src/features/loans/components/title-
 import { TitleDeedUploadDialog } from '@src/features/loans/components/title-deed-upload-dialog';
 import { LoanPaymentReportsTable } from '@src/features/loans/tables/loan-payment-reports';
 import { ProductListTable } from '@src/features/loans/tables/product-list';
-import { Container } from '@src/shared/components/common/container';
-import { Button } from '@src/shared/components/ui/button';
 import { PlusIcon } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import { Container } from '@src/shared/components/common/container';
 
 export default function ProductList() {
   const [isMethodModalOpen, setIsMethodModalOpen] = useState(false);

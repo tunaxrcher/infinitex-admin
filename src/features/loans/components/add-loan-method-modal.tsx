@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import { PenTool, Sparkles, X } from 'lucide-react'
-import { Button } from '@src/shared/components/ui/button'
+import Image from 'next/image';
+import { PenTool, Sparkles, X } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 interface AddLoanMethodModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onManualAdd: () => void
-  onAIAdd: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onManualAdd: () => void;
+  onAIAdd: () => void;
 }
 
 export function AddLoanMethodModal({
@@ -17,7 +17,7 @@ export function AddLoanMethodModal({
   onManualAdd,
   onAIAdd,
 }: AddLoanMethodModalProps) {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -70,8 +70,8 @@ export function AddLoanMethodModal({
               {/* Manual Option */}
               <button
                 onClick={() => {
-                  onManualAdd()
-                  onClose()
+                  onManualAdd();
+                  onClose();
                 }}
                 className="group relative overflow-hidden rounded-3xl border-2 border-border hover:border-primary transition-all duration-300 p-10 text-left bg-card hover:shadow-2xl hover:scale-[1.02]"
               >
@@ -122,8 +122,8 @@ export function AddLoanMethodModal({
               {/* AI Option */}
               <button
                 onClick={() => {
-                  onAIAdd()
-                  onClose()
+                  onAIAdd();
+                  onClose();
                 }}
                 className="group relative overflow-hidden rounded-3xl border-2 border-primary/50 hover:border-primary transition-all duration-300 p-10 text-left bg-gradient-to-br from-primary/5 to-transparent hover:shadow-2xl hover:shadow-primary/30 hover:scale-[1.02]"
               >
@@ -189,6 +189,5 @@ export function AddLoanMethodModal({
         </div>
       </div>
     </div>
-  )
+  );
 }
-

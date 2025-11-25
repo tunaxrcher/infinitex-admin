@@ -133,17 +133,15 @@ export async function POST(request: NextRequest) {
       parseFormDataFields(formData);
 
     // Upload files
-    const [newTitleDeedUrls, newSupportingUrls, idCardUrl] = await Promise.all(
-      [
-        uploadFilesToStorage(titleDeedFiles, 'title-deeds'),
-        uploadFilesToStorage(supportingFiles, 'supporting-images'),
-        idCardFile
-          ? uploadFilesToStorage([idCardFile], 'id-cards').then(
-              (urls) => urls[0] || null,
-            )
-          : Promise.resolve(null),
-      ],
-    );
+    const [newTitleDeedUrls, newSupportingUrls, idCardUrl] = await Promise.all([
+      uploadFilesToStorage(titleDeedFiles, 'title-deeds'),
+      uploadFilesToStorage(supportingFiles, 'supporting-images'),
+      idCardFile
+        ? uploadFilesToStorage([idCardFile], 'id-cards').then(
+            (urls) => urls[0] || null,
+          )
+        : Promise.resolve(null),
+    ]);
 
     // Combine images (existing + new)
     const existingTitleDeedUrls = data.existingImageUrls || [];
