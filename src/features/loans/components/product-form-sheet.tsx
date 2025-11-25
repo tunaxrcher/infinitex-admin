@@ -3,14 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchCustomers } from '@src/features/customers/hooks';
-import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import {
   useCreateLoan,
   useGetLoanById,
   useUpdateLoan,
 } from '@src/features/loans/hooks';
 import { cn } from '@src/shared/lib/utils';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
@@ -110,13 +109,6 @@ export function ProductFormSheet({
   const [loanAmount, setLoanAmount] = useState<number>(0);
   const [loanStartDate, setLoanStartDate] = useState(getTodayDate());
   const [loanDueDate, setLoanDueDate] = useState(getNextMonthDate());
-  const [landAccountId, setLandAccountId] = useState('');
-
-  // Fetch land accounts for selection
-  const { data: landAccountsData } = useGetLandAccountList({
-    page: 1,
-    limit: 1000,
-  });
 
   // Form state - Section 2: ข้อมูลลูกค้า
   const [fullName, setFullName] = useState('');
@@ -151,6 +143,15 @@ export function ProductFormSheet({
   >([]); // รูปเพิ่มเติมที่มีอยู่แล้ว (URL)
   const supportingInputRef = useRef<HTMLInputElement>(null);
 
+  // File upload - ID Card
+  const [idCardFile, setIdCardFile] = useState<File | null>(null);
+  const [idCardImage, setIdCardImage] = useState<string | null>(null);
+  const idCardInputRef = useRef<HTMLInputElement>(null);
+  const [isAnalyzingIdCard, setIsAnalyzingIdCard] = useState(false);
+
+  // Phone generation
+  const [isGeneratingPhone, setIsGeneratingPhone] = useState(false);
+
   const formRef = useRef<HTMLFormElement>(null);
 
   // Calculations
@@ -163,12 +164,12 @@ export function ProductFormSheet({
   }, [loanAmount, totalInterest]);
 
   const monthlyPayment = useMemo(() => {
-    if (loanAmount === 0 || loanYears === 0 || interestRate === 0) return 0;
-    const n = loanYears * 12;
-    const r = interestRate / 100 / 12;
-    const pmt = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
-    return pmt;
-  }, [loanAmount, loanYears, interestRate]);
+    if (loanAmount === 0 || interestRate === 0) return 0;
+    // คำนวณดอกเบี้ยต่อเดือน (ไม่รวมเงินต้น)
+    // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
+    const monthlyInterest = (loanAmount * (interestRate / 100)) / 12;
+    return monthlyInterest;
+  }, [loanAmount, interestRate]);
 
   const actualPayment = useMemo(() => {
     return loanAmount - (operationFee + transferFee + otherFee);
@@ -238,6 +239,106 @@ export function ProductFormSheet({
     setExistingSupportingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Track if data was filled by AI
+  const [isAiFilled, setIsAiFilled] = useState(false);
+
+  // ID Card handlers
+  const handleIdCardClick = () => {
+    idCardInputRef.current?.click();
+  };
+
+  const handleIdCardChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIdCardFile(file);
+    setIsAnalyzingIdCard(true);
+
+    try {
+      // Create FormData for upload
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Call API to analyze ID card
+      const response = await fetch('/api/customers/analyze-id-card', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze ID card');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        // Auto-fill form with extracted data
+        if (result.data.fullName) {
+          setFullName(result.data.fullName);
+        }
+        if (result.data.idCardNumber) {
+          setIdCard(formatIdCard(result.data.idCardNumber));
+        }
+        if (result.data.dateOfBirth) {
+          setBirthDate(result.data.dateOfBirth);
+        }
+        if (result.data.address) {
+          setAddress(result.data.address);
+        }
+
+        // Mark as AI filled
+        setIsAiFilled(true);
+
+        // Show preview
+        setIdCardImage(URL.createObjectURL(file));
+
+        console.log('[Form] ID card analyzed:', result.data);
+      }
+    } catch (error) {
+      console.error('[Form] Failed to analyze ID card:', error);
+      alert('ไม่สามารถวิเคราะห์บัตรประชาชนได้ กรุณากรอกข้อมูลด้วยตนเอง');
+    } finally {
+      setIsAnalyzingIdCard(false);
+    }
+  };
+
+  const handleRemoveIdCard = () => {
+    setIdCardFile(null);
+    setIdCardImage(null);
+    setIsAiFilled(false);
+    if (idCardInputRef.current) {
+      idCardInputRef.current.value = '';
+    }
+  };
+
+  // Generate phone number
+  const handleGeneratePhone = async () => {
+    setIsGeneratingPhone(true);
+
+    try {
+      const response = await fetch('/api/customers/generate-phone', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate phone number');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data?.phoneNumber) {
+        setPhoneNumber(result.data.phoneNumber);
+        setOpenCustomerCombo(false);
+        console.log('[Form] Generated phone:', result.data.phoneNumber);
+      }
+    } catch (error) {
+      console.error('[Form] Failed to generate phone:', error);
+      alert('ไม่สามารถสร้างเบอร์โทรศัพท์ได้ กรุณาลองอีกครั้ง');
+    } finally {
+      setIsGeneratingPhone(false);
+    }
+  };
+
   // Auto-fill customer data
   const handleSelectCustomer = (customer: {
     phoneNumber: string;
@@ -277,12 +378,6 @@ export function ProductFormSheet({
       return;
     }
 
-    // ตรวจสอบบัญชี
-    if (!landAccountId) {
-      alert('กรุณาเลือกบัญชีสำหรับจ่ายสินเชื่อ');
-      return;
-    }
-
     try {
       const loanData = {
         customerName: fullName, // ใช้ fullName แทน customerName
@@ -306,11 +401,11 @@ export function ProductFormSheet({
         transferFee,
         otherFee,
         note,
-        landAccountId, // บัญชีสำหรับจ่ายสินเชื่อ
         titleDeedFiles: uploadedFiles, // ส่งไฟล์โฉนดใหม่ที่จะอัปโหลด
         existingImageUrls: existingImages, // ส่ง URL ของรูปโฉนดที่มีอยู่แล้ว
         supportingFiles: supportingFiles, // ส่งไฟล์เพิ่มเติมใหม่ที่จะอัปโหลด
         existingSupportingImageUrls: existingSupportingImages, // ส่ง URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
+        idCardFile: idCardFile, // ส่งไฟล์บัตรประชาชน
         titleDeedData: titleDeedData, // ส่งข้อมูลโฉนดทั้งชุดจาก API
       };
 
@@ -336,7 +431,6 @@ export function ProductFormSheet({
     setLoanAmount(0);
     setLoanStartDate(getTodayDate());
     setLoanDueDate(getNextMonthDate());
-    setLandAccountId('');
     setFullName('');
     setPhoneNumber('');
     setIdCard('');
@@ -354,6 +448,9 @@ export function ProductFormSheet({
     setExistingImages([]);
     setSupportingFiles([]);
     setExistingSupportingImages([]);
+    setIdCardFile(null);
+    setIdCardImage(null);
+    setIsAiFilled(false);
     setCustomerSearchQuery('');
   };
 
@@ -678,38 +775,6 @@ export function ProductFormSheet({
                               </span>
                             </div>
                           </div>
-
-                          <div className="flex flex-col gap-2 md:col-span-2">
-                            <Label className="text-xs">
-                              บัญชีสำหรับจ่ายสินเชื่อ{' '}
-                              <span className="text-destructive">*</span>
-                            </Label>
-                            <Select
-                              value={landAccountId}
-                              onValueChange={setLandAccountId}
-                              required
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="เลือกบัญชี" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {landAccountsData?.data?.map((account: any) => (
-                                  <SelectItem
-                                    key={account.id}
-                                    value={account.id}
-                                  >
-                                    {account.accountName} (฿
-                                    {Number(
-                                      account.accountBalance,
-                                    ).toLocaleString('th-TH', {
-                                      minimumFractionDigits: 2,
-                                    })}
-                                    )
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -720,7 +785,7 @@ export function ProductFormSheet({
                         <CardTitle className="text-2sm">ข้อมูลลูกค้า</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid gap-2 grid-cols-[1fr_auto]">
                           <div className="flex flex-col gap-2 md:col-span-2">
                             <Label className="text-xs">
                               เบอร์ติดต่อ{' '}
@@ -822,6 +887,41 @@ export function ProductFormSheet({
                             </Popover>
                           </div>
 
+                          {/* Generate Phone Button */}
+                          <div className="flex flex-col gap-2 md:col-span-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={handleGeneratePhone}
+                              disabled={isGeneratingPhone}
+                              className="w-full"
+                            >
+                              {isGeneratingPhone ? (
+                                <>
+                                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                  กำลังสร้างเบอร์...
+                                </>
+                              ) : (
+                                <>
+                                  <svg
+                                    className="mr-2 h-4 w-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 4v16m8-8H4"
+                                    />
+                                  </svg>
+                                  Generate เบอร์อัตโนมัติ (สำหรับลูกค้าที่ไม่ยอมให้เบอร์)
+                                </>
+                              )}
+                            </Button>
+                          </div>
+
                           {/* แสดง input อื่นๆ เฉพาะเมื่อใส่เบอร์โทรแล้ว */}
                           {phoneNumber ? (
                             <>
@@ -836,15 +936,96 @@ export function ProductFormSheet({
                                 </div>
                               </div>
 
+                              {/* ID Card Upload Section */}
+                              <div className="flex flex-col gap-2 md:col-span-2">
+                                <Label className="text-xs">
+                                  อัพโหลดบัตรประชาชน (เพื่อกรอกข้อมูลอัตโนมัติ)
+                                </Label>
+                                <div className="flex gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleIdCardClick}
+                                    disabled={isAnalyzingIdCard}
+                                    className="flex-1"
+                                  >
+                                    {isAnalyzingIdCard ? (
+                                      <>
+                                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                        กำลังวิเคราะห์...
+                                      </>
+                                    ) : idCardFile ? (
+                                      <>
+                                        <Check className="mr-2 h-4 w-4" />
+                                        บัตรประชาชนถูกอัพโหลดแล้ว
+                                      </>
+                                    ) : (
+                                      <>
+                                        <svg
+                                          className="mr-2 h-4 w-4"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                          />
+                                        </svg>
+                                        คลิกเพื่ออัพโหลดบัตรประชาชน
+                                      </>
+                                    )}
+                                  </Button>
+                                  {idCardFile && (
+                                    <Button
+                                      type="button"
+                                      variant="destructive"
+                                      size="icon"
+                                      onClick={handleRemoveIdCard}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                                <Input
+                                  ref={idCardInputRef}
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleIdCardChange}
+                                />
+                                {idCardImage && (
+                                  <div className="relative mt-2 aspect-video w-full overflow-hidden rounded-lg border">
+                                    <img
+                                      src={idCardImage}
+                                      alt="บัตรประชาชน"
+                                      className="h-full w-full object-contain"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
                               <div className="flex flex-col gap-2">
                                 <Label className="text-xs">
                                   ชื่อ-นามสกุล{' '}
                                   <span className="text-destructive">*</span>
+                                  {isAiFilled && fullName && (
+                                    <span className="text-xs text-blue-600 font-normal ml-2">
+                                      ✨ AI ใส่ให้
+                                    </span>
+                                  )}
                                 </Label>
                                 <Input
                                   placeholder="กรอกชื่อ-นามสกุล"
                                   value={fullName}
                                   onChange={(e) => setFullName(e.target.value)}
+                                  className={
+                                    isAiFilled && fullName
+                                      ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                      : ''
+                                  }
                                   required
                                 />
                               </div>
@@ -853,6 +1034,11 @@ export function ProductFormSheet({
                                 <Label className="text-xs">
                                   เลขบัตรประชาชน{' '}
                                   <span className="text-destructive">*</span>
+                                  {isAiFilled && idCard && (
+                                    <span className="text-xs text-blue-600 font-normal ml-2">
+                                      ✨ AI ใส่ให้
+                                    </span>
+                                  )}
                                 </Label>
                                 <Input
                                   placeholder="X-XXXX-XXXXX-XX-X"
@@ -864,6 +1050,11 @@ export function ProductFormSheet({
                                     setIdCard(formatted);
                                   }}
                                   maxLength={17}
+                                  className={
+                                    isAiFilled && idCard
+                                      ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                      : ''
+                                  }
                                   required
                                 />
                               </div>
@@ -881,11 +1072,21 @@ export function ProductFormSheet({
                               <div className="flex flex-col gap-2">
                                 <Label className="text-xs">
                                   วัน/เดือน/ปีเกิด
+                                  {isAiFilled && birthDate && (
+                                    <span className="text-xs text-blue-600 font-normal ml-2">
+                                      ✨ AI ใส่ให้
+                                    </span>
+                                  )}
                                 </Label>
                                 <Input
                                   type="date"
                                   value={birthDate}
                                   onChange={(e) => setBirthDate(e.target.value)}
+                                  className={
+                                    isAiFilled && birthDate
+                                      ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                      : ''
+                                  }
                                 />
                               </div>
 
@@ -913,12 +1114,23 @@ export function ProductFormSheet({
                               </div>
 
                               <div className="flex flex-col gap-2 md:col-span-2">
-                                <Label className="text-xs">ที่อยู่</Label>
+                                <Label className="text-xs">
+                                  ที่อยู่
+                                  {isAiFilled && address && (
+                                    <span className="text-xs text-blue-600 font-normal ml-2">
+                                      ✨ AI ใส่ให้
+                                    </span>
+                                  )}
+                                </Label>
                                 <Textarea
                                   placeholder="กรอกที่อยู่ทั้งหมด"
                                   value={address}
                                   onChange={(e) => setAddress(e.target.value)}
-                                  className="min-h-[80px]"
+                                  className={
+                                    isAiFilled && address
+                                      ? 'min-h-[80px] border-blue-300 bg-blue-50/50 dark:bg-blue-950/20'
+                                      : 'min-h-[80px]'
+                                  }
                                 />
                               </div>
                             </>

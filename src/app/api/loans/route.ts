@@ -19,12 +19,15 @@ function parseFormDataFields(formData: FormData) {
   const data: any = {};
   const titleDeedFiles: File[] = [];
   const supportingFiles: File[] = [];
+  let idCardFile: File | null = null;
 
   for (const [key, value] of formData.entries()) {
     if (key === 'titleDeedFiles' && value instanceof File) {
       titleDeedFiles.push(value);
     } else if (key === 'supportingFiles' && value instanceof File) {
       supportingFiles.push(value);
+    } else if (key === 'idCardFile' && value instanceof File) {
+      idCardFile = value;
     } else if (
       key === 'existingImageUrls' ||
       key === 'existingSupportingImageUrls'
@@ -54,7 +57,7 @@ function parseFormDataFields(formData: FormData) {
     }
   }
 
-  return { data, titleDeedFiles, supportingFiles };
+  return { data, titleDeedFiles, supportingFiles, idCardFile };
 }
 
 /**
@@ -126,14 +129,21 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
 
     // Parse form data
-    const { data, titleDeedFiles, supportingFiles } =
+    const { data, titleDeedFiles, supportingFiles, idCardFile } =
       parseFormDataFields(formData);
 
     // Upload files
-    const [newTitleDeedUrls, newSupportingUrls] = await Promise.all([
-      uploadFilesToStorage(titleDeedFiles, 'title-deeds'),
-      uploadFilesToStorage(supportingFiles, 'supporting-images'),
-    ]);
+    const [newTitleDeedUrls, newSupportingUrls, idCardUrl] = await Promise.all(
+      [
+        uploadFilesToStorage(titleDeedFiles, 'title-deeds'),
+        uploadFilesToStorage(supportingFiles, 'supporting-images'),
+        idCardFile
+          ? uploadFilesToStorage([idCardFile], 'id-cards').then(
+              (urls) => urls[0] || null,
+            )
+          : Promise.resolve(null),
+      ],
+    );
 
     // Combine images (existing + new)
     const existingTitleDeedUrls = data.existingImageUrls || [];
@@ -141,6 +151,11 @@ export async function POST(request: NextRequest) {
 
     data.titleDeedImages = [...existingTitleDeedUrls, ...newTitleDeedUrls];
     data.supportingImages = [...existingSupportingUrls, ...newSupportingUrls];
+
+    // Add ID card image if uploaded
+    if (idCardUrl) {
+      data.idCardImage = idCardUrl;
+    }
 
     // Validate and create
     const validatedData = loanCreateSchema.parse(data);

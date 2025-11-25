@@ -388,14 +388,14 @@ export const loanService = {
         });
       }
 
-      // Step 3: สร้าง LoanApplication (สถานะอนุมัติแล้ว)
+      // Step 3: สร้าง LoanApplication (สถานะรออนุมัติ)
       const requestedAmount = data.requestedAmount ?? loanAmount;
       const maxApprovedAmount = data.maxApprovedAmount ?? loanAmount * 1.5; // ค่า default = 150% ของยอดที่ขอ
 
       const application = await tx.loanApplication.create({
         data: {
           loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'APPROVED', // เริ่มต้นเป็น APPROVED (อนุมัติแล้ว)
+          status: 'SUBMITTED', // เริ่มต้นเป็น SUBMITTED (รออนุมัติ)
           currentStep: 4,
           requestedAmount: requestedAmount,
           approvedAmount: loanAmount,
@@ -416,6 +416,8 @@ export const loanService = {
           titleDeedData: data.titleDeedData || null,
           // บันทึกภาพเพิ่มเติม (supporting images)
           supportingImages: data.supportingImages || [],
+          // บันทึกภาพบัตรประชาชน
+          idCardFrontImage: data.idCardImage || null,
         },
       });
 

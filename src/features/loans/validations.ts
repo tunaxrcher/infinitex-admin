@@ -54,14 +54,12 @@ export const loanCreateSchema = z.object({
   otherFee: z.number().min(0).optional().default(0),
   note: z.string().optional(),
 
-  // บัญชีสำหรับการจ่ายสินเชื่อ
-  landAccountId: z.string().min(1, 'กรุณาเลือกบัญชีสำหรับจ่ายสินเชื่อ'),
-
   // ไฟล์อัพโหลด
   titleDeedImages: z.array(z.string()).optional(), // URL ของรูปโฉนดทั้งหมด
   existingImageUrls: z.array(z.string()).optional(), // URL ของรูปโฉนดที่มีอยู่แล้ว
   supportingImages: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมทั้งหมด
   existingSupportingImageUrls: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
+  idCardImage: z.string().optional(), // URL ของรูปบัตรประชาชน
 
   // ข้อมูลโฉนดจาก API (จาก LandsMaps)
   titleDeedData: z.any().optional(), // ข้อมูลโฉนดทั้งชุดจาก API

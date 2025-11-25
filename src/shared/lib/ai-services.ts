@@ -41,11 +41,30 @@ const propertyValuationSchema = z.object({
     .describe('ระดับความมั่นใจในการประเมิน (0-100)'),
 });
 
+// ID Card analysis schema
+const idCardAnalysisSchema = z.object({
+  fullName: z
+    .string()
+    .describe('ชื่อ-นามสกุลที่พบในบัตรประชาชน หากไม่พบให้ใส่ค่าว่าง'),
+  idCardNumber: z
+    .string()
+    .describe('เลขบัตรประชาชน 13 หลักที่พบ หากไม่พบให้ใส่ค่าว่าง'),
+  dateOfBirth: z
+    .string()
+    .describe(
+      'วันเกิดในรูปแบบ YYYY-MM-DD (เช่น 1990-01-15) หากไม่พบให้ใส่ค่าว่าง',
+    ),
+  address: z
+    .string()
+    .describe('ที่อยู่ที่พบในบัตรประชาชน หากไม่พบให้ใส่ค่าว่าง'),
+});
+
 // Type definitions from schemas
 type TitleDeedAnalysisResult = z.infer<typeof titleDeedAnalysisSchema>;
 type ProvinceSearchResult = z.infer<typeof provinceSearchSchema>;
 type AmphurSearchResult = z.infer<typeof amphurSearchSchema>;
 type PropertyValuationResult = z.infer<typeof propertyValuationSchema>;
+type IdCardAnalysisResult = z.infer<typeof idCardAnalysisSchema>;
 
 class AIService {
   private googleProvider: ReturnType<typeof createGoogleGenerativeAI>;
@@ -255,6 +274,90 @@ class AIService {
         pvCode: provinceCode,
         amCode,
         parcelNo,
+      };
+    }
+  }
+
+  /**
+   * วิเคราะห์รูปบัตรประชาชนเพื่อหาข้อมูล ชื่อ-นามสกุล, เลขบัตร, วันเกิด, ที่อยู่
+   * ใช้ generateObject สำหรับ structured output
+   */
+  async analyzeIdCardImage(
+    imageBuffer: Buffer,
+    mimeType: string,
+  ): Promise<IdCardAnalysisResult> {
+    try {
+      console.log('[AI] Analyzing ID card image with Gemini 2.5...');
+
+      const model = this.getModel(true);
+
+      const { object } = await generateObject({
+        model,
+        schema: idCardAnalysisSchema,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `วิเคราะห์รูปบัตรประชาชนนี้และหาข้อมูลดังต่อไปนี้:
+
+**ข้อมูลที่ต้องหา:**
+1. **ชื่อ-นามสกุล (fullName)**: 
+   - มักอยู่ในบริเวณกลางหรือด้านบนของบัตร
+   - ให้รวมคำนำหน้า (นาย, นาง, นางสาว) ชื่อจริง และนามสกุลเข้าด้วยกัน
+   - ตัวอย่าง: "นาย สมชาย ใจดี"
+
+2. **เลขบัตรประชาชน (idCardNumber)**:
+   - เป็นตัวเลข 13 หลัก
+   - **สำคัญ: หากเป็นเลขไทย (๐๑๒๓๔๕๖๗๘๙) ให้แปลงเป็นเลขอารบิก (0123456789)**
+   - ตัวอย่าง: "๑-๒๓๔๕-๖๗๘๙๐-๑๒-๓" → ตอบ "1234567890123" (ไม่ต้องมีขีด)
+
+3. **วันเกิด (dateOfBirth)**:
+   - มักมีคำว่า "เกิด" หรือ "Date of Birth"
+   - แปลงเป็นรูปแบบ YYYY-MM-DD
+   - **สำคัญ: หากเป็นปีพ.ศ. ให้แปลงเป็นปีค.ศ. โดยลบ 543**
+   - ตัวอย่าง: "15 ม.ค. 2533" → "1990-01-15"
+   - ตัวอย่าง: "15 ม.ค. 33" → "1990-01-15"
+
+4. **ที่อยู่ (address)**:
+   - มักมีคำว่า "ที่อยู่" หรือ "Address"
+   - รวมบ้านเลขที่, หมู่, ถนน, ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์
+   - ให้รวมเป็นข้อความเดียวกันแบบเต็ม
+
+**หมายเหตุสำคัญ:**
+- อ่านข้อความในรูปอย่างละเอียด
+- หากไม่พบข้อมูลใดให้ใส่ค่าว่าง ""
+- ตรวจสอบการแปลงเลขไทยเป็นเลขอารบิกให้ถูกต้อง
+- ตรวจสอบการแปลงปี พ.ศ. เป็น ค.ศ. ให้ถูกต้อง`,
+              },
+              {
+                type: 'image',
+                image: imageBuffer,
+              },
+            ],
+          },
+        ],
+      });
+
+      console.log('[AI] ID card analysis result:', object);
+
+      return {
+        fullName: object.fullName || '',
+        idCardNumber: object.idCardNumber || '',
+        dateOfBirth: object.dateOfBirth || '',
+        address: object.address || '',
+      };
+    } catch (error) {
+      console.error('[AI] ID card analysis failed:', error);
+      console.log('[AI] Falling back to empty result...');
+
+      // Fallback: return empty result
+      return {
+        fullName: '',
+        idCardNumber: '',
+        dateOfBirth: '',
+        address: '',
       };
     }
   }
