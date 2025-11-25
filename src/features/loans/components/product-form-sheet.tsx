@@ -938,6 +938,10 @@ export function ProductFormSheet({
                                 </div>
                               </div>
 
+                              <div className="flex flex-col gap-2 md:col-span-2">
+                                <hr className="w-full" />
+                              </div>
+
                               {/* ID Card Upload Section */}
                               <div className="flex flex-col gap-2 md:col-span-2">
                                 <Label className="text-xs">
