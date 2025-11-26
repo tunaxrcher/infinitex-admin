@@ -19,7 +19,7 @@
     "@ai-sdk/openai": "^2.0.42",
     "@ai-sdk/react": "^2.0.59",
     "@auth/core": "^0.40.0",
-    "@auth/prisma-adapter": "^2.10.0",
+    "@auth/prisma-adapter": "^2.7.1",
     "@aws-sdk/client-s3": "^3.839.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
@@ -80,7 +80,7 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@prisma/client": "^6.10.1",
+    "@prisma/client": "^6.6.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/bcrypt": "^5.0.2",
     "@types/leaflet": "^1.9.19",
@@ -99,7 +99,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.13",
-    "prisma": "^6.19.0",
+    "prisma": "^6.6.0",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3"
   }
