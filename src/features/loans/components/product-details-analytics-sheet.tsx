@@ -12,7 +12,6 @@ import {
 } from '@src/features/loans/hooks';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { CoreFinancialRatios } from './core-financial-ratios';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -64,6 +63,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
+import { CoreFinancialRatios } from './core-financial-ratios';
 
 export function ProductDetailsAnalyticsSheet({
   open,
@@ -311,7 +311,10 @@ export function ProductDetailsAnalyticsSheet({
     const monthsPassed = contractDate
       ? Math.max(
           1,
-          Math.floor((today.getTime() - contractDate.getTime()) / (1000 * 60 * 60 * 24 * 30))
+          Math.floor(
+            (today.getTime() - contractDate.getTime()) /
+              (1000 * 60 * 60 * 24 * 30),
+          ),
         )
       : 1;
 
@@ -319,25 +322,30 @@ export function ProductDetailsAnalyticsSheet({
     const paidInstallments = installments.filter((inst: any) => inst.isPaid);
     const totalInterestEarned = paidInstallments.reduce(
       (sum: number, inst: any) => sum + Number(inst.interestAmount || 0),
-      0
+      0,
     );
 
     // 1. ROI (Return on Investment)
-    const roi = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
+    const roi =
+      principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
 
     // 2. IRR (Internal Rate of Return) - simplified annualized version
     const irr =
-      principalAmount > 0 ? ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100 : 0;
+      principalAmount > 0
+        ? (totalInterestEarned / principalAmount) * (12 / monthsPassed) * 100
+        : 0;
 
     // 3. P/Loan (Price-to-Loan) - using mock market value
     const mockMarketValue = principalAmount * 4.17;
     const pToLoan = principalAmount > 0 ? mockMarketValue / principalAmount : 0;
 
     // 4. LTV (Loan-to-Value)
-    const ltv = estimatedValue > 0 ? (principalAmount / estimatedValue) * 100 : null;
+    const ltv =
+      estimatedValue > 0 ? (principalAmount / estimatedValue) * 100 : null;
 
     // 5. NIM (Net Interest Margin)
-    const nim = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
+    const nim =
+      principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
 
     // 6. Duration (Tenor Remaining)
     const remainingInstallments = totalInstallments - currentInstallment;
@@ -346,20 +354,22 @@ export function ProductDetailsAnalyticsSheet({
     // 7. YTD (Yield-to-Date) - Realized
     const ytdRealized =
       principalAmount > 0 && monthsPassed > 0
-        ? ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100
+        ? (totalInterestEarned / principalAmount) * (12 / monthsPassed) * 100
         : 0;
 
     // 7b. YTD (Planned)
     const totalExpectedInterest = principalAmount * (interestRate / 100);
-    const expectedInterestSoFar = (totalExpectedInterest / totalInstallments) * currentInstallment;
+    const expectedInterestSoFar =
+      (totalExpectedInterest / totalInstallments) * currentInstallment;
     const ytdPlanned =
       principalAmount > 0 && monthsPassed > 0
-        ? ((expectedInterestSoFar / principalAmount) * (12 / monthsPassed)) * 100
+        ? (expectedInterestSoFar / principalAmount) * (12 / monthsPassed) * 100
         : 0;
 
     // 8. YTD Gap
     const ytdGap = Math.abs(ytdRealized - ytdPlanned);
-    const ytdGapDirection: 'lag' | 'lead' = ytdRealized > ytdPlanned ? 'lag' : 'lead';
+    const ytdGapDirection: 'lag' | 'lead' =
+      ytdRealized > ytdPlanned ? 'lag' : 'lead';
 
     return {
       roi,
@@ -634,6 +644,15 @@ export function ProductDetailsAnalyticsSheet({
                       <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
                     )}
                   </TabsTrigger>
+                  <TabsTrigger
+                    value="payment"
+                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
+                  >
+                    ชำระสินเชื่อ
+                    {activeTab === 'payment' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                    )}
+                  </TabsTrigger>
 
                   <TabsTrigger
                     value="valuation"
@@ -659,15 +678,6 @@ export function ProductDetailsAnalyticsSheet({
                   >
                     ตารางผ่อนชำระ
                     {activeTab === 'schedule' && (
-                      <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="payment"
-                    className="relative text-foreground px-3 py-2.5 hover:text-primary data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:font-medium"
-                  >
-                    ชำระสินเชื่อ
-                    {activeTab === 'payment' && (
                       <div className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
                     )}
                   </TabsTrigger>
@@ -872,7 +882,7 @@ export function ProductDetailsAnalyticsSheet({
                       <Card className="rounded-md">
                         <CardHeader className="min-h-[34px] bg-accent/50">
                           <CardTitle className="text-2sm">
-                            การวิเคราะห์ (In development)
+                            กราฟการวิเคราะห์ (In development)
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 gap-5 lg:gap-7.5 pt-4 pb-5">
@@ -1729,10 +1739,10 @@ export function ProductDetailsAnalyticsSheet({
                           ยังไม่มีการประเมินมูลค่าทรัพย์สิน
                         </h3>
                         เงื่อนไขการใช้งาน
-                        <hr className="my-2"/>
+                        <hr className="my-2" />
                         <p className="text-muted-foreground max-w-md gradientText">
-                          * ต้องมีผลวิเคราะห์จาก AI <br />
-                          * หรือ ต้องมีรูปโฉนดที่ดินกับภาพประกอบ
+                          * ต้องมีผลวิเคราะห์จาก AI <br />* หรือ
+                          ต้องมีรูปโฉนดที่ดินกับภาพประกอบ
                         </p>
                       </div>
                       <Button
