@@ -91,11 +91,11 @@ export function CoreFinancialRatios({ ratios }: CoreFinancialRatiosProps) {
             </>
           ) : (
             <>
-              <div className="text-sm font-medium text-muted-foreground mb-1">
-                ยังไม่มีข้อมูล
+              <div className="text-2xl font-bold text-foreground mb-1">
+                -
               </div>
               <div className="text-xs text-muted-foreground">
-                ยังไม่ได้ประเมินมูลค่า ให้กดประเมินมูลค่าก่อน
+              💡ประเมินมูลค่าทรัพย์สินก่อน
               </div>
             </>
           )}
@@ -113,7 +113,7 @@ export function CoreFinancialRatios({ ratios }: CoreFinancialRatiosProps) {
               duration={1.5}
               format={(value) => `${value.toFixed(2)}x`}
             />{' '}
-            (ทดสอบ)
+            (Test)
           </div>
           <div className="text-xs text-muted-foreground">
             มูลค่าทรัพย์สินกว่าเงินกู้ {ratios.pToLoan.toFixed(2)} เท่า
@@ -231,7 +231,7 @@ export function CoreFinancialRatios({ ratios }: CoreFinancialRatiosProps) {
             )}
           </div>
           <div className="text-xs text-muted-foreground">
-            อัตราผลตอบแทนแท้จริงรวมเวลา — ดูผลตอบแทนเมื่อมีต่อสัญญา
+            อัตราผลตอบแทนแท้จริงรวมเวลา
           </div>
         </div>
 
