@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
 import {
@@ -12,6 +12,7 @@ import {
 } from '@src/features/loans/hooks';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { CoreFinancialRatios } from './core-financial-ratios';
 import { Badge, BadgeDot } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -293,6 +294,87 @@ export function ProductDetailsAnalyticsSheet({
       setValuationResult(null); // Clear previous result
     }
   }, [loan]);
+
+  // Calculate Core Financial Ratios (Memoized)
+  const financialRatios = useMemo(() => {
+    if (!loan) return null;
+
+    const principalAmount = Number(loan.principalAmount || 0);
+    const interestRate = Number(loan.interestRate || 0);
+    const currentInstallment = Number(loan.currentInstallment || 0);
+    const totalInstallments = Number(loan.totalInstallments || 0);
+    const estimatedValue = Number(loan.estimatedValue || 0);
+    const contractDate = loan.contractDate ? new Date(loan.contractDate) : null;
+    const today = new Date();
+
+    // Calculate months passed since contract
+    const monthsPassed = contractDate
+      ? Math.max(
+          1,
+          Math.floor((today.getTime() - contractDate.getTime()) / (1000 * 60 * 60 * 24 * 30))
+        )
+      : 1;
+
+    // Get paid installments
+    const paidInstallments = installments.filter((inst: any) => inst.isPaid);
+    const totalInterestEarned = paidInstallments.reduce(
+      (sum: number, inst: any) => sum + Number(inst.interestAmount || 0),
+      0
+    );
+
+    // 1. ROI (Return on Investment)
+    const roi = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
+
+    // 2. IRR (Internal Rate of Return) - simplified annualized version
+    const irr =
+      principalAmount > 0 ? ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100 : 0;
+
+    // 3. P/Loan (Price-to-Loan) - using mock market value
+    const mockMarketValue = principalAmount * 4.17;
+    const pToLoan = principalAmount > 0 ? mockMarketValue / principalAmount : 0;
+
+    // 4. LTV (Loan-to-Value)
+    const ltv = estimatedValue > 0 ? (principalAmount / estimatedValue) * 100 : null;
+
+    // 5. NIM (Net Interest Margin)
+    const nim = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
+
+    // 6. Duration (Tenor Remaining)
+    const remainingInstallments = totalInstallments - currentInstallment;
+    const remainingMonths = remainingInstallments;
+
+    // 7. YTD (Yield-to-Date) - Realized
+    const ytdRealized =
+      principalAmount > 0 && monthsPassed > 0
+        ? ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100
+        : 0;
+
+    // 7b. YTD (Planned)
+    const totalExpectedInterest = principalAmount * (interestRate / 100);
+    const expectedInterestSoFar = (totalExpectedInterest / totalInstallments) * currentInstallment;
+    const ytdPlanned =
+      principalAmount > 0 && monthsPassed > 0
+        ? ((expectedInterestSoFar / principalAmount) * (12 / monthsPassed)) * 100
+        : 0;
+
+    // 8. YTD Gap
+    const ytdGap = Math.abs(ytdRealized - ytdPlanned);
+    const ytdGapDirection: 'lag' | 'lead' = ytdRealized > ytdPlanned ? 'lag' : 'lead';
+
+    return {
+      roi,
+      irr,
+      pToLoan,
+      ltv,
+      nim,
+      remainingMonths,
+      ytdRealized,
+      ytdPlanned,
+      ytdGap,
+      ytdGapDirection,
+      monthsPassed,
+    };
+  }, [loan, installments]);
 
   // Handle property valuation
   const handleValuation = async () => {
@@ -784,261 +866,7 @@ export function ProductDetailsAnalyticsSheet({
                       </Card>
 
                       {/* Core Financial Ratios */}
-                      <Card className="rounded-md">
-                        <CardHeader className="min-h-[34px] bg-accent/50">
-                          <CardTitle className="text-2sm">
-                            📊 Core Financial Ratios
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-5 pb-5">
-                          {(() => {
-                            // Calculate financial ratios
-                            const principalAmount = Number(loan?.principalAmount || 0);
-                            const interestRate = Number(loan?.interestRate || 0);
-                            const currentInstallment = Number(loan?.currentInstallment || 0);
-                            const totalInstallments = Number(loan?.totalInstallments || 0);
-                            const estimatedValue = Number(loan?.estimatedValue || 0);
-                            const contractDate = loan?.contractDate ? new Date(loan.contractDate) : null;
-                            const today = new Date();
-
-                            // Calculate total interest earned (from paid installments)
-                            const paidInstallments = installments.filter((inst: any) => inst.isPaid);
-                            const totalInterestEarned = paidInstallments.reduce(
-                              (sum: number, inst: any) => sum + Number(inst.interestAmount || 0),
-                              0
-                            );
-
-                            // 1. ROI (Return on Investment) = ดอกเบี้ยที่เก็บแล้ว ÷ เงินต้น
-                            const roi = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
-
-                            // 2. IRR (simplified - using annualized interest rate as approximation)
-                            const monthsPassed = contractDate ? Math.max(1, Math.floor((today.getTime() - contractDate.getTime()) / (1000 * 60 * 60 * 24 * 30))) : 1;
-                            const irr = principalAmount > 0 ? ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100 : 0;
-
-                            // 3. P/Loan (Price-to-Loan) = มูลค่าตลาดทรัพย์ ÷ เงินต้น (mock data)
-                            const mockMarketValue = principalAmount * 4.17; // Mock value based on image
-                            const pToLoan = principalAmount > 0 ? mockMarketValue / principalAmount : 0;
-
-                            // 4. LTV (Loan-to-Value) = เงินกู้ ÷ มูลค่าทรัพย์
-                            const ltv = estimatedValue > 0 ? (principalAmount / estimatedValue) * 100 : null;
-
-                            // 5. NIM (Net Interest Margin) = ดอกเบี้ยรับสุทธิ ÷ เงินต้น
-                            const nim = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
-
-                            // 6. Duration = ระยะเวลาคงเหลือ
-                            const remainingInstallments = totalInstallments - currentInstallment;
-                            const remainingMonths = remainingInstallments;
-                            const remainingDays = remainingMonths * 30; // Approximation
-
-                            // 7. YTD (Yield-to-Date) - Realized
-                            const ytdRealized = principalAmount > 0 && monthsPassed > 0 ? 
-                              ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100 : 0;
-
-                            // 7b. YTD (Planned) - based on interest rate
-                            const totalExpectedInterest = (principalAmount * (interestRate / 100));
-                            const expectedInterestSoFar = (totalExpectedInterest / totalInstallments) * currentInstallment;
-                            const ytdPlanned = principalAmount > 0 && monthsPassed > 0 ? 
-                              ((expectedInterestSoFar / principalAmount) * (12 / monthsPassed)) * 100 : 0;
-
-                            return (
-                              <div className="grid grid-cols-3 gap-4">
-                                {/* ROI Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <TrendingUp className="w-4 h-4 text-purple-600" />
-                                    <span className="text-xs font-semibold text-purple-600">ROI (Return on Investment)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {roi.toFixed(2)}%
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    ลูกหนี้ทำกำไร {roi.toFixed(2)}% ของเงินต้น
-                                  </div>
-                                </div>
-
-                                {/* LTV Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-green-600">LTV (Loan-to-Value)</span>
-                                  </div>
-                                  {ltv !== null ? (
-                                    <>
-                                      <div className="text-2xl font-bold text-foreground mb-1">
-                                        {ltv.toFixed(1)}%
-                                      </div>
-                                      <div className="text-xs text-muted-foreground">
-                                        {ltv < 60 ? 'เงินกู้เป็น 24% ของมูลค่าหลักทรัพย์ ค่อนข้างปลอดภัย' : ltv < 80 ? 'ยิ่งต่ำยิ่งปลอดภัย / ยิ่งสูงยิ่งเสี่ยง' : 'อัตราส่วนสูง มีความเสี่ยง'}
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className="text-sm font-medium text-muted-foreground mb-1">
-                                        ยังไม่มีข้อมูล
-                                      </div>
-                                      <div className="text-xs text-muted-foreground">
-                                        ยังไม่ได้ประเมินมูลค่า ให้กดประเมินมูลค่าก่อน
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
-
-                                {/* P/Loan Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-blue-600">P/Loan (Price-to-Loan)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {pToLoan.toFixed(2)}x
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    มูลค่าทรัพย์สินกว่าเงินกู้ {pToLoan.toFixed(2)} เท่า แสดงถึงศักยภาพดี
-                                  </div>
-                                </div>
-
-                                {/* YTD Realized Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-purple-500/10 to-purple-700/5 border border-purple-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <TrendingUp className="w-4 h-4 text-purple-600" />
-                                    <span className="text-xs font-semibold text-purple-600">YTD (Realized)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {ytdRealized.toFixed(1)}%
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    ผลตอบแทนจริง ณ ปัจจุบันสูงกว่าดอกเบี้ยที่เสนอ
-                                  </div>
-                                </div>
-
-                                {/* YTD Planned Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-blue-500/10 to-blue-700/5 border border-blue-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-blue-600">YTD (Planned)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {ytdPlanned.toFixed(1)}%
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    ผลตอบแทนคาดการณ์ตามแผน ดำเนินไปได้ดี
-                                  </div>
-                                </div>
-
-                                {/* Δ YTD Gap Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-amber-500/10 to-amber-700/5 border border-amber-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-amber-600">Δ YTD Gap</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {Math.abs(ytdRealized - ytdPlanned).toFixed(1)}% {ytdRealized > ytdPlanned ? 'lag' : 'lead'}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    ส่วนต่างระหว่างจริงและแผน ({ytdRealized > ytdPlanned ? 'ต่ำกว่า' : 'สูงกว่า'} {Math.abs(ytdRealized - ytdPlanned).toFixed(1)}%)
-                                  </div>
-                                </div>
-
-                                {/* NIM Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-purple-600">NIM (Net Interest Margin)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {nim.toFixed(1)}%
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    มาร์จิ้นดอกเบี้ยสุทธิเทียบกับเงินต้น
-                                  </div>
-                                </div>
-
-                                {/* IRR Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 border border-indigo-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-indigo-600">IRR (Internal Rate of Return)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {irr > 0 ? `${irr.toFixed(1)}%` : 'ยังไม่มีข้อมูล'}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    อัตราผลตอบแทนแท้จริงรวมเวลา — ดูผลตอบแทนเมื่อมีต่อสัญญา
-                                  </div>
-                                </div>
-
-                                {/* Duration Card */}
-                                <div className="rounded-lg p-4 bg-gradient-to-br from-gray-500/10 to-gray-600/5 border border-gray-500/20">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs font-semibold text-gray-600">Duration (Tenor Remaining)</span>
-                                  </div>
-                                  <div className="text-2xl font-bold text-foreground mb-1">
-                                    {remainingMonths > 0 ? (
-                                      remainingMonths < 12 ? 
-                                        `${remainingMonths} เดือน` : 
-                                        `${(remainingMonths / 12).toFixed(1)} ปี`
-                                    ) : 'ยังไม่มีข้อมูล'}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    ระยะเวลาคงเหลือ ใช้ในการวัด risk exposure
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })()}
-
-                          {/* Analysis Summary */}
-                          {(() => {
-                            const principalAmount = Number(loan?.principalAmount || 0);
-                            const currentInstallment = Number(loan?.currentInstallment || 0);
-                            const totalInstallments = Number(loan?.totalInstallments || 0);
-                            const estimatedValue = Number(loan?.estimatedValue || 0);
-                            
-                            const paidInstallments = installments.filter((inst: any) => inst.isPaid);
-                            const totalInterestEarned = paidInstallments.reduce(
-                              (sum: number, inst: any) => sum + Number(inst.interestAmount || 0),
-                              0
-                            );
-                            
-                            const roi = principalAmount > 0 ? (totalInterestEarned / principalAmount) * 100 : 0;
-                            const ltv = estimatedValue > 0 ? (principalAmount / estimatedValue) * 100 : null;
-                            const mockMarketValue = principalAmount * 4.17;
-                            const pToLoan = principalAmount > 0 ? mockMarketValue / principalAmount : 0;
-                            
-                            const remainingInstallments = totalInstallments - currentInstallment;
-                            const contractDate = loan?.contractDate ? new Date(loan.contractDate) : null;
-                            const today = new Date();
-                            const monthsPassed = contractDate ? Math.max(1, Math.floor((today.getTime() - contractDate.getTime()) / (1000 * 60 * 60 * 24 * 30))) : 1;
-                            const ytdRealized = principalAmount > 0 && monthsPassed > 0 ? 
-                              ((totalInterestEarned / principalAmount) * (12 / monthsPassed)) * 100 : 0;
-
-                            return (
-                              <div className="mt-5 p-4 bg-accent/30 rounded-lg border border-border">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <span className="text-sm font-semibold text-foreground">💡 วิเคราะห์การลงทุน</span>
-                                </div>
-                                <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-                                  <p>
-                                    • <span className="font-medium text-foreground">ลูกค้าคำนวณถึง ROI สะสมสูง ({roi.toFixed(2)}%)</span> จากการจัดเก็บดอกเบี้ยของเงินต้น {monthsPassed} เดือน
-                                  </p>
-                                  {ltv !== null ? (
-                                    <p>
-                                      • <span className="font-medium text-foreground">LTV ต่ำ ({ltv.toFixed(0)}%)</span> ของมูลค่าหลักทรัพย์ ค่อนข้างปลอดภัย
-                                    </p>
-                                  ) : (
-                                    <p>
-                                      • <span className="font-medium text-foreground">ยังไม่มีข้อมูล LTV</span> ต้องประเมินมูลค่าทรัพย์สินก่อนเพื่อดูความปลอดภัยของสินเชื่อ
-                                    </p>
-                                  )}
-                                  <p>
-                                    • <span className="font-medium text-foreground">YTD Real {ytdRealized.toFixed(1)}%</span> แปลว่าดอกเบี้ยจริง ณ ปัจจุบันนี้ ยังคงอยู่ในระดับดอกเบี้ยเสนอ แม้จะต่ำกว่าผลตอบแทนเช่น 36% แต่ก็ยังดี (Gap 2.8%)
-                                  </p>
-                                  <p>
-                                    • <span className="font-medium text-foreground">P/Loan {pToLoan.toFixed(2)}</span> แปลว่าพรีเมียมราคาบนทรัพย์สิน {pToLoan.toFixed(2)} เท่า แสดงถึงศักยภาพหรือคุณค่าที่ดี
-                                  </p>
-                                  <p>
-                                    • <span className="font-medium text-foreground">การตั้งงวดดอก Duration = ∞ (ไม่มีกำหนด)</span> หมายความว่าไม่มีผลิตภัณฑ์สะสมระยะสั้น เนื่องจากเลือกการผ่อนชำระระยะยาว
-                                  </p>
-                                </div>
-                              </div>
-                            );
-                          })()}
-                        </CardContent>
-                      </Card>
+                      <CoreFinancialRatios ratios={financialRatios} />
 
                       {/* Analytics */}
                       <Card className="rounded-md">
