@@ -1468,7 +1468,7 @@ export function ProductDetailsAnalyticsSheet({
                                   <p className="text-muted-foreground">
                                     ยังไม่มีข้อมูลตารางผ่อนชำระ
                                   </p>
-                                  {loan && (
+                                  {/* {loan && (
                                     <Button
                                       variant="mono"
                                       onClick={() => {
@@ -1482,7 +1482,7 @@ export function ProductDetailsAnalyticsSheet({
                                         ? 'กำลังสร้าง...'
                                         : 'สร้างตารางผ่อนชำระ'}
                                     </Button>
-                                  )}
+                                  )} */}
                                 </div>
                               )}
                             </TableCell>
