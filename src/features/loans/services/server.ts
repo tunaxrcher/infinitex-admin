@@ -881,6 +881,123 @@ export const loanService = {
     });
   },
 
+  /**
+   * Get property valuation for a loan
+   */
+  async getValuation(loanId: string) {
+    console.log('[LoanService] Starting valuation for loan:', loanId);
+
+    // Fetch loan data with application
+    const loan = await prisma.loan.findUnique({
+      where: { id: loanId },
+      include: {
+        application: true,
+      },
+    });
+
+    if (!loan || !loan.application) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อหรือใบสมัคร');
+    }
+
+    // Get images from application
+    const titleDeedImage = loan.application.titleDeedImage;
+    const supportingImages = loan.application.supportingImages
+      ? typeof loan.application.supportingImages === 'string'
+        ? JSON.parse(loan.application.supportingImages)
+        : loan.application.supportingImages
+      : [];
+
+    console.log('[LoanService] Image data:', {
+      hasTitleDeedImage: !!titleDeedImage,
+      supportingImagesCount: Array.isArray(supportingImages)
+        ? supportingImages.length
+        : 0,
+    });
+
+    if (!titleDeedImage) {
+      throw new Error('ไม่พบรูปโฉนดที่ดิน');
+    }
+
+    if (!Array.isArray(supportingImages) || supportingImages.length === 0) {
+      throw new Error('ต้องมีรูปเพิ่มเติมอย่างน้อย 1 รูป');
+    }
+
+    console.log('[LoanService] Converting images to buffers...');
+
+    // Helper function to convert URL to Buffer
+    const urlToBuffer = async (url: string): Promise<Buffer> => {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    };
+
+    // Convert title deed image to Buffer
+    const titleDeedBuffer = await urlToBuffer(titleDeedImage);
+
+    // Convert supporting images to Buffers
+    const supportingBuffers: Buffer[] = [];
+    for (let i = 0; i < supportingImages.length; i++) {
+      const buffer = await urlToBuffer(supportingImages[i]);
+      supportingBuffers.push(buffer);
+    }
+
+    console.log('[LoanService] Calling aiService.evaluatePropertyValue...');
+
+    // Get title deed data if available
+    const titleDeedData = loan.application.titleDeedData
+      ? typeof loan.application.titleDeedData === 'string'
+        ? JSON.parse(loan.application.titleDeedData)
+        : loan.application.titleDeedData
+      : null;
+
+    // Call AI service to evaluate property value
+    const result = await aiService.evaluatePropertyValue(
+      titleDeedBuffer,
+      titleDeedData,
+      supportingBuffers,
+    );
+
+    console.log('[LoanService] Valuation result:', result);
+
+    return {
+      success: true,
+      ...result,
+    };
+  },
+
+  /**
+   * Save valuation result for a loan
+   */
+  async saveValuation(
+    loanId: string,
+    valuationResult: string,
+    estimatedValue: number,
+  ) {
+    if (!valuationResult || !estimatedValue) {
+      throw new Error('กรุณาระบุผลการประเมินและมูลค่าประเมิน');
+    }
+
+    // Update loan with valuation data
+    const updatedLoan = await prisma.loan.update({
+      where: { id: loanId },
+      data: {
+        valuationResult,
+        valuationDate: new Date(),
+        estimatedValue: parseFloat(estimatedValue.toString()),
+      },
+      include: {
+        customer: {
+          include: {
+            profile: true,
+          },
+        },
+        application: true,
+      },
+    });
+
+    return updatedLoan;
+  },
+
   async delete(id: string) {
     // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
     let application = await prisma.loanApplication.findUnique({

@@ -4,8 +4,18 @@ import { paymentService } from '@src/features/loans/services/server';
 
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Get userId from authentication session
-    const userId = 'demo-user-id';
+    const searchParams = request.nextUrl.searchParams;
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'กรุณาระบุ userId',
+        },
+        { status: 400 },
+      );
+    }
 
     const result = await paymentService.getOverduePayments(userId);
     return NextResponse.json({

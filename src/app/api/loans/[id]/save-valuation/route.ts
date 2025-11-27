@@ -1,5 +1,6 @@
+// src/app/api/loans/[id]/save-valuation/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@src/shared/lib/db';
+import { loanService } from '@src/features/loans/services/server';
 
 export async function POST(
   request: NextRequest,
@@ -11,39 +12,25 @@ export async function POST(
 
     const { valuationResult, estimatedValue } = body;
 
-    if (!valuationResult || !estimatedValue) {
-      return NextResponse.json(
-        { error: 'กรุณาระบุผลการประเมินและมูลค่าประเมิน' },
-        { status: 400 },
-      );
-    }
-
-    // Update loan with valuation data
-    const updatedLoan = await prisma.loan.update({
-      where: { id },
-      data: {
-        valuationResult,
-        valuationDate: new Date(),
-        estimatedValue: parseFloat(estimatedValue),
-      },
-      include: {
-        customer: {
-          include: {
-            profile: true,
-          },
-        },
-        application: true,
-      },
-    });
+    const updatedLoan = await loanService.saveValuation(
+      id,
+      valuationResult,
+      estimatedValue,
+    );
 
     return NextResponse.json({
       success: true,
       data: updatedLoan,
     });
-  } catch (error) {
-    console.error('Error saving valuation:', error);
+  } catch (error: any) {
+    const { id } = await params;
+    console.error(`[API Error] POST /api/loans/${id}/save-valuation:`, error);
     return NextResponse.json(
-      { error: 'เกิดข้อผิดพลาดในการบันทึกผลประเมิน' },
+      {
+        success: false,
+        message: error.message || 'เกิดข้อผิดพลาดในการบันทึกผลประเมิน',
+        errors: error,
+      },
       { status: 500 },
     );
   }

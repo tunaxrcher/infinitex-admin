@@ -8,9 +8,17 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit')
       ? parseInt(searchParams.get('limit')!)
       : 5;
+    const userId = searchParams.get('userId');
 
-    // TODO: Get userId from authentication session
-    const userId = 'demo-user-id';
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'กรุณาระบุ userId',
+        },
+        { status: 400 },
+      );
+    }
 
     const result = await paymentService.getUpcomingPayments(userId, limit);
     return NextResponse.json({
