@@ -6,6 +6,7 @@
 import React from 'react';
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { THAI_FONT } from './fonts';
+import { EmptyTH, Spacer, TH, TR } from './table-helpers';
 import {
   addMonths,
   dayThai,
@@ -14,7 +15,6 @@ import {
   numToThaiBath,
   yearThai,
 } from './thai-date';
-import { TR, TH, EmptyTH, Spacer } from './table-helpers';
 
 // ============================================
 // TYPES
@@ -196,12 +196,15 @@ export const LoanContractPDF: React.FC<{ data: LoanContractData }> = ({
           <TH width={3} bold>
             ข้อ
           </TH>
-          <TH width={33}>2.ผู้กู้ตกลงชำระดอกเบี้ยให้แก่ผู้ให้กู้ในอัตราร้อยละ</TH>
+          <TH width={33}>
+            2.ผู้กู้ตกลงชำระดอกเบี้ยให้แก่ผู้ให้กู้ในอัตราร้อยละ
+          </TH>
           <TH width={8} align="center" underline>
             {loan_payment_interest} %
           </TH>
           <TH width={54}>
-            ต่อปี และต่อไปหากผู้ให้กู้ประสงค์จะเพิ่มอัตราดอกเบี้ยซึ่งไม่เกินไปกว่าอัตรากฎหมาย
+            ต่อปี
+            และต่อไปหากผู้ให้กู้ประสงค์จะเพิ่มอัตราดอกเบี้ยซึ่งไม่เกินไปกว่าอัตรากฎหมาย
           </TH>
         </TR>
         <Spacer />
@@ -311,11 +314,15 @@ export const LoanContractPDF: React.FC<{ data: LoanContractData }> = ({
         <TR>
           <EmptyTH width={15} />
           <TH width={1}>(</TH>
-          <TH width={25}>..............................................................</TH>
+          <TH width={25}>
+            ..............................................................
+          </TH>
           <TH width={1}>)</TH>
           <EmptyTH width={18} />
           <TH width={1}>(</TH>
-          <TH width={25}>..............................................................</TH>
+          <TH width={25}>
+            ..............................................................
+          </TH>
           <TH width={1}>)</TH>
           <EmptyTH width={13} />
         </TR>
@@ -338,11 +345,15 @@ export const LoanContractPDF: React.FC<{ data: LoanContractData }> = ({
         <TR>
           <EmptyTH width={15} />
           <TH width={1}>(</TH>
-          <TH width={25}>..............................................................</TH>
+          <TH width={25}>
+            ..............................................................
+          </TH>
           <TH width={1}>)</TH>
           <EmptyTH width={18} />
           <TH width={1}>(</TH>
-          <TH width={25}>..............................................................</TH>
+          <TH width={25}>
+            ..............................................................
+          </TH>
           <TH width={1}>)</TH>
           <EmptyTH width={13} />
         </TR>
@@ -352,4 +363,3 @@ export const LoanContractPDF: React.FC<{ data: LoanContractData }> = ({
 };
 
 export default LoanContractPDF;
-

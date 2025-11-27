@@ -1,5 +1,5 @@
 // import { Prisma } from '@prisma/client';
-// import { prisma } from '@src/shared/lib/prisma';
+// import { prisma } from '@src/shared/lib/db';
 
 // export interface SystemLogProps {
 //   event: string;

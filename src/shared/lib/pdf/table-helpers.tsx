@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from '@react-pdf/renderer';
+import { StyleSheet, Text, View } from '@react-pdf/renderer';
 
 // A4 width calculation
 const PAGE_WIDTH = 515; // 595 - (40 padding * 2)
@@ -87,4 +87,3 @@ export const Spacer: React.FC<{ size?: number }> = ({ size = 6 }) => (
 export const EmptyTH: React.FC<{ width: number }> = ({ width }) => (
   <TH width={width}> </TH>
 );
-

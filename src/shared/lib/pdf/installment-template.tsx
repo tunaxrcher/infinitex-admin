@@ -6,8 +6,8 @@
 import React from 'react';
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { THAI_FONT } from './fonts';
+import { EmptyTH, Spacer, TH, TR } from './table-helpers';
 import { dayThai, formatThaiDate } from './thai-date';
-import { TR, TH, EmptyTH, Spacer } from './table-helpers';
 
 // ============================================
 // TYPES
@@ -216,7 +216,9 @@ export const InstallmentSchedulePDF: React.FC<{
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <View style={{ width: '8%' }}>
-              <Text style={[styles.tableCell, { fontWeight: 'bold' }]}>งวด</Text>
+              <Text style={[styles.tableCell, { fontWeight: 'bold' }]}>
+                งวด
+              </Text>
             </View>
             <View style={{ width: '17%' }}>
               <Text style={[styles.tableCell, { fontWeight: 'bold' }]}>
@@ -291,4 +293,3 @@ export const InstallmentSchedulePDF: React.FC<{
 };
 
 export default InstallmentSchedulePDF;
-
