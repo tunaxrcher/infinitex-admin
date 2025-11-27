@@ -7,6 +7,7 @@ import React from 'react';
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { THAI_FONT } from './fonts';
 import { dayThai, formatThaiDate } from './thai-date';
+import { TR, TH, EmptyTH, Spacer } from './table-helpers';
 
 // ============================================
 // TYPES
@@ -122,161 +123,93 @@ export const InstallmentSchedulePDF: React.FC<{
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={{ height: 25 }} />
+        <Spacer size={25} />
 
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerText}>ตารางการผ่อนชำระ</Text>
         </View>
-        <View style={{ height: 10 }} />
+        <Spacer size={10} />
 
         {/* Customer and Employee Info */}
-        <View style={styles.row}>
-          <View style={{ width: '4%' }}>
-            <Text style={styles.text}>ชื่อผู้กู้</Text>
-          </View>
-          <View style={{ width: '46%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {loan_customer}
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '7%' }}>
-            <Text style={styles.text}>เจ้าหน้าที่</Text>
-          </View>
-          <View style={{ width: '40%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {loan_employee}
-            </Text>
-          </View>
-        </View>
-        <View style={{ height: 6 }} />
+        <TR>
+          <TH width={4}>ชื่อผู้กู้</TH>
+          <TH width={46} align="center" underline>
+            {loan_customer}
+          </TH>
+          <EmptyTH width={3} />
+          <TH width={7}>เจ้าหน้าที่</TH>
+          <TH width={40} align="center" underline>
+            {loan_employee}
+          </TH>
+        </TR>
+        <Spacer />
 
         {/* Address and Branch */}
-        <View style={styles.row}>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}>ที่อยู่</Text>
-          </View>
-          <View style={{ width: '47%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {customer_address}
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '4%' }}>
-            <Text style={styles.text}>สาขา</Text>
-          </View>
-          <View style={{ width: '43%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {branch}
-            </Text>
-          </View>
-        </View>
-        <View style={{ height: 6 }} />
+        <TR>
+          <TH width={3}>ที่อยู่</TH>
+          <TH width={47} align="center" underline>
+            {customer_address}
+          </TH>
+          <EmptyTH width={3} />
+          <TH width={4}>สาขา</TH>
+          <TH width={43} align="center" underline>
+            {branch}
+          </TH>
+        </TR>
+        <Spacer />
 
         {/* Phone and Loan Date */}
-        <View style={styles.row}>
-          <View style={{ width: '9%' }}>
-            <Text style={styles.text}>เบอร์โทรศัพท์</Text>
-          </View>
-          <View style={{ width: '41%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {customer_phone}
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '11%' }}>
-            <Text style={styles.text}>วันที่ออกสินเชื่อ</Text>
-          </View>
-          <View style={{ width: '36%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {formatThaiDate(loan_date_promise)}
-            </Text>
-          </View>
-        </View>
-        <View style={{ height: 13 }} />
+        <TR>
+          <TH width={9}>เบอร์โทรศัพท์</TH>
+          <TH width={41} align="center" underline>
+            {customer_phone}
+          </TH>
+          <EmptyTH width={3} />
+          <TH width={11}>วันที่ออกสินเชื่อ</TH>
+          <TH width={36} align="center" underline>
+            {formatThaiDate(loan_date_promise)}
+          </TH>
+        </TR>
+        <Spacer size={13} />
 
         {/* Loan Details Row */}
-        <View style={styles.row}>
-          <View style={{ width: '5%' }}>
-            <Text style={styles.text}>วงเงินกู้</Text>
-          </View>
-          <View style={{ width: '11%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {loan_summary_no_vat.toLocaleString('th-TH', {
-                minimumFractionDigits: 2,
-              })}
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}>บาท</Text>
-          </View>
-          <View style={{ width: '1%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '9%' }}>
-            <Text style={styles.text}>อัตราดอกเบี้ย</Text>
-          </View>
-          <View style={{ width: '8%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {loan_payment_interest} %
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}>ต่อปี</Text>
-          </View>
-          <View style={{ width: '1%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '10%' }}>
-            <Text style={styles.text}>ระยะเวลาชำระ</Text>
-          </View>
-          <View style={{ width: '5%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {totalInstallments}
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}>งวด</Text>
-          </View>
-          <View style={{ width: '1%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '5%' }}>
-            <Text style={styles.text}>งวดละ</Text>
-          </View>
-          <View style={{ width: '10%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {loan_payment_month.toLocaleString('th-TH', {
-                minimumFractionDigits: 2,
-              })}
-            </Text>
-          </View>
-          <View style={{ width: '3%' }}>
-            <Text style={styles.text}>บาท</Text>
-          </View>
-          <View style={{ width: '1%' }}>
-            <Text style={styles.text}> </Text>
-          </View>
-          <View style={{ width: '9%' }}>
-            <Text style={styles.text}>ชำระทุกวันที่</Text>
-          </View>
-          <View style={{ width: '4%' }}>
-            <Text style={[styles.text, styles.underline, { textAlign: 'center' }]}>
-              {dayThai(loan_installment_date)}
-            </Text>
-          </View>
-          <View style={{ width: '9%' }}>
-            <Text style={styles.text}>ของทุกเดือน</Text>
-          </View>
-        </View>
-        <View style={{ height: 13 }} />
+        <TR>
+          <TH width={5}>วงเงินกู้</TH>
+          <TH width={11} align="center" underline>
+            {loan_summary_no_vat.toLocaleString('th-TH', {
+              minimumFractionDigits: 2,
+            })}
+          </TH>
+          <TH width={3}>บาท</TH>
+          <EmptyTH width={1} />
+          <TH width={9}>อัตราดอกเบี้ย</TH>
+          <TH width={8} align="center" underline>
+            {loan_payment_interest} %
+          </TH>
+          <TH width={3}>ต่อปี</TH>
+          <EmptyTH width={1} />
+          <TH width={10}>ระยะเวลาชำระ</TH>
+          <TH width={5} align="center" underline>
+            {totalInstallments}
+          </TH>
+          <TH width={3}>งวด</TH>
+          <EmptyTH width={1} />
+          <TH width={5}>งวดละ</TH>
+          <TH width={10} align="center" underline>
+            {loan_payment_month.toLocaleString('th-TH', {
+              minimumFractionDigits: 2,
+            })}
+          </TH>
+          <TH width={3}>บาท</TH>
+          <EmptyTH width={1} />
+          <TH width={9}>ชำระทุกวันที่</TH>
+          <TH width={4} align="center" underline>
+            {dayThai(loan_installment_date)}
+          </TH>
+          <TH width={9}>ของทุกเดือน</TH>
+        </TR>
+        <Spacer size={13} />
 
         {/* Installment Table */}
         <View style={styles.table}>
