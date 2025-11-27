@@ -73,18 +73,20 @@ const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontFamily: THAI_FONT,
-    fontSize: 13,
+    fontSize: 12,
   },
   row: {
     flexDirection: 'row',
     width: PAGE_WIDTH,
   },
   text: {
-    fontSize: 13,
+    fontSize: 12,
+    overflow: 'hidden',
   },
   textBold: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'bold',
+    overflow: 'hidden',
   },
   underline: {
     borderBottomWidth: 0.5,
@@ -217,7 +219,7 @@ export const LoanContractPDF: React.FC<{ data: LoanContractData }> = ({
           <View style={{ width: w(3) }}><Text style={styles.textBold}>ข้อ</Text></View>
           <View style={{ width: w(33) }}><Text style={styles.text}>2.ผู้กู้ตกลงชำระดอกเบี้ยให้แก่ผู้ให้กู้ในอัตราร้อยละ</Text></View>
           <View style={{ width: w(8) }}><Text style={[styles.text, styles.underline, styles.centerText]}>{loan_payment_interest} %</Text></View>
-          <View style={{ width: w(55) }}><Text style={styles.text}>ต่อปี และต่อไปหากผู้ให้กู้ประสงค์จะเพิ่มอัตราดอกเบี้ยซึ่งไม่เกินไปกว่าอัตรากฎหมาย</Text></View>
+          <View style={{ width: w(54) }}><Text style={styles.text}>ต่อปี และต่อไปหากผู้ให้กู้ประสงค์จะเพิ่มอัตราดอกเบี้ยซึ่งไม่เกินไปกว่าอัตรากฎหมาย</Text></View>
         </View>
         <View style={{ height: 6 }} />
 
@@ -253,7 +255,7 @@ export const LoanContractPDF: React.FC<{ data: LoanContractData }> = ({
         <View style={styles.row}>
           <View style={{ width: w(2) }}><Text style={styles.text}> </Text></View>
           <View style={{ width: w(3) }}><Text style={styles.textBold}>ข้อ</Text></View>
-          <View style={{ width: w(94) }}><Text style={styles.text}>4.หากผู้กู้ปฎิบัติผิดกำหนดชำระหนี้หรือผิดสัญญาในข้อหนึ่งข้อใดแห่งสัญญานี้ผู้กู้ยินยอมรับผิด และชำระหนี้เงินกู้และดอกเบี้ย พร้อมค่าเสียหายอื่นๆ</Text></View>
+          <View style={{ width: w(95) }}><Text style={styles.text}>4.หากผู้กู้ปฎิบัติผิดกำหนดชำระหนี้หรือผิดสัญญาในข้อหนึ่งข้อใดแห่งสัญญานี้ผู้กู้ยินยอมรับผิด และชำระหนี้เงินกู้และดอกเบี้ย พร้อมค่าเสียหายอื่นๆ</Text></View>
         </View>
         <View style={{ height: 6 }} />
 
