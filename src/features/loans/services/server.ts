@@ -1176,7 +1176,7 @@ export const loanService = {
 
     // Prepare data for PDF
     const pdfData = {
-      loan_customer: loan.customer?.profile?.fullName || 'ไม่ระบุ',
+      loan_customer: loan.customer?.profile?.fullName || '',
       loan_date_promise: loan.contractDate.toISOString(),
       loan_summary_no_vat: Number(loan.principalAmount),
       loan_payment_interest: Number(loan.interestRate),
@@ -1236,8 +1236,8 @@ export const loanService = {
 
     // Prepare loan data
     const loanData = {
-      loan_customer: loan.customer?.profile?.fullName || 'ไม่ระบุ',
-      loan_employee: loan.agent?.profile?.fullName || 'ไม่ระบุ',
+      loan_customer: loan.customer?.profile?.fullName || '',
+      loan_employee: loan.agent?.profile?.fullName || '',
       loan_date_promise: loan.contractDate.toISOString(),
       loan_summary_no_vat: Number(loan.principalAmount),
       loan_payment_interest: Number(loan.interestRate),
@@ -1258,8 +1258,8 @@ export const loanService = {
       return {
         loan_payment_installment: installment.installmentNumber,
         loan_payment_date: format(installment.dueDate, 'dd/MM/yyyy'),
-        loan_payment_customer: loan.customer?.profile?.fullName || 'ไม่ระบุ',
-        loan_employee: loan.agent?.profile?.fullName || 'ไม่ระบุ',
+        loan_payment_customer: loan.customer?.profile?.fullName || '',
+        loan_employee: loan.agent?.profile?.fullName || '',
         loan_payment_amount: Number(installment.totalAmount),
         loan_balance: Math.max(0, remainingBalance),
       };
