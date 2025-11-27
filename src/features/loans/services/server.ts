@@ -1146,6 +1146,133 @@ export const loanService = {
 
     return finalResult;
   },
+
+  /**
+   * Generate Loan Contract PDF
+   */
+  async generateContractPDF(loanId: string): Promise<Buffer> {
+    const { renderPDFToBuffer } = await import('@src/shared/lib/pdf/generator');
+    const { LoanContractPDF } = await import('@src/shared/lib/pdf/templates');
+    const { registerFonts } = await import('@src/shared/lib/pdf/fonts');
+    const { calculateAge } = await import('@src/shared/lib/pdf/thai-date');
+    const React = await import('react');
+
+    // Register fonts
+    registerFonts();
+
+    // Fetch loan data
+    const loan = await loanRepository.findById(loanId, {
+      customer: {
+        include: {
+          profile: true,
+        },
+      },
+      application: true,
+    });
+
+    if (!loan) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    // Prepare data for PDF
+    const pdfData = {
+      loan_customer: loan.customer?.profile?.fullName || 'ไม่ระบุ',
+      loan_date_promise: loan.contractDate.toISOString(),
+      loan_summary_no_vat: Number(loan.principalAmount),
+      loan_payment_interest: Number(loan.interestRate),
+      loan_installment_date: loan.nextPaymentDate.toISOString(),
+      loan_payment_year_counter: Math.floor(loan.termMonths / 12),
+      customer_age: loan.customer?.profile?.dateOfBirth
+        ? calculateAge(loan.customer.profile.dateOfBirth)
+        : undefined,
+      customer_address: loan.customer?.profile?.address || '',
+      lender_name: 'บริษัท อินฟินิเท็กซ์ จำกัด',
+      note: '',
+    };
+
+    // Generate PDF
+    return renderPDFToBuffer(
+      React.createElement(LoanContractPDF, { data: pdfData }),
+    );
+  },
+
+  /**
+   * Generate Installment Schedule PDF
+   */
+  async generateInstallmentPDF(loanId: string): Promise<Buffer> {
+    const { renderPDFToBuffer } = await import('@src/shared/lib/pdf/generator');
+    const { InstallmentSchedulePDF } = await import(
+      '@src/shared/lib/pdf/templates'
+    );
+    const { registerFonts } = await import('@src/shared/lib/pdf/fonts');
+    const { format } = await import('date-fns');
+    const React = await import('react');
+
+    // Register fonts
+    registerFonts();
+
+    // Fetch loan data
+    const loan = await loanRepository.findById(loanId, {
+      customer: {
+        include: {
+          profile: true,
+        },
+      },
+      agent: {
+        include: {
+          profile: true,
+        },
+      },
+      installments: {
+        orderBy: {
+          installmentNumber: 'asc',
+        },
+      },
+    });
+
+    if (!loan) {
+      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    }
+
+    // Prepare loan data
+    const loanData = {
+      loan_customer: loan.customer?.profile?.fullName || 'ไม่ระบุ',
+      loan_employee: loan.agent?.profile?.fullName || 'ไม่ระบุ',
+      loan_date_promise: loan.contractDate.toISOString(),
+      loan_summary_no_vat: Number(loan.principalAmount),
+      loan_payment_interest: Number(loan.interestRate),
+      loan_payment_year_counter: Math.floor(loan.termMonths / 12),
+      loan_payment_month: Number(loan.monthlyPayment),
+      loan_installment_date: loan.nextPaymentDate.toISOString(),
+      customer_address: loan.customer?.profile?.address || '',
+      customer_phone: loan.customer?.phoneNumber || '',
+      branch: 'สำนักงานใหญ่',
+    };
+
+    // Prepare installments data
+    let remainingBalance = Number(loan.principalAmount);
+    const installmentsData = loan.installments.map((installment) => {
+      const principalPaid = Number(installment.principalAmount);
+      remainingBalance -= principalPaid;
+
+      return {
+        loan_payment_installment: installment.installmentNumber,
+        loan_payment_date: format(installment.dueDate, 'dd/MM/yyyy'),
+        loan_payment_customer: loan.customer?.profile?.fullName || 'ไม่ระบุ',
+        loan_employee: loan.agent?.profile?.fullName || 'ไม่ระบุ',
+        loan_payment_amount: Number(installment.totalAmount),
+        loan_balance: Math.max(0, remainingBalance),
+      };
+    });
+
+    // Generate PDF
+    return renderPDFToBuffer(
+      React.createElement(InstallmentSchedulePDF, {
+        loan: loanData,
+        installments: installmentsData,
+      }),
+    );
+  },
 };
 
 // ============================================

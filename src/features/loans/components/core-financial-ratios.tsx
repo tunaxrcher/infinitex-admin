@@ -91,11 +91,9 @@ export function CoreFinancialRatios({ ratios }: CoreFinancialRatiosProps) {
             </>
           ) : (
             <>
-              <div className="text-2xl font-bold text-foreground mb-1">
-                -
-              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">-</div>
               <div className="text-xs text-muted-foreground">
-              💡ประเมินมูลค่าทรัพย์สินก่อน
+                💡ประเมินมูลค่าทรัพย์สินก่อน
               </div>
             </>
           )}
