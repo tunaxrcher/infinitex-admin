@@ -17,9 +17,11 @@ import {
   AccordionMenuSubTrigger,
 } from '@src/shared/components/ui/accordion-menu';
 import { Badge } from '@src/shared/components/ui/badge';
+import { useVoucherDialog } from '@src/shared/providers/voucher-dialog-provider';
 
 export function SidebarMenu() {
   const pathname = usePathname();
+  const { openReceiptVoucher, openPaymentVoucher } = useVoucherDialog();
 
   // Memoize matchPath to prevent unnecessary re-renders
   const matchPath = useCallback(
@@ -27,6 +29,18 @@ export function SidebarMenu() {
       path === pathname || (path.length > 1 && pathname.startsWith(path)),
     [pathname],
   );
+
+  // Handle menu item action
+  const handleAction = useCallback((action: string) => {
+    switch (action) {
+      case 'open-receipt-voucher':
+        openReceiptVoucher();
+        break;
+      case 'open-payment-voucher':
+        openPaymentVoucher();
+        break;
+    }
+  }, [openReceiptVoucher, openPaymentVoucher]);
 
   // Global classNames for consistent styling
   const classNames: AccordionMenuClassNames = {
@@ -47,12 +61,28 @@ export function SidebarMenu() {
     return items.map((item: MenuItem, index: number) => {
       if (item.heading) {
         return buildMenuHeading(item, index);
+      } else if (item.action) {
+        return buildMenuItemAction(item, index);
       } else if (item.disabled) {
         return buildMenuItemRootDisabled(item, index);
       } else {
         return buildMenuItemRoot(item, index);
       }
     });
+  };
+
+  const buildMenuItemAction = (item: MenuItem, index: number): JSX.Element => {
+    return (
+      <AccordionMenuItem
+        key={index}
+        value={`action-${index}`}
+        className="text-sm font-medium cursor-pointer"
+        onClick={() => item.action && handleAction(item.action)}
+      >
+        {item.icon && <item.icon data-slot="accordion-menu-icon" />}
+        <span data-slot="accordion-menu-title">{item.title}</span>
+      </AccordionMenuItem>
+    );
   };
 
   const buildMenuItemRoot = (item: MenuItem, index: number): JSX.Element => {

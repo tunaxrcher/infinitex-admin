@@ -14,6 +14,7 @@ export interface MenuItem {
   expandTitle?: string;
   badge?: string;
   separator?: boolean;
+  action?: 'open-receipt-voucher' | 'open-payment-voucher'; // For triggering dialogs
 }
 
 export type MenuConfig = MenuItem[];
