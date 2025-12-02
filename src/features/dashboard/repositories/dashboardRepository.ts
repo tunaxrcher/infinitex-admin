@@ -1,5 +1,4 @@
 // src/features/dashboard/repositories/dashboardRepository.ts
-import { Prisma } from '@prisma/client';
 import { prisma } from '@src/shared/lib/db';
 
 export class DashboardRepository {

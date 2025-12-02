@@ -15,22 +15,33 @@ export const customerService = {
    * Starts with "10" (e.g., 1000000001), if exists, try "20", then "30"
    */
   generateUniquePhoneNumber: async (): Promise<string> => {
-    /**
-     * Generate phone number with given prefix
-     */
-    const generatePhoneWithPrefix = async (
-      prefix: string,
-    ): Promise<string | null> => {
-      // Start from the smallest number
-      let counter = 1;
-      const maxAttempts = 100000; // Prevent infinite loop
+    const prefixes = ['10', '20', '30'];
+    const maxAttempts = 100000;
 
-      while (counter <= maxAttempts) {
-        // Generate phone number: prefix + padded counter
-        // e.g., "10" + "00000001" = "1000000001" (10 digits total)
+    for (const prefix of prefixes) {
+      // Find the highest phone number with this prefix
+      const lastPhone = await prisma.user.findFirst({
+        where: {
+          phoneNumber: {
+            startsWith: prefix,
+          },
+        },
+        orderBy: {
+          phoneNumber: 'desc',
+        },
+        select: { phoneNumber: true },
+      });
+
+      // Start counter from the next available number
+      const startCounter = lastPhone
+        ? parseInt(lastPhone.phoneNumber.substring(2)) + 1
+        : 1;
+
+      // Try to find an available number
+      for (let counter = startCounter; counter <= maxAttempts; counter++) {
         const phoneNumber = `${prefix}${counter.toString().padStart(8, '0')}`;
 
-        // Check if phone number already exists
+        // Double-check availability
         const exists = await prisma.user.findUnique({
           where: { phoneNumber },
           select: { id: true },
@@ -38,37 +49,17 @@ export const customerService = {
 
         if (!exists) {
           console.log(
-            '[CustomerService] Found available phone number:',
-            phoneNumber,
+            `[CustomerService] Generated phone number: ${phoneNumber}`,
           );
           return phoneNumber;
         }
-
-        counter++;
       }
 
-      return null; // Could not find available number with this prefix
-    };
-
-    // Try prefix "10" first
-    let phoneNumber = await generatePhoneWithPrefix('10');
-
-    // If "10" prefix is full, try "20"
-    if (!phoneNumber) {
-      console.log('[CustomerService] Prefix "10" is full, trying "20"...');
-      phoneNumber = await generatePhoneWithPrefix('20');
+      console.log(
+        `[CustomerService] Prefix "${prefix}" is full, trying next...`,
+      );
     }
 
-    // If both prefixes are full, try "30" as fallback
-    if (!phoneNumber) {
-      console.log('[CustomerService] Prefix "20" is full, trying "30"...');
-      phoneNumber = await generatePhoneWithPrefix('30');
-    }
-
-    if (!phoneNumber) {
-      throw new Error('ไม่สามารถสร้างเบอร์โทรศัพท์ได้ กรุณาติดต่อผู้ดูแลระบบ');
-    }
-
-    return phoneNumber;
+    throw new Error('ไม่สามารถสร้างเบอร์โทรศัพท์ได้ กรุณาติดต่อผู้ดูแลระบบ');
   },
 };

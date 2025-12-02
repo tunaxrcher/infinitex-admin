@@ -23,7 +23,14 @@ import {
   type VerifyPaymentSchema,
 } from '../validations';
 
-// Helper function to generate unique loan number
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Generate unique loan number
+ * Format: LOA + timestamp(8 digits) + random(3 digits)
+ */
 function generateLoanNumber(): string {
   const timestamp = Date.now().toString().slice(-8);
   const random = Math.floor(Math.random() * 1000)
@@ -31,6 +38,501 @@ function generateLoanNumber(): string {
     .padStart(3, '0');
   return `LOA${timestamp}${random}`;
 }
+
+/**
+ * Generate unique reference number for payment
+ * Format: PAY + timestamp + random(4 digits)
+ */
+function generateReferenceNumber(): string {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, '0');
+  return `PAY${timestamp}${random}`;
+}
+
+/**
+ * Calculate monthly payment (interest only, no principal)
+ * Formula: Loan Amount × (Interest Rate / 100) / 12
+ */
+function calculateMonthlyPayment(
+  loanAmount: number,
+  interestRate: number,
+): number {
+  return (loanAmount * (interestRate / 100)) / 12;
+}
+
+/**
+ * Calculate late fee based on days overdue
+ */
+function calculateLateFee(
+  originalAmount: number,
+  daysLate: number,
+  lateFeePerDay: number = 50,
+): number {
+  return daysLate * lateFeePerDay;
+}
+
+/**
+ * Calculate days between two dates
+ */
+function calculateDaysBetween(date1: Date, date2: Date): number {
+  const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+/**
+ * Calculate next payment date (1 month after contract date)
+ */
+function calculateNextPaymentDate(contractDate: Date): Date {
+  const nextDate = new Date(contractDate);
+  nextDate.setMonth(nextDate.getMonth() + 1);
+  return nextDate;
+}
+
+/**
+ * Calculate expiry date based on loan years
+ */
+function calculateExpiryDate(contractDate: Date, loanYears: number): Date {
+  const expiryDate = new Date(contractDate);
+  expiryDate.setFullYear(expiryDate.getFullYear() + loanYears);
+  return expiryDate;
+}
+
+/**
+ * Generate installments data for loan
+ */
+function generateInstallmentsData(
+  loanId: string,
+  contractDate: Date,
+  termMonths: number,
+  monthlyPayment: number,
+): Array<{
+  loanId: string;
+  installmentNumber: number;
+  dueDate: Date;
+  principalAmount: number;
+  interestAmount: number;
+  totalAmount: number;
+  isPaid: boolean;
+  isLate: boolean;
+}> {
+  const installments = [];
+
+  for (let i = 1; i <= termMonths; i++) {
+    const dueDate = new Date(contractDate);
+    dueDate.setMonth(dueDate.getMonth() + i);
+
+    installments.push({
+      loanId,
+      installmentNumber: i,
+      dueDate,
+      principalAmount: 0, // Interest-only loan
+      interestAmount: monthlyPayment,
+      totalAmount: monthlyPayment,
+      isPaid: false,
+      isLate: false,
+    });
+  }
+
+  return installments;
+}
+
+/**
+ * Parse full name to first and last name
+ */
+function parseFullName(fullName: string): {
+  firstName: string;
+  lastName: string;
+} {
+  const parts = fullName.split(' ');
+  return {
+    firstName: parts[0] || fullName,
+    lastName: parts.slice(1).join(' ') || '',
+  };
+}
+
+/**
+ * Format loan data for application creation
+ */
+function prepareLoanApplicationData(data: any) {
+  const { firstName, lastName } = parseFullName(data.fullName);
+
+  return {
+    customerData: {
+      phoneNumber: data.phoneNumber,
+      profile: {
+        firstName,
+        lastName,
+        idCardNumber: data.idCard.replace(/\D/g, ''),
+        dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
+        address: data.address,
+        email: data.email || null,
+      },
+    },
+    applicationData: {
+      loanType: 'HOUSE_LAND_MORTGAGE',
+      status: 'SUBMITTED',
+      currentStep: 4,
+      requestedAmount: data.requestedAmount ?? data.loanAmount,
+      approvedAmount: data.loanAmount,
+      maxApprovedAmount: data.maxApprovedAmount ?? data.loanAmount * 1.5,
+      landNumber: data.landNumber,
+      ownerName: data.ownerName || data.fullName,
+      propertyLocation: data.placeName,
+      propertyArea: data.landArea,
+      propertyType: data.propertyType || 'ที่ดิน',
+      propertyValue: data.propertyValue ?? data.loanAmount * 2,
+      interestRate: data.interestRate,
+      termMonths: data.loanYears * 12,
+      operationFee: data.operationFee || 0,
+      transferFee: data.transferFee || 0,
+      otherFee: data.otherFee || 0,
+      titleDeedImage:
+        data.titleDeedImages && data.titleDeedImages.length > 0
+          ? data.titleDeedImages[0]
+          : null,
+      titleDeedData: data.titleDeedData || null,
+      supportingImages: data.supportingImages || [],
+      idCardFrontImage: data.idCardImage || null,
+    },
+  };
+}
+
+/**
+ * Create or update user and profile
+ */
+async function upsertCustomer(
+  tx: any,
+  phoneNumber: string,
+  profileData: {
+    firstName: string;
+    lastName: string;
+    idCardNumber: string;
+    dateOfBirth: Date | null;
+    address: string;
+    email: string | null;
+  },
+) {
+  // Find or create user
+  let customer = await tx.user.findUnique({
+    where: { phoneNumber },
+    include: { profile: true },
+  });
+
+  if (!customer) {
+    customer = await tx.user.create({
+      data: {
+        phoneNumber,
+        userType: 'CUSTOMER',
+      },
+      include: { profile: true },
+    });
+  }
+
+  // Create or update profile
+  if (customer.profile) {
+    await tx.userProfile.update({
+      where: { userId: customer.id },
+      data: profileData,
+    });
+  } else {
+    await tx.userProfile.create({
+      data: {
+        userId: customer.id,
+        ...profileData,
+      },
+    });
+  }
+
+  return customer;
+}
+
+/**
+ * Update land account balance and create reports
+ */
+async function updateLandAccountBalance(
+  tx: any,
+  landAccountId: string,
+  amount: number,
+  operation: 'increment' | 'decrement',
+  detail: string,
+  note: string,
+  adminId?: string,
+  adminName?: string,
+) {
+  // Validate account exists and has sufficient balance if decrementing
+  const account = await tx.landAccount.findUnique({
+    where: { id: landAccountId, deletedAt: null },
+  });
+
+  if (!account) {
+    throw new Error('ไม่พบบัญชีที่เลือก');
+  }
+
+  if (operation === 'decrement' && Number(account.accountBalance) < amount) {
+    throw new Error('ยอดเงินในบัญชีไม่เพียงพอ');
+  }
+
+  // Update account balance
+  const updatedAccount = await tx.landAccount.update({
+    where: { id: landAccountId },
+    data: {
+      accountBalance: { [operation]: amount },
+      updatedAt: new Date(),
+    },
+  });
+
+  // Create report
+  await tx.landAccountReport.create({
+    data: {
+      landAccountId,
+      detail,
+      amount,
+      note,
+      accountBalance: updatedAccount.accountBalance,
+      ...(adminId && { adminId }),
+      adminName: adminName || undefined,
+    },
+  });
+
+  // Create log
+  await tx.landAccountLog.create({
+    data: {
+      landAccountId,
+      detail: operation === 'increment' ? 'รับชำระสินเชื่อ' : 'อนุมัติสินเชื่อ',
+      amount,
+      note,
+      ...(adminId && { adminId }),
+      adminName: adminName || undefined,
+    },
+  });
+
+  return updatedAccount;
+}
+
+/**
+ * Mark installments as paid and update loan
+ */
+async function markInstallmentsAsPaid(
+  tx: any,
+  installmentIds: string[],
+  paidDate: Date,
+  loanId: string,
+) {
+  // Mark installments as paid
+  await tx.loanInstallment.updateMany({
+    where: { id: { in: installmentIds } },
+    data: {
+      isPaid: true,
+      paidDate,
+      updatedAt: new Date(),
+    },
+  });
+
+  // Check if all installments are paid
+  const unpaidCount = await tx.loanInstallment.count({
+    where: {
+      loanId,
+      isPaid: false,
+    },
+  });
+
+  // Get loan details
+  const loan = await tx.loan.findUnique({
+    where: { id: loanId },
+    include: { installments: true },
+  });
+
+  if (!loan) {
+    throw new Error('ไม่พบข้อมูลสินเชื่อ');
+  }
+
+  // Update loan status
+  const updateData: any = {
+    currentInstallment: loan.currentInstallment + installmentIds.length,
+    updatedAt: new Date(),
+  };
+
+  if (unpaidCount === 0) {
+    updateData.status = 'COMPLETED';
+    updateData.remainingBalance = 0;
+  } else {
+    // Calculate remaining principal
+    const paidInstallments = await tx.loanInstallment.findMany({
+      where: { loanId, isPaid: true },
+    });
+    const totalPaidPrincipal = paidInstallments.reduce(
+      (sum: number, inst: any) => sum + Number(inst.principalAmount),
+      0,
+    );
+    updateData.remainingBalance = Math.max(
+      0,
+      Number(loan.principalAmount) - totalPaidPrincipal,
+    );
+  }
+
+  await tx.loan.update({
+    where: { id: loanId },
+    data: updateData,
+  });
+
+  return unpaidCount === 0;
+}
+
+/**
+ * Find or create loan application
+ */
+async function findOrCreateApplication(
+  id: string,
+): Promise<{ application: any; loanId: string | null }> {
+  // Try to find as application first
+  let application = await prisma.loanApplication.findUnique({
+    where: { id },
+    include: {
+      customer: {
+        include: { profile: true },
+      },
+      agent: true,
+      loan: true,
+    },
+  });
+
+  if (application) {
+    return {
+      application,
+      loanId: application.loan?.id || null,
+    };
+  }
+
+  // Try to find as loan
+  const loan = await prisma.loan.findUnique({
+    where: { id },
+    include: {
+      application: {
+        include: {
+          customer: {
+            include: { profile: true },
+          },
+          agent: true,
+          loan: true,
+        },
+      },
+    },
+  });
+
+  if (!loan || !loan.application) {
+    throw new Error('ไม่พบข้อมูลสินเชื่อ');
+  }
+
+  return {
+    application: loan.application,
+    loanId: loan.id,
+  };
+}
+
+/**
+ * Calculate late fee for an installment
+ */
+function calculateInstallmentLateFee(
+  installment: any,
+  includeLateFee: boolean,
+  providedLateFee?: number,
+): {
+  isLate: boolean;
+  daysLate: number;
+  lateFee: number;
+  totalAmount: number;
+} {
+  const today = new Date();
+  const dueDate = new Date(installment.dueDate);
+  let totalAmount = Number(installment.totalAmount);
+  let lateFee = 0;
+  let daysLate = 0;
+  let isLate = false;
+
+  if (today > dueDate) {
+    isLate = true;
+    daysLate = calculateDaysBetween(dueDate, today);
+    lateFee = includeLateFee
+      ? providedLateFee || calculateLateFee(totalAmount, daysLate)
+      : 0;
+    totalAmount += lateFee;
+  }
+
+  return { isLate, daysLate, lateFee, totalAmount };
+}
+
+/**
+ * Process land account payment
+ */
+async function processLandAccountPayment(
+  tx: any,
+  landAccountId: string,
+  amount: number,
+  loanNumber: string,
+  installmentNumber: number | null,
+  adminId?: string,
+  adminName?: string,
+) {
+  // Validate account exists
+  const account = await tx.landAccount.findUnique({
+    where: { id: landAccountId, deletedAt: null },
+  });
+
+  if (!account) {
+    throw new Error('ไม่พบบัญชีที่เลือก');
+  }
+
+  // Update account balance
+  const updatedAccount = await tx.landAccount.update({
+    where: { id: landAccountId },
+    data: {
+      accountBalance: { increment: amount },
+      updatedAt: new Date(),
+    },
+  });
+
+  // Create detail message
+  const detail = installmentNumber
+    ? `ชำระสินเชื่อ ${loanNumber}(งวดที่ ${installmentNumber})`
+    : `ชำระสินเชื่อ ${loanNumber}(ชำระปิดสินเชื่อ)`;
+
+  const note = installmentNumber
+    ? `รับชำระสินเชื่อ ${loanNumber} งวดที่ ${installmentNumber}`
+    : `รับชำระปิดสินเชื่อ ${loanNumber}`;
+
+  // Create report
+  await tx.landAccountReport.create({
+    data: {
+      landAccountId,
+      detail,
+      amount,
+      note,
+      accountBalance: updatedAccount.accountBalance,
+      ...(adminId && { adminId }),
+      adminName: adminName || undefined,
+    },
+  });
+
+  // Create log
+  await tx.landAccountLog.create({
+    data: {
+      landAccountId,
+      detail: installmentNumber ? 'รับชำระสินเชื่อ' : 'ปิดสินเชื่อ',
+      amount,
+      note,
+      ...(adminId && { adminId }),
+      adminName: adminName || undefined,
+    },
+  });
+
+  return updatedAccount;
+}
+
+// ============================================
+// LOAN SERVICE
+// ============================================
 
 export const loanService = {
   async getList(filters: LoanFiltersSchema) {
@@ -316,108 +818,34 @@ export const loanService = {
   },
 
   async create(data: LoanCreateSchema, adminId?: string, adminName?: string) {
-    // สร้างหมายเลขสินเชื่อ
-    const loanNumber = generateLoanNumber();
-
     // คำนวณข้อมูลสินเชื่อ
     const { loanAmount, loanYears, interestRate } = data;
     const termMonths = loanYears * 12;
-
-    // คำนวณงวดชำระรายเดือน (ดอกเบี้ยอย่างเดียว ไม่รวมเงินต้น)
-    // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
-    const monthlyPayment = (loanAmount * (interestRate / 100)) / 12;
-
+    const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate);
     const contractDate = new Date(data.loanStartDate);
-    const expiryDate = new Date(data.loanDueDate);
 
-    // คำนวณวันชำระงวดแรก (1 เดือนหลังจากวันทำสัญญา)
-    const nextPaymentDate = new Date(contractDate);
-    nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+    // Prepare application data
+    const { customerData, applicationData } = prepareLoanApplicationData({
+      ...data,
+      loanAmount,
+      loanYears,
+      interestRate,
+    });
 
     // Use transaction to ensure data consistency
-    const loan = await prisma.$transaction(async (tx) => {
-      // Step 1: ตรวจสอบและสร้าง User (Customer) ที่ตาราง users
-      let customer = await tx.user.findUnique({
-        where: { phoneNumber: data.phoneNumber },
-        include: { profile: true },
-      });
+    const application = await prisma.$transaction(async (tx) => {
+      // Step 1: Create or update customer
+      const customer = await upsertCustomer(
+        tx,
+        customerData.phoneNumber,
+        customerData.profile,
+      );
 
-      if (!customer) {
-        // สร้าง User ใหม่ในตาราง users
-        customer = await tx.user.create({
-          data: {
-            phoneNumber: data.phoneNumber,
-            userType: 'CUSTOMER',
-          },
-          include: { profile: true },
-        });
-      }
-
-      // Step 2: สร้างหรืออัพเดท UserProfile ที่ตาราง user_profiles
-      if (customer.profile) {
-        // อัพเดท profile ที่มีอยู่
-        await tx.userProfile.update({
-          where: { userId: customer.id },
-          data: {
-            firstName: data.fullName.split(' ')[0] || data.fullName,
-            lastName: data.fullName.split(' ').slice(1).join(' ') || '',
-            idCardNumber: data.idCard.replace(/\D/g, ''),
-            dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
-            address: data.address,
-            email: data.email || null,
-          },
-        });
-      } else {
-        // สร้าง profile ใหม่
-        await tx.userProfile.create({
-          data: {
-            userId: customer.id,
-            firstName: data.fullName.split(' ')[0] || data.fullName,
-            lastName: data.fullName.split(' ').slice(1).join(' ') || '',
-            idCardNumber: data.idCard.replace(/\D/g, ''),
-            dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
-            address: data.address,
-            email: data.email || null,
-          },
-        });
-      }
-
-      // Step 3: สร้าง LoanApplication (สถานะรออนุมัติ)
-      const requestedAmount = data.requestedAmount ?? loanAmount;
-      const maxApprovedAmount = data.maxApprovedAmount ?? loanAmount * 1.5; // ค่า default = 150% ของยอดที่ขอ
-
-      const application = await tx.loanApplication.create({
+      // Step 2: Create loan application
+      const app = await tx.loanApplication.create({
         data: {
-          loanType: 'HOUSE_LAND_MORTGAGE',
-          status: 'SUBMITTED', // เริ่มต้นเป็น SUBMITTED (รออนุมัติ)
-          currentStep: 4,
-          requestedAmount: requestedAmount,
-          approvedAmount: loanAmount,
-          maxApprovedAmount: maxApprovedAmount,
-          landNumber: data.landNumber,
-          ownerName: data.ownerName || data.fullName,
-          propertyLocation: data.placeName,
-          propertyArea: data.landArea,
-          propertyType: data.propertyType || 'ที่ดิน', // ค่า default
-          propertyValue: data.propertyValue ?? loanAmount * 2, // ค่า default = 2 เท่าของยอดกู้
+          ...applicationData,
           customerId: customer.id,
-          // บันทึกข้อมูลการคำนวณ
-          interestRate: interestRate,
-          termMonths: termMonths,
-          operationFee: data.operationFee || 0,
-          transferFee: data.transferFee || 0,
-          otherFee: data.otherFee || 0,
-          // บันทึกภาพโฉนด (ใช้ภาพแรกเป็นหลัก)
-          titleDeedImage:
-            data.titleDeedImages && data.titleDeedImages.length > 0
-              ? data.titleDeedImages[0]
-              : null,
-          // บันทึกข้อมูลโฉนดทั้งชุดจาก API (ถ้ามี)
-          titleDeedData: data.titleDeedData || null,
-          // บันทึกภาพเพิ่มเติม (supporting images)
-          supportingImages: data.supportingImages || [],
-          // บันทึกภาพบัตรประชาชน
-          idCardFrontImage: data.idCardImage || null,
         },
         include: {
           customer: {
@@ -428,13 +856,10 @@ export const loanService = {
         },
       });
 
-      // ไม่สร้าง Loan record, installments, และไม่หักเงินจากบัญชี
-      // ทั้งหมดนี้จะถูกสร้างตอนกดอนุมัติ (approve function)
-
-      return application;
+      return app;
     });
 
-    return loan;
+    return application;
   },
 
   async update(id: string, data: LoanUpdateSchema) {
@@ -607,275 +1032,154 @@ export const loanService = {
     adminId?: string,
     adminName?: string,
   ) {
-    // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
-    let application = await prisma.loanApplication.findUnique({
-      where: { id },
-      include: {
-        customer: {
-          include: {
-            profile: true,
-          },
-        },
-        agent: true,
-        loan: true,
-      },
-    });
+    // Find application
+    const { application } = await findOrCreateApplication(id);
 
-    // ถ้าไม่เจอ ให้ลองหาจาก loan
-    if (!application) {
-      const loan = await prisma.loan.findUnique({
-        where: { id },
-        include: {
-          application: {
-            include: {
-              customer: {
-                include: {
-                  profile: true,
-                },
-              },
-              agent: true,
-              loan: true,
-            },
-          },
-        },
-      });
-
-      if (!loan) {
-        throw new Error('ไม่พบข้อมูลสินเชื่อ');
-      }
-
-      application = loan.application;
-    }
-
-    // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ
+    // Validate application status
     if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
       throw new Error('สินเชื่อนี้ไม่สามารถอนุมัติได้');
     }
 
     return prisma.$transaction(async (tx) => {
-      // อัพเดท LoanApplication
+      // Update application status
       await tx.loanApplication.update({
         where: { id: application.id },
         data: {
           status: 'APPROVED',
           reviewedAt: new Date(),
-          approvedAmount: application.requestedAmount, // อนุมัติตามยอดที่ขอ
-          // reviewedBy: adminId, // TODO: เพิ่ม admin authentication
+          approvedAmount: application.requestedAmount,
         },
       });
 
-      // ตรวจสอบว่ามี Loan record อยู่แล้วหรือไม่
+      // Check if loan already exists
       const existingLoan = await tx.loan.findUnique({
         where: { applicationId: application.id },
       });
 
       if (existingLoan) {
-        // ถ้ามี loan แล้ว ให้ update status
+        // Update existing loan status
         await tx.loan.update({
           where: { id: existingLoan.id },
-          data: {
-            status: 'ACTIVE',
-            updatedAt: new Date(),
-          },
+          data: { status: 'ACTIVE', updatedAt: new Date() },
         });
       } else {
-        // ถ้ายังไม่มี loan ให้สร้างใหม่
-        const loanNumber = generateLoanNumber();
-        const loanAmount = Number(application.requestedAmount || 0);
-        // ใช้ข้อมูลจาก application ที่บันทึกไว้
-        const interestRate = Number(application.interestRate || 1); // ดอกเบี้ยจาก application
-        const termMonths = application.termMonths || 48; // จำนวนเดือนจาก application
-        const loanYears = termMonths / 12;
-
-        // คำนวณงวดชำระรายเดือน (ดอกเบี้ยอย่างเดียว ไม่รวมเงินต้น)
-        // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
-        const monthlyPayment = (loanAmount * (interestRate / 100)) / 12;
-
-        const contractDate = new Date();
-        const expiryDate = new Date();
-        expiryDate.setFullYear(expiryDate.getFullYear() + loanYears);
-
-        const nextPaymentDate = new Date(contractDate);
-        nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
-
-        // สร้าง Loan record
-        const newLoan = await tx.loan.create({
-          data: {
-            loanNumber,
-            loanType: application.loanType,
-            status: 'ACTIVE',
-            principalAmount: loanAmount,
-            interestRate: interestRate,
-            termMonths,
-            monthlyPayment,
-            currentInstallment: 0,
-            totalInstallments: termMonths,
-            remainingBalance: loanAmount * (1 + interestRate / 100),
-            nextPaymentDate,
-            contractDate,
-            expiryDate,
-            titleDeedNumber: application.landNumber,
-            customerId: application.customerId,
-            applicationId: application.id,
-            agentId: application.agentId,
-          },
-        });
-
-        // สร้างตารางผ่อนชำระ
-        const installmentsData = [];
-        for (let i = 1; i <= termMonths; i++) {
-          const dueDate = new Date(contractDate);
-          dueDate.setMonth(dueDate.getMonth() + i);
-
-          // คำนวณดอกเบี้ยต่อเดือนอย่างเดียว (ไม่รวมเงินต้น)
-          const interestAmount = monthlyPayment; // monthlyPayment คือดอกเบี้ยต่อเดือนแล้ว
-          const principalAmount = 0; // ไม่ผ่อนเงินต้น
-
-          installmentsData.push({
-            loanId: newLoan.id,
-            installmentNumber: i,
-            dueDate,
-            principalAmount,
-            interestAmount,
-            totalAmount: monthlyPayment,
-            isPaid: false,
-            isLate: false,
-          });
-        }
-
-        await tx.loanInstallment.createMany({
-          data: installmentsData,
-        });
-
-        // หักเงินจากบัญชีและสร้างรายงาน
-        if (landAccountId) {
-          // ตรวจสอบบัญชี
-          const account = await tx.landAccount.findUnique({
-            where: { id: landAccountId, deletedAt: null },
-          });
-
-          if (!account) {
-            throw new Error('ไม่พบบัญชีที่เลือก');
-          }
-
-          if (Number(account.accountBalance) < loanAmount) {
-            throw new Error('ยอดเงินในบัญชีไม่เพียงพอ');
-          }
-
-          // หักเงินจากบัญชี
-          const updatedAccount = await tx.landAccount.update({
-            where: { id: landAccountId },
-            data: {
-              accountBalance: { decrement: loanAmount },
-              updatedAt: new Date(),
-            },
-          });
-
-          // สร้างรายงานใน land_account_reports
-          await tx.landAccountReport.create({
-            data: {
-              landAccountId: landAccountId,
-              detail: `อนุมัติสินเชื่อ(${loanNumber})`,
-              amount: loanAmount,
-              note: `อนุมัติสินเชื่อให้ ${application.customer?.profile?.firstName || ''} ${application.customer?.profile?.lastName || ''} จำนวน ${loanAmount.toLocaleString()} บาท`,
-              accountBalance: updatedAccount.accountBalance,
-              ...(adminId && { adminId }),
-              adminName: adminName || undefined,
-            },
-          });
-
-          // สร้าง log ใน land_account_logs
-          await tx.landAccountLog.create({
-            data: {
-              landAccountId: landAccountId,
-              detail: 'อนุมัติสินเชื่อ',
-              amount: loanAmount,
-              note: `อนุมัติสินเชื่อ ${loanNumber}`,
-              ...(adminId && { adminId }),
-              adminName: adminName || undefined,
-            },
-          });
-        }
+        // Create new loan
+        await this._createNewLoanFromApplication(
+          tx,
+          application,
+          landAccountId,
+          adminId,
+          adminName,
+        );
       }
 
       return { success: true };
     });
   },
 
-  async reject(id: string, reviewNotes: string) {
-    // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
-    let application = await prisma.loanApplication.findUnique({
-      where: { id },
-      include: {
-        customer: {
-          include: {
-            profile: true,
-          },
-        },
-        agent: true,
-        loan: true,
+  /**
+   * Internal: Create new loan from application
+   */
+  async _createNewLoanFromApplication(
+    tx: any,
+    application: any,
+    landAccountId: string,
+    adminId?: string,
+    adminName?: string,
+  ) {
+    const loanNumber = generateLoanNumber();
+    const loanAmount = Number(application.requestedAmount || 0);
+    const interestRate = Number(application.interestRate || 1);
+    const termMonths = application.termMonths || 48;
+    const loanYears = termMonths / 12;
+    const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate);
+
+    const contractDate = new Date();
+    const expiryDate = calculateExpiryDate(contractDate, loanYears);
+    const nextPaymentDate = calculateNextPaymentDate(contractDate);
+
+    // Create loan
+    const newLoan = await tx.loan.create({
+      data: {
+        loanNumber,
+        loanType: application.loanType,
+        status: 'ACTIVE',
+        principalAmount: loanAmount,
+        interestRate,
+        termMonths,
+        monthlyPayment,
+        currentInstallment: 0,
+        totalInstallments: termMonths,
+        remainingBalance: loanAmount * (1 + interestRate / 100),
+        nextPaymentDate,
+        contractDate,
+        expiryDate,
+        titleDeedNumber: application.landNumber,
+        customerId: application.customerId,
+        applicationId: application.id,
+        agentId: application.agentId,
       },
     });
 
-    // ถ้าไม่เจอ ให้ลองหาจาก loan
-    if (!application) {
-      const loan = await prisma.loan.findUnique({
-        where: { id },
-        include: {
-          application: {
-            include: {
-              customer: {
-                include: {
-                  profile: true,
-                },
-              },
-              agent: true,
-              loan: true,
-            },
-          },
-        },
-      });
+    // Create installments
+    const installmentsData = generateInstallmentsData(
+      newLoan.id,
+      contractDate,
+      termMonths,
+      monthlyPayment,
+    );
+    await tx.loanInstallment.createMany({ data: installmentsData });
 
-      if (!loan) {
-        throw new Error('ไม่พบข้อมูลสินเชื่อ');
-      }
+    // Deduct from land account
+    if (landAccountId) {
+      const customerName =
+        `${application.customer?.profile?.firstName || ''} ${application.customer?.profile?.lastName || ''}`.trim();
 
-      application = loan.application;
+      await updateLandAccountBalance(
+        tx,
+        landAccountId,
+        loanAmount,
+        'decrement',
+        `อนุมัติสินเชื่อ(${loanNumber})`,
+        `อนุมัติสินเชื่อให้ ${customerName} จำนวน ${loanAmount.toLocaleString()} บาท`,
+        adminId,
+        adminName,
+      );
     }
 
-    // ตรวจสอบสถานะ - ต้องเป็นรออนุมัติ
+    return newLoan;
+  },
+
+  async reject(id: string, reviewNotes: string) {
+    // Find application
+    const { application, loanId } = await findOrCreateApplication(id);
+
+    // Validate application status
     if (!['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
       throw new Error('สินเชื่อนี้ไม่สามารถยกเลิกได้');
     }
 
     return prisma.$transaction(async (tx) => {
-      // อัพเดท LoanApplication
+      // Update application status
       await tx.loanApplication.update({
         where: { id: application.id },
         data: {
           status: 'REJECTED',
           reviewedAt: new Date(),
-          reviewNotes: reviewNotes,
-          // reviewedBy: adminId, // TODO: เพิ่ม admin authentication
+          reviewNotes,
         },
       });
 
-      // ตรวจสอบว่ามี Loan record หรือไม่
-      const existingLoan = await tx.loan.findUnique({
-        where: { applicationId: application.id },
-      });
-
-      if (existingLoan) {
-        // ถ้ามี loan แล้ว ให้ update status เป็น CANCELLED
+      // Cancel loan if exists
+      if (loanId) {
         await tx.loan.update({
-          where: { id: existingLoan.id },
+          where: { id: loanId },
           data: {
             status: 'CANCELLED',
             updatedAt: new Date(),
           },
         });
       }
-      // ถ้ายังไม่มี loan ก็ไม่ต้องทำอะไร (แค่ update application ก็พอ)
 
       return { success: true };
     });
@@ -999,130 +1303,52 @@ export const loanService = {
   },
 
   async delete(id: string) {
-    // ตรวจสอบว่ามี application อยู่หรือไม่ (id อาจเป็น loan id หรือ application id)
-    let application = await prisma.loanApplication.findUnique({
-      where: { id },
-      include: {
-        customer: {
-          include: {
-            profile: true,
-          },
-        },
-        agent: true,
-        loan: true,
-      },
-    });
+    // Find application
+    const { application, loanId } = await findOrCreateApplication(id);
 
-    let loanId: string | null = null;
-
-    // ถ้าไม่เจอ ให้ลองหาจาก loan
-    if (!application) {
-      const loan = await prisma.loan.findUnique({
-        where: { id },
-        include: {
-          application: {
-            include: {
-              customer: {
-                include: {
-                  profile: true,
-                },
-              },
-              agent: true,
-              loan: true,
-            },
-          },
-        },
-      });
-
-      if (!loan) {
-        throw new Error('ไม่พบข้อมูลสินเชื่อ');
-      }
-
-      application = loan.application;
-      loanId = loan.id;
-    } else if (application.loan) {
-      loanId = application.loan.id;
-    }
-
-    // Hard delete - ลบจริงจาก database
+    // Hard delete - remove from database
     return prisma.$transaction(async (tx) => {
-      // ถ้ามี loan record ให้ลบข้อมูลที่เกี่ยวข้อง
+      // Delete loan-related data if loan exists
       if (loanId) {
-        // 1. ลบ Loan Installments ก่อน (ถ้ามี)
-        await tx.loanInstallment.deleteMany({
-          where: { loanId: loanId },
-        });
-
-        // 2. ลบ Payments ที่เกี่ยวข้อง (ถ้ามี)
-        await tx.payment.deleteMany({
-          where: { loanId: loanId },
-        });
-
-        // 3. ลบ Loan
-        await tx.loan.delete({
-          where: { id: loanId },
-        });
+        await tx.loanInstallment.deleteMany({ where: { loanId } });
+        await tx.payment.deleteMany({ where: { loanId } });
+        await tx.loan.delete({ where: { id: loanId } });
       }
 
-      // 4. ลบ LoanApplication
-      await tx.loanApplication.delete({
-        where: { id: application.id },
-      });
+      // Delete application
+      await tx.loanApplication.delete({ where: { id: application.id } });
 
       return { success: true };
     });
   },
 
   async generateInstallments(id: string) {
-    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
+    // Validate loan exists
     const loan = await this.getById(id);
     if (!loan) {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
-    // ตรวจสอบว่ามี installments อยู่แล้วหรือไม่
-    const existingInstallments = await prisma.loanInstallment.count({
+    // Check if installments already exist
+    const existingCount = await prisma.loanInstallment.count({
       where: { loanId: id },
     });
 
-    if (existingInstallments > 0) {
+    if (existingCount > 0) {
       throw new Error('สินเชื่อนี้มีตารางผ่อนชำระอยู่แล้ว');
     }
 
-    // สร้างตารางผ่อนชำระ
-    const loanAmount = Number(loan.principalAmount);
-    const interestRate = Number(loan.interestRate);
-    const termMonths = loan.termMonths;
-    const monthlyPayment = Number(loan.monthlyPayment);
-    const contractDate = new Date(loan.contractDate);
+    // Generate installments
+    const installmentsData = generateInstallmentsData(
+      id,
+      new Date(loan.contractDate),
+      loan.termMonths,
+      Number(loan.monthlyPayment),
+    );
 
-    const installmentsData = [];
+    await prisma.loanInstallment.createMany({ data: installmentsData });
 
-    for (let i = 1; i <= termMonths; i++) {
-      const dueDate = new Date(contractDate);
-      dueDate.setMonth(dueDate.getMonth() + i);
-
-      // คำนวณดอกเบี้ยต่อเดือนอย่างเดียว (ไม่รวมเงินต้น)
-      const interestAmount = monthlyPayment; // monthlyPayment คือดอกเบี้ยต่อเดือนแล้ว
-      const principalAmount = 0; // ไม่ผ่อนเงินต้น
-
-      installmentsData.push({
-        loanId: id,
-        installmentNumber: i,
-        dueDate,
-        principalAmount,
-        interestAmount,
-        totalAmount: monthlyPayment,
-        isPaid: false,
-        isLate: false,
-      });
-    }
-
-    await prisma.loanInstallment.createMany({
-      data: installmentsData,
-    });
-
-    // ดึงข้อมูลใหม่พร้อม installments
+    // Return updated loan with installments
     return this.getById(id);
   },
 
@@ -1396,31 +1622,6 @@ export const loanService = {
 // PAYMENT SERVICE
 // ============================================
 
-// Generate unique reference number for payment
-function generateReferenceNumber(): string {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 10000)
-    .toString()
-    .padStart(4, '0');
-  return `PAY${timestamp}${random}`;
-}
-
-// Calculate late fee based on days overdue
-function calculateLateFee(
-  originalAmount: number,
-  daysLate: number,
-  lateFeePerDay: number = 50,
-): number {
-  return daysLate * lateFeePerDay;
-}
-
-// Calculate days between two dates
-function calculateDaysBetween(date1: Date, date2: Date): number {
-  const diffTime = Math.abs(date2.getTime() - date1.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-}
-
 export const paymentService = {
   /**
    * Get list of payments with filters and pagination
@@ -1534,67 +1735,48 @@ export const paymentService = {
     adminId?: string,
     adminName?: string,
   ) {
+    // Validate loan
     const loan = await loanRepository.findById(data.loanId, {
       installments: true,
     });
 
-    if (!loan) {
-      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    if (!loan || loan.status !== 'ACTIVE') {
+      throw new Error(
+        !loan
+          ? 'ไม่พบข้อมูลสินเชื่อ'
+          : 'สินเชื่อไม่อยู่ในสถานะที่สามารถชำระได้',
+      );
     }
 
-    if (loan.status !== 'ACTIVE') {
-      throw new Error('สินเชื่อไม่อยู่ในสถานะที่สามารถชำระได้');
-    }
-
-    // Use customer ID from loan as the payer
     const payerUserId = userId || loan.customerId;
-
     if (!payerUserId) {
       throw new Error('ไม่พบข้อมูลผู้ชำระเงิน');
     }
 
-    const installment = await installmentRepository.findById(
+    // Validate installment
+    const installment = await this._validateInstallment(
       data.installmentId,
-      {
-        payments: true,
-      },
+      data.loanId,
     );
 
-    if (!installment) {
-      throw new Error('ไม่พบข้อมูลงวดชำระ');
-    }
+    // Calculate late fee
+    const { isLate, daysLate, lateFee, totalAmount } =
+      calculateInstallmentLateFee(
+        installment,
+        data.includeLateFee || false,
+        data.lateFeeAmount,
+      );
 
-    if (installment.isPaid) {
-      throw new Error('งวดนี้ชำระแล้ว');
-    }
-
-    if (installment.loanId !== data.loanId) {
-      throw new Error('งวดชำระไม่ตรงกับสินเชื่อที่ระบุ');
-    }
-
-    const today = new Date();
-    const dueDate = new Date(installment.dueDate);
-    let totalAmount = Number(installment.totalAmount);
-    let lateFee = 0;
-    let daysLate = 0;
-    let isLate = false;
-
-    if (today > dueDate) {
-      isLate = true;
-      daysLate = calculateDaysBetween(dueDate, today);
-      lateFee = data.includeLateFee
-        ? data.lateFeeAmount || calculateLateFee(totalAmount, daysLate)
-        : 0;
-
+    // Update late fee if applicable
+    if (isLate && lateFee > 0) {
       await installmentRepository.updateLateFee(
         installment.id,
         lateFee,
         daysLate,
       );
-
-      totalAmount += lateFee;
     }
 
+    // Validate payment amount
     if (data.amount < totalAmount) {
       throw new Error(
         `จำนวนเงินไม่เพียงพอ ต้องชำระอย่างน้อย ${totalAmount.toLocaleString()} บาท`,
@@ -1603,6 +1785,7 @@ export const paymentService = {
 
     const paidDate = new Date();
 
+    // Create payment record
     const payment = await paymentRepository.create({
       user: { connect: { id: payerUserId } },
       loan: { connect: { id: data.loanId } },
@@ -1612,7 +1795,7 @@ export const paymentService = {
       status: 'COMPLETED',
       referenceNumber: generateReferenceNumber(),
       dueDate: installment.dueDate,
-      paidDate: paidDate,
+      paidDate,
       principalAmount: Number(installment.principalAmount),
       interestAmount: Number(installment.interestAmount),
       feeAmount: lateFee,
@@ -1622,82 +1805,26 @@ export const paymentService = {
       transactionId: data.transactionId,
     });
 
-    // Mark installment as paid
-    await installmentRepository.markAsPaid(
-      data.installmentId,
-      data.amount,
+    // Mark installment as paid and update loan
+    await markInstallmentsAsPaid(
+      prisma,
+      [data.installmentId],
       paidDate,
+      data.loanId,
     );
 
-    // Update loan's current installment and remaining balance
-    const currentInstallment = loan.currentInstallment + 1;
-    const newRemainingBalance =
-      Number(loan.remainingBalance) - Number(installment.principalAmount);
-
-    await loanRepository.update(data.loanId, {
-      currentInstallment,
-      remainingBalance: Math.max(0, newRemainingBalance),
-    });
-
-    // Check if all installments are paid
-    const unpaidCount = await installmentRepository.count({
-      loanId: data.loanId,
-      isPaid: false,
-    });
-
-    if (unpaidCount === 0) {
-      // Mark loan as completed
-      await loanRepository.update(data.loanId, {
-        status: 'COMPLETED',
-        remainingBalance: 0,
-      });
-    }
-
-    // เพิ่มเงินเข้าบัญชีและสร้างรายงาน
+    // Process land account payment
     if (data.landAccountId) {
       await prisma.$transaction(async (tx) => {
-        // ตรวจสอบบัญชี
-        const account = await tx.landAccount.findUnique({
-          where: { id: data.landAccountId, deletedAt: null },
-        });
-
-        if (!account) {
-          throw new Error('ไม่พบบัญชีที่เลือก');
-        }
-
-        // เพิ่มเงินเข้าบัญชี
-        const updatedAccount = await tx.landAccount.update({
-          where: { id: data.landAccountId },
-          data: {
-            accountBalance: { increment: data.amount },
-            updatedAt: new Date(),
-          },
-        });
-
-        // สร้างรายงานใน land_account_reports
-        await tx.landAccountReport.create({
-          data: {
-            landAccountId: data.landAccountId,
-            detail: `ชำระสินเชื่อ ${loan.loanNumber}(งวดที่ ${installment.installmentNumber})`,
-            amount: data.amount,
-            note: `รับชำระสินเชื่อ ${loan.loanNumber} งวดที่ ${installment.installmentNumber}`,
-            accountBalance: updatedAccount.accountBalance,
-            ...(adminId && { adminId }),
-            adminName: adminName || undefined,
-          },
-        });
-
-        // สร้าง log ใน land_account_logs
-        await tx.landAccountLog.create({
-          data: {
-            landAccountId: data.landAccountId,
-            detail: 'รับชำระสินเชื่อ',
-            amount: data.amount,
-            note: `รับชำระสินเชื่อ ${loan.loanNumber} งวดที่ ${installment.installmentNumber}`,
-            ...(adminId && { adminId }),
-            adminName: adminName || undefined,
-          },
-        });
+        await processLandAccountPayment(
+          tx,
+          data.landAccountId!,
+          data.amount,
+          loan.loanNumber,
+          installment.installmentNumber,
+          adminId,
+          adminName,
+        );
       });
     }
 
@@ -1712,6 +1839,29 @@ export const paymentService = {
   },
 
   /**
+   * Internal: Validate installment for payment
+   */
+  async _validateInstallment(installmentId: string, loanId: string) {
+    const installment = await installmentRepository.findById(installmentId, {
+      payments: true,
+    });
+
+    if (!installment) {
+      throw new Error('ไม่พบข้อมูลงวดชำระ');
+    }
+
+    if (installment.isPaid) {
+      throw new Error('งวดนี้ชำระแล้ว');
+    }
+
+    if (installment.loanId !== loanId) {
+      throw new Error('งวดชำระไม่ตรงกับสินเชื่อที่ระบุ');
+    }
+
+    return installment;
+  },
+
+  /**
    * Close/Payoff the entire loan
    */
   async closeLoan(
@@ -1720,25 +1870,23 @@ export const paymentService = {
     adminId?: string,
     adminName?: string,
   ) {
+    // Validate loan
     const loan = await loanRepository.findById(data.loanId, {
       installments: true,
     });
 
-    if (!loan) {
-      throw new Error('ไม่พบข้อมูลสินเชื่อ');
+    if (!loan || loan.status !== 'ACTIVE') {
+      throw new Error(
+        !loan ? 'ไม่พบข้อมูลสินเชื่อ' : 'สินเชื่อไม่อยู่ในสถานะที่สามารถปิดได้',
+      );
     }
 
-    if (loan.status !== 'ACTIVE') {
-      throw new Error('สินเชื่อไม่อยู่ในสถานะที่สามารถปิดได้');
-    }
-
-    // Use customer ID from loan as the payer
     const payerUserId = userId || loan.customerId;
-
     if (!payerUserId) {
       throw new Error('ไม่พบข้อมูลผู้ชำระเงิน');
     }
 
+    // Get unpaid installments
     const unpaidInstallments = await installmentRepository.findUnpaidByLoanId(
       data.loanId,
     );
@@ -1747,16 +1895,18 @@ export const paymentService = {
       throw new Error('สินเชื่อนี้ชำระครบแล้ว');
     }
 
-    let totalPayoffAmount = unpaidInstallments.reduce((sum, inst) => {
-      return sum + Number(inst.totalAmount);
-    }, 0);
-
+    // Calculate payoff amount
+    const baseAmount = unpaidInstallments.reduce(
+      (sum, inst) => sum + Number(inst.totalAmount),
+      0,
+    );
     const discount = data.discountAmount || 0;
     const additionalFees = data.additionalFees || 0;
-    totalPayoffAmount = totalPayoffAmount - discount + additionalFees;
+    const totalPayoffAmount = baseAmount - discount + additionalFees;
 
     const paidDate = new Date();
 
+    // Create payment record
     const payment = await paymentRepository.create({
       user: { connect: { id: payerUserId } },
       loan: { connect: { id: data.loanId } },
@@ -1765,7 +1915,7 @@ export const paymentService = {
       status: 'COMPLETED',
       referenceNumber: generateReferenceNumber(),
       dueDate: paidDate,
-      paidDate: paidDate,
+      paidDate,
       principalAmount: unpaidInstallments.reduce(
         (sum, inst) => sum + Number(inst.principalAmount),
         0,
@@ -1781,69 +1931,26 @@ export const paymentService = {
       transactionId: data.transactionId,
     });
 
-    // Mark all unpaid installments as paid
-    await Promise.all(
-      unpaidInstallments.map((inst) =>
-        installmentRepository.markAsPaid(
-          inst.id,
-          Number(inst.totalAmount),
-          paidDate,
-        ),
-      ),
+    // Mark all installments as paid and complete loan
+    await markInstallmentsAsPaid(
+      prisma,
+      unpaidInstallments.map((i) => i.id),
+      paidDate,
+      data.loanId,
     );
 
-    // Mark loan as completed
-    await loanRepository.update(data.loanId, {
-      status: 'COMPLETED',
-      remainingBalance: 0,
-      currentInstallment: loan.totalInstallments,
-    });
-
-    // เพิ่มเงินเข้าบัญชีและสร้างรายงาน
+    // Process land account payment
     if (data.landAccountId) {
       await prisma.$transaction(async (tx) => {
-        // ตรวจสอบบัญชี
-        const account = await tx.landAccount.findUnique({
-          where: { id: data.landAccountId, deletedAt: null },
-        });
-
-        if (!account) {
-          throw new Error('ไม่พบบัญชีที่เลือก');
-        }
-
-        // เพิ่มเงินเข้าบัญชี
-        const updatedAccount = await tx.landAccount.update({
-          where: { id: data.landAccountId },
-          data: {
-            accountBalance: { increment: totalPayoffAmount },
-            updatedAt: new Date(),
-          },
-        });
-
-        // สร้างรายงานใน land_account_reports
-        await tx.landAccountReport.create({
-          data: {
-            landAccountId: data.landAccountId,
-            detail: `ชำระสินเชื่อ ${loan.loanNumber}(ชำระปิดสินเชื่อ)`,
-            amount: totalPayoffAmount,
-            note: `รับชำระปิดสินเชื่อ ${loan.loanNumber} ทั้งหมด ${unpaidInstallments.length} งวด`,
-            accountBalance: updatedAccount.accountBalance,
-            ...(adminId && { adminId }),
-            adminName: adminName || undefined,
-          },
-        });
-
-        // สร้าง log ใน land_account_logs
-        await tx.landAccountLog.create({
-          data: {
-            landAccountId: data.landAccountId,
-            detail: 'ปิดสินเชื่อ',
-            amount: totalPayoffAmount,
-            note: `รับชำระปิดสินเชื่อ ${loan.loanNumber}`,
-            ...(adminId && { adminId }),
-            adminName: adminName || undefined,
-          },
-        });
+        await processLandAccountPayment(
+          tx,
+          data.landAccountId!,
+          totalPayoffAmount,
+          loan.loanNumber,
+          null, // null = close loan (not specific installment)
+          adminId,
+          adminName,
+        );
       });
     }
 

@@ -16,31 +16,156 @@ import {
   type LandAccountUpdateSchema,
 } from '../validations';
 
+// ============================================
+// HELPER FUNCTIONS - QUERY BUILDERS
+// ============================================
+
+/**
+ * Build where clause for land account queries
+ */
+function buildLandAccountWhere(filters: {
+  search?: string;
+}): Prisma.LandAccountWhereInput {
+  return {
+    deletedAt: null,
+    ...(filters.search && {
+      accountName: {
+        contains: filters.search,
+      },
+    }),
+  };
+}
+
+/**
+ * Build order by clause for land account queries
+ */
+function buildLandAccountOrderBy(
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
+): Prisma.LandAccountOrderByWithRelationInput {
+  if (sortBy === 'accountName') {
+    return { accountName: sortOrder || 'asc' };
+  }
+  if (sortBy === 'accountBalance') {
+    return { accountBalance: sortOrder || 'desc' };
+  }
+  return { createdAt: 'desc' };
+}
+
+/**
+ * Build where clause for land account log queries
+ */
+function buildLandAccountLogWhere(filters: {
+  landAccountId?: string;
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}): Prisma.LandAccountLogWhereInput {
+  const where: Prisma.LandAccountLogWhereInput = {
+    deletedAt: null,
+  };
+
+  if (filters.landAccountId) {
+    where.landAccountId = filters.landAccountId;
+  }
+
+  if (filters.search) {
+    where.OR = [
+      { detail: { contains: filters.search } },
+      { note: { contains: filters.search } },
+      { adminName: { contains: filters.search } },
+    ];
+  }
+
+  if (filters.dateFrom && filters.dateTo) {
+    where.createdAt = {
+      gte: new Date(filters.dateFrom),
+      lte: new Date(filters.dateTo),
+    };
+  }
+
+  return where;
+}
+
+/**
+ * Build order by clause for land account log queries
+ */
+function buildLandAccountLogOrderBy(
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
+): Prisma.LandAccountLogOrderByWithRelationInput {
+  if (sortBy === 'amount') {
+    return { amount: sortOrder || 'desc' };
+  }
+  return { createdAt: sortOrder || 'desc' };
+}
+
+/**
+ * Build where clause for land account report queries
+ */
+function buildLandAccountReportWhere(filters: {
+  landAccountId?: string;
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}): Prisma.LandAccountReportWhereInput {
+  const where: Prisma.LandAccountReportWhereInput = {
+    deletedAt: null,
+    OR: [
+      { detail: { contains: 'ชำระสินเชื่อ' } },
+      { detail: { contains: 'เปิดสินเชื่อ' } },
+      { detail: { contains: 'ลบสินเชื่อ' } },
+    ],
+  };
+
+  if (filters.landAccountId) {
+    where.landAccountId = filters.landAccountId;
+  }
+
+  if (filters.search) {
+    where.OR = [
+      { detail: { contains: filters.search } },
+      { note: { contains: filters.search } },
+      { adminName: { contains: filters.search } },
+    ];
+  }
+
+  if (filters.dateFrom && filters.dateTo) {
+    where.createdAt = {
+      gte: new Date(filters.dateFrom),
+      lte: new Date(filters.dateTo),
+    };
+  }
+
+  return where;
+}
+
+/**
+ * Build order by clause for land account report queries
+ */
+function buildLandAccountReportOrderBy(
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
+): Prisma.LandAccountReportOrderByWithRelationInput {
+  if (sortBy === 'amount') {
+    return { amount: sortOrder || 'desc' };
+  }
+  return { createdAt: sortOrder || 'desc' };
+}
+
+// ============================================
+// LAND ACCOUNT SERVICE
+// ============================================
+
 export const landAccountService = {
   async getList(filters: LandAccountFiltersSchema) {
     const { page = 1, limit = 10, search, sortBy, sortOrder } = filters;
 
-    const where: Prisma.LandAccountWhereInput = {
-      deletedAt: null,
-      ...(search && {
-        accountName: {
-          contains: search,
-        },
-      }),
-    };
-
-    const orderBy: Prisma.LandAccountOrderByWithRelationInput =
-      sortBy === 'accountName'
-        ? { accountName: sortOrder || 'asc' }
-        : sortBy === 'accountBalance'
-          ? { accountBalance: sortOrder || 'desc' }
-          : { createdAt: 'desc' };
-
     return landAccountRepository.paginate({
-      where,
+      where: buildLandAccountWhere({ search }),
       page,
       limit,
-      orderBy,
+      orderBy: buildLandAccountOrderBy(sortBy, sortOrder),
     });
   },
 
@@ -300,35 +425,16 @@ export const landAccountService = {
       sortOrder,
     } = filters;
 
-    const where: Prisma.LandAccountLogWhereInput = {
-      deletedAt: null,
-      ...(landAccountId && { landAccountId }),
-      ...(search && {
-        OR: [
-          { detail: { contains: search } },
-          { note: { contains: search } },
-          { adminName: { contains: search } },
-        ],
-      }),
-      ...(dateFrom &&
-        dateTo && {
-          createdAt: {
-            gte: new Date(dateFrom),
-            lte: new Date(dateTo),
-          },
-        }),
-    };
-
-    const orderBy: Prisma.LandAccountLogOrderByWithRelationInput =
-      sortBy === 'amount'
-        ? { amount: sortOrder || 'desc' }
-        : { createdAt: sortOrder || 'desc' };
-
     return landAccountLogRepository.paginate({
-      where,
+      where: buildLandAccountLogWhere({
+        landAccountId,
+        search,
+        dateFrom,
+        dateTo,
+      }),
       page,
       limit,
-      orderBy,
+      orderBy: buildLandAccountLogOrderBy(sortBy, sortOrder),
       include: {
         landAccount: true,
         admin: {
@@ -361,40 +467,16 @@ export const landAccountReportService = {
       sortOrder,
     } = filters;
 
-    const where: Prisma.LandAccountReportWhereInput = {
-      deletedAt: null,
-      OR: [
-        { detail: { contains: 'ชำระสินเชื่อ' } },
-        { detail: { contains: 'เปิดสินเชื่อ' } },
-        { detail: { contains: 'ลบสินเชื่อ' } },
-      ],
-      ...(landAccountId && { landAccountId }),
-      ...(search && {
-        OR: [
-          { detail: { contains: search } },
-          { note: { contains: search } },
-          { adminName: { contains: search } },
-        ],
-      }),
-      ...(dateFrom &&
-        dateTo && {
-          createdAt: {
-            gte: new Date(dateFrom),
-            lte: new Date(dateTo),
-          },
-        }),
-    };
-
-    const orderBy: Prisma.LandAccountReportOrderByWithRelationInput =
-      sortBy === 'amount'
-        ? { amount: sortOrder || 'desc' }
-        : { createdAt: sortOrder || 'desc' };
-
     return landAccountReportRepository.paginate({
-      where,
+      where: buildLandAccountReportWhere({
+        landAccountId,
+        search,
+        dateFrom,
+        dateTo,
+      }),
       page,
       limit,
-      orderBy,
+      orderBy: buildLandAccountReportOrderBy(sortBy, sortOrder),
       include: {
         landAccount: true,
         admin: {

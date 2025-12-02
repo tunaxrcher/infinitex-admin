@@ -29,80 +29,97 @@ export const dashboardService = {
     const year = parseInt(filters.year || new Date().getFullYear().toString());
     const currentMonth = new Date().getMonth() + 1; // 1-12
 
-    // สร้างข้อมูลรายเดือน 12 เดือน
-    const monthlyDataPromises: Promise<MonthlyData>[] = [];
+    // Fetch monthly data for all 12 months in parallel
+    const monthlyData = await this._fetchAllMonthlyData(year);
 
-    for (let month = 1; month <= 12; month++) {
-      monthlyDataPromises.push(this.getMonthlyData(year, month));
-    }
-
-    const monthlyData = await Promise.all(monthlyDataPromises);
-
-    // คำนวณข้อมูลสรุป
+    // Calculate summary metrics
     const currentMonthData = monthlyData[currentMonth - 1];
-
-    // ยอดเปิดสินเชื่อเดือนปัจจุบัน
-    const currentMonthLoanAmount = currentMonthData.loanAmount;
-
-    // กำไรเดือนปัจจุบัน (ดอกเบี้ย + ค่าธรรมเนียม)
-    const currentMonthProfit = currentMonthData.profit;
-
-    // กำไรทั้งปี (รวมกำไรทุกเดือน)
-    const yearProfit = monthlyData.reduce((sum, data) => sum + data.profit, 0);
-
-    // หายอดรับชำระสูงสุด/ต่ำสุด (ใช้ interestPayment = ชำระค่างวด)
-    const monthsWithData = monthlyData.filter((d) => d.interestPayment > 0);
-
-    let highestPaymentMonth = monthsWithData[0] || monthlyData[0];
-    let lowestPaymentMonth = monthsWithData[0] || monthlyData[0];
-
-    monthsWithData.forEach((data) => {
-      if (data.interestPayment > highestPaymentMonth.interestPayment) {
-        highestPaymentMonth = data;
-      }
-      if (data.interestPayment < lowestPaymentMonth.interestPayment) {
-        lowestPaymentMonth = data;
-      }
-    });
-
-    // ยอดรับชำระทั้งหมด = ยอดชำระค่างวดทั้งหมด
-    const totalPaymentYear = monthlyData.reduce(
-      (sum, data) => sum + data.interestPayment,
-      0,
-    );
-
-    // เฉลี่ยต่อเดือน = เฉลี่ยกำไร
-    const averagePaymentPerMonth = yearProfit / 12;
-
-    // คำนวณเปอร์เซ็นต์ยอดรับชำระ (ยอดชำระค่างวดทั้งปี / ยอดเปิดสินเชื่อทั้งปี)
-    const totalLoanAmountYear = monthlyData.reduce(
-      (sum, data) => sum + data.loanAmount,
-      0,
-    );
-    const paymentPercentage =
-      totalLoanAmountYear > 0
-        ? (totalPaymentYear / totalLoanAmountYear) * 100
-        : 0;
+    const yearProfit = this._calculateYearProfit(monthlyData);
+    const { highestPaymentMonth, lowestPaymentMonth } =
+      this._findPaymentExtremes(monthlyData);
+    const totalPaymentYear = this._calculateTotalPayment(monthlyData);
+    const totalLoanAmountYear = this._calculateTotalLoanAmount(monthlyData);
 
     return {
-      currentMonthLoanAmount,
-      currentMonthProfit,
+      currentMonthLoanAmount: currentMonthData.loanAmount,
+      currentMonthProfit: currentMonthData.profit,
       yearProfit,
       monthlyData,
       highestPaymentMonth: {
         month: highestPaymentMonth.month,
         monthName: highestPaymentMonth.monthName,
-        amount: highestPaymentMonth.interestPayment, // ใช้ interestPayment (ชำระค่างวด)
+        amount: highestPaymentMonth.interestPayment,
       },
       lowestPaymentMonth: {
         month: lowestPaymentMonth.month,
         monthName: lowestPaymentMonth.monthName,
-        amount: lowestPaymentMonth.interestPayment, // ใช้ interestPayment (ชำระค่างวด)
+        amount: lowestPaymentMonth.interestPayment,
       },
-      averagePaymentPerMonth,
+      averagePaymentPerMonth: yearProfit / 12,
       totalPaymentYear,
-      paymentPercentage,
+      paymentPercentage:
+        totalLoanAmountYear > 0
+          ? (totalPaymentYear / totalLoanAmountYear) * 100
+          : 0,
     };
+  },
+
+  /**
+   * Fetch monthly data for all 12 months in parallel
+   */
+  async _fetchAllMonthlyData(year: number): Promise<MonthlyData[]> {
+    const promises = Array.from({ length: 12 }, (_, i) =>
+      this.getMonthlyData(year, i + 1),
+    );
+    return Promise.all(promises);
+  },
+
+  /**
+   * Calculate total profit for the year
+   */
+  _calculateYearProfit(monthlyData: MonthlyData[]): number {
+    return monthlyData.reduce((sum, data) => sum + data.profit, 0);
+  },
+
+  /**
+   * Calculate total payment amount for the year
+   */
+  _calculateTotalPayment(monthlyData: MonthlyData[]): number {
+    return monthlyData.reduce((sum, data) => sum + data.interestPayment, 0);
+  },
+
+  /**
+   * Calculate total loan amount for the year
+   */
+  _calculateTotalLoanAmount(monthlyData: MonthlyData[]): number {
+    return monthlyData.reduce((sum, data) => sum + data.loanAmount, 0);
+  },
+
+  /**
+   * Find months with highest and lowest payment amounts
+   */
+  _findPaymentExtremes(monthlyData: MonthlyData[]): {
+    highestPaymentMonth: MonthlyData;
+    lowestPaymentMonth: MonthlyData;
+  } {
+    const monthsWithData = monthlyData.filter((d) => d.interestPayment > 0);
+
+    // Use first month as default if no data exists
+    const defaultMonth = monthsWithData[0] || monthlyData[0];
+
+    const highestPaymentMonth = monthsWithData.reduce(
+      (highest, current) =>
+        current.interestPayment > highest.interestPayment ? current : highest,
+      defaultMonth,
+    );
+
+    const lowestPaymentMonth = monthsWithData.reduce(
+      (lowest, current) =>
+        current.interestPayment < lowest.interestPayment ? current : lowest,
+      defaultMonth,
+    );
+
+    return { highestPaymentMonth, lowestPaymentMonth };
   },
 
   async getMonthlyData(year: number, month: number): Promise<MonthlyData> {
@@ -163,19 +180,13 @@ export const dashboardService = {
       | 'close-payments'
       | 'overdue',
   ): Promise<any[]> {
-    switch (type) {
-      case 'loans': {
-        // ดึงสินเชื่อที่สร้างในเดือนนั้น
-        return dashboardRepository.getLoansCreatedInMonthDetails(year, month);
-      }
+    const detailHandlers = {
+      loans: () =>
+        dashboardRepository.getLoansCreatedInMonthDetails(year, month),
 
-      case 'payments': {
-        // ดึง payments ทั้งหมด
-        return dashboardRepository.getPaymentsInMonth(year, month);
-      }
+      payments: () => dashboardRepository.getPaymentsInMonth(year, month),
 
-      case 'interest-payments': {
-        // ดึง payments แล้วกรองตาม type (มี installmentId)
+      'interest-payments': async () => {
         const payments = await dashboardRepository.getPaymentsInMonth(
           year,
           month,
@@ -183,10 +194,9 @@ export const dashboardService = {
         return payments.filter(
           (p) => p.installmentId != null && p.installmentId !== '',
         );
-      }
+      },
 
-      case 'close-payments': {
-        // ดึง payments แล้วกรองตาม type (ไม่มี installmentId)
+      'close-payments': async () => {
         const payments = await dashboardRepository.getPaymentsInMonth(
           year,
           month,
@@ -194,18 +204,17 @@ export const dashboardService = {
         return payments.filter(
           (p) => !p.installmentId || p.installmentId === '',
         );
-      }
+      },
 
-      case 'overdue': {
-        // ดึงงวดค้างชำระของเดือนนั้น
-        return dashboardRepository.getOverdueInstallmentsInMonthDetails(
-          year,
-          month,
-        );
-      }
+      overdue: () =>
+        dashboardRepository.getOverdueInstallmentsInMonthDetails(year, month),
+    };
 
-      default:
-        throw new Error('Invalid type parameter');
+    const handler = detailHandlers[type];
+    if (!handler) {
+      throw new Error(`Invalid type parameter: ${type}`);
     }
+
+    return handler();
   },
 };
