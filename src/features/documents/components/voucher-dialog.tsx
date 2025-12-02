@@ -190,8 +190,7 @@ function VoucherFormSection({
     };
 
     window.open(
-    //   `/category-selector?docType=${categoryType}`,
-      `/category-selector?docType=RECEIPT`,
+      `/category-selector?docType=${categoryType}`,
       'DF',
       `menubar=no,toolbar=no,location=no,scrollbars=yes,status=no,resizable=no,height=600,width=800,left=${x},top=${y}`,
     );
@@ -326,17 +325,14 @@ function VoucherFormSection({
                 <div className="flex gap-2">
                   <Input
                     {...field}
-                    placeholder="เลือกหมวดหมู่"
-                    readOnly
-                    className="cursor-pointer"
-                    onClick={openCategorySelector}
+                    placeholder="พิมพ์หรือเลือกหมวดหมู่"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     onClick={openCategorySelector}
                   >
-                    เลือก
+                    ค้นหา
                   </Button>
                 </div>
               </FormControl>
@@ -399,7 +395,12 @@ function VoucherFormSection({
                 <SelectContent>
                   {accounts.map((account: any) => (
                     <SelectItem key={account.id} value={account.accountName}>
-                      {account.accountName}
+                      <div className="flex items-center justify-between w-full gap-4">
+                        <span>{account.accountName}</span>
+                        <span className="text-xs text-muted-foreground font-mono">
+                          ({Number(account.accountBalance).toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท)
+                        </span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

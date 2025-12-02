@@ -19,7 +19,7 @@ function CategorySelectorContent() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data, isLoading } = useGetDocumentTitleList({
-    docType: docType as 'RECEIPT', // | 'PAYMENT_VOUCHER' | 'DISCOUNT_NOTE' | 'EXPENSE',
+    docType: docType as 'RECEIPT' | 'PAYMENT_VOUCHER' | 'DISCOUNT_NOTE' | 'EXPENSE',
     search: searchQuery || undefined,
     page: 1,
     limit: 100,
@@ -37,10 +37,10 @@ function CategorySelectorContent() {
 
   const getTitle = () => {
     switch (docType) {
-      // case 'RECEIPT':
-      //   return 'เลือกหมวดหมู่ใบสำคัญรับ';
-      // case 'PAYMENT_VOUCHER':
-      //   return 'เลือกหมวดหมู่ใบสำคัญจ่าย';
+      case 'RECEIPT':
+        return 'เลือกหมวดหมู่ใบสำคัญรับ';
+      case 'PAYMENT_VOUCHER':
+        return 'เลือกหมวดหมู่ใบสำคัญจ่าย';
       default:
         return 'เลือกหมวดหมู่';
     }

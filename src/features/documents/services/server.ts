@@ -125,6 +125,9 @@ export const documentService = {
     // Parse docDate to Date object
     const docDate = new Date(data.docDate);
 
+    // Find or create document title in document_title_lists
+    await documentTitleListService.findOrCreate(data.docType, data.title);
+
     // Create document
     const document = await documentRepository.create({
       docType: data.docType as DocType,
@@ -207,10 +210,133 @@ export const documentService = {
     adminName?: string,
   ) {
     const existingDoc = await this.getById(id);
+    const oldPrice = Number(existingDoc.price);
+    const newPrice = data.price !== undefined ? data.price : oldPrice;
+    const oldCashFlowName = existingDoc.cashFlowName;
+    const newCashFlowName = data.cashFlowName || oldCashFlowName;
+    const oldTitle = existingDoc.title;
+    const newTitle = data.title || oldTitle;
+    const isIncome = existingDoc.docType === 'RECEIPT';
+    const docTypeLabel = isIncome ? 'ใบสำคัญรับ' : 'ใบสำคัญจ่าย';
 
-    // Calculate price difference for updating land account
-    const priceDiff = data.price !== undefined ? data.price - Number(existingDoc.price) : 0;
+    // Check if price or account changed
+    const hasChanges = oldCashFlowName !== newCashFlowName || oldPrice !== newPrice;
 
+    if (hasChanges) {
+      // Step 1: Reverse the old transaction on the old account
+      const oldLandAccount = await prisma.landAccount.findFirst({
+        where: {
+          accountName: oldCashFlowName,
+          deletedAt: null,
+        },
+      });
+
+      if (oldLandAccount) {
+        // Reverse: Receipt = subtract, Payment = add back
+        const newOldAccountBalance = isIncome
+          ? Number(oldLandAccount.accountBalance) - oldPrice
+          : Number(oldLandAccount.accountBalance) + oldPrice;
+
+        // Update old account balance
+        await prisma.landAccount.update({
+          where: { id: oldLandAccount.id },
+          data: {
+            accountBalance: isIncome
+              ? { decrement: oldPrice }
+              : { increment: oldPrice },
+            updatedAt: new Date(),
+          },
+        });
+
+        // Create report for reversal
+        const reverseDetail = `ลบ${docTypeLabel}(${oldTitle})`;
+        const reverseNote = `ทำการแก้ไขรายการ ${docTypeLabel}(${oldTitle}) ทำการแก้ไขจากบัญชี ${oldCashFlowName} จำนวนเงิน ${oldPrice.toLocaleString('th-TH', { minimumFractionDigits: 2 })} แก้ไขเป็น บัญชี ${newCashFlowName} จำนวนเงิน ${newPrice.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+
+        await prisma.landAccountReport.create({
+          data: {
+            landAccountId: oldLandAccount.id,
+            detail: reverseDetail,
+            amount: isIncome ? -oldPrice : oldPrice,
+            note: reverseNote,
+            accountBalance: newOldAccountBalance,
+            ...(adminId && { adminId }),
+            adminName,
+          },
+        });
+
+        // Create log for reversal
+        await prisma.landAccountLog.create({
+          data: {
+            landAccountId: oldLandAccount.id,
+            detail: `${reverseDetail} 📝`,
+            amount: oldPrice,
+            note: `แก้ไข ${existingDoc.docNumber} - ${oldTitle}`,
+            ...(adminId && { adminId }),
+            adminName,
+          },
+        });
+      }
+
+      // Step 2: Apply the new transaction on the new account
+      const newLandAccount = await prisma.landAccount.findFirst({
+        where: {
+          accountName: newCashFlowName,
+          deletedAt: null,
+        },
+      });
+
+      if (newLandAccount) {
+        // Apply: Receipt = add, Payment = subtract
+        const newAccountBalance = isIncome
+          ? Number(newLandAccount.accountBalance) + newPrice
+          : Number(newLandAccount.accountBalance) - newPrice;
+
+        // Update new account balance
+        await prisma.landAccount.update({
+          where: { id: newLandAccount.id },
+          data: {
+            accountBalance: isIncome
+              ? { increment: newPrice }
+              : { decrement: newPrice },
+            updatedAt: new Date(),
+          },
+        });
+
+        // Create report for new transaction
+        const addDetail = `เพิ่มรายการแก้ไข${docTypeLabel}(${newTitle}) แก้ไขจากบัญชี ${oldCashFlowName} จำนวนเงิน ${oldPrice.toLocaleString('th-TH', { minimumFractionDigits: 2 })} แก้ไขเป็น บัญชี ${newCashFlowName} จำนวนเงิน ${newPrice.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+
+        await prisma.landAccountReport.create({
+          data: {
+            landAccountId: newLandAccount.id,
+            detail: addDetail,
+            amount: isIncome ? newPrice : -newPrice,
+            note: data.note || '',
+            accountBalance: newAccountBalance,
+            ...(adminId && { adminId }),
+            adminName,
+          },
+        });
+
+        // Create log for new transaction
+        await prisma.landAccountLog.create({
+          data: {
+            landAccountId: newLandAccount.id,
+            detail: isIncome ? `รับเงิน 📈 ${docTypeLabel}(แก้ไข)` : `จ่ายเงิน 📉 ${docTypeLabel}(แก้ไข)`,
+            amount: newPrice,
+            note: `${existingDoc.docNumber} - ${newTitle}`,
+            ...(adminId && { adminId }),
+            adminName,
+          },
+        });
+      }
+    }
+
+    // Find or create document title in document_title_lists if title changed
+    if (data.title && data.title !== existingDoc.title) {
+      await documentTitleListService.findOrCreate(existingDoc.docType, data.title);
+    }
+
+    // Update document
     const updatedDocument = await documentRepository.update(id, {
       ...(data.docDate && { docDate: new Date(data.docDate) }),
       ...(data.title && { title: data.title }),
@@ -221,48 +347,14 @@ export const documentService = {
       updatedAt: new Date(),
     });
 
-    // Update land account if price changed
-    if (priceDiff !== 0) {
-      const landAccount = await prisma.landAccount.findFirst({
-        where: {
-          accountName: existingDoc.cashFlowName,
-          deletedAt: null,
-        },
-      });
-
-      if (landAccount) {
-        const isIncome = existingDoc.docType === 'RECEIPT';
-        
-        // Update balance: for income, add diff; for expense, subtract diff
-        await prisma.landAccount.update({
-          where: { id: landAccount.id },
-          data: {
-            accountBalance: isIncome
-              ? { increment: priceDiff }
-              : { decrement: priceDiff },
-            updatedAt: new Date(),
-          },
-        });
-
-        // Create adjustment log
-        await prisma.landAccountLog.create({
-          data: {
-            landAccountId: landAccount.id,
-            detail: `แก้ไขใบสำคัญ 📝`,
-            amount: Math.abs(priceDiff),
-            note: `แก้ไข ${existingDoc.docNumber} ปรับยอด ${priceDiff > 0 ? '+' : ''}${priceDiff}`,
-            ...(adminId && { adminId }),
-            adminName,
-          },
-        });
-      }
-    }
-
     return updatedDocument;
   },
 
   async delete(id: string, adminId?: string, adminName?: string) {
     const existingDoc = await this.getById(id);
+    const amount = Number(existingDoc.price);
+    const isIncome = existingDoc.docType === 'RECEIPT';
+    const docTypeLabel = isIncome ? 'ใบสำคัญรับ' : 'ใบสำคัญจ่าย';
 
     // Reverse the transaction in land account
     const landAccount = await prisma.landAccount.findFirst({
@@ -273,10 +365,12 @@ export const documentService = {
     });
 
     if (landAccount) {
-      const isIncome = existingDoc.docType === 'RECEIPT';
-      const amount = Number(existingDoc.price);
+      // Reverse: Receipt = subtract, Payment = add back
+      const newBalance = isIncome
+        ? Number(landAccount.accountBalance) - amount
+        : Number(landAccount.accountBalance) + amount;
 
-      // Reverse: for income, subtract; for expense, add back
+      // Update account balance
       await prisma.landAccount.update({
         where: { id: landAccount.id },
         data: {
@@ -287,13 +381,27 @@ export const documentService = {
         },
       });
 
-      // Create reversal log
+      // Create land account report for deletion
+      const detail = `ลบ${docTypeLabel}(${existingDoc.title})`;
+      await prisma.landAccountReport.create({
+        data: {
+          landAccountId: landAccount.id,
+          detail,
+          amount: isIncome ? -amount : amount,
+          note: existingDoc.note || '',
+          accountBalance: newBalance,
+          ...(adminId && { adminId }),
+          adminName,
+        },
+      });
+
+      // Create land account log
       await prisma.landAccountLog.create({
         data: {
           landAccountId: landAccount.id,
-          detail: `ยกเลิกใบสำคัญ ❌`,
+          detail: `ลบ${docTypeLabel} ❌`,
           amount,
-          note: `ยกเลิก ${existingDoc.docNumber} - ${existingDoc.title}`,
+          note: `ลบ ${existingDoc.docNumber} - ${existingDoc.title}`,
           ...(adminId && { adminId }),
           adminName,
         },
@@ -343,6 +451,29 @@ export const documentTitleListService = {
       page,
       limit,
       orderBy: { title: 'asc' },
+    });
+  },
+
+  async findOrCreate(docType: string, title: string) {
+    // Check if title already exists
+    const existingTitle = await prisma.documentTitleList.findFirst({
+      where: {
+        docType: docType as DocType,
+        title,
+        deletedAt: null,
+      },
+    });
+
+    if (existingTitle) {
+      return existingTitle;
+    }
+
+    // Create new title if not exists
+    return prisma.documentTitleList.create({
+      data: {
+        docType: docType as DocType,
+        title,
+      },
     });
   },
 };
