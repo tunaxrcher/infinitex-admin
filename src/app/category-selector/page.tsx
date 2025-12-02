@@ -1,11 +1,10 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useGetDocumentTitleList } from '@src/features/documents/hooks';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
-import { useState } from 'react';
 
 interface CategoryItem {
   id: string;
@@ -47,29 +46,26 @@ function CategorySelectorContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="w-full h-full p-4 sm:p-6">
+      <div className="max-w-lg mx-auto space-y-4">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-foreground">{getTitle()}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+        <div className="text-center">
+          <h1 className="text-lg font-semibold">{getTitle()}</h1>
+          <p className="text-sm text-muted-foreground">
             คลิกเลือกหมวดหมู่ที่ต้องการ
           </p>
         </div>
 
         {/* Search */}
-        <div className="mb-4">
-          <Input
-            type="text"
-            placeholder="ค้นหาหมวดหมู่..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full"
-          />
-        </div>
+        <Input
+          type="text"
+          placeholder="ค้นหาหมวดหมู่..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
 
         {/* Category List */}
-        <div className="border rounded-lg bg-card">
+        <div className="border border-border rounded-lg overflow-hidden">
           {isLoading ? (
             <div className="p-8 text-center text-muted-foreground">
               กำลังโหลด...
@@ -80,20 +76,20 @@ function CategorySelectorContent() {
               <p className="text-xs mt-2">กรุณาเพิ่มหมวดหมู่ในระบบก่อน</p>
             </div>
           ) : (
-            <ul className="divide-y divide-border">
+            <ul className="divide-y divide-border max-h-[350px] overflow-auto">
               {categories.map((category) => (
                 <li key={category.id}>
                   <button
                     type="button"
-                    className="w-full px-4 py-3 text-left hover:bg-accent transition-colors flex items-center justify-between group"
+                    className="w-full px-4 py-2.5 text-left hover:bg-muted/50 transition-colors flex items-center justify-between group"
                     onClick={() => handleSelectCategory(category)}
                   >
                     <div>
-                      <span className="font-medium text-foreground">
+                      <span className="text-sm font-medium">
                         {category.title}
                       </span>
                       {category.note && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-xs text-muted-foreground">
                           {category.note}
                         </p>
                       )}
@@ -109,8 +105,8 @@ function CategorySelectorContent() {
         </div>
 
         {/* Footer */}
-        <div className="mt-4 text-center">
-          <Button variant="outline" onClick={() => window.close()}>
+        <div className="text-center pt-2">
+          <Button variant="outline" size="sm" onClick={() => window.close()}>
             ปิดหน้าต่าง
           </Button>
         </div>
@@ -121,7 +117,13 @@ function CategorySelectorContent() {
 
 export default function CategorySelectorPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center">กำลังโหลด...</div>}>
+    <Suspense 
+      fallback={
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="text-center text-muted-foreground">กำลังโหลด...</div>
+        </div>
+      }
+    >
       <CategorySelectorContent />
     </Suspense>
   );
