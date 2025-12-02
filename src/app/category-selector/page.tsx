@@ -27,7 +27,6 @@ function CategorySelectorContent() {
   const categories: CategoryItem[] = data?.data || [];
 
   const handleSelectCategory = (category: CategoryItem) => {
-    // Send selected category to parent window
     if (window.opener && typeof (window.opener as any).__onCategorySelected === 'function') {
       (window.opener as any).__onCategorySelected({ title: category.title });
     }
@@ -46,7 +45,7 @@ function CategorySelectorContent() {
   };
 
   return (
-    <div className="w-full h-full p-4 sm:p-6">
+    <div className="p-5">
       <div className="max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="text-center">
@@ -65,7 +64,7 @@ function CategorySelectorContent() {
         />
 
         {/* Category List */}
-        <div className="border border-border rounded-lg overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden bg-card">
           {isLoading ? (
             <div className="p-8 text-center text-muted-foreground">
               กำลังโหลด...
@@ -81,20 +80,11 @@ function CategorySelectorContent() {
                 <li key={category.id}>
                   <button
                     type="button"
-                    className="w-full px-4 py-2.5 text-left hover:bg-muted/50 transition-colors flex items-center justify-between group"
+                    className="w-full px-4 py-2.5 text-left hover:bg-accent transition-colors flex items-center justify-between group"
                     onClick={() => handleSelectCategory(category)}
                   >
-                    <div>
-                      <span className="text-sm font-medium">
-                        {category.title}
-                      </span>
-                      {category.note && (
-                        <p className="text-xs text-muted-foreground">
-                          {category.note}
-                        </p>
-                      )}
-                    </div>
-                    <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-sm">{category.title}</span>
+                    <span className="text-xs text-primary opacity-0 group-hover:opacity-100">
                       เลือก →
                     </span>
                   </button>
@@ -105,7 +95,7 @@ function CategorySelectorContent() {
         </div>
 
         {/* Footer */}
-        <div className="text-center pt-2">
+        <div className="text-center">
           <Button variant="outline" size="sm" onClick={() => window.close()}>
             ปิดหน้าต่าง
           </Button>
@@ -117,13 +107,7 @@ function CategorySelectorContent() {
 
 export default function CategorySelectorPage() {
   return (
-    <Suspense 
-      fallback={
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="text-center text-muted-foreground">กำลังโหลด...</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">กำลังโหลด...</div>}>
       <CategorySelectorContent />
     </Suspense>
   );
