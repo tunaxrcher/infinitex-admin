@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  type ReactNode,
+} from 'react';
 import { VoucherDialog } from '@src/features/documents/components';
 
 interface VoucherDialogContextType {
@@ -9,19 +15,25 @@ interface VoucherDialogContextType {
   closeVoucherDialog: () => void;
 }
 
-const VoucherDialogContext = createContext<VoucherDialogContextType | undefined>(undefined);
+const VoucherDialogContext = createContext<
+  VoucherDialogContextType | undefined
+>(undefined);
 
 export function useVoucherDialog() {
   const context = useContext(VoucherDialogContext);
   if (!context) {
-    throw new Error('useVoucherDialog must be used within VoucherDialogProvider');
+    throw new Error(
+      'useVoucherDialog must be used within VoucherDialogProvider',
+    );
   }
   return context;
 }
 
 export function VoucherDialogProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [defaultTab, setDefaultTab] = useState<'receipt' | 'payment'>('receipt');
+  const [defaultTab, setDefaultTab] = useState<'receipt' | 'payment'>(
+    'receipt',
+  );
 
   const openReceiptVoucher = useCallback(() => {
     setDefaultTab('receipt');
@@ -54,4 +66,3 @@ export function VoucherDialogProvider({ children }: { children: ReactNode }) {
     </VoucherDialogContext.Provider>
   );
 }
-

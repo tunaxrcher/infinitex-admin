@@ -3,11 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
-import { th } from 'date-fns/locale';
-import { Edit2, EllipsisVertical, FileUp, Printer, Trash2, Upload, X } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import {
   useCreateDocument,
   useDeleteDocument,
@@ -16,6 +11,19 @@ import {
   useUpdateDocument,
 } from '@src/features/documents/hooks';
 import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
+import { format } from 'date-fns';
+import { th } from 'date-fns/locale';
+import {
+  Edit2,
+  EllipsisVertical,
+  FileUp,
+  Printer,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
@@ -25,6 +33,12 @@ import {
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@src/shared/components/ui/dropdown-menu';
+import {
   Form,
   FormControl,
   FormField,
@@ -33,12 +47,6 @@ import {
   FormMessage,
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@src/shared/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -54,7 +62,12 @@ import {
   TableHeader,
   TableRow,
 } from '@src/shared/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@src/shared/components/ui/tabs';
 import { Textarea } from '@src/shared/components/ui/textarea';
 
 // ============================================
@@ -188,7 +201,7 @@ function VoucherFormSection({
     const x = (window.screen.width - 800) / 2;
     const y = (window.screen.height - 600) / 2;
     const categoryType = docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER';
-    
+
     // Create callback function to receive selected category
     (window as any).__onCategorySelected = (category: { title: string }) => {
       form.setValue('title', category.title);
@@ -236,7 +249,9 @@ function VoucherFormSection({
               note: '',
             });
             generateDocNumberMutation.mutate(
-              { docType: docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER' },
+              {
+                docType: docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER',
+              },
               {
                 onSuccess: (response) => {
                   form.setValue('docNumber', response.data.docNumber);
@@ -270,7 +285,9 @@ function VoucherFormSection({
               note: '',
             });
             generateDocNumberMutation.mutate(
-              { docType: docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER' },
+              {
+                docType: docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER',
+              },
               {
                 onSuccess: (response) => {
                   form.setValue('docNumber', response.data.docNumber);
@@ -329,10 +346,7 @@ function VoucherFormSection({
               <FormLabel>รายการ (หมวดหมู่)</FormLabel>
               <FormControl>
                 <div className="flex gap-2">
-                  <Input
-                    {...field}
-                    placeholder="พิมพ์หรือเลือกหมวดหมู่"
-                  />
+                  <Input {...field} placeholder="พิมพ์หรือเลือกหมวดหมู่" />
                   <Button
                     type="button"
                     variant="outline"
@@ -404,7 +418,12 @@ function VoucherFormSection({
                       <div className="flex items-center justify-between w-full gap-4">
                         <span>{account.accountName}</span>
                         <span className="text-xs text-muted-foreground font-mono">
-                          ({Number(account.accountBalance).toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท)
+                          (
+                          {Number(account.accountBalance).toLocaleString(
+                            'th-TH',
+                            { minimumFractionDigits: 2 },
+                          )}{' '}
+                          บาท)
                         </span>
                       </div>
                     </SelectItem>
@@ -472,7 +491,10 @@ function VoucherFormSection({
                   note: '',
                 });
                 generateDocNumberMutation.mutate(
-                  { docType: docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER' },
+                  {
+                    docType:
+                      docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER',
+                  },
                   {
                     onSuccess: (response) => {
                       form.setValue('docNumber', response.data.docNumber);
@@ -597,7 +619,9 @@ function VoucherHistorySection({
       {/* Date Filters */}
       <div className="flex gap-4 items-end">
         <div className="flex-1">
-          <label className="text-xs text-muted-foreground">วันที่เริ่มต้น</label>
+          <label className="text-xs text-muted-foreground">
+            วันที่เริ่มต้น
+          </label>
           <Input
             type="date"
             value={dateFrom}
@@ -634,15 +658,22 @@ function VoucherHistorySection({
           <TableBody>
             {documents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                <TableCell
+                  colSpan={7}
+                  className="text-center text-muted-foreground py-8"
+                >
                   ไม่พบข้อมูล
                 </TableCell>
               </TableRow>
             ) : (
               documents.map((doc) => (
                 <TableRow key={doc.id}>
-                  <TableCell className="text-xs font-mono">{doc.docNumber}</TableCell>
-                  <TableCell className="text-xs">{formatDate(doc.docDate)}</TableCell>
+                  <TableCell className="text-xs font-mono">
+                    {doc.docNumber}
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    {formatDate(doc.docDate)}
+                  </TableCell>
                   <TableCell className="text-xs">{doc.title}</TableCell>
                   <TableCell className="text-xs max-w-[100px] truncate">
                     {doc.note || '-'}
@@ -650,11 +681,17 @@ function VoucherHistorySection({
                   <TableCell className="text-xs text-right font-mono">
                     {formatAmount(doc.price)}
                   </TableCell>
-                  <TableCell className="text-xs">{doc.username || '-'}</TableCell>
+                  <TableCell className="text-xs">
+                    {doc.username || '-'}
+                  </TableCell>
                   <TableCell className="text-xs">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                        >
                           <EllipsisVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -734,9 +771,7 @@ export function VoucherDialog({
           <DialogTitle className="text-center text-xl gradientText">
             ใบสำคัญรับ/จ่าย
           </DialogTitle>
-          <DialogDescription>
-            บันทึกและจัดการใบสำคัญรับ/จ่าย
-          </DialogDescription>
+          <DialogDescription>บันทึกและจัดการใบสำคัญรับ/จ่าย</DialogDescription>
           <hr className="w-full border-border" />
         </DialogHeader>
 
@@ -747,16 +782,16 @@ export function VoucherDialog({
             setEditingDoc(null);
           }}
         >
-  <div className="flex justify-center mb-">
-  <TabsList className="w-1/2">
-    <TabsTrigger value="receipt" className="flex-1">
-      ใบสำคัญรับ
-    </TabsTrigger>
-    <TabsTrigger value="payment" className="flex-1">
-      ใบสำคัญจ่าย
-    </TabsTrigger>
-  </TabsList>
-</div>
+          <div className="flex justify-center mb-">
+            <TabsList className="w-1/2">
+              <TabsTrigger value="receipt" className="flex-1">
+                ใบสำคัญรับ
+              </TabsTrigger>
+              <TabsTrigger value="payment" className="flex-1">
+                ใบสำคัญจ่าย
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Receipt Voucher Tab */}
           <TabsContent value="receipt" className="space-y-6">
@@ -779,11 +814,13 @@ export function VoucherDialog({
               onSuccess={handleSuccess}
             />
             <hr className="border-border" />
-            <VoucherHistorySection docType="PAYMENT_VOUCHER" onEdit={handleEdit} />
+            <VoucherHistorySection
+              docType="PAYMENT_VOUCHER"
+              onEdit={handleEdit}
+            />
           </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
   );
 }
-

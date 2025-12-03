@@ -704,7 +704,7 @@ export const MENU_MEGA: MenuConfig = [
               },
               {
                 title: 'รายงานรายรับ/รายจ่าย',
-                path: '/test2',
+                path: '/income-expense-report',
               },
             ],
           },

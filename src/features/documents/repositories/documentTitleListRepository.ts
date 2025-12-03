@@ -73,4 +73,3 @@ export class DocumentTitleListRepository {
 }
 
 export const documentTitleListRepository = new DocumentTitleListRepository();
-

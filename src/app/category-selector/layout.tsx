@@ -5,4 +5,3 @@ export default function CategorySelectorLayout({
 }) {
   return <main className="grow w-full overflow-auto">{children}</main>;
 }
-

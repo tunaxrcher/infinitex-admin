@@ -1,7 +1,13 @@
-// src/app/api/income-expense-report/route.ts
+// src/app/api/income-expense-report/details/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { incomeExpenseReportService } from '@src/features/documents/services/server';
-import { incomeExpenseReportFiltersSchema } from '@src/features/documents/validations';
+import { z } from 'zod';
+
+const detailsFiltersSchema = z.object({
+  year: z.string().transform((val) => parseInt(val, 10)),
+  month: z.string().transform((val) => parseInt(val, 10)),
+  type: z.enum(['income-operation', 'income-installment', 'expense']),
+});
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,17 +15,21 @@ export async function GET(request: NextRequest) {
     const filters = Object.fromEntries(searchParams.entries());
 
     // Validate filters
-    const validatedFilters = incomeExpenseReportFiltersSchema.parse(filters);
+    const validatedFilters = detailsFiltersSchema.parse(filters);
 
-    const result =
-      await incomeExpenseReportService.getMonthlyReport(validatedFilters);
+    const result = await incomeExpenseReportService.getMonthlyDetails(
+      validatedFilters.year,
+      validatedFilters.month,
+      validatedFilters.type,
+    );
+
     return NextResponse.json({
       success: true,
       message: 'สำเร็จ',
       data: result,
     });
   } catch (error: any) {
-    console.error('[API Error] GET /api/income-expense-report:', error);
+    console.error('[API Error] GET /api/income-expense-report/details:', error);
     return NextResponse.json(
       {
         success: false,

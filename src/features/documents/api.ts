@@ -107,7 +107,9 @@ export const documentTitleListApi = {
       }
     });
 
-    const response = await apiFetch(`/api/document-title-lists?${searchParams}`);
+    const response = await apiFetch(
+      `/api/document-title-lists?${searchParams}`,
+    );
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'เกิดข้อผิดพลาด');
@@ -130,7 +132,30 @@ export const incomeExpenseReportApi = {
       }
     });
 
-    const response = await apiFetch(`/api/income-expense-report?${searchParams}`);
+    const response = await apiFetch(
+      `/api/income-expense-report?${searchParams}`,
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  getMonthlyDetails: async (
+    year: number,
+    month: number,
+    type: 'income-operation' | 'income-installment' | 'expense',
+  ) => {
+    const searchParams = new URLSearchParams({
+      year: year.toString(),
+      month: month.toString(),
+      type,
+    });
+
+    const response = await apiFetch(
+      `/api/income-expense-report/details?${searchParams}`,
+    );
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'เกิดข้อผิดพลาด');
@@ -138,4 +163,3 @@ export const incomeExpenseReportApi = {
     return response.json();
   },
 };
-

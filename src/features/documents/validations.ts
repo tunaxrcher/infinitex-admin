@@ -8,7 +8,9 @@ import { z } from 'zod';
 export const documentFiltersSchema = z.object({
   page: z.coerce.number().min(1).optional().default(1),
   limit: z.coerce.number().min(1).max(10000).optional().default(10),
-  docType: z.enum(['RECEIPT', 'PAYMENT_VOUCHER', 'DISCOUNT_NOTE', 'EXPENSE']).optional(),
+  docType: z
+    .enum(['RECEIPT', 'PAYMENT_VOUCHER', 'DISCOUNT_NOTE', 'EXPENSE'])
+    .optional(),
   search: z.string().optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
@@ -53,11 +55,15 @@ export type DocumentUpdateSchema = z.infer<typeof documentUpdateSchema>;
 export const documentTitleListFiltersSchema = z.object({
   page: z.coerce.number().min(1).optional().default(1),
   limit: z.coerce.number().min(1).max(10000).optional().default(100),
-  docType: z.enum(['RECEIPT', 'PAYMENT_VOUCHER', 'DISCOUNT_NOTE', 'EXPENSE']).optional(),
+  docType: z
+    .enum(['RECEIPT', 'PAYMENT_VOUCHER', 'DISCOUNT_NOTE', 'EXPENSE'])
+    .optional(),
   search: z.string().optional(),
 });
 
-export type DocumentTitleListFiltersSchema = z.infer<typeof documentTitleListFiltersSchema>;
+export type DocumentTitleListFiltersSchema = z.infer<
+  typeof documentTitleListFiltersSchema
+>;
 
 // ============================================
 // INCOME/EXPENSE REPORT SCHEMAS
@@ -68,7 +74,9 @@ export const incomeExpenseReportFiltersSchema = z.object({
   landAccountId: z.string().optional(),
 });
 
-export type IncomeExpenseReportFiltersSchema = z.infer<typeof incomeExpenseReportFiltersSchema>;
+export type IncomeExpenseReportFiltersSchema = z.infer<
+  typeof incomeExpenseReportFiltersSchema
+>;
 
 // ============================================
 // GENERATE DOCUMENT NUMBER SCHEMA
@@ -80,4 +88,3 @@ export const generateDocNumberSchema = z.object({
 });
 
 export type GenerateDocNumberSchema = z.infer<typeof generateDocNumberSchema>;
-

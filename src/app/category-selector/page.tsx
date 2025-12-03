@@ -18,7 +18,11 @@ function CategorySelectorContent() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data, isLoading } = useGetDocumentTitleList({
-    docType: docType as 'RECEIPT' | 'PAYMENT_VOUCHER' | 'DISCOUNT_NOTE' | 'EXPENSE',
+    docType: docType as
+      | 'RECEIPT'
+      | 'PAYMENT_VOUCHER'
+      | 'DISCOUNT_NOTE'
+      | 'EXPENSE',
     search: searchQuery || undefined,
     page: 1,
     limit: 100,
@@ -27,7 +31,10 @@ function CategorySelectorContent() {
   const categories: CategoryItem[] = data?.data || [];
 
   const handleSelectCategory = (category: CategoryItem) => {
-    if (window.opener && typeof (window.opener as any).__onCategorySelected === 'function') {
+    if (
+      window.opener &&
+      typeof (window.opener as any).__onCategorySelected === 'function'
+    ) {
       (window.opener as any).__onCategorySelected({ title: category.title });
     }
     window.close();
@@ -107,9 +114,14 @@ function CategorySelectorContent() {
 
 export default function CategorySelectorPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">กำลังโหลด...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-muted-foreground">
+          กำลังโหลด...
+        </div>
+      }
+    >
       <CategorySelectorContent />
     </Suspense>
   );
 }
-

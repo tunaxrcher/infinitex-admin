@@ -99,7 +99,16 @@ function buildDocumentTitleListWhere(filters: {
 
 export const documentService = {
   async getList(filters: DocumentFiltersSchema) {
-    const { page = 1, limit = 10, docType, search, dateFrom, dateTo, sortBy, sortOrder } = filters;
+    const {
+      page = 1,
+      limit = 10,
+      docType,
+      search,
+      dateFrom,
+      dateTo,
+      sortBy,
+      sortOrder,
+    } = filters;
 
     return documentRepository.paginate({
       where: buildDocumentWhere({ docType, search, dateFrom, dateTo }),
@@ -152,7 +161,8 @@ export const documentService = {
     if (landAccount) {
       // Determine detail pattern for land_account_reports
       // ใบสำคัญจ่าย(หมวดหมู่) or ใบสำคัญรับ(หมวดหมู่)
-      const docTypeLabel = data.docType === 'RECEIPT' ? 'ใบสำคัญรับ' : 'ใบสำคัญจ่าย';
+      const docTypeLabel =
+        data.docType === 'RECEIPT' ? 'ใบสำคัญรับ' : 'ใบสำคัญจ่าย';
       const detail = `${docTypeLabel}(${data.title})`;
 
       // Calculate new balance
@@ -191,7 +201,9 @@ export const documentService = {
       await prisma.landAccountLog.create({
         data: {
           landAccountId: landAccount.id,
-          detail: isIncome ? `รับเงิน 📈 ${docTypeLabel}` : `จ่ายเงิน 📉 ${docTypeLabel}`,
+          detail: isIncome
+            ? `รับเงิน 📈 ${docTypeLabel}`
+            : `จ่ายเงิน 📉 ${docTypeLabel}`,
           amount: data.price,
           note: `${data.docNumber} - ${data.title}`,
           ...(adminId && { adminId }),
@@ -220,7 +232,8 @@ export const documentService = {
     const docTypeLabel = isIncome ? 'ใบสำคัญรับ' : 'ใบสำคัญจ่าย';
 
     // Check if price or account changed
-    const hasChanges = oldCashFlowName !== newCashFlowName || oldPrice !== newPrice;
+    const hasChanges =
+      oldCashFlowName !== newCashFlowName || oldPrice !== newPrice;
 
     if (hasChanges) {
       // Step 1: Reverse the old transaction on the old account
@@ -321,7 +334,9 @@ export const documentService = {
         await prisma.landAccountLog.create({
           data: {
             landAccountId: newLandAccount.id,
-            detail: isIncome ? `รับเงิน 📈 ${docTypeLabel}(แก้ไข)` : `จ่ายเงิน 📉 ${docTypeLabel}(แก้ไข)`,
+            detail: isIncome
+              ? `รับเงิน 📈 ${docTypeLabel}(แก้ไข)`
+              : `จ่ายเงิน 📉 ${docTypeLabel}(แก้ไข)`,
             amount: newPrice,
             note: `${existingDoc.docNumber} - ${newTitle}`,
             ...(adminId && { adminId }),
@@ -333,7 +348,10 @@ export const documentService = {
 
     // Find or create document title in document_title_lists if title changed
     if (data.title && data.title !== existingDoc.title) {
-      await documentTitleListService.findOrCreate(existingDoc.docType, data.title);
+      await documentTitleListService.findOrCreate(
+        existingDoc.docType,
+        data.title,
+      );
     }
 
     // Update document
@@ -418,7 +436,7 @@ export const documentService = {
     const yearMonth = `${year}${month}`;
 
     const prefix = data.docType === 'RECEIPT' ? 'RV' : 'PV';
-    
+
     const latestDocNumber = await documentRepository.getLatestDocNumber(
       data.docType,
       yearMonth,
@@ -484,79 +502,55 @@ export const documentTitleListService = {
 
 export const incomeExpenseReportService = {
   async getMonthlyReport(filters: IncomeExpenseReportFiltersSchema) {
-    const { year, landAccountId } = filters;
-
-    // Get all reports for the year
-    const startDate = new Date(year, 0, 1);
-    const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
-
-    const whereCondition: Prisma.LandAccountReportWhereInput = {
-      deletedAt: null,
-      createdAt: {
-        gte: startDate,
-        lte: endDate,
-      },
-    };
-
-    if (landAccountId) {
-      whereCondition.landAccountId = landAccountId;
-    }
-
-    const reports = await prisma.landAccountReport.findMany({
-      where: whereCondition,
-      orderBy: { createdAt: 'asc' },
-    });
+    const { year } = filters;
 
     // Initialize monthly data
     const monthlyData = Array.from({ length: 12 }, (_, i) => ({
       month: i + 1,
       monthName: getThaiMonthName(i + 1),
-      incomeOperation: 0, // รายรับ(ค่าดำเนินการ) - from opening loans
-      incomeInstallment: 0, // รายรับ(ค่างวด) - from loan payments
-      incomeTotal: 0, // รายรับ(รวม)
-      expense: 0, // รายจ่าย
-      operatingBalance: 0, // ดุลดำเนินการ
-      netProfit: 0, // กำไรสุทธิ
+      incomeOperation: 0, // รายรับ(ค่าดำเนินการ) - from loans (operationFee + transferFee + otherFee)
+      incomeInstallment: 0, // รายรับ(ค่างวด) - from paid installments (payments)
+      incomeTotal: 0, // รายรับ(รวม) = รายรับ(ค่าดำเนินการ) + รายรับ(ค่างวด)
+      expense: 0, // รายจ่าย - from payment vouchers (ใบสำคัญจ่าย)
+      operatingBalance: 0, // ดุลดำเนินการ = รายรับ(ค่าดำเนินการ) - รายจ่าย
+      netProfit: 0, // กำไรสุทธิ = รายรับ(รวม) - รายจ่าย
     }));
 
-    // Process reports
-    reports.forEach((report) => {
-      const month = new Date(report.createdAt).getMonth();
-      const amount = Number(report.amount);
-      const detail = report.detail;
+    // Fetch all data for the year in parallel
+    const monthPromises = Array.from({ length: 12 }, (_, i) =>
+      this._getMonthData(year, i + 1),
+    );
+    const monthResults = await Promise.all(monthPromises);
 
-      // Categorize based on detail pattern
-      if (detail.includes('เปิดสินเชื่อ') || detail.includes('ค่าดำเนินการ')) {
-        monthlyData[month].incomeOperation += amount > 0 ? amount : 0;
-      } else if (detail.includes('ชำระสินเชื่อ') || detail.includes('ค่างวด')) {
-        monthlyData[month].incomeInstallment += amount > 0 ? amount : 0;
-      } else if (detail.includes('ใบสำคัญรับ')) {
-        // Receipt voucher = income
-        monthlyData[month].incomeOperation += amount > 0 ? amount : 0;
-      } else if (detail.includes('ใบสำคัญจ่าย')) {
-        // Payment voucher = expense
-        monthlyData[month].expense += Math.abs(amount);
-      } else if (amount < 0) {
-        monthlyData[month].expense += Math.abs(amount);
-      } else if (amount > 0) {
-        monthlyData[month].incomeOperation += amount;
-      }
-    });
-
-    // Calculate totals for each month
-    monthlyData.forEach((data) => {
-      data.incomeTotal = data.incomeOperation + data.incomeInstallment;
-      data.operatingBalance = data.incomeTotal - data.expense;
-      data.netProfit = data.operatingBalance; // Can be adjusted for other deductions
+    // Populate monthly data
+    monthResults.forEach((result, index) => {
+      monthlyData[index].incomeOperation = result.incomeOperation;
+      monthlyData[index].incomeInstallment = result.incomeInstallment;
+      monthlyData[index].expense = result.expense;
+      monthlyData[index].incomeTotal =
+        result.incomeOperation + result.incomeInstallment;
+      monthlyData[index].operatingBalance =
+        result.incomeOperation - result.expense;
+      monthlyData[index].netProfit =
+        result.incomeOperation + result.incomeInstallment - result.expense;
     });
 
     // Calculate annual totals
     const totals = {
-      incomeOperation: monthlyData.reduce((sum, m) => sum + m.incomeOperation, 0),
-      incomeInstallment: monthlyData.reduce((sum, m) => sum + m.incomeInstallment, 0),
+      incomeOperation: monthlyData.reduce(
+        (sum, m) => sum + m.incomeOperation,
+        0,
+      ),
+      incomeInstallment: monthlyData.reduce(
+        (sum, m) => sum + m.incomeInstallment,
+        0,
+      ),
       incomeTotal: monthlyData.reduce((sum, m) => sum + m.incomeTotal, 0),
       expense: monthlyData.reduce((sum, m) => sum + m.expense, 0),
-      operatingBalance: monthlyData.reduce((sum, m) => sum + m.operatingBalance, 0),
+      operatingBalance: monthlyData.reduce(
+        (sum, m) => sum + m.operatingBalance,
+        0,
+      ),
       netProfit: monthlyData.reduce((sum, m) => sum + m.netProfit, 0),
     };
 
@@ -565,6 +559,215 @@ export const incomeExpenseReportService = {
       data: monthlyData,
       totals,
     };
+  },
+
+  /**
+   * Get data for a specific month
+   */
+  async _getMonthData(year: number, month: number) {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+    // 1. รายรับ(ค่าดำเนินการ) - from loans created in this month
+    // Sum of operationFee + transferFee + otherFee from LoanApplication
+    const loansWithFees = await prisma.loan.findMany({
+      where: {
+        status: { in: ['ACTIVE', 'COMPLETED'] },
+        contractDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        application: {
+          select: {
+            operationFee: true,
+            transferFee: true,
+            otherFee: true,
+          },
+        },
+      },
+    });
+
+    const incomeOperation = loansWithFees.reduce((sum, loan) => {
+      const opFee = Number(loan.application?.operationFee || 0);
+      const trFee = Number(loan.application?.transferFee || 0);
+      const otFee = Number(loan.application?.otherFee || 0);
+      return sum + opFee + trFee + otFee;
+    }, 0);
+
+    // 2. รายรับ(ค่างวด) - from payments completed in this month
+    const payments = await prisma.payment.findMany({
+      where: {
+        status: 'COMPLETED',
+        paidDate: {
+          not: null,
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    const incomeInstallment = payments.reduce(
+      (sum, payment) => sum + Number(payment.amount || 0),
+      0,
+    );
+
+    // 3. รายจ่าย - from payment vouchers (ใบสำคัญจ่าย) in this month
+    const expenseDocuments = await prisma.document.findMany({
+      where: {
+        docType: 'PAYMENT_VOUCHER',
+        deletedAt: null,
+        docDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    const expense = expenseDocuments.reduce(
+      (sum, doc) => sum + Number(doc.price || 0),
+      0,
+    );
+
+    return {
+      incomeOperation,
+      incomeInstallment,
+      expense,
+    };
+  },
+
+  /**
+   * Get monthly report details by type
+   */
+  async getMonthlyDetails(
+    year: number,
+    month: number,
+    type: 'income-operation' | 'income-installment' | 'expense',
+  ) {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+    if (type === 'income-operation') {
+      // รายรับ(ค่าดำเนินการ) - Loans with fees
+      const loans = await prisma.loan.findMany({
+        where: {
+          status: { in: ['ACTIVE', 'COMPLETED'] },
+          contractDate: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        include: {
+          application: {
+            select: {
+              operationFee: true,
+              transferFee: true,
+              otherFee: true,
+            },
+          },
+          customer: {
+            include: {
+              profile: true,
+            },
+          },
+        },
+        orderBy: { contractDate: 'desc' },
+      });
+
+      return loans.map((loan) => ({
+        id: loan.id,
+        type: 'loan',
+        date: loan.contractDate,
+        loanNumber: loan.loanNumber,
+        customerName: loan.customer?.profile
+          ? `${loan.customer.profile.firstName || ''} ${loan.customer.profile.lastName || ''}`.trim()
+          : '-',
+        operationFee: Number(loan.application?.operationFee || 0),
+        transferFee: Number(loan.application?.transferFee || 0),
+        otherFee: Number(loan.application?.otherFee || 0),
+        totalFee:
+          Number(loan.application?.operationFee || 0) +
+          Number(loan.application?.transferFee || 0) +
+          Number(loan.application?.otherFee || 0),
+        principalAmount: Number(loan.principalAmount),
+      }));
+    }
+
+    if (type === 'income-installment') {
+      // รายรับ(ค่างวด) - Payments
+      const payments = await prisma.payment.findMany({
+        where: {
+          status: 'COMPLETED',
+          paidDate: {
+            not: null,
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        include: {
+          loan: {
+            select: {
+              loanNumber: true,
+            },
+          },
+          user: {
+            include: {
+              profile: true,
+            },
+          },
+          installment: {
+            select: {
+              installmentNumber: true,
+            },
+          },
+        },
+        orderBy: { paidDate: 'desc' },
+      });
+
+      return payments.map((payment) => ({
+        id: payment.id,
+        type: 'payment',
+        date: payment.paidDate,
+        loanNumber: payment.loan?.loanNumber || '-',
+        customerName: payment.user?.profile
+          ? `${payment.user.profile.firstName || ''} ${payment.user.profile.lastName || ''}`.trim()
+          : '-',
+        installmentNumber: payment.installment?.installmentNumber || null,
+        amount: Number(payment.amount),
+        principalAmount: Number(payment.principalAmount || 0),
+        interestAmount: Number(payment.interestAmount || 0),
+        feeAmount: Number(payment.feeAmount || 0),
+      }));
+    }
+
+    if (type === 'expense') {
+      // รายจ่าย - Payment vouchers
+      const documents = await prisma.document.findMany({
+        where: {
+          docType: 'PAYMENT_VOUCHER',
+          deletedAt: null,
+          docDate: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        orderBy: { docDate: 'desc' },
+      });
+
+      return documents.map((doc) => ({
+        id: doc.id,
+        type: 'document',
+        date: doc.docDate,
+        docNumber: doc.docNumber,
+        title: doc.title,
+        cashFlowName: doc.cashFlowName,
+        amount: Number(doc.price),
+        note: doc.note,
+      }));
+    }
+
+    return [];
   },
 };
 
@@ -586,4 +789,3 @@ function getThaiMonthName(month: number): string {
   ];
   return months[month - 1] || '';
 }
-

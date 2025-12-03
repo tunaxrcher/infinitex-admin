@@ -1,7 +1,11 @@
 // src/features/documents/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { documentApi, documentTitleListApi, incomeExpenseReportApi } from './api';
+import {
+  documentApi,
+  documentTitleListApi,
+  incomeExpenseReportApi,
+} from './api';
 import {
   type DocumentCreateSchema,
   type DocumentFiltersSchema,
@@ -17,18 +21,21 @@ import {
 
 export const documentKeys = {
   all: () => ['documents'] as const,
-  list: (filters?: DocumentFiltersSchema) => ['documents', 'list', filters] as const,
+  list: (filters?: DocumentFiltersSchema) =>
+    ['documents', 'list', filters] as const,
   detail: (id: string) => ['documents', 'detail', id] as const,
 };
 
 export const documentTitleListKeys = {
   all: () => ['documentTitleLists'] as const,
-  list: (filters?: DocumentTitleListFiltersSchema) => ['documentTitleLists', 'list', filters] as const,
+  list: (filters?: DocumentTitleListFiltersSchema) =>
+    ['documentTitleLists', 'list', filters] as const,
 };
 
 export const incomeExpenseReportKeys = {
   all: () => ['incomeExpenseReport'] as const,
-  monthly: (filters?: IncomeExpenseReportFiltersSchema) => ['incomeExpenseReport', 'monthly', filters] as const,
+  monthly: (filters?: IncomeExpenseReportFiltersSchema) =>
+    ['incomeExpenseReport', 'monthly', filters] as const,
 };
 
 // ============================================
@@ -61,7 +68,9 @@ export const useCreateDocument = () => {
     mutationFn: (data: DocumentCreateSchema) => documentApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents', 'list'] });
-      queryClient.invalidateQueries({ queryKey: ['landAccountReports', 'list'] });
+      queryClient.invalidateQueries({
+        queryKey: ['landAccountReports', 'list'],
+      });
       queryClient.invalidateQueries({ queryKey: ['landAccounts', 'list'] });
       queryClient.refetchQueries({ queryKey: ['documents', 'list'] });
       toast.success('บันทึกใบสำคัญสำเร็จ');
@@ -79,8 +88,12 @@ export const useUpdateDocument = () => {
       documentApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['documents', 'list'] });
-      queryClient.invalidateQueries({ queryKey: documentKeys.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: ['landAccountReports', 'list'] });
+      queryClient.invalidateQueries({
+        queryKey: documentKeys.detail(variables.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['landAccountReports', 'list'],
+      });
       queryClient.invalidateQueries({ queryKey: ['landAccounts', 'list'] });
       queryClient.refetchQueries({ queryKey: ['documents', 'list'] });
       toast.success('แก้ไขใบสำคัญสำเร็จ');
@@ -98,7 +111,9 @@ export const useDeleteDocument = () => {
     onSuccess: (_, id) => {
       queryClient.removeQueries({ queryKey: documentKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: ['documents', 'list'] });
-      queryClient.invalidateQueries({ queryKey: ['landAccountReports', 'list'] });
+      queryClient.invalidateQueries({
+        queryKey: ['landAccountReports', 'list'],
+      });
       queryClient.invalidateQueries({ queryKey: ['landAccounts', 'list'] });
       queryClient.refetchQueries({ queryKey: ['documents', 'list'] });
       toast.success('ลบใบสำคัญสำเร็จ');
@@ -111,7 +126,8 @@ export const useDeleteDocument = () => {
 
 export const useGenerateDocNumber = () => {
   return useMutation({
-    mutationFn: (data: GenerateDocNumberSchema) => documentApi.generateDocNumber(data),
+    mutationFn: (data: GenerateDocNumberSchema) =>
+      documentApi.generateDocNumber(data),
     onError: (error: Error) => {
       toast.error(error.message || 'เกิดข้อผิดพลาด');
     },
@@ -122,7 +138,9 @@ export const useGenerateDocNumber = () => {
 // DOCUMENT TITLE LIST HOOKS
 // ============================================
 
-export const useGetDocumentTitleList = (filters: DocumentTitleListFiltersSchema) => {
+export const useGetDocumentTitleList = (
+  filters: DocumentTitleListFiltersSchema,
+) => {
   return useQuery({
     queryKey: documentTitleListKeys.list(filters),
     queryFn: () => documentTitleListApi.getList(filters),
@@ -138,7 +156,9 @@ export const useGetDocumentTitleList = (filters: DocumentTitleListFiltersSchema)
 // INCOME/EXPENSE REPORT HOOKS
 // ============================================
 
-export const useGetIncomeExpenseReport = (filters: IncomeExpenseReportFiltersSchema) => {
+export const useGetIncomeExpenseReport = (
+  filters: IncomeExpenseReportFiltersSchema,
+) => {
   return useQuery({
     queryKey: incomeExpenseReportKeys.monthly(filters),
     queryFn: () => incomeExpenseReportApi.getMonthlyReport(filters),
@@ -149,4 +169,3 @@ export const useGetIncomeExpenseReport = (filters: IncomeExpenseReportFiltersSch
     retry: 1,
   });
 };
-

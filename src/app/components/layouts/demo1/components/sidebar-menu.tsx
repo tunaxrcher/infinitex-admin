@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { MENU_SIDEBAR } from '@src/shared/config/menu.config';
 import { MenuConfig, MenuItem } from '@src/shared/config/types';
 import { cn } from '@src/shared/lib/utils';
+import { useVoucherDialog } from '@src/shared/providers/voucher-dialog-provider';
 import {
   AccordionMenu,
   AccordionMenuClassNames,
@@ -17,7 +18,6 @@ import {
   AccordionMenuSubTrigger,
 } from '@src/shared/components/ui/accordion-menu';
 import { Badge } from '@src/shared/components/ui/badge';
-import { useVoucherDialog } from '@src/shared/providers/voucher-dialog-provider';
 
 export function SidebarMenu() {
   const pathname = usePathname();
@@ -31,16 +31,19 @@ export function SidebarMenu() {
   );
 
   // Handle menu item action
-  const handleAction = useCallback((action: string) => {
-    switch (action) {
-      case 'open-receipt-voucher':
-        openReceiptVoucher();
-        break;
-      case 'open-payment-voucher':
-        openPaymentVoucher();
-        break;
-    }
-  }, [openReceiptVoucher, openPaymentVoucher]);
+  const handleAction = useCallback(
+    (action: string) => {
+      switch (action) {
+        case 'open-receipt-voucher':
+          openReceiptVoucher();
+          break;
+        case 'open-payment-voucher':
+          openPaymentVoucher();
+          break;
+      }
+    },
+    [openReceiptVoucher, openPaymentVoucher],
+  );
 
   // Global classNames for consistent styling
   const classNames: AccordionMenuClassNames = {

@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { VoucherDialogProvider } from '@src/shared/providers/voucher-dialog-provider';
 import { useSession } from 'next-auth/react';
 import { ScreenLoader } from '@src/shared/components/common/screen-loader';
-import { VoucherDialogProvider } from '@src/shared/providers/voucher-dialog-provider';
 import { Demo1Layout } from '../components/layouts/demo1/layout';
 
 export default function ProtectedLayout({
