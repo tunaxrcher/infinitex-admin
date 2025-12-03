@@ -46,6 +46,7 @@ import {
   TableRow,
 } from '@src/shared/components/ui/table';
 import { Container } from '@src/shared/components/common/container';
+import { CountingNumber } from '@src/shared/components/ui/counting-number';
 
 // Generate year options (current year and 5 previous years)
 const generateYearOptions = () => {
@@ -494,7 +495,12 @@ export default function IncomeExpenseReportPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {formatCurrency(totals.incomeTotal)}
+                <CountingNumber
+                  to={totals.incomeTotal ?? 0}
+                  duration={1.5}
+                  delay={300}
+                  format={(value) => formatCurrency(value)}
+                />
               </div>
               <p className="text-xs text-muted-foreground">บาท</p>
             </CardContent>
@@ -509,7 +515,12 @@ export default function IncomeExpenseReportPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {formatCurrency(totals.expense)}
+                <CountingNumber
+                  to={totals.expense ?? 0}
+                  duration={1.5}
+                  delay={400}
+                  format={(value) => formatCurrency(value)}
+                />
               </div>
               <p className="text-xs text-muted-foreground">บาท</p>
             </CardContent>
@@ -530,7 +541,12 @@ export default function IncomeExpenseReportPage() {
                     : 'text-red-600'
                 }`}
               >
-                {formatCurrency(totals.netProfit)}
+                <CountingNumber
+                  to={totals.netProfit ?? 0}
+                  duration={1.5}
+                  delay={500}
+                  format={(value) => formatCurrency(value)}
+                />
               </div>
               <p className="text-xs text-muted-foreground">บาท</p>
             </CardContent>
