@@ -88,15 +88,8 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden">
-      {/* Background with gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(135deg, #E8B4C8 0%, #D4A5C9 25%, #9B7BB8 50%, #6B5B95 75%, #4A4A8A 100%)',
-        }}
-      />
-      <div className="absolute inset-0 backdrop-blur-sm bg-black/10" />
+      {/* Background - transparent with blur to see content behind */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm px-8">

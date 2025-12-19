@@ -45,7 +45,8 @@ import {
 
 interface LoanDetailsViewProps {
   loanApplicationId: string;
-  authToken: string;
+  authToken: string | null;
+  isLocked?: boolean;
 }
 
 interface ValuationResult {
@@ -134,6 +135,7 @@ type ApprovalStep =
 export function LoanDetailsView({
   loanApplicationId,
   authToken,
+  isLocked = false,
 }: LoanDetailsViewProps) {
   const [loanData, setLoanData] = useState<LoanData | null>(null);
   const [landAccounts, setLandAccounts] = useState<LandAccount[]>([]);
@@ -179,18 +181,22 @@ export function LoanDetailsView({
     return images;
   }, [loanData]);
 
-  // Fetch loan data
+  // Fetch loan data - preview when locked, full data when authenticated
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
 
-        const loanResponse = await fetch(
-          `/api/loan-check/${loanApplicationId}`,
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          },
-        );
+        // Use preview endpoint when locked (no auth), full endpoint when authenticated
+        const endpoint = authToken
+          ? `/api/loan-check/${loanApplicationId}`
+          : `/api/loan-check/${loanApplicationId}/preview`;
+
+        const headers: HeadersInit = authToken
+          ? { Authorization: `Bearer ${authToken}` }
+          : {};
+
+        const loanResponse = await fetch(endpoint, { headers });
         const loanResult = await loanResponse.json();
 
         if (!loanResult.success) {
@@ -218,13 +224,16 @@ export function LoanDetailsView({
           }
         }
 
-        const accountsResponse = await fetch('/api/loan-check/land-accounts', {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-        const accountsResult = await accountsResponse.json();
+        // Only fetch land accounts when authenticated (for approval form)
+        if (authToken) {
+          const accountsResponse = await fetch('/api/loan-check/land-accounts', {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+          const accountsResult = await accountsResponse.json();
 
-        if (accountsResult.success) {
-          setLandAccounts(accountsResult.data);
+          if (accountsResult.success) {
+            setLandAccounts(accountsResult.data);
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'เกิดข้อผิดพลาด');
@@ -482,12 +491,124 @@ export function LoanDetailsView({
     };
   }, [loanData]);
 
-  if (isLoading) {
+  // Show skeleton only when loading AND no data yet
+  if (isLoading && !loanData) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-primary animate-spin" />
-          <p className="text-muted-foreground">กำลังโหลดข้อมูล...</p>
+      <div className="min-h-screen w-full bg-background">
+        {/* Header Skeleton */}
+        <header className="sticky top-0 z-40 bg-background border-b">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-10 h-10 rounded-lg" />
+              <div>
+                <Skeleton className="h-5 w-32 mb-1" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </div>
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+        </header>
+
+        {/* Tabs Skeleton */}
+        <div className="max-w-7xl mx-auto border-b border-border px-5">
+          <div className="flex items-center gap-4 py-3">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-6 w-24" />
+          </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="max-w-7xl mx-auto px-4 py-5 space-y-5">
+          {/* Image Gallery Card Skeleton */}
+          <Card className="rounded-md">
+            <CardHeader className="min-h-[34px] bg-accent/50">
+              <Skeleton className="h-4 w-40" />
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex flex-col lg:flex-row gap-4">
+                <Skeleton className="h-[250px] w-full lg:w-[350px] rounded-md" />
+                <div className="flex-1 space-y-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-2 mt-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-[40px] w-[40px] rounded-md" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Loan Summary Card Skeleton */}
+          <Card className="rounded-md">
+            <CardHeader className="min-h-[34px] bg-accent/50">
+              <Skeleton className="h-4 w-32" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-start flex-wrap lg:gap-10 gap-5">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex flex-col gap-1.5">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-5 w-24" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Analysis Card Skeleton */}
+          <Card className="rounded-md border-primary/30">
+            <CardHeader className="min-h-[34px] bg-primary/10">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <Skeleton className="h-4 w-40" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-8 w-32" />
+                </div>
+                <div className="space-y-1">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-8 w-20" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-20 w-full rounded-md" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Calculation Preview Skeleton */}
+          <Card className="rounded-md">
+            <CardHeader className="min-h-[34px] bg-accent/50">
+              <Skeleton className="h-4 w-44" />
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 lg:grid-cols-4 gap-5 pt-4 pb-5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="space-y-1">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-7 w-28" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Bottom Action Bar Skeleton */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 z-30">
+          <div className="max-w-2xl mx-auto flex gap-3">
+            <Skeleton className="h-10 flex-1 rounded-md" />
+            <Skeleton className="h-10 flex-1 rounded-md" />
+          </div>
         </div>
       </div>
     );
@@ -695,7 +816,7 @@ export function LoanDetailsView({
                             </CardHeader>
                             <CardContent className="pt-4">
                               <div className="flex flex-col lg:flex-row gap-4">
-                                <div className="flex-shrink-0">
+                                <div className="shrink-0">
                                   <Card className="flex items-center justify-center rounded-md bg-accent/50 shadow-none">
                                     {allImages.length > 0 ? (
                                       <img

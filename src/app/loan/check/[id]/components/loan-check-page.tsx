@@ -17,14 +17,17 @@ export function LoanCheckPage({ loanApplicationId }: LoanCheckPageProps) {
     setIsAuthenticated(true);
   };
 
-  if (!isAuthenticated) {
-    return <PinEntryScreen onSuccess={handlePinSuccess} />;
-  }
-
   return (
-    <LoanDetailsView
-      loanApplicationId={loanApplicationId}
-      authToken={authToken!}
-    />
+    <>
+      {/* Always render LoanDetailsView in background */}
+      <LoanDetailsView
+        loanApplicationId={loanApplicationId}
+        authToken={authToken}
+        isLocked={!isAuthenticated}
+      />
+      
+      {/* Show PIN overlay when not authenticated */}
+      {!isAuthenticated && <PinEntryScreen onSuccess={handlePinSuccess} />}
+    </>
   );
 }
