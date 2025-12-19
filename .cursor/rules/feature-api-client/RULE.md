@@ -1,7 +1,7 @@
 ---
-description: "Pattern สำหรับ Client-side API calls ใน feature api.ts"
+description: 'Pattern สำหรับ Client-side API calls ใน feature api.ts'
 globs:
-  - "**/features/**/api.ts"
+  - '**/features/**/api.ts'
 alwaysApply: false
 ---
 
@@ -94,11 +94,13 @@ export const entityApi = {
 6. **Type imports**: import types จาก `./validations`
 
 ## สำหรับ File Upload
+
 ใช้ FormData แทน JSON:
+
 ```typescript
 create: async (data: EntityCreateSchema & { files?: File[] }) => {
   const formData = new FormData();
-  
+
   Object.entries(data).forEach(([key, value]) => {
     if (key === 'files' && Array.isArray(value)) {
       value.forEach((file) => {
@@ -121,8 +123,9 @@ create: async (data: EntityCreateSchema & { files?: File[] }) => {
 ```
 
 ## Operations เพิ่มเติม
+
 เพิ่ม methods ตามความต้องการ:
+
 - `toggleStatus`: สำหรับเปลี่ยน active/inactive
 - `approve`, `reject`: สำหรับ workflow
 - `search`: สำหรับ autocomplete
-

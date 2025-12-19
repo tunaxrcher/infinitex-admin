@@ -1,8 +1,8 @@
 ---
-description: "Pattern สำหรับ Server-side services ใน services/server.ts"
+description: 'Pattern สำหรับ Server-side services ใน services/server.ts'
 globs:
-  - "**/services/server.ts"
-  - "**/services/*.server.ts"
+  - '**/services/server.ts'
+  - '**/services/*.server.ts'
 alwaysApply: false
 ---
 
@@ -13,7 +13,6 @@ alwaysApply: false
 ```typescript
 // src/features/[feature-name]/services/server.ts
 import 'server-only';
-
 import { entityRepository } from '../repositories/entityRepository';
 import {
   type EntityCreateSchema,
@@ -157,11 +156,13 @@ export const entityService = {
 ## ข้อกำหนดสำคัญ
 
 ### 1. Server-Only Directive
+
 ```typescript
-import 'server-only';  // บรรทัดแรกเสมอ!
+import 'server-only'; // บรรทัดแรกเสมอ!
 ```
 
 ### 2. Error Messages ภาษาไทย
+
 ```typescript
 throw new Error('ไม่พบข้อมูล');
 throw new Error('ไม่มีสิทธิ์ดำเนินการ');
@@ -171,7 +172,9 @@ throw new Error('สถานะไม่ถูกต้อง');
 ```
 
 ### 3. Audit Fields
+
 ทุก mutation ต้องมี audit fields:
+
 ```typescript
 // Create
 createdBy: adminId,
@@ -189,6 +192,7 @@ deletedByName: adminName,
 ```
 
 ### 4. Soft Delete Pattern
+
 ```typescript
 // ไม่ใช้ delete() ตรงๆ
 // แต่ใช้ update() เพื่อ set deletedAt
@@ -204,11 +208,14 @@ async delete(id: number, adminId: number) {
 ```
 
 ### 5. Filter Building Pattern
+
 ```typescript
 const where: any = { deletedAt: null };
 
 if (filters.search) {
-  where.OR = [/* search fields */];
+  where.OR = [
+    /* search fields */
+  ];
 }
 
 if (filters.status) {
@@ -224,8 +231,8 @@ if (filters.dateFrom || filters.dateTo) {
 ```
 
 ### Method Structure
+
 1. **Query methods**: `getList`, `getById`, `getByField`
 2. **Mutation methods**: `create`, `update`, `delete`, `toggleStatus`
 3. **Business logic**: `validateBusinessRules`, `checkDuplicates`
 4. **Helpers**: private methods สำหรับ logic ที่ซ้ำ
-

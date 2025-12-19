@@ -1,9 +1,9 @@
 ---
-description: "Pattern สำหรับใช้ DataGrid และ react-table ใน Infinitex Admin"
+description: 'Pattern สำหรับใช้ DataGrid และ react-table ใน Infinitex Admin'
 globs:
-  - "**/tables/**/*.tsx"
-  - "**/*-table.tsx"
-  - "**/*-list.tsx"
+  - '**/tables/**/*.tsx'
+  - '**/*-table.tsx'
+  - '**/*-list.tsx'
 alwaysApply: false
 ---
 
@@ -15,6 +15,7 @@ alwaysApply: false
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useGetEntityList } from '@src/features/[feature]/hooks';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -24,14 +25,12 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { Card, CardFooter, CardTable } from '@src/shared/components/ui/card';
 import { DataGrid } from '@src/shared/components/ui/data-grid';
 import { DataGridColumnHeader } from '@src/shared/components/ui/data-grid-column-header';
 import { DataGridPagination } from '@src/shared/components/ui/data-grid-pagination';
 import { DataGridTable } from '@src/shared/components/ui/data-grid-table';
-import { Card, CardFooter, CardTable } from '@src/shared/components/ui/card';
 import { ScrollArea, ScrollBar } from '@src/shared/components/ui/scroll-area';
-
-import { useGetEntityList } from '@src/features/[feature]/hooks';
 
 interface EntityData {
   id: string;
@@ -67,9 +66,12 @@ export function EntityListTable() {
   }, [apiResponse]);
 
   // 4. Define columns
-  const columns = useMemo<ColumnDef<EntityData>[]>(() => [
-    // ... column definitions
-  ], []);
+  const columns = useMemo<ColumnDef<EntityData>[]>(
+    () => [
+      // ... column definitions
+    ],
+    [],
+  );
 
   // 5. Create table instance
   const table = useReactTable({
@@ -114,6 +116,7 @@ export function EntityListTable() {
 ## Column Definitions
 
 ### Basic Column
+
 ```tsx
 {
   id: 'name',
@@ -130,6 +133,7 @@ export function EntityListTable() {
 ```
 
 ### Column with Custom Cell
+
 ```tsx
 {
   id: 'status',
@@ -152,6 +156,7 @@ export function EntityListTable() {
 ```
 
 ### Column with Filter
+
 ```tsx
 {
   id: 'name',
@@ -178,6 +183,7 @@ export function EntityListTable() {
 ```
 
 ### Actions Column
+
 ```tsx
 {
   id: 'actions',
@@ -210,6 +216,7 @@ export function EntityListTable() {
 ```
 
 ### Currency Column
+
 ```tsx
 {
   id: 'amount',
@@ -234,16 +241,16 @@ export function EntityListTable() {
   table={table}
   recordCount={totalRecords}
   isLoading={isLoading}
-  loadingMode="skeleton"  // 'skeleton' | 'spinner'
+  loadingMode="skeleton" // 'skeleton' | 'spinner'
   emptyMessage="ไม่พบข้อมูล"
   onRowClick={(row) => handleRowClick(row.id)}
   tableLayout={{
-    dense: false,           // แถวบางลง
-    cellBorder: true,       // เส้นขอบ cells
-    rowBorder: true,        // เส้นขอบ rows
-    headerSticky: true,     // header ติดด้านบน
+    dense: false, // แถวบางลง
+    cellBorder: true, // เส้นขอบ cells
+    rowBorder: true, // เส้นขอบ rows
+    headerSticky: true, // header ติดด้านบน
     columnsVisibility: true, // ซ่อน/แสดง columns
-    columnsResizable: true,  // ปรับขนาด columns
+    columnsResizable: true, // ปรับขนาด columns
   }}
 />
 ```
@@ -251,15 +258,17 @@ export function EntityListTable() {
 ## Pagination
 
 ### Client-side Pagination
+
 ```tsx
 const table = useReactTable({
-  data: allData,  // ส่งข้อมูลทั้งหมด
-  manualPagination: false,  // react-table จัดการ pagination
+  data: allData, // ส่งข้อมูลทั้งหมด
+  manualPagination: false, // react-table จัดการ pagination
   getPaginationRowModel: getPaginationRowModel(),
 });
 ```
 
 ### Server-side Pagination
+
 ```tsx
 const { data, isLoading } = useGetEntityList({
   page: pagination.pageIndex + 1,
@@ -269,7 +278,7 @@ const { data, isLoading } = useGetEntityList({
 const table = useReactTable({
   data: data?.data || [],
   pageCount: Math.ceil((data?.meta?.total || 0) / pagination.pageSize),
-  manualPagination: true,  // pagination จาก server
+  manualPagination: true, // pagination จาก server
 });
 ```
 
@@ -307,4 +316,3 @@ useEffect(() => {
   setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 }, [activeTab]);
 ```
-

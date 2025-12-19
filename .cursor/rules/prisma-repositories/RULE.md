@@ -1,8 +1,8 @@
 ---
-description: "Pattern สำหรับ Prisma repositories ใน repositories folder"
+description: 'Pattern สำหรับ Prisma repositories ใน repositories folder'
 globs:
-  - "**/repositories/**Repository.ts"
-  - "**/repositories/*.ts"
+  - '**/repositories/**Repository.ts'
+  - '**/repositories/*.ts'
 alwaysApply: false
 ---
 
@@ -12,76 +12,92 @@ alwaysApply: false
 
 ```typescript
 // src/features/[feature-name]/repositories/entityRepository.ts
+import { Prisma } from '@prisma/client';
 import { prisma } from '@src/shared/lib/db';
-import { BaseRepository } from '@src/shared/repositories/baseRepository';
 
-export class EntityRepository extends BaseRepository<typeof prisma.entity> {
-  constructor() {
-    super(prisma.entity);
-  }
-
+export class EntityRepository {
   // ============================================
-  // Custom Query Methods
+  // Find Methods
   // ============================================
 
-  async findByStatus(status: string) {
-    return this.model.findMany({
-      where: { status, deletedAt: null },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findMany(options: {
+    where?: Prisma.EntityWhereInput;
+    skip?: number;
+    take?: number;
+    orderBy?: Prisma.EntityOrderByWithRelationInput;
+    include?: Prisma.EntityInclude;
+  }) {
+    return prisma.entity.findMany(options);
   }
 
-  async findWithRelations(id: number) {
-    return this.model.findUnique({
+  async findById(id: string, include?: Prisma.EntityInclude) {
+    return prisma.entity.findUnique({
       where: { id },
-      include: {
-        createdByAdmin: { select: { id: true, name: true } },
-        updatedByAdmin: { select: { id: true, name: true } },
-        // Add other relations
+      include,
+    });
+  }
+
+  async count(where?: Prisma.EntityWhereInput) {
+    return prisma.entity.count({ where });
+  }
+
+  // ============================================
+  // Mutation Methods
+  // ============================================
+
+  async create(data: Prisma.EntityCreateInput) {
+    return prisma.entity.create({ data });
+  }
+
+  async update(id: string, data: Prisma.EntityUpdateInput) {
+    return prisma.entity.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async delete(id: string) {
+    // Soft delete - ใช้ update แทน delete
+    return prisma.entity.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  // ============================================
+  // Pagination
+  // ============================================
+
+  async paginate(options: {
+    where?: Prisma.EntityWhereInput;
+    page: number;
+    limit: number;
+    orderBy?: Prisma.EntityOrderByWithRelationInput;
+    include?: Prisma.EntityInclude;
+  }) {
+    const { where, page, limit, orderBy, include } = options;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include,
+      }),
+      this.count(where),
+    ]);
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-    });
-  }
-
-  async findByCustomerId(customerId: number) {
-    return this.model.findMany({
-      where: { customerId, deletedAt: null },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  // ============================================
-  // Search & Filter Methods
-  // ============================================
-
-  async search(keyword: string) {
-    return this.model.findMany({
-      where: {
-        OR: [
-          { name: { contains: keyword, mode: 'insensitive' } },
-          { code: { contains: keyword, mode: 'insensitive' } },
-        ],
-        deletedAt: null,
-      },
-      take: 10,
-    });
-  }
-
-  // ============================================
-  // Aggregate Methods
-  // ============================================
-
-  async countByStatus(status: string) {
-    return this.model.count({
-      where: { status, deletedAt: null },
-    });
-  }
-
-  async sumAmount(where: any) {
-    const result = await this.model.aggregate({
-      _sum: { amount: true },
-      where: { ...where, deletedAt: null },
-    });
-    return result._sum.amount || 0;
+    };
   }
 }
 
@@ -92,71 +108,131 @@ export const entityRepository = new EntityRepository();
 ## ข้อกำหนดสำคัญ
 
 ### Class Structure
-1. **ALWAYS** extend `BaseRepository`
-2. Export ทั้ง class และ singleton instance
-3. ใช้ `prisma` จาก `@src/shared/lib/db`
+
+- Import `Prisma` types จาก `@prisma/client`
+- Import `prisma` จาก `@src/shared/lib/db`
+- Export ทั้ง class และ singleton instance
 
 ### Naming Convention
-- Class: `EntityRepository` (PascalCase)
-- Instance: `entityRepository` (camelCase)
-- File: `entityRepository.ts` (camelCase)
 
-### Soft Delete
-**ALWAYS** include `deletedAt: null` ใน where clause:
+| Type     | Format     | Example                    |
+| -------- | ---------- | -------------------------- |
+| Class    | PascalCase | `LandAccountRepository`    |
+| Instance | camelCase  | `landAccountRepository`    |
+| File     | camelCase  | `landAccountRepository.ts` |
+
+### Standard Methods
+
+| Method                   | Purpose                     |
+| ------------------------ | --------------------------- |
+| `findMany(options)`      | ค้นหาหลาย records           |
+| `findById(id, include?)` | ค้นหาตาม ID                 |
+| `count(where?)`          | นับจำนวน records            |
+| `create(data)`           | สร้าง record ใหม่           |
+| `update(id, data)`       | แก้ไข record                |
+| `delete(id)`             | Soft delete (set deletedAt) |
+| `paginate(options)`      | Pagination พร้อม meta       |
+
+### Soft Delete Pattern (สำคัญมาก!)
+
 ```typescript
-where: { 
-  status: 'active',
-  deletedAt: null  // สำคัญมาก!
+// ❌ ห้ามใช้ delete() โดยตรง
+await prisma.entity.delete({ where: { id } });
+
+// ✅ ใช้ update() เพื่อ set deletedAt
+async delete(id: string) {
+  return prisma.entity.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
 }
 ```
 
-### Common Patterns
+### Paginate Response Format
 
-#### Pagination with BaseRepository
 ```typescript
-// BaseRepository มี paginate method ให้แล้ว
-const result = await entityRepository.paginate({
-  where: { status: 'active', deletedAt: null },
-  orderBy: { createdAt: 'desc' },
-  page: 1,
-  limit: 10,
-});
-```
-
-#### Include Relations
-```typescript
-include: {
-  customer: { select: { id: true, name: true, phone: true } },
-  createdByAdmin: { select: { id: true, name: true } },
-  items: {
-    where: { deletedAt: null },
-    include: { product: true },
-  },
+{
+  data: Entity[],
+  meta: {
+    page: number,
+    limit: number,
+    total: number,
+    totalPages: number,
+  }
 }
 ```
 
-#### Transaction
+### Custom Query Methods (เพิ่มตามความต้องการ)
+
 ```typescript
-async createWithItems(data: any, items: any[]) {
+async findByStatus(status: string) {
+  return this.findMany({
+    where: { status, deletedAt: null },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+async findByCustomerId(customerId: string) {
+  return this.findMany({
+    where: { customerId, deletedAt: null },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+async search(keyword: string) {
+  return this.findMany({
+    where: {
+      OR: [
+        { name: { contains: keyword } },
+        { code: { contains: keyword } },
+      ],
+      deletedAt: null,
+    },
+    take: 10,
+  });
+}
+```
+
+### Include Relations
+
+```typescript
+async findWithRelations(id: string) {
+  return this.findById(id, {
+    customer: { select: { id: true, name: true, phone: true } },
+    admin: { select: { id: true, email: true, firstName: true } },
+    items: {
+      where: { deletedAt: null },
+      include: { product: true },
+    },
+  });
+}
+```
+
+### Transaction Pattern
+
+```typescript
+// ใน service layer, ไม่ใช่ repository
+async createWithLog(data: any, adminId: string) {
   return prisma.$transaction(async (tx) => {
     const entity = await tx.entity.create({ data });
-    
-    await tx.entityItem.createMany({
-      data: items.map(item => ({
-        ...item,
+
+    await tx.entityLog.create({
+      data: {
         entityId: entity.id,
-      })),
+        action: 'CREATE',
+        adminId,
+      },
     });
-    
+
     return entity;
   });
 }
 ```
 
-### Method Naming
-- `findBy[Field]` - หา record ตาม field
-- `findWithRelations` - หา record พร้อม relations
-- `search` - ค้นหาด้วย keyword
-- `countBy[Field]` - นับจำนวนตาม field
-- `sum[Field]` - รวมค่าตาม field
+## Checklist สำหรับ Repository ใหม่
 
+- [ ] Import `Prisma` และ `prisma`
+- [ ] สร้าง class พร้อม standard methods
+- [ ] Implement `paginate()` method
+- [ ] ใช้ soft delete ใน `delete()` method
+- [ ] Export ทั้ง class และ singleton instance

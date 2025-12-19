@@ -1,8 +1,8 @@
 ---
-description: "Pattern สำหรับ React components ใน Infinitex Admin"
+description: 'Pattern สำหรับ React components ใน Infinitex Admin'
 globs:
-  - "**/components/**/*.tsx"
-  - "**/app/**/*.tsx"
+  - '**/components/**/*.tsx'
+  - '**/app/**/*.tsx'
 alwaysApply: false
 ---
 
@@ -11,11 +11,12 @@ alwaysApply: false
 ## โครงสร้าง Component พื้นฐาน
 
 ```tsx
-'use client';  // เฉพาะ Client Components
+'use client';
 
+// เฉพาะ Client Components
 import { useState } from 'react';
-import { Button } from '@src/shared/components/ui/button';
 import { useGetLoanList } from '@src/features/loans/hooks';
+import { Button } from '@src/shared/components/ui/button';
 
 interface LoanCardProps {
   loanId: string;
@@ -31,17 +32,14 @@ export function LoanCard({ loanId, onEdit, className }: LoanCardProps) {
     return <Skeleton className="h-20 w-full" />;
   }
 
-  return (
-    <Card className={cn('p-4', className)}>
-      {/* ... */}
-    </Card>
-  );
+  return <Card className={cn('p-4', className)}>{/* ... */}</Card>;
 }
 ```
 
 ## Client vs Server Components
 
 ### Server Components (default)
+
 ```tsx
 // ไม่ต้องมี 'use client'
 // ใช้ได้: async/await, เรียก service โดยตรง
@@ -51,7 +49,7 @@ import { loanService } from '@src/features/loans/services/server';
 
 export default async function LoansPage() {
   const loans = await loanService.getList({ page: 1, limit: 10 });
-  
+
   return (
     <div>
       <LoanList initialData={loans} />
@@ -61,6 +59,7 @@ export default async function LoansPage() {
 ```
 
 ### Client Components
+
 ```tsx
 'use client';  // บรรทัดแรก!
 
@@ -70,7 +69,7 @@ export default async function LoansPage() {
 export function LoanList({ initialData }: Props) {
   const [filter, setFilter] = useState('');
   const { data } = useGetLoanList({ search: filter });
-  
+
   return (/* ... */);
 }
 ```
@@ -78,6 +77,7 @@ export function LoanList({ initialData }: Props) {
 ## Component Organization
 
 ### Feature Components
+
 ```
 src/features/[feature]/components/
 ├── [entity]-list.tsx      # List/table component
@@ -89,6 +89,7 @@ src/features/[feature]/components/
 ```
 
 ### Naming Conventions
+
 - **Files**: `kebab-case.tsx` (`loan-card.tsx`)
 - **Components**: `PascalCase` (`LoanCard`)
 - **Props Interface**: `ComponentNameProps` (`LoanCardProps`)
@@ -96,17 +97,18 @@ src/features/[feature]/components/
 ## Props Pattern
 
 ### Interface Definition
+
 ```tsx
 interface LoanDialogProps {
   // Required props
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  
+
   // Optional props
   loanId?: string;
   mode?: 'create' | 'edit';
   className?: string;
-  
+
   // Callbacks
   onSuccess?: () => void;
   onError?: (error: Error) => void;
@@ -114,6 +116,7 @@ interface LoanDialogProps {
 ```
 
 ### Destructuring with Defaults
+
 ```tsx
 export function LoanDialog({
   open,
@@ -130,12 +133,14 @@ export function LoanDialog({
 ## State Management
 
 ### Local State
+
 ```tsx
 const [isOpen, setIsOpen] = useState(false);
 const [selectedId, setSelectedId] = useState<string | undefined>();
 ```
 
 ### Server State (React Query)
+
 ```tsx
 // ใช้ hooks จาก features
 const { data, isLoading, error } = useGetLoanList(filters);
@@ -190,20 +195,17 @@ const handleDelete = (id: string) => {
 ```tsx
 // 1. React imports
 'use client';
-import { useState, useEffect, useMemo } from 'react';
 
+import { useEffect, useMemo, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+// 3. Feature hooks/utils
+import { useCreateLoan, useGetLoanList } from '@src/features/loans/hooks';
+import { loanCreateSchema } from '@src/features/loans/validations';
 // 2. External libraries
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-// 3. Feature hooks/utils
-import { useGetLoanList, useCreateLoan } from '@src/features/loans/hooks';
-import { loanCreateSchema } from '@src/features/loans/validations';
-
 // 4. Shared components
 import { Button } from '@src/shared/components/ui/button';
 import { Card } from '@src/shared/components/ui/card';
-
 // 5. Local/relative imports
 import { LoanCard } from './loan-card';
 ```
@@ -240,4 +242,3 @@ import { LoanCard } from './loan-card';
 <Badge variant="warning">รออนุมัติ</Badge>
 <Badge variant="destructive">ยกเลิก</Badge>
 ```
-

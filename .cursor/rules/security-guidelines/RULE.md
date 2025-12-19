@@ -1,10 +1,10 @@
 ---
-description: "Security guidelines สำหรับ Infinitex Admin"
+description: 'Security guidelines สำหรับ Infinitex Admin'
 alwaysApply: false
 globs:
-  - "**/app/api/**/route.ts"
-  - "**/services/**"
-  - "**/middleware/**"
+  - '**/app/api/**/route.ts'
+  - '**/services/**'
+  - '**/middleware/**'
 ---
 
 # Security Guidelines
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { success: false, message: 'ไม่มีสิทธิ์เข้าถึง' },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 ```typescript
 // ✅ ถูก - validate ด้วย Zod ก่อนใช้งาน
 const body = await request.json();
-const validatedData = loanCreateSchema.parse(body);  // throws if invalid
+const validatedData = loanCreateSchema.parse(body); // throws if invalid
 
 // ✅ ถูก - validate query params
 const filters = Object.fromEntries(searchParams.entries());
@@ -45,7 +45,7 @@ const validatedFilters = loanFiltersSchema.parse(filters);
 
 // ❌ ผิด - ใช้ input โดยตรงไม่ validate
 const body = await request.json();
-await loanService.create(body);  // อันตราย!
+await loanService.create(body); // อันตราย!
 ```
 
 ## 3. SQL Injection Prevention
@@ -55,23 +55,24 @@ await loanService.create(body);  // อันตราย!
 ```typescript
 // ✅ ถูก - Prisma handles escaping
 const user = await prisma.user.findUnique({
-  where: { email: userInput }
+  where: { email: userInput },
 });
 
 // ❌ อันตรายมาก - raw SQL with string interpolation
 const user = await prisma.$queryRaw`
   SELECT * FROM users WHERE email = '${userInput}'
-`;  // SQL Injection vulnerability!
+`; // SQL Injection vulnerability!
 
 // ✅ ถ้าต้องใช้ raw SQL - ใช้ Prisma.$queryRaw with template literal
 const user = await prisma.$queryRaw`
   SELECT * FROM users WHERE email = ${userInput}
-`;  // Prisma will escape this
+`; // Prisma will escape this
 ```
 
 ## 4. Sensitive Data - ห้าม Expose
 
 ### ห้าม return sensitive data
+
 ```typescript
 // ❌ ผิด - return password
 return NextResponse.json({ data: user });
@@ -82,9 +83,10 @@ return NextResponse.json({ data: safeUser });
 ```
 
 ### ห้าม log sensitive data
+
 ```typescript
 // ❌ ผิด
-console.log('User data:', user);  // อาจมี password
+console.log('User data:', user); // อาจมี password
 
 // ✅ ถูก
 console.log('User ID:', user.id);
@@ -137,16 +139,16 @@ const safeFilename = `${Date.now()}-${crypto.randomUUID()}${ext}`;
 // ✅ ตรวจสอบว่า user มีสิทธิ์เข้าถึง resource นี้
 async function getById(id: number, adminId: number) {
   const entity = await repository.findUnique({ where: { id } });
-  
+
   if (!entity) {
     throw new Error('ไม่พบข้อมูล');
   }
-  
+
   // ตรวจสอบ ownership หรือ permission
   if (entity.ownerId !== adminId && !isAdmin(adminId)) {
     throw new Error('ไม่มีสิทธิ์เข้าถึงข้อมูลนี้');
   }
-  
+
   return entity;
 }
 ```
@@ -154,6 +156,7 @@ async function getById(id: number, adminId: number) {
 ## 8. Rate Limiting (ถ้าจำเป็น)
 
 สำหรับ sensitive endpoints:
+
 ```typescript
 // ควรใช้ rate limiting สำหรับ:
 // - Login attempts
@@ -172,4 +175,3 @@ async function getById(id: number, adminId: number) {
 - [ ] Error messages ไม่ leak system info
 - [ ] Log errors ฝั่ง server
 - [ ] ตรวจสอบ authorization ถ้าจำเป็น
-

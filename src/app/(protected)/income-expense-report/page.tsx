@@ -21,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/shared/components/ui/card';
+import { CountingNumber } from '@src/shared/components/ui/counting-number';
 import {
   Dialog,
   DialogContent,
@@ -46,7 +47,6 @@ import {
   TableRow,
 } from '@src/shared/components/ui/table';
 import { Container } from '@src/shared/components/common/container';
-import { CountingNumber } from '@src/shared/components/ui/counting-number';
 
 // Generate year options (current year and 5 previous years)
 const generateYearOptions = () => {

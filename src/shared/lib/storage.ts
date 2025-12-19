@@ -26,9 +26,7 @@ class DigitalOceanStorage {
     this.s3 = new AWS.S3({
       endpoint,
       accessKeyId: process.env.DO_SPACES_KEY || '',
-      secretAccessKey:
-        process.env.DO_SPACES_SECRET ||
-        '',
+      secretAccessKey: process.env.DO_SPACES_SECRET || '',
       s3ForcePathStyle: true, // Use path-style URLs to avoid subdomain certificate issues
       signatureVersion: 'v4',
       region: 'sgp1',

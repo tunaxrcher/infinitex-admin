@@ -1,9 +1,9 @@
 ---
-description: "Pattern สำหรับ Forms ด้วย React Hook Form + Zod"
+description: 'Pattern สำหรับ Forms ด้วย React Hook Form + Zod'
 globs:
-  - "**/*-form.tsx"
-  - "**/*-dialog.tsx"
-  - "**/components/**/*form*.tsx"
+  - '**/*-form.tsx'
+  - '**/*-dialog.tsx'
+  - '**/components/**/*form*.tsx'
 alwaysApply: false
 ---
 
@@ -15,6 +15,11 @@ alwaysApply: false
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateEntity } from '@src/features/[feature]/hooks';
+import {
+  entityCreateSchema,
+  type EntityCreateSchema,
+} from '@src/features/[feature]/validations';
 import { useForm } from 'react-hook-form';
 import { Button } from '@src/shared/components/ui/button';
 import {
@@ -34,18 +39,15 @@ import {
 } from '@src/shared/components/ui/form';
 import { Input } from '@src/shared/components/ui/input';
 
-import { useCreateEntity } from '@src/features/[feature]/hooks';
-import {
-  entityCreateSchema,
-  type EntityCreateSchema,
-} from '@src/features/[feature]/validations';
-
 interface EntityFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) {
+export function EntityFormDialog({
+  open,
+  onOpenChange,
+}: EntityFormDialogProps) {
   const createMutation = useCreateEntity();
 
   const form = useForm<EntityCreateSchema>({
@@ -76,7 +78,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Form fields */}
-            
+
             <DialogFooter>
               <Button
                 type="button"
@@ -100,6 +102,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 ## Form Field Types
 
 ### Text Input
+
 ```tsx
 <FormField
   control={form.control}
@@ -117,6 +120,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 ```
 
 ### Number Input
+
 ```tsx
 <FormField
   control={form.control}
@@ -139,6 +143,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 ```
 
 ### Textarea
+
 ```tsx
 <FormField
   control={form.control}
@@ -160,6 +165,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 ```
 
 ### Select
+
 ```tsx
 <FormField
   control={form.control}
@@ -185,6 +191,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 ```
 
 ### Checkbox
+
 ```tsx
 <FormField
   control={form.control}
@@ -192,10 +199,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
   render={({ field }) => (
     <FormItem className="flex items-center gap-2">
       <FormControl>
-        <Checkbox
-          checked={field.value}
-          onCheckedChange={field.onChange}
-        />
+        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
       </FormControl>
       <FormLabel className="!mt-0">เปิดใช้งาน</FormLabel>
       <FormMessage />
@@ -205,6 +209,7 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 ```
 
 ### Date Picker
+
 ```tsx
 <FormField
   control={form.control}
@@ -245,17 +250,17 @@ export function EntityFormDialog({ open, onOpenChange }: EntityFormDialogProps) 
 interface EntityFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  entityId?: string;  // ถ้ามี = edit mode
+  entityId?: string; // ถ้ามี = edit mode
 }
 
 export function EntityFormDialog({ open, onOpenChange, entityId }: Props) {
   const isEditMode = !!entityId;
-  
+
   // Fetch existing data
   const { data: existingData } = useGetEntityById(entityId!, {
     enabled: isEditMode,
   });
-  
+
   const createMutation = useCreateEntity();
   const updateMutation = useUpdateEntity();
 
@@ -281,7 +286,7 @@ export function EntityFormDialog({ open, onOpenChange, entityId }: Props) {
     if (isEditMode) {
       updateMutation.mutate(
         { id: entityId, data },
-        { onSuccess: () => onOpenChange(false) }
+        { onSuccess: () => onOpenChange(false) },
       );
     } else {
       createMutation.mutate(data, {
@@ -307,9 +312,13 @@ export function EntityFormDialog({ open, onOpenChange, entityId }: Props) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* fields */}
-            
+
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 ยกเลิก
               </Button>
               <Button type="submit" disabled={isPending}>
@@ -344,6 +353,7 @@ export type EntityCreateSchema = z.infer<typeof entityCreateSchema>;
 ## Key Patterns
 
 ### 1. Always use zodResolver
+
 ```tsx
 const form = useForm({
   resolver: zodResolver(schema),  // สำคัญ!
@@ -352,14 +362,16 @@ const form = useForm({
 ```
 
 ### 2. Reset form on success
+
 ```tsx
 onSuccess: () => {
   form.reset();
   onOpenChange(false);
-}
+};
 ```
 
 ### 3. Disable submit while pending
+
 ```tsx
 <Button type="submit" disabled={mutation.isPending}>
   {mutation.isPending ? 'กำลังบันทึก...' : 'บันทึก'}
@@ -367,11 +379,13 @@ onSuccess: () => {
 ```
 
 ### 4. Handle number inputs
+
 ```tsx
 onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
 ```
 
 ### 5. Populate form for edit mode
+
 ```tsx
 useEffect(() => {
   if (existingData) {
@@ -379,4 +393,3 @@ useEffect(() => {
   }
 }, [existingData, form]);
 ```
-

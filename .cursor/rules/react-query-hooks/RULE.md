@@ -1,7 +1,7 @@
 ---
-description: "Pattern สำหรับ React Query hooks ใน feature hooks.ts"
+description: 'Pattern สำหรับ React Query hooks ใน feature hooks.ts'
 globs:
-  - "**/features/**/hooks.ts"
+  - '**/features/**/hooks.ts'
 alwaysApply: false
 ---
 
@@ -13,7 +13,6 @@ alwaysApply: false
 // src/features/[feature-name]/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-
 import { entityApi } from './api';
 import { type EntityFiltersSchema } from './validations';
 
@@ -23,7 +22,8 @@ import { type EntityFiltersSchema } from './validations';
 
 export const entityKeys = {
   all: () => ['entities'] as const,
-  list: (filters?: EntityFiltersSchema) => ['entities', 'list', filters] as const,
+  list: (filters?: EntityFiltersSchema) =>
+    ['entities', 'list', filters] as const,
   detail: (id: string) => ['entities', 'detail', id] as const,
 };
 
@@ -77,7 +77,9 @@ export const useUpdateEntity = () => {
       entityApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['entities', 'list'] });
-      queryClient.invalidateQueries({ queryKey: entityKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: entityKeys.detail(variables.id),
+      });
       queryClient.refetchQueries({ queryKey: ['entities', 'list'] });
       toast.success('แก้ไขรายการสำเร็จ');
     },
@@ -107,11 +109,13 @@ export const useDeleteEntity = () => {
 ## ข้อกำหนดสำคัญ
 
 ### Query Keys Pattern
+
 - ใช้ factory function สำหรับ query keys
 - Structure: `[entity, 'list'/'detail', params]`
 - Export เป็น `entityKeys` object
 
 ### Query Hooks Naming
+
 - `useGet[Entity]List` - ดึงรายการ
 - `useGet[Entity]ById` - ดึงรายละเอียด
 - `useCreate[Entity]` - สร้างใหม่
@@ -120,6 +124,7 @@ export const useDeleteEntity = () => {
 - `useToggle[Entity]Status` - เปลี่ยนสถานะ
 
 ### Query Options ที่แนะนำ
+
 ```typescript
 {
   placeholderData: (previousData) => previousData, // ป้องกัน loading flash
@@ -131,21 +136,22 @@ export const useDeleteEntity = () => {
 ```
 
 ### Mutation Pattern
+
 1. `invalidateQueries` - ทำให้ cache หมดอายุ
 2. `refetchQueries` - ดึงข้อมูลใหม่ทันที
 3. `removeQueries` - ลบ cache สำหรับ delete operations
 4. Toast notifications ภาษาไทย
 
 ## Toast Messages ที่ใช้บ่อย
+
 ```typescript
 // Success
-toast.success('สร้างรายการสำเร็จ')
-toast.success('แก้ไขรายการสำเร็จ')
-toast.success('ลบรายการสำเร็จ')
-toast.success('อัปเดตสถานะสำเร็จ')
-toast.success('บันทึกสำเร็จ')
+toast.success('สร้างรายการสำเร็จ');
+toast.success('แก้ไขรายการสำเร็จ');
+toast.success('ลบรายการสำเร็จ');
+toast.success('อัปเดตสถานะสำเร็จ');
+toast.success('บันทึกสำเร็จ');
 
 // Error
-toast.error(error.message || 'เกิดข้อผิดพลาด')
+toast.error(error.message || 'เกิดข้อผิดพลาด');
 ```
-

@@ -1,7 +1,7 @@
 ---
-description: "Pattern สำหรับ Next.js API routes ใน app/api"
+description: 'Pattern สำหรับ Next.js API routes ใน app/api'
 globs:
-  - "**/app/api/**/route.ts"
+  - '**/app/api/**/route.ts'
 alwaysApply: false
 ---
 
@@ -13,7 +13,10 @@ alwaysApply: false
 // src/app/api/[entity]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { entityService } from '@src/features/[feature]/services/server';
-import { entityFiltersSchema, entityCreateSchema } from '@src/features/[feature]/validations';
+import {
+  entityCreateSchema,
+  entityFiltersSchema,
+} from '@src/features/[feature]/validations';
 import { getAdminFromToken } from '@src/shared/lib/auth';
 
 // ============================================
@@ -57,7 +60,11 @@ export async function POST(request: NextRequest) {
     const validatedData = entityCreateSchema.parse(body);
 
     const { adminId, adminName } = await getAdminFromToken(request);
-    const result = await entityService.create(validatedData, adminId, adminName);
+    const result = await entityService.create(
+      validatedData,
+      adminId,
+      adminName,
+    );
 
     return NextResponse.json({
       success: true,
@@ -192,16 +199,20 @@ export async function DELETE(
 // ❌ ผิด - เขียน logic ใน route.ts
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  
+
   // ❌ ไม่ควรมี business logic ใน route
-  const existingUser = await prisma.user.findUnique({ where: { email: body.email } });
+  const existingUser = await prisma.user.findUnique({
+    where: { email: body.email },
+  });
   if (existingUser) {
     throw new Error('อีเมลนี้ถูกใช้งานแล้ว');
   }
-  
+
   const hashedPassword = await bcrypt.hash(body.password, 10);
-  const user = await prisma.user.create({ data: { ...body, password: hashedPassword } });
-  
+  const user = await prisma.user.create({
+    data: { ...body, password: hashedPassword },
+  });
+
   return NextResponse.json({ success: true, data: user });
 }
 
@@ -209,15 +220,16 @@ export async function POST(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const validatedData = userCreateSchema.parse(body);
-  
+
   const { adminId, adminName } = await getAdminFromToken(request);
   const result = await userService.create(validatedData, adminId, adminName);
-  
+
   return NextResponse.json({ success: true, data: result });
 }
 ```
 
 ### หน้าที่ของ API Route:
+
 1. ✅ รับ request (query params, body, formData)
 2. ✅ Validate ด้วย Zod schema
 3. ✅ ดึง auth info จาก token
@@ -226,6 +238,7 @@ export async function POST(request: NextRequest) {
 6. ✅ Handle errors และ log
 
 ### สิ่งที่ไม่ควรทำใน API Route:
+
 - ❌ เขียน query database โดยตรง
 - ❌ เขียน business logic (validation rules, calculations)
 - ❌ เรียก repository โดยตรง (ต้องผ่าน service)
@@ -236,6 +249,7 @@ export async function POST(request: NextRequest) {
 ## ข้อกำหนดสำคัญ
 
 ### Response Format
+
 ```typescript
 // Success response
 {
@@ -254,16 +268,19 @@ export async function POST(request: NextRequest) {
 ```
 
 ### Error Logging
+
 ```typescript
 console.error('[API Error] METHOD /api/path:', error);
 ```
 
 ### Auth Pattern
+
 ```typescript
 const { adminId, adminName } = await getAdminFromToken(request);
 ```
 
 ### Validation Pattern
+
 ```typescript
 // Query params
 const filters = Object.fromEntries(searchParams.entries());
@@ -275,15 +292,16 @@ const validatedData = entityCreateSchema.parse(body);
 ```
 
 ### File Upload Pattern
+
 ```typescript
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    
+
     // Parse form data
     const data: any = {};
     const files: File[] = [];
-    
+
     for (const [key, value] of formData.entries()) {
       if (key === 'files' && value instanceof File) {
         files.push(value);
@@ -291,16 +309,20 @@ export async function POST(request: NextRequest) {
         data[key] = value;
       }
     }
-    
+
     // Upload files
     const uploadedUrls = await uploadFilesToStorage(files, 'uploads');
-    
+
     // Create record with file URLs
-    const result = await entityService.create({
-      ...data,
-      fileUrls: uploadedUrls,
-    }, adminId, adminName);
-    
+    const result = await entityService.create(
+      {
+        ...data,
+        fileUrls: uploadedUrls,
+      },
+      adminId,
+      adminName,
+    );
+
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
     // ...
@@ -309,13 +331,13 @@ export async function POST(request: NextRequest) {
 ```
 
 ## Common Success Messages
-```typescript
-'สำเร็จ'
-'สร้างรายการสำเร็จ'
-'แก้ไขรายการสำเร็จ'
-'ลบรายการสำเร็จ'
-'อนุมัติสำเร็จ'
-'ยกเลิกสำเร็จ'
-'อัปโหลดสำเร็จ'
-```
 
+```typescript
+'สำเร็จ';
+'สร้างรายการสำเร็จ';
+'แก้ไขรายการสำเร็จ';
+'ลบรายการสำเร็จ';
+'อนุมัติสำเร็จ';
+'ยกเลิกสำเร็จ';
+'อัปโหลดสำเร็จ';
+```

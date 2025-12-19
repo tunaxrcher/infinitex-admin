@@ -1,5 +1,5 @@
 ---
-description: "Template สำหรับสร้าง feature ใหม่ตาม Infinitex architecture"
+description: 'Template สำหรับสร้าง feature ใหม่ตาม Infinitex architecture'
 alwaysApply: false
 ---
 
@@ -31,11 +31,13 @@ src/app/api/[entity]/
 ## Checklist สำหรับสร้าง Feature ใหม่
 
 ### 1. Database (ถ้าต้องการ)
+
 - [ ] เพิ่ม model ใน `prisma/schema.prisma`
 - [ ] รัน `npx prisma migrate dev`
 - [ ] รัน `npx prisma generate`
 
 ### 2. Feature Files
+
 - [ ] สร้าง `validations.ts` ก่อน (เพราะ files อื่นต้อง import types)
 - [ ] สร้าง `repositories/[entity]Repository.ts`
 - [ ] สร้าง `services/server.ts`
@@ -43,11 +45,13 @@ src/app/api/[entity]/
 - [ ] สร้าง `hooks.ts`
 
 ### 3. API Routes
+
 - [ ] สร้าง `src/app/api/[entity]/route.ts` (GET, POST)
 - [ ] สร้าง `src/app/api/[entity]/[id]/route.ts` (GET, PUT, DELETE)
 - [ ] เพิ่ม routes พิเศษตามความต้องการ
 
 ### 4. Components & Pages (optional)
+
 - [ ] สร้าง components ใน `src/features/[feature]/components/`
 - [ ] สร้าง page ใน `src/app/(protected)/admin/[feature]/page.tsx`
 
@@ -77,6 +81,7 @@ Entity fields:
 ผู้ใช้: "สร้าง feature products สำหรับจัดการสินค้า มี name, price, category, status"
 
 AI จะสร้าง:
+
 1. `src/features/products/validations.ts`
 2. `src/features/products/repositories/productRepository.ts`
 3. `src/features/products/services/server.ts`
@@ -87,15 +92,14 @@ AI จะสร้าง:
 
 ## Naming Convention Summary
 
-| Type | Format | Example |
-|------|--------|---------|
-| Feature folder | kebab-case | `products`, `land-accounts` |
-| Entity name | camelCase | `product`, `landAccount` |
-| Repository class | PascalCase | `ProductRepository` |
-| Repository instance | camelCase | `productRepository` |
-| Service object | camelCase | `productService` |
-| API object | camelCase | `productApi` |
-| Hooks | camelCase + usePrefix | `useGetProductList` |
-| Schema | camelCase + Suffix | `productCreateSchema` |
-| Type | PascalCase + Suffix | `ProductCreateSchema` |
-
+| Type                | Format                | Example                     |
+| ------------------- | --------------------- | --------------------------- |
+| Feature folder      | kebab-case            | `products`, `land-accounts` |
+| Entity name         | camelCase             | `product`, `landAccount`    |
+| Repository class    | PascalCase            | `ProductRepository`         |
+| Repository instance | camelCase             | `productRepository`         |
+| Service object      | camelCase             | `productService`            |
+| API object          | camelCase             | `productApi`                |
+| Hooks               | camelCase + usePrefix | `useGetProductList`         |
+| Schema              | camelCase + Suffix    | `productCreateSchema`       |
+| Type                | PascalCase + Suffix   | `ProductCreateSchema`       |
