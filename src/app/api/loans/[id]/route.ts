@@ -15,12 +15,15 @@ function parseFormDataFields(formData: FormData) {
   const data: any = {};
   const titleDeedFiles: File[] = [];
   const supportingFiles: File[] = [];
+  let idCardFile: File | null = null;
 
   for (const [key, value] of formData.entries()) {
     if (key === 'titleDeedFiles' && value instanceof File) {
       titleDeedFiles.push(value);
     } else if (key === 'supportingFiles' && value instanceof File) {
       supportingFiles.push(value);
+    } else if (key === 'idCardFile' && value instanceof File) {
+      idCardFile = value;
     } else if (
       key === 'existingImageUrls' ||
       key === 'existingSupportingImageUrls'
@@ -50,7 +53,7 @@ function parseFormDataFields(formData: FormData) {
     }
   }
 
-  return { data, titleDeedFiles, supportingFiles };
+  return { data, titleDeedFiles, supportingFiles, idCardFile };
 }
 
 /**
@@ -148,13 +151,18 @@ export async function PUT(
     const formData = await request.formData();
 
     // Parse form data
-    const { data, titleDeedFiles, supportingFiles } =
+    const { data, titleDeedFiles, supportingFiles, idCardFile } =
       parseFormDataFields(formData);
 
     // Upload files
-    const [newTitleDeedUrls, newSupportingUrls] = await Promise.all([
+    const [newTitleDeedUrls, newSupportingUrls, idCardUrl] = await Promise.all([
       uploadFilesToStorage(titleDeedFiles, 'title-deeds'),
       uploadFilesToStorage(supportingFiles, 'supporting-images'),
+      idCardFile
+        ? uploadFilesToStorage([idCardFile], 'id-cards').then(
+            (urls) => urls[0] || null,
+          )
+        : Promise.resolve(null),
     ]);
 
     // Process images (replace if new, keep existing otherwise)
@@ -171,6 +179,12 @@ export async function PUT(
       existingSupportingUrls,
       'supporting images',
     );
+
+    // Add ID card image if uploaded
+    if (idCardUrl) {
+      data.idCardImage = idCardUrl;
+      console.log('[API Update] Uploaded ID card image:', idCardUrl);
+    }
 
     // Validate and update
     const validatedData = loanUpdateSchema.parse(data);

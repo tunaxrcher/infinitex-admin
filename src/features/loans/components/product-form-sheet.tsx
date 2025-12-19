@@ -514,6 +514,15 @@ export function ProductFormSheet({
         supportingImgs.push(...loan.application.supportingImages);
       }
       setExistingSupportingImages(supportingImgs);
+
+      // Load existing ID card image
+      const existingIdCardImage =
+        loan.application?.idCardFrontImage ||
+        loan.customer?.profile?.idCardFrontImage;
+      if (existingIdCardImage) {
+        setIdCardImage(existingIdCardImage);
+        console.log('[Form] Loaded existing ID card image:', existingIdCardImage);
+      }
     }
   }, [mode, loanData, open, loanId]);
 
@@ -967,6 +976,11 @@ export function ProductFormSheet({
                                         <Check className="mr-2 h-4 w-4" />
                                         บัตรประชาชนถูกอัพโหลดแล้ว
                                       </>
+                                    ) : idCardImage ? (
+                                      <>
+                                        <Check className="mr-2 h-4 w-4" />
+                                        มีบัตรประชาชนในระบบแล้ว (คลิกเพื่อเปลี่ยน)
+                                      </>
                                     ) : (
                                       <>
                                         <svg
@@ -986,7 +1000,7 @@ export function ProductFormSheet({
                                       </>
                                     )}
                                   </Button>
-                                  {idCardFile && (
+                                  {(idCardFile || idCardImage) && (
                                     <Button
                                       type="button"
                                       variant="destructive"

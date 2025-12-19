@@ -869,15 +869,19 @@ export const loanService = {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
+    // ตรวจสอบว่ามี Loan record หรือไม่ (สินเชื่อที่ยังไม่อนุมัติจะไม่มี Loan record)
+    const hasLoanRecord = await prisma.loan.findUnique({ where: { id } });
+    const isApplicationOnly = !hasLoanRecord;
+
     // คำนวณข้อมูลใหม่ถ้ามีการเปลี่ยนแปลง
-    let monthlyPayment = Number(existing.monthlyPayment);
-    let termMonths = existing.termMonths;
-    let remainingBalance = Number(existing.remainingBalance);
+    let monthlyPayment = Number(existing.monthlyPayment || 0);
+    let termMonths = existing.termMonths || 48;
+    let remainingBalance = Number(existing.remainingBalance || 0);
 
     if (data.loanAmount || data.loanYears || data.interestRate) {
-      const loanAmount = data.loanAmount ?? Number(existing.principalAmount);
-      const loanYears = data.loanYears ?? existing.termMonths / 12;
-      const interestRate = data.interestRate ?? Number(existing.interestRate);
+      const loanAmount = data.loanAmount ?? Number(existing.principalAmount || 0);
+      const loanYears = data.loanYears ?? (existing.termMonths ? existing.termMonths / 12 : 4);
+      const interestRate = data.interestRate ?? Number(existing.interestRate || 1);
 
       termMonths = loanYears * 12;
 
@@ -889,41 +893,45 @@ export const loanService = {
 
     // Use transaction for update
     return prisma.$transaction(async (tx) => {
-      // Step 1: Update Loan
-      const updateData: Prisma.LoanUpdateInput = {
-        ...(data.loanAmount && { principalAmount: data.loanAmount }),
-        ...(data.interestRate && { interestRate: data.interestRate }),
-        ...(data.loanYears && {
-          termMonths,
-          totalInstallments: termMonths,
-        }),
-        monthlyPayment,
-        remainingBalance,
-        ...(data.loanStartDate && {
-          contractDate: new Date(data.loanStartDate),
-        }),
-        ...(data.loanDueDate && { expiryDate: new Date(data.loanDueDate) }),
-        ...(data.landNumber && { titleDeedNumber: data.landNumber }),
-        updatedAt: new Date(),
-      };
+      let updatedLoan = null;
 
-      const updatedLoan = await tx.loan.update({
-        where: { id },
-        data: updateData,
-        include: {
-          customer: {
-            include: {
-              profile: true,
+      // Step 1: Update Loan (only if loan record exists)
+      if (!isApplicationOnly) {
+        const updateData: Prisma.LoanUpdateInput = {
+          ...(data.loanAmount && { principalAmount: data.loanAmount }),
+          ...(data.interestRate && { interestRate: data.interestRate }),
+          ...(data.loanYears && {
+            termMonths,
+            totalInstallments: termMonths,
+          }),
+          monthlyPayment,
+          remainingBalance,
+          ...(data.loanStartDate && {
+            contractDate: new Date(data.loanStartDate),
+          }),
+          ...(data.loanDueDate && { expiryDate: new Date(data.loanDueDate) }),
+          ...(data.landNumber && { titleDeedNumber: data.landNumber }),
+          updatedAt: new Date(),
+        };
+
+        updatedLoan = await tx.loan.update({
+          where: { id },
+          data: updateData,
+          include: {
+            customer: {
+              include: {
+                profile: true,
+              },
             },
+            application: true,
           },
-          application: true,
-        },
-      });
+        });
+      }
 
       // Step 2: Update UserProfile ในตาราง user_profiles (ถ้ามีการเปลี่ยนแปลง)
       if (
         existing.customerId &&
-        (data.fullName || data.email || data.address || data.birthDate)
+        (data.fullName || data.email || data.address || data.birthDate || data.idCardImage)
       ) {
         const profileData: any = {};
 
@@ -937,6 +945,8 @@ export const loanService = {
         if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
         if (data.idCard)
           profileData.idCardNumber = data.idCard.replace(/\D/g, '');
+        if (data.idCardImage)
+          profileData.idCardFrontImage = data.idCardImage;
 
         // อัพเดท UserProfile
         await tx.userProfile.update({
@@ -977,7 +987,8 @@ export const loanService = {
         data.maxApprovedAmount !== undefined ||
         data.loanAmount ||
         data.titleDeedImages ||
-        data.supportingImages
+        data.supportingImages ||
+        data.idCardImage
       ) {
         const updateApplicationData: any = {
           ...(data.ownerName && { ownerName: data.ownerName }),
@@ -1016,13 +1027,40 @@ export const loanService = {
           });
         }
 
+        // Update ID card image (แทนที่รูปเดิม)
+        if (data.idCardImage) {
+          updateApplicationData.idCardFrontImage = data.idCardImage;
+
+          console.log('[Service] Replacing ID card image:', {
+            idCardFrontImage: data.idCardImage,
+          });
+        }
+
         await tx.loanApplication.update({
           where: { id: existing.applicationId },
           data: updateApplicationData,
         });
       }
 
-      return updatedLoan;
+      // Return updated data
+      if (updatedLoan) {
+        return updatedLoan;
+      }
+
+      // If no loan record, return updated application data
+      const updatedApplication = await tx.loanApplication.findUnique({
+        where: { id: existing.applicationId },
+        include: {
+          customer: {
+            include: {
+              profile: true,
+            },
+          },
+          loan: true,
+        },
+      });
+
+      return updatedApplication;
     });
   },
 

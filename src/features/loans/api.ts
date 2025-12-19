@@ -104,6 +104,7 @@ export const loanApi = {
       existingImageUrls?: string[];
       supportingFiles?: File[];
       existingSupportingImageUrls?: string[];
+      idCardFile?: File | null;
     },
   ) => {
     // Create FormData to send files along with loan data
@@ -125,6 +126,9 @@ export const loanApi = {
             formData.append('supportingFiles', file);
           }
         });
+      } else if (key === 'idCardFile' && value instanceof File) {
+        // Append ID card file
+        formData.append('idCardFile', value);
       } else if (key === 'existingImageUrls' && Array.isArray(value)) {
         // Append existing title deed image URLs as JSON array
         formData.append('existingImageUrls', JSON.stringify(value));
