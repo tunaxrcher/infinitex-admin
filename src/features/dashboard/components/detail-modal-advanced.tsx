@@ -84,8 +84,7 @@ export function DetailModalAdvanced({
           ),
         },
         {
-          accessorFn: (row) =>
-            `${row.customer?.profile?.firstName || ''} ${row.customer?.profile?.lastName || ''}`.trim(),
+          accessorFn: (row) => row.customer?.profile?.fullName || '',
           id: 'customerName',
           header: 'ชื่อลูกค้า',
           cell: ({ row }) => <div>{row.getValue('customerName') || '-'}</div>,
@@ -155,8 +154,7 @@ export function DetailModalAdvanced({
           ),
         },
         {
-          accessorFn: (row) =>
-            `${row.user?.profile?.firstName || ''} ${row.user?.profile?.lastName || ''}`.trim(),
+          accessorFn: (row) => row.user?.profile?.fullName || '',
           id: 'customerName',
           header: 'ชื่อลูกค้า',
           cell: ({ row }) => <div>{row.getValue('customerName') || '-'}</div>,
@@ -254,8 +252,7 @@ export function DetailModalAdvanced({
         ),
       },
       {
-        accessorFn: (row) =>
-          `${row.loan?.customer?.profile?.firstName || ''} ${row.loan?.customer?.profile?.lastName || ''}`.trim(),
+        accessorFn: (row) => row.loan?.customer?.profile?.fullName || '',
         id: 'customerName',
         header: 'ชื่อลูกค้า',
         cell: ({ row }) => <div>{row.getValue('customerName') || '-'}</div>,

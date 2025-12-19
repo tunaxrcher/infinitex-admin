@@ -192,10 +192,7 @@ export function ProductListTable({
         | Record<string, unknown>
         | undefined;
 
-      const customerFirstName = (profile?.firstName as string) || '';
-      const customerLastName = (profile?.lastName as string) || '';
-      const fullName =
-        `${customerFirstName} ${customerLastName}`.trim() || 'ไม่ระบุ';
+      const fullName = (profile?.fullName as string) || 'ไม่ระบุ';
 
       // กำหนดสถานะตาม loan.status หรือ application.status
       const loanStatus = loanData.status as string;

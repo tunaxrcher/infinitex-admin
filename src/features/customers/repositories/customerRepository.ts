@@ -11,8 +11,7 @@ export const customerRepository = {
         userType: 'CUSTOMER',
         OR: [
           { phoneNumber: { contains: query } },
-          { profile: { firstName: { contains: query } } },
-          { profile: { lastName: { contains: query } } },
+          { profile: { fullName: { contains: query } } },
         ],
       },
       include: {

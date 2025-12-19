@@ -351,8 +351,7 @@ export function ProductFormSheet({
   const handleSelectCustomer = (customer: {
     phoneNumber: string;
     profile?: {
-      firstName?: string | null;
-      lastName?: string | null;
+      fullName?: string | null;
       idCardNumber?: string | null;
       email?: string | null;
       dateOfBirth?: Date | null;
@@ -360,9 +359,7 @@ export function ProductFormSheet({
     } | null;
   }) => {
     setPhoneNumber(customer.phoneNumber || '');
-    setFullName(
-      `${customer.profile?.firstName || ''} ${customer.profile?.lastName || ''}`.trim(),
-    );
+    setFullName(customer.profile?.fullName || '');
     setIdCard(customer.profile?.idCardNumber || '');
     setEmail(customer.profile?.email || '');
     if (customer.profile?.dateOfBirth) {
@@ -478,9 +475,7 @@ export function ProductFormSheet({
       setLoanDueDate(new Date(loan.expiryDate).toISOString().split('T')[0]);
 
       // Section 2: ข้อมูลลูกค้า
-      const firstName = loan.customer?.profile?.firstName || '';
-      const lastName = loan.customer?.profile?.lastName || '';
-      setFullName(`${firstName} ${lastName}`.trim());
+      setFullName(loan.customer?.profile?.fullName || '');
       setPhoneNumber(loan.customer?.phoneNumber || '');
       setIdCard(loan.customer?.profile?.idCardNumber || '');
       setEmail(loan.customer?.profile?.email || '');
@@ -863,12 +858,11 @@ export function ProductFormSheet({
                                             id: string;
                                             phoneNumber: string;
                                             profile?: {
-                                              firstName?: string | null;
-                                              lastName?: string | null;
+                                              fullName?: string | null;
                                             } | null;
                                           }) => {
                                             const displayName =
-                                              `${customer.profile?.firstName || ''} ${customer.profile?.lastName || ''}`.trim();
+                                              customer.profile?.fullName || '';
                                             return (
                                               <CommandItem
                                                 key={customer.id}

@@ -56,28 +56,22 @@ export function DetailModal({
 
     return data.filter((item) => {
       if (type === 'loan') {
-        const customerName =
-          `${item.customer?.profile?.firstName || ''} ${item.customer?.profile?.lastName || ''}`
-            .trim()
-            .toLowerCase();
+        const customerName = (item.customer?.profile?.fullName || '')
+          .toLowerCase();
         const loanNumber = (item.loanNumber || '').toLowerCase();
         return loanNumber.includes(query) || customerName.includes(query);
       }
 
       if (type === 'payment') {
-        const customerName =
-          `${item.user?.profile?.firstName || ''} ${item.user?.profile?.lastName || ''}`
-            .trim()
-            .toLowerCase();
+        const customerName = (item.user?.profile?.fullName || '')
+          .toLowerCase();
         const loanNumber = (item.loan?.loanNumber || '').toLowerCase();
         return loanNumber.includes(query) || customerName.includes(query);
       }
 
       if (type === 'installment') {
-        const customerName =
-          `${item.loan?.customer?.profile?.firstName || ''} ${item.loan?.customer?.profile?.lastName || ''}`
-            .trim()
-            .toLowerCase();
+        const customerName = (item.loan?.customer?.profile?.fullName || '')
+          .toLowerCase();
         const loanNumber = (item.loan?.loanNumber || '').toLowerCase();
         return loanNumber.includes(query) || customerName.includes(query);
       }
@@ -139,8 +133,7 @@ export function DetailModal({
             </TableHeader>
             <TableBody>
               {filteredData.map((loan: any) => {
-                const customerName =
-                  `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim();
+                const customerName = loan.customer?.profile?.fullName || '';
                 return (
                   <TableRow key={loan.id}>
                     <TableCell className="font-medium">
@@ -206,8 +199,7 @@ export function DetailModal({
             </TableHeader>
             <TableBody>
               {filteredData.map((payment: any) => {
-                const customerName =
-                  `${payment.user?.profile?.firstName || ''} ${payment.user?.profile?.lastName || ''}`.trim();
+                const customerName = payment.user?.profile?.fullName || '';
                 return (
                   <TableRow key={payment.id}>
                     <TableCell className="font-medium">
@@ -290,8 +282,7 @@ export function DetailModal({
                         (1000 * 60 * 60 * 24),
                     )
                   : 0;
-                const customerName =
-                  `${installment.loan?.customer?.profile?.firstName || ''} ${installment.loan?.customer?.profile?.lastName || ''}`.trim();
+                const customerName = installment.loan?.customer?.profile?.fullName || '';
                 return (
                   <TableRow key={installment.id}>
                     <TableCell className="font-medium">

@@ -138,32 +138,16 @@ function generateInstallmentsData(
   return installments;
 }
 
-/**
- * Parse full name to first and last name
- */
-function parseFullName(fullName: string): {
-  firstName: string;
-  lastName: string;
-} {
-  const parts = fullName.split(' ');
-  return {
-    firstName: parts[0] || fullName,
-    lastName: parts.slice(1).join(' ') || '',
-  };
-}
 
 /**
  * Format loan data for application creation
  */
 function prepareLoanApplicationData(data: any) {
-  const { firstName, lastName } = parseFullName(data.fullName);
-
   return {
     customerData: {
       phoneNumber: data.phoneNumber,
       profile: {
-        firstName,
-        lastName,
+        fullName: data.fullName,
         idCardNumber: data.idCard.replace(/\D/g, ''),
         dateOfBirth: data.birthDate ? new Date(data.birthDate) : null,
         address: data.address,
@@ -206,8 +190,7 @@ async function upsertCustomer(
   tx: any,
   phoneNumber: string,
   profileData: {
-    firstName: string;
-    lastName: string;
+    fullName: string;
     idCardNumber: string;
     dateOfBirth: Date | null;
     address: string;
@@ -557,8 +540,7 @@ export const loanService = {
     if (search) {
       const searchConditions: Prisma.LoanApplicationWhereInput[] = [
         // ค้นหาจากชื่อลูกค้า
-        { customer: { profile: { firstName: { contains: search } } } },
-        { customer: { profile: { lastName: { contains: search } } } },
+        { customer: { profile: { fullName: { contains: search } } } },
         // ค้นหาจากที่ตั้งทรัพย์สิน
         { propertyLocation: { contains: search } },
         { ownerName: { contains: search } },
@@ -936,9 +918,7 @@ export const loanService = {
         const profileData: any = {};
 
         if (data.fullName) {
-          profileData.firstName = data.fullName.split(' ')[0] || data.fullName;
-          profileData.lastName =
-            data.fullName.split(' ').slice(1).join(' ') || '';
+          profileData.fullName = data.fullName;
         }
         if (data.email) profileData.email = data.email;
         if (data.address) profileData.address = data.address;
@@ -1170,8 +1150,7 @@ export const loanService = {
 
     // Deduct from land account
     if (landAccountId) {
-      const customerName =
-        `${application.customer?.profile?.firstName || ''} ${application.customer?.profile?.lastName || ''}`.trim();
+      const customerName = application.customer?.profile?.fullName || '';
 
       await updateLandAccountBalance(
         tx,
@@ -1718,8 +1697,7 @@ export const paymentService = {
             phoneNumber: true,
             profile: {
               select: {
-                firstName: true,
-                lastName: true,
+                fullName: true,
               },
             },
           },

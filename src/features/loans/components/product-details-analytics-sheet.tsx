@@ -533,8 +533,7 @@ export function ProductDetailsAnalyticsSheet({
                   <div className="flex items-center gap-2.5">
                     <span className="lg:text-[22px] font-semibold text-foreground leading-none">
                       {loan
-                        ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim() ||
-                          'ไม่ระบุ'
+                        ? loan.customer?.profile?.fullName || 'ไม่ระบุ'
                         : 'ไม่ระบุ'}
                     </span>
                     <div className="flex flex-col gap-1">
@@ -1828,7 +1827,7 @@ export function ProductDetailsAnalyticsSheet({
                           id="borrower"
                           value={
                             loan
-                              ? `${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim()
+                              ? loan.customer?.profile?.fullName || '-'
                               : '-'
                           }
                           disabled
@@ -2092,7 +2091,7 @@ export function ProductDetailsAnalyticsSheet({
                         </Label>
                         <Input
                           id="closeBorrower"
-                          value={`${loan.customer?.profile?.firstName || ''} ${loan.customer?.profile?.lastName || ''}`.trim()}
+                          value={loan.customer?.profile?.fullName || ''}
                           disabled
                           className="bg-muted"
                         />

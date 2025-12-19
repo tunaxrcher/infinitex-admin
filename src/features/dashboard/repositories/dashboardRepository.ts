@@ -120,8 +120,7 @@ export class DashboardRepository {
         li.*,
         l.loanNumber,
         l.status as loanStatus,
-        up.firstName,
-        up.lastName
+        up.fullName
       FROM loan_installments li
       INNER JOIN loans l ON li.loanId = l.id
       LEFT JOIN users u ON l.customerId = u.id
@@ -142,8 +141,7 @@ export class DashboardRepository {
         status: item.loanStatus,
         customer: {
           profile: {
-            firstName: item.firstName,
-            lastName: item.lastName,
+            fullName: item.fullName,
           },
         },
       },

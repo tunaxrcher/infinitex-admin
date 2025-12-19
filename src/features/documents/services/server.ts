@@ -680,9 +680,7 @@ export const incomeExpenseReportService = {
         type: 'loan',
         date: loan.contractDate,
         loanNumber: loan.loanNumber,
-        customerName: loan.customer?.profile
-          ? `${loan.customer.profile.firstName || ''} ${loan.customer.profile.lastName || ''}`.trim()
-          : '-',
+        customerName: loan.customer?.profile?.fullName || '-',
         operationFee: Number(loan.application?.operationFee || 0),
         transferFee: Number(loan.application?.transferFee || 0),
         otherFee: Number(loan.application?.otherFee || 0),
@@ -730,9 +728,7 @@ export const incomeExpenseReportService = {
         type: 'payment',
         date: payment.paidDate,
         loanNumber: payment.loan?.loanNumber || '-',
-        customerName: payment.user?.profile
-          ? `${payment.user.profile.firstName || ''} ${payment.user.profile.lastName || ''}`.trim()
-          : '-',
+        customerName: payment.user?.profile?.fullName || '-',
         installmentNumber: payment.installment?.installmentNumber || null,
         amount: Number(payment.amount),
         principalAmount: Number(payment.principalAmount || 0),

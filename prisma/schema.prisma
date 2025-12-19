@@ -66,8 +66,7 @@ model UserProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Personal information
-  firstName    String?   @db.VarChar(255)
-  lastName     String?   @db.VarChar(255)
+  fullName     String?   @db.VarChar(500)
   idCardNumber String?   @db.VarChar(13)
   dateOfBirth  DateTime? @db.DateTime(0)
   address      String?   @db.Text
