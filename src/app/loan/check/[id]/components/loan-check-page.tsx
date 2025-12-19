@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { PinEntryScreen } from './pin-entry-screen';
 import { LoanDetailsView } from './loan-details-view';
+import { PinEntryScreen } from './pin-entry-screen';
 
 interface LoanCheckPageProps {
   loanApplicationId: string;
@@ -28,4 +28,3 @@ export function LoanCheckPage({ loanApplicationId }: LoanCheckPageProps) {
     />
   );
 }
-

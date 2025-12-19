@@ -1,8 +1,8 @@
 // src/app/api/loan-check/[id]/reject/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { loanService } from '@src/features/loans/services/server';
-import { sendLoanRejectionToLine } from '@src/shared/lib/line-api';
 import { prisma } from '@src/shared/lib/db';
+import { sendLoanRejectionToLine } from '@src/shared/lib/line-api';
 import { z } from 'zod';
 
 const rejectSchema = z.object({
@@ -46,14 +46,20 @@ export async function POST(
       try {
         await sendLoanRejectionToLine({
           amount: `฿${Number(application.requestedAmount).toLocaleString('th-TH')}`,
-          ownerName: application.ownerName || application.customer?.profile?.fullName || '',
+          ownerName:
+            application.ownerName ||
+            application.customer?.profile?.fullName ||
+            '',
           propertyLocation: application.propertyLocation || undefined,
           parcelNo: application.landNumber || undefined,
           reason: reviewNotes,
           status: 'rejected',
         });
       } catch (lineError) {
-        console.error('[LINE API] Failed to send rejection notification:', lineError);
+        console.error(
+          '[LINE API] Failed to send rejection notification:',
+          lineError,
+        );
         // Don't fail the request if LINE notification fails
       }
     }
@@ -75,4 +81,3 @@ export async function POST(
     );
   }
 }
-

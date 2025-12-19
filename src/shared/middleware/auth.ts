@@ -8,6 +8,7 @@ const publicPages = [
   '/reset-password',
   '/verify-email',
   '/change-password',
+  '/loan/check', // หน้าตรวจสอบสินเชื่อสาธารณะ (ใช้ PIN แทน)
 ];
 
 // หน้าเริ่มต้นหลัง login

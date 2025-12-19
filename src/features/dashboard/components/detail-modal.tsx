@@ -56,22 +56,23 @@ export function DetailModal({
 
     return data.filter((item) => {
       if (type === 'loan') {
-        const customerName = (item.customer?.profile?.fullName || '')
-          .toLowerCase();
+        const customerName = (
+          item.customer?.profile?.fullName || ''
+        ).toLowerCase();
         const loanNumber = (item.loanNumber || '').toLowerCase();
         return loanNumber.includes(query) || customerName.includes(query);
       }
 
       if (type === 'payment') {
-        const customerName = (item.user?.profile?.fullName || '')
-          .toLowerCase();
+        const customerName = (item.user?.profile?.fullName || '').toLowerCase();
         const loanNumber = (item.loan?.loanNumber || '').toLowerCase();
         return loanNumber.includes(query) || customerName.includes(query);
       }
 
       if (type === 'installment') {
-        const customerName = (item.loan?.customer?.profile?.fullName || '')
-          .toLowerCase();
+        const customerName = (
+          item.loan?.customer?.profile?.fullName || ''
+        ).toLowerCase();
         const loanNumber = (item.loan?.loanNumber || '').toLowerCase();
         return loanNumber.includes(query) || customerName.includes(query);
       }
@@ -282,7 +283,8 @@ export function DetailModal({
                         (1000 * 60 * 60 * 24),
                     )
                   : 0;
-                const customerName = installment.loan?.customer?.profile?.fullName || '';
+                const customerName =
+                  installment.loan?.customer?.profile?.fullName || '';
                 return (
                   <TableRow key={installment.id}>
                     <TableCell className="font-medium">

@@ -3,23 +3,23 @@
  * For sending Flex Messages to LINE groups
  */
 
-const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || '' 
-const LINE_GROUP_ID = process.env.LINE_GROUP_ID || ''
-const LINE_API_URL = 'https://api.line.me/v2/bot/message/push'
+const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || '';
+const LINE_GROUP_ID = process.env.LINE_GROUP_ID || '';
+const LINE_API_URL = 'https://api.line.me/v2/bot/message/push';
 
 export interface LoanFlexMessageData {
-  amount: string
-  ownerName: string
-  propertyLocation?: string
-  propertyArea?: string
-  parcelNo?: string
-  amphur?: string
-  province?: string
-  latitude?: string
-  longitude?: string
-  notes?: string
-  titleDeedImageUrl?: string
-  supportingImageUrls?: string[]
+  amount: string;
+  ownerName: string;
+  propertyLocation?: string;
+  propertyArea?: string;
+  parcelNo?: string;
+  amphur?: string;
+  province?: string;
+  latitude?: string;
+  longitude?: string;
+  notes?: string;
+  titleDeedImageUrl?: string;
+  supportingImageUrls?: string[];
 }
 
 /**
@@ -27,7 +27,7 @@ export interface LoanFlexMessageData {
  */
 function createLoanFlexMessage(data: LoanFlexMessageData) {
   // Get first two supporting images if available
-  const supportingImages = data.supportingImageUrls?.slice(0, 2) || []
+  const supportingImages = data.supportingImageUrls?.slice(0, 2) || [];
 
   // Build image layout
   const imageLayout: any = {
@@ -35,7 +35,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
     layout: 'horizontal',
     height: '160px',
     contents: [],
-  }
+  };
 
   if (data.titleDeedImageUrl) {
     imageLayout.contents.push({
@@ -45,7 +45,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
       aspectMode: 'cover',
       aspectRatio: '4:5',
       flex: 2,
-    })
+    });
   }
 
   if (supportingImages.length > 0) {
@@ -54,7 +54,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
       layout: 'vertical',
       flex: 1,
       contents: [],
-    }
+    };
 
     supportingImages.forEach((url) => {
       supportingBox.contents.push({
@@ -62,29 +62,29 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
         url: url,
         size: 'full',
         aspectMode: 'cover',
-      })
-    })
+      });
+    });
 
-    imageLayout.contents.push(supportingBox)
+    imageLayout.contents.push(supportingBox);
   }
 
   // Build location details text
-  const locationParts = []
-  if (data.ownerName) locationParts.push(data.ownerName)
-  if (data.propertyLocation) locationParts.push(data.propertyLocation)
-  if (data.propertyArea) locationParts.push(data.propertyArea)
-  const locationText = locationParts.join(' | ')
+  const locationParts = [];
+  if (data.ownerName) locationParts.push(data.ownerName);
+  if (data.propertyLocation) locationParts.push(data.propertyLocation);
+  if (data.propertyArea) locationParts.push(data.propertyArea);
+  const locationText = locationParts.join(' | ');
 
   // Build parcel info text
-  const parcelInfoParts = []
+  const parcelInfoParts = [];
   if (data.parcelNo)
     parcelInfoParts.push(`เลขโฉนด ${data.parcelNo}`) ??
-      parcelInfoParts.push(`เลขโฉนด: -`)
+      parcelInfoParts.push(`เลขโฉนด: -`);
   if (data.amphur)
-    parcelInfoParts.push(`อ.${data.amphur}`) ?? parcelInfoParts.push(`อ.: -`)
+    parcelInfoParts.push(`อ.${data.amphur}`) ?? parcelInfoParts.push(`อ.: -`);
   if (data.province)
-    parcelInfoParts.push(`จ.${data.province}`) ?? parcelInfoParts.push(`จ.: -`)
-  const parcelInfoText = parcelInfoParts.join(' • ')
+    parcelInfoParts.push(`จ.${data.province}`) ?? parcelInfoParts.push(`จ.: -`);
+  const parcelInfoText = parcelInfoParts.join(' • ');
 
   // Build content section
   const contentSection: any[] = [
@@ -118,7 +118,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
       color: '#FFFFFF',
       margin: 'sm',
     },
-  ]
+  ];
 
   // Add location text if available
   if (locationText) {
@@ -128,7 +128,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
       size: 'sm',
       color: '#D0D4E2',
       wrap: true,
-    })
+    });
   }
 
   // Add parcel info if available
@@ -140,7 +140,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
       color: '#B0B6C5',
       margin: 'xs',
       wrap: true,
-    })
+    });
   }
 
   // Add notes section if notes exist
@@ -160,7 +160,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
           wrap: true,
         },
       ],
-    })
+    });
   }
 
   // Build footer with action buttons
@@ -180,11 +180,11 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
         },
       },
     ],
-  }
+  };
 
   // Add Google Maps button if coordinates are available
   if (data.latitude && data.longitude) {
-    const mapsUrl = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`
+    const mapsUrl = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
     footer.contents.push({
       type: 'button',
       style: 'link',
@@ -194,7 +194,7 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
         label: 'ดู Maps',
         uri: mapsUrl,
       },
-    })
+    });
   }
 
   return {
@@ -216,21 +216,21 @@ function createLoanFlexMessage(data: LoanFlexMessageData) {
       ],
     },
     footer: footer,
-  }
+  };
 }
 
 // Approval/Rejection notification data
 export interface LoanStatusNotificationData {
-  loanNumber?: string
-  amount: string
-  ownerName: string
-  propertyLocation?: string
-  propertyArea?: string
-  parcelNo?: string
-  interestRate?: string
-  termMonths?: string
-  reason?: string
-  status: 'approved' | 'rejected'
+  loanNumber?: string;
+  amount: string;
+  ownerName: string;
+  propertyLocation?: string;
+  propertyArea?: string;
+  parcelNo?: string;
+  interestRate?: string;
+  termMonths?: string;
+  reason?: string;
+  status: 'approved' | 'rejected';
 }
 
 /**
@@ -269,7 +269,7 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
       color: '#00C851',
       margin: 'md',
     },
-  ]
+  ];
 
   // Add loan number if available
   if (data.loanNumber) {
@@ -279,7 +279,7 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
       size: 'sm',
       color: '#666666',
       margin: 'sm',
-    })
+    });
   }
 
   // Add owner name
@@ -290,7 +290,7 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
     color: '#333333',
     margin: 'sm',
     wrap: true,
-  })
+  });
 
   // Add property location if available
   if (data.propertyLocation) {
@@ -300,7 +300,7 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
       size: 'xs',
       color: '#666666',
       wrap: true,
-    })
+    });
   }
 
   // Add parcel number if available
@@ -310,14 +310,14 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
       text: `เลขโฉนด: ${data.parcelNo}`,
       size: 'xs',
       color: '#666666',
-    })
+    });
   }
 
   // Add loan terms
-  const termsText = []
-  if (data.interestRate) termsText.push(`ดอกเบี้ย ${data.interestRate}%/ปี`)
-  if (data.termMonths) termsText.push(`ระยะเวลา ${data.termMonths} เดือน`)
-  
+  const termsText = [];
+  if (data.interestRate) termsText.push(`ดอกเบี้ย ${data.interestRate}%/ปี`);
+  if (data.termMonths) termsText.push(`ระยะเวลา ${data.termMonths} เดือน`);
+
   if (termsText.length > 0) {
     contentSection.push({
       type: 'text',
@@ -325,7 +325,7 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
       size: 'xs',
       color: '#888888',
       margin: 'md',
-    })
+    });
   }
 
   return {
@@ -337,7 +337,7 @@ function createApprovalFlexMessage(data: LoanStatusNotificationData) {
       paddingAll: '20px',
       contents: contentSection,
     },
-  }
+  };
 }
 
 /**
@@ -376,7 +376,7 @@ function createRejectionFlexMessage(data: LoanStatusNotificationData) {
       color: '#FF4444',
       margin: 'md',
     },
-  ]
+  ];
 
   // Add owner name
   contentSection.push({
@@ -386,7 +386,7 @@ function createRejectionFlexMessage(data: LoanStatusNotificationData) {
     color: '#333333',
     margin: 'sm',
     wrap: true,
-  })
+  });
 
   // Add property location if available
   if (data.propertyLocation) {
@@ -396,7 +396,7 @@ function createRejectionFlexMessage(data: LoanStatusNotificationData) {
       size: 'xs',
       color: '#666666',
       wrap: true,
-    })
+    });
   }
 
   // Add parcel number if available
@@ -406,7 +406,7 @@ function createRejectionFlexMessage(data: LoanStatusNotificationData) {
       text: `เลขโฉนด: ${data.parcelNo}`,
       size: 'xs',
       color: '#666666',
-    })
+    });
   }
 
   // Add rejection reason
@@ -435,7 +435,7 @@ function createRejectionFlexMessage(data: LoanStatusNotificationData) {
           margin: 'xs',
         },
       ],
-    })
+    });
   }
 
   return {
@@ -447,17 +447,17 @@ function createRejectionFlexMessage(data: LoanStatusNotificationData) {
       paddingAll: '20px',
       contents: contentSection,
     },
-  }
+  };
 }
 
 /**
  * Send loan approval notification to LINE
  */
 export async function sendLoanApprovalToLine(
-  data: LoanStatusNotificationData
+  data: LoanStatusNotificationData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const flexMessage = createApprovalFlexMessage(data)
+    const flexMessage = createApprovalFlexMessage(data);
 
     const response = await fetch(LINE_API_URL, {
       method: 'POST',
@@ -475,25 +475,25 @@ export async function sendLoanApprovalToLine(
           },
         ],
       }),
-    })
+    });
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('[LINE API] Failed to send approval message:', errorText)
+      const errorText = await response.text();
+      console.error('[LINE API] Failed to send approval message:', errorText);
       return {
         success: false,
         error: `LINE API error: ${response.status} ${errorText}`,
-      }
+      };
     }
 
-    console.log('[LINE API] Approval message sent successfully')
-    return { success: true }
+    console.log('[LINE API] Approval message sent successfully');
+    return { success: true };
   } catch (error) {
-    console.error('[LINE API] Error sending approval message:', error)
+    console.error('[LINE API] Error sending approval message:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-    }
+    };
   }
 }
 
@@ -501,10 +501,10 @@ export async function sendLoanApprovalToLine(
  * Send loan rejection notification to LINE
  */
 export async function sendLoanRejectionToLine(
-  data: LoanStatusNotificationData
+  data: LoanStatusNotificationData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const flexMessage = createRejectionFlexMessage(data)
+    const flexMessage = createRejectionFlexMessage(data);
 
     const response = await fetch(LINE_API_URL, {
       method: 'POST',
@@ -522,25 +522,25 @@ export async function sendLoanRejectionToLine(
           },
         ],
       }),
-    })
+    });
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('[LINE API] Failed to send rejection message:', errorText)
+      const errorText = await response.text();
+      console.error('[LINE API] Failed to send rejection message:', errorText);
       return {
         success: false,
         error: `LINE API error: ${response.status} ${errorText}`,
-      }
+      };
     }
 
-    console.log('[LINE API] Rejection message sent successfully')
-    return { success: true }
+    console.log('[LINE API] Rejection message sent successfully');
+    return { success: true };
   } catch (error) {
-    console.error('[LINE API] Error sending rejection message:', error)
+    console.error('[LINE API] Error sending rejection message:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-    }
+    };
   }
 }
 
@@ -548,10 +548,10 @@ export async function sendLoanRejectionToLine(
  * Send Flex Message to LINE group
  */
 export async function sendLoanApplicationToLine(
-  data: LoanFlexMessageData
+  data: LoanFlexMessageData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const flexMessage = createLoanFlexMessage(data)
+    const flexMessage = createLoanFlexMessage(data);
 
     const response = await fetch(LINE_API_URL, {
       method: 'POST',
@@ -569,25 +569,25 @@ export async function sendLoanApplicationToLine(
           },
         ],
       }),
-    })
+    });
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('[LINE API] Failed to send message:', errorText)
+      const errorText = await response.text();
+      console.error('[LINE API] Failed to send message:', errorText);
       return {
         success: false,
         error: `LINE API error: ${response.status} ${errorText}`,
-      }
+      };
     }
 
-    console.log('[LINE API] Message sent successfully')
-    return { success: true }
+    console.log('[LINE API] Message sent successfully');
+    return { success: true };
   } catch (error) {
-    console.error('[LINE API] Error sending message:', error)
+    console.error('[LINE API] Error sending message:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-    }
+    };
   }
 }
 
@@ -596,5 +596,5 @@ export async function sendLoanApplicationToLine(
  * This should be called from API routes, not client-side
  */
 export async function sendLoanNotification(data: LoanFlexMessageData) {
-  return sendLoanApplicationToLine(data)
+  return sendLoanApplicationToLine(data);
 }

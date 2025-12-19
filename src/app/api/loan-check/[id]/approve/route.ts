@@ -1,8 +1,8 @@
 // src/app/api/loan-check/[id]/approve/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { loanService } from '@src/features/loans/services/server';
-import { sendLoanApprovalToLine } from '@src/shared/lib/line-api';
 import { prisma } from '@src/shared/lib/db';
+import { sendLoanApprovalToLine } from '@src/shared/lib/line-api';
 
 export async function POST(
   request: NextRequest,
@@ -11,14 +11,14 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { 
-      landAccountId, 
-      interestRate, 
-      termMonths, 
-      operationFee, 
-      transferFee, 
+    const {
+      landAccountId,
+      interestRate,
+      termMonths,
+      operationFee,
+      transferFee,
       otherFee,
-      note 
+      note,
     } = body;
 
     // Verify token from header
@@ -78,16 +78,24 @@ export async function POST(
         await sendLoanApprovalToLine({
           loanNumber: application.loan?.loanNumber || '',
           amount: `฿${Number(application.requestedAmount).toLocaleString('th-TH')}`,
-          ownerName: application.ownerName || application.customer?.profile?.fullName || '',
+          ownerName:
+            application.ownerName ||
+            application.customer?.profile?.fullName ||
+            '',
           propertyLocation: application.propertyLocation || undefined,
           propertyArea: application.propertyArea || undefined,
           parcelNo: application.landNumber || undefined,
-          interestRate: interestRate?.toString() || application.interestRate?.toString(),
-          termMonths: termMonths?.toString() || application.termMonths?.toString(),
+          interestRate:
+            interestRate?.toString() || application.interestRate?.toString(),
+          termMonths:
+            termMonths?.toString() || application.termMonths?.toString(),
           status: 'approved',
         });
       } catch (lineError) {
-        console.error('[LINE API] Failed to send approval notification:', lineError);
+        console.error(
+          '[LINE API] Failed to send approval notification:',
+          lineError,
+        );
         // Don't fail the request if LINE notification fails
       }
     }
@@ -109,4 +117,3 @@ export async function POST(
     );
   }
 }
-

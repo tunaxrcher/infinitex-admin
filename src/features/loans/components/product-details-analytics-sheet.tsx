@@ -1826,9 +1826,7 @@ export function ProductDetailsAnalyticsSheet({
                         <Input
                           id="borrower"
                           value={
-                            loan
-                              ? loan.customer?.profile?.fullName || '-'
-                              : '-'
+                            loan ? loan.customer?.profile?.fullName || '-' : '-'
                           }
                           disabled
                           className="bg-muted"

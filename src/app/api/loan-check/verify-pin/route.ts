@@ -46,7 +46,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate a simple session token (in production, use JWT)
-    const token = Buffer.from(`loan-check-${Date.now()}-${Math.random()}`).toString('base64');
+    const token = Buffer.from(
+      `loan-check-${Date.now()}-${Math.random()}`,
+    ).toString('base64');
 
     return NextResponse.json({
       success: true,
@@ -64,4 +66,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -9,4 +9,3 @@ export default async function Page({
   const { id } = await params;
   return <LoanCheckPage loanApplicationId={id} />;
 }
-

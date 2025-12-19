@@ -138,7 +138,6 @@ function generateInstallmentsData(
   return installments;
 }
 
-
 /**
  * Format loan data for application creation
  */
@@ -861,9 +860,12 @@ export const loanService = {
     let remainingBalance = Number(existing.remainingBalance || 0);
 
     if (data.loanAmount || data.loanYears || data.interestRate) {
-      const loanAmount = data.loanAmount ?? Number(existing.principalAmount || 0);
-      const loanYears = data.loanYears ?? (existing.termMonths ? existing.termMonths / 12 : 4);
-      const interestRate = data.interestRate ?? Number(existing.interestRate || 1);
+      const loanAmount =
+        data.loanAmount ?? Number(existing.principalAmount || 0);
+      const loanYears =
+        data.loanYears ?? (existing.termMonths ? existing.termMonths / 12 : 4);
+      const interestRate =
+        data.interestRate ?? Number(existing.interestRate || 1);
 
       termMonths = loanYears * 12;
 
@@ -913,7 +915,11 @@ export const loanService = {
       // Step 2: Update UserProfile ในตาราง user_profiles (ถ้ามีการเปลี่ยนแปลง)
       if (
         existing.customerId &&
-        (data.fullName || data.email || data.address || data.birthDate || data.idCardImage)
+        (data.fullName ||
+          data.email ||
+          data.address ||
+          data.birthDate ||
+          data.idCardImage)
       ) {
         const profileData: any = {};
 
@@ -925,8 +931,7 @@ export const loanService = {
         if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
         if (data.idCard)
           profileData.idCardNumber = data.idCard.replace(/\D/g, '');
-        if (data.idCardImage)
-          profileData.idCardFrontImage = data.idCardImage;
+        if (data.idCardImage) profileData.idCardFrontImage = data.idCardImage;
 
         // อัพเดท UserProfile
         await tx.userProfile.update({

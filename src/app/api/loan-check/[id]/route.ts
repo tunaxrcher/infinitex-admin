@@ -77,6 +77,20 @@ export async function GET(
       }
     }
 
+    // Parse valuation result if it exists
+    let valuationResult = null;
+    if (application.valuationResult) {
+      if (typeof application.valuationResult === 'string') {
+        try {
+          valuationResult = JSON.parse(application.valuationResult);
+        } catch {
+          valuationResult = null;
+        }
+      } else {
+        valuationResult = application.valuationResult;
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -84,14 +98,27 @@ export async function GET(
         status: application.status,
         loanType: application.loanType,
         requestedAmount: Number(application.requestedAmount),
-        approvedAmount: application.approvedAmount ? Number(application.approvedAmount) : null,
-        interestRate: application.interestRate ? Number(application.interestRate) : 1,
+        approvedAmount: application.approvedAmount
+          ? Number(application.approvedAmount)
+          : null,
+        maxApprovedAmount: application.maxApprovedAmount
+          ? Number(application.maxApprovedAmount)
+          : null,
+        interestRate: application.interestRate
+          ? Number(application.interestRate)
+          : 1,
         termMonths: application.termMonths || 48,
-        operationFee: application.operationFee ? Number(application.operationFee) : 0,
-        transferFee: application.transferFee ? Number(application.transferFee) : 0,
+        operationFee: application.operationFee
+          ? Number(application.operationFee)
+          : 0,
+        transferFee: application.transferFee
+          ? Number(application.transferFee)
+          : 0,
         otherFee: application.otherFee ? Number(application.otherFee) : 0,
         propertyType: application.propertyType,
-        propertyValue: application.propertyValue ? Number(application.propertyValue) : null,
+        propertyValue: application.propertyValue
+          ? Number(application.propertyValue)
+          : null,
         propertyArea: application.propertyArea,
         propertyLocation: application.propertyLocation,
         landNumber: application.landNumber,
@@ -104,25 +131,38 @@ export async function GET(
         submittedAt: application.submittedAt,
         reviewNotes: application.reviewNotes,
         createdAt: application.createdAt,
-        customer: application.customer ? {
-          id: application.customer.id,
-          phoneNumber: application.customer.phoneNumber,
-          fullName: application.customer.profile?.fullName,
-          idCardNumber: application.customer.profile?.idCardNumber,
-          address: application.customer.profile?.address,
-          email: application.customer.profile?.email,
-        } : null,
-        agent: application.agent ? {
-          id: application.agent.id,
-          phoneNumber: application.agent.phoneNumber,
-          fullName: application.agent.profile?.fullName,
-        } : null,
+        // AI Analysis fields
+        valuationResult,
+        estimatedValue: application.estimatedValue
+          ? Number(application.estimatedValue)
+          : null,
+        valuationDate: application.valuationDate,
+        customer: application.customer
+          ? {
+              id: application.customer.id,
+              phoneNumber: application.customer.phoneNumber,
+              fullName: application.customer.profile?.fullName,
+              idCardNumber: application.customer.profile?.idCardNumber,
+              address: application.customer.profile?.address,
+              email: application.customer.profile?.email,
+              idCardImage: application.customer.profile?.idCardImage,
+            }
+          : null,
+        agent: application.agent
+          ? {
+              id: application.agent.id,
+              phoneNumber: application.agent.phoneNumber,
+              fullName: application.agent.profile?.fullName,
+            }
+          : null,
         hasLoan: !!application.loan,
-        loan: application.loan ? {
-          id: application.loan.id,
-          loanNumber: application.loan.loanNumber,
-          status: application.loan.status,
-        } : null,
+        loan: application.loan
+          ? {
+              id: application.loan.id,
+              loanNumber: application.loan.loanNumber,
+              status: application.loan.status,
+            }
+          : null,
       },
     });
   } catch (error: any) {
@@ -134,4 +174,3 @@ export async function GET(
     );
   }
 }
-

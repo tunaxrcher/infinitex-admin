@@ -516,7 +516,10 @@ export function ProductFormSheet({
         loan.customer?.profile?.idCardFrontImage;
       if (existingIdCardImage) {
         setIdCardImage(existingIdCardImage);
-        console.log('[Form] Loaded existing ID card image:', existingIdCardImage);
+        console.log(
+          '[Form] Loaded existing ID card image:',
+          existingIdCardImage,
+        );
       }
     }
   }, [mode, loanData, open, loanId]);
@@ -973,7 +976,8 @@ export function ProductFormSheet({
                                     ) : idCardImage ? (
                                       <>
                                         <Check className="mr-2 h-4 w-4" />
-                                        มีบัตรประชาชนในระบบแล้ว (คลิกเพื่อเปลี่ยน)
+                                        มีบัตรประชาชนในระบบแล้ว
+                                        (คลิกเพื่อเปลี่ยน)
                                       </>
                                     ) : (
                                       <>

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useCallback, useState } from 'react';
 import { Delete } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface PinEntryScreenProps {
   onSuccess: (token: string) => void;
@@ -16,47 +16,50 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [shake, setShake] = useState(false);
 
-  const handleNumberPress = useCallback(async (num: string) => {
-    if (pin.length >= PIN_LENGTH || isLoading) return;
-    
-    const newPin = pin + num;
-    setPin(newPin);
-    setError('');
+  const handleNumberPress = useCallback(
+    async (num: string) => {
+      if (pin.length >= PIN_LENGTH || isLoading) return;
 
-    // Auto-submit when PIN is complete
-    if (newPin.length === PIN_LENGTH) {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/loan-check/verify-pin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pin: newPin }),
-        });
+      const newPin = pin + num;
+      setPin(newPin);
+      setError('');
 
-        const data = await response.json();
+      // Auto-submit when PIN is complete
+      if (newPin.length === PIN_LENGTH) {
+        setIsLoading(true);
+        try {
+          const response = await fetch('/api/loan-check/verify-pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: newPin }),
+          });
 
-        if (data.success) {
-          onSuccess(data.token);
-        } else {
+          const data = await response.json();
+
+          if (data.success) {
+            onSuccess(data.token);
+          } else {
+            setShake(true);
+            setTimeout(() => setShake(false), 500);
+            setError(data.message || 'PIN ไม่ถูกต้อง');
+            setPin('');
+          }
+        } catch (err) {
           setShake(true);
           setTimeout(() => setShake(false), 500);
-          setError(data.message || 'PIN ไม่ถูกต้อง');
+          setError('เกิดข้อผิดพลาด กรุณาลองใหม่');
           setPin('');
+        } finally {
+          setIsLoading(false);
         }
-      } catch (err) {
-        setShake(true);
-        setTimeout(() => setShake(false), 500);
-        setError('เกิดข้อผิดพลาด กรุณาลองใหม่');
-        setPin('');
-      } finally {
-        setIsLoading(false);
       }
-    }
-  }, [pin, isLoading, onSuccess]);
+    },
+    [pin, isLoading, onSuccess],
+  );
 
   const handleDelete = useCallback(() => {
     if (isLoading) return;
-    setPin(prev => prev.slice(0, -1));
+    setPin((prev) => prev.slice(0, -1));
     setError('');
   }, [isLoading]);
 
@@ -86,10 +89,11 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden">
       {/* Background with gradient */}
-      <div 
+      <div
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(135deg, #E8B4C8 0%, #D4A5C9 25%, #9B7BB8 50%, #6B5B95 75%, #4A4A8A 100%)',
+          background:
+            'linear-gradient(135deg, #E8B4C8 0%, #D4A5C9 25%, #9B7BB8 50%, #6B5B95 75%, #4A4A8A 100%)',
         }}
       />
       <div className="absolute inset-0 backdrop-blur-sm bg-black/10" />
@@ -97,7 +101,7 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm px-8">
         {/* Title */}
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-2xl font-light text-white mb-8 tracking-wider"
@@ -107,7 +111,7 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
         </motion.h1>
 
         {/* PIN Dots */}
-        <motion.div 
+        <motion.div
           className="flex gap-4 mb-4"
           animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
           transition={{ duration: 0.4 }}
@@ -116,10 +120,11 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
             <motion.div
               key={i}
               initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ 
-                scale: 1, 
+              animate={{
+                scale: 1,
                 opacity: 1,
-                backgroundColor: i < pin.length ? 'rgba(255, 255, 255, 1)' : 'transparent',
+                backgroundColor:
+                  i < pin.length ? 'rgba(255, 255, 255, 1)' : 'transparent',
               }}
               transition={{ delay: i * 0.05 }}
               className="w-3.5 h-3.5 rounded-full border-2 border-white/80"
@@ -169,12 +174,16 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
                   <motion.button
                     key={key}
                     whileTap={{ scale: 0.95 }}
-                    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
+                    whileHover={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    }}
                     onClick={() => handleNumberPress(key)}
                     disabled={isLoading}
                     className="w-20 h-20 rounded-full flex flex-col items-center justify-center bg-white/10 border border-white/20 backdrop-blur-sm disabled:opacity-50 transition-colors"
                   >
-                    <span className="text-3xl font-light text-white">{key}</span>
+                    <span className="text-3xl font-light text-white">
+                      {key}
+                    </span>
                     {letterMap[key] && (
                       <span className="text-[10px] font-medium text-white/70 tracking-[0.2em] mt-0.5">
                         {letterMap[key]}
