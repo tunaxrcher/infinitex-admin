@@ -226,9 +226,12 @@ export function LoanDetailsView({
 
         // Only fetch land accounts when authenticated (for approval form)
         if (authToken) {
-          const accountsResponse = await fetch('/api/loan-check/land-accounts', {
-            headers: { Authorization: `Bearer ${authToken}` },
-          });
+          const accountsResponse = await fetch(
+            '/api/loan-check/land-accounts',
+            {
+              headers: { Authorization: `Bearer ${authToken}` },
+            },
+          );
           const accountsResult = await accountsResponse.json();
 
           if (accountsResult.success) {
@@ -1264,19 +1267,6 @@ export function LoanDetailsView({
                                   }))
                                 }
                                 placeholder="เบอร์โทรศัพท์"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>อีเมล</Label>
-                              <Input
-                                value={customerFormData.email}
-                                onChange={(e) =>
-                                  setCustomerFormData((prev) => ({
-                                    ...prev,
-                                    email: e.target.value,
-                                  }))
-                                }
-                                placeholder="อีเมล"
                               />
                             </div>
                           </div>

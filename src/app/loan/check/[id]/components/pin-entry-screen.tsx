@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import Image from 'next/image';
 import { Delete } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -93,10 +94,27 @@ export function PinEntryScreen({ onSuccess }: PinEntryScreenProps) {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm px-8">
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6"
+        >
+          <Image
+            src="/images/logo.png"
+            alt="InfiniteX"
+            width={80}
+            height={80}
+            className="rounded-2xl shadow-lg"
+          />
+        </motion.div>
+
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="text-2xl font-light text-white mb-8 tracking-wider"
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
         >

@@ -25,7 +25,7 @@ export function LoanCheckPage({ loanApplicationId }: LoanCheckPageProps) {
         authToken={authToken}
         isLocked={!isAuthenticated}
       />
-      
+
       {/* Show PIN overlay when not authenticated */}
       {!isAuthenticated && <PinEntryScreen onSuccess={handlePinSuccess} />}
     </>
