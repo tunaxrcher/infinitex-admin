@@ -145,7 +145,7 @@ export async function GET(
               idCardNumber: application.customer.profile?.idCardNumber,
               address: application.customer.profile?.address,
               email: application.customer.profile?.email,
-              idCardImage: application.customer.profile?.idCardImage,
+              idCardImage: application.customer.profile?.idCardFrontImage,
             }
           : null,
         agent: application.agent

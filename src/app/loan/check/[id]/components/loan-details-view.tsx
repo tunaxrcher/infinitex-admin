@@ -449,6 +449,9 @@ export function LoanDetailsView({
                 customer: {
                   ...prev.customer!,
                   ...customerFormData,
+                  // If a new image was uploaded, keep showing the preview
+                  // The actual URL from server will be fetched on next page load
+                  idCardImage: idCardPreview || prev.customer?.idCardImage,
                 },
               }
             : null,
@@ -1197,6 +1200,12 @@ export function LoanDetailsView({
                               {idCardPreview ? (
                                 <img
                                   src={idCardPreview}
+                                  alt="บัตรประชาชน"
+                                  className="max-h-[140px] object-contain rounded"
+                                />
+                              ) : loanData?.customer?.idCardImage ? (
+                                <img
+                                  src={loanData.customer.idCardImage}
                                   alt="บัตรประชาชน"
                                   className="max-h-[140px] object-contain rounded"
                                 />
