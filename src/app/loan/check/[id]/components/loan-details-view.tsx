@@ -148,6 +148,7 @@ export function LoanDetailsView({
 
   // Approval form state
   const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [editedLoanAmount, setEditedLoanAmount] = useState<number>(0);
   const [loanYears, setLoanYears] = useState(1);
   const [interestRate, setInterestRate] = useState(1);
   const [operationFee, setOperationFee] = useState(0);
@@ -206,6 +207,7 @@ export function LoanDetailsView({
         setLoanData(loanResult.data);
 
         if (loanResult.data) {
+          setEditedLoanAmount(loanResult.data.requestedAmount || 0);
           setInterestRate(loanResult.data.interestRate || 1);
           setLoanYears((loanResult.data.termMonths || 48) / 12);
           setOperationFee(loanResult.data.operationFee || 0);
@@ -249,7 +251,7 @@ export function LoanDetailsView({
   }, [loanApplicationId, authToken]);
 
   // Calculations
-  const loanAmount = loanData?.requestedAmount || 0;
+  const loanAmount = editedLoanAmount || loanData?.requestedAmount || 0;
   const termMonths = loanYears * 12;
   const totalInterest = useMemo(() => {
     return (loanAmount * interestRate * loanYears) / 100;
@@ -293,6 +295,7 @@ export function LoanDetailsView({
           },
           body: JSON.stringify({
             landAccountId: selectedAccountId,
+            approvedAmount: editedLoanAmount,
             interestRate,
             termMonths,
             operationFee,
@@ -1477,12 +1480,17 @@ export function LoanDetailsView({
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* ยอดที่ขอมา (แสดงเสมอ) */}
                   <div className="space-y-2">
-                    <Label>ยอดสินเชื่อ</Label>
+                    <Label variant="secondary">ยอดที่ขอมา</Label>
                     <div className="relative">
                       <Input
                         type="text"
-                        value={formatCurrency(loanAmount)}
+                        value={
+                          loanData?.requestedAmount
+                            ? formatCurrency(loanData.requestedAmount)
+                            : '0.00'
+                        }
                         disabled
                         className="pr-12 bg-muted"
                       />
@@ -1490,6 +1498,40 @@ export function LoanDetailsView({
                         บาท
                       </span>
                     </div>
+                  </div>
+
+                  {/* ยอดที่อนุมัติ (แก้ไขได้) */}
+                  <div className="space-y-2">
+                    <Label>
+                      ยอดที่อนุมัติ <span className="text-destructive">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        value={editedLoanAmount || ''}
+                        onChange={(e) =>
+                          setEditedLoanAmount(parseFloat(e.target.value) || 0)
+                        }
+                        min={0}
+                        className="pr-12"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                        บาท
+                      </span>
+                    </div>
+                    {loanData?.requestedAmount &&
+                      editedLoanAmount !== loanData.requestedAmount && (
+                        <p className="text-xs text-warning">
+                          ⚠️ ยอดอนุมัติต่างจากยอดที่ขอ (
+                          {editedLoanAmount > loanData.requestedAmount
+                            ? '+'
+                            : ''}
+                          {formatCurrency(
+                            editedLoanAmount - loanData.requestedAmount,
+                          )}
+                          )
+                        </p>
+                      )}
                   </div>
 
                   <div className="space-y-2">

@@ -13,6 +13,7 @@ export async function POST(
     const body = await request.json();
     const {
       landAccountId,
+      approvedAmount,
       interestRate,
       termMonths,
       operationFee,
@@ -44,6 +45,7 @@ export async function POST(
     await prisma.loanApplication.update({
       where: { id },
       data: {
+        approvedAmount: approvedAmount ?? undefined,
         interestRate: interestRate ?? undefined,
         termMonths: termMonths ?? undefined,
         operationFee: operationFee ?? undefined,
@@ -77,7 +79,7 @@ export async function POST(
       try {
         await sendLoanApprovalToLine({
           loanNumber: application.loan?.loanNumber || '',
-          amount: `฿${Number(application.requestedAmount).toLocaleString('th-TH')}`,
+          amount: `฿${Number(application.approvedAmount || application.requestedAmount).toLocaleString('th-TH')}`,
           ownerName:
             application.ownerName ||
             application.customer?.profile?.fullName ||

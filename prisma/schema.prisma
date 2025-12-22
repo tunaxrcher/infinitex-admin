@@ -369,6 +369,10 @@ model Loan {
   valuationDate   DateTime? @db.DateTime(0) // วันที่ทำการประเมิน
   estimatedValue  Decimal?  @db.Decimal(15, 2) // มูลค่าประเมินที่บันทึก
 
+  // Property location (from LandMaps API)
+  latitude  String? @db.VarChar(50) // parcellat
+  longitude String? @db.VarChar(50) // parcellon
+
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @updatedAt @db.DateTime(0)
 
