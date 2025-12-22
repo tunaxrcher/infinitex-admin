@@ -250,24 +250,31 @@ export function LoanDetailsView({
     fetchData();
   }, [loanApplicationId, authToken]);
 
-  // Calculations
+  // Calculations (ใช้สูตรเดียวกับ product-form-sheet.tsx)
   const loanAmount = editedLoanAmount || loanData?.requestedAmount || 0;
   const termMonths = loanYears * 12;
+
+  // ยอดดอกเบี้ยรวม = ยอดสินเชื่อ × (ดอกเบี้ย/100) × จำนวนปี
   const totalInterest = useMemo(() => {
-    return (loanAmount * interestRate * loanYears) / 100;
+    return loanAmount * (interestRate / 100) * loanYears;
   }, [loanAmount, interestRate, loanYears]);
 
+  // ยอดสินเชื่อรวม = ยอดสินเชื่อ + ยอดดอกเบี้ยรวม
   const totalLoanAmount = useMemo(() => {
     return loanAmount + totalInterest;
   }, [loanAmount, totalInterest]);
 
+  // งวดละ (รายเดือน) = ดอกเบี้ยต่อเดือน (ไม่รวมเงินต้น)
+  // สูตร: ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
   const monthlyPayment = useMemo(() => {
-    if (termMonths === 0) return 0;
-    return totalLoanAmount / termMonths;
-  }, [totalLoanAmount, termMonths]);
+    if (loanAmount === 0 || interestRate === 0) return 0;
+    const monthlyInterest = (loanAmount * (interestRate / 100)) / 12;
+    return monthlyInterest;
+  }, [loanAmount, interestRate]);
 
+  // ยอดจ่ายจริง = ยอดสินเชื่อ - ค่าธรรมเนียมต่างๆ
   const actualPayment = useMemo(() => {
-    return loanAmount - operationFee - transferFee - otherFee;
+    return loanAmount - (operationFee + transferFee + otherFee);
   }, [loanAmount, operationFee, transferFee, otherFee]);
 
   const formatCurrency = (value: number) => {
