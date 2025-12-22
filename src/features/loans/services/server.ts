@@ -1162,8 +1162,8 @@ export const loanService = {
         landAccountId,
         loanAmount,
         'decrement',
-        `อนุมัติสินเชื่อ(${loanNumber})`,
-        `อนุมัติสินเชื่อให้ ${customerName} จำนวน ${loanAmount.toLocaleString()} บาท`,
+        `เปิดสินเชื่อ(${loanNumber})`,
+        '',
         adminId,
         adminName,
       );

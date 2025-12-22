@@ -107,7 +107,7 @@ export async function GET(
         interestRate: application.interestRate
           ? Number(application.interestRate)
           : 1,
-        termMonths: application.termMonths || 48,
+        termMonths: application.termMonths || 0,
         operationFee: application.operationFee
           ? Number(application.operationFee)
           : 0,

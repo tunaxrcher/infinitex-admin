@@ -126,7 +126,7 @@ export function ProductFormSheet({
   const [address, setAddress] = useState('');
 
   // Form state - Section 3: การคำนวณ
-  const [loanYears, setLoanYears] = useState<number>(4);
+  const [loanYears, setLoanYears] = useState<number>(1);
   const [interestRate, setInterestRate] = useState<number>(1);
   const [operationFee, setOperationFee] = useState<number>(0);
   const [transferFee, setTransferFee] = useState<number>(0);

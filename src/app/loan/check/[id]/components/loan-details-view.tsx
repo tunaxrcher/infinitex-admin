@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Dices,
   Loader2,
   Save,
   Sparkles,
@@ -42,6 +43,12 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@src/shared/components/ui/toggle-group';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@src/shared/components/ui/tooltip';
 
 interface LoanDetailsViewProps {
   loanApplicationId: string;
@@ -165,6 +172,7 @@ export function LoanDetailsView({
   const [isAnalyzingIdCard, setIsAnalyzingIdCard] = useState(false);
   const [idCardData, setIdCardData] = useState<IdCardData | null>(null);
   const [isSavingCustomer, setIsSavingCustomer] = useState(false);
+  const [isGeneratingPhone, setIsGeneratingPhone] = useState(false);
   const [customerFormData, setCustomerFormData] = useState({
     fullName: '',
     idCardNumber: '',
@@ -454,6 +462,33 @@ export function LoanDetailsView({
       setError('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     } finally {
       setIsSavingCustomer(false);
+    }
+  };
+
+  // Generate random phone number
+  const handleGeneratePhone = async () => {
+    setIsGeneratingPhone(true);
+    try {
+      const response = await fetch('/api/customers/generate-phone', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate phone number');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data?.phoneNumber) {
+        setCustomerFormData((prev) => ({
+          ...prev,
+          phoneNumber: result.data.phoneNumber,
+        }));
+      }
+    } catch (error) {
+      setError('ไม่สามารถสร้างเบอร์โทรศัพท์ได้');
+    } finally {
+      setIsGeneratingPhone(false);
     }
   };
 
@@ -1067,7 +1102,7 @@ export function LoanDetailsView({
                           )}
 
                           {/* Loan Calculation Preview */}
-                          <Card className="rounded-md">
+                          {/* <Card className="rounded-md">
                             <CardHeader className="min-h-[34px] bg-accent/50">
                               <CardTitle className="text-2sm">
                                 การคำนวณสินเชื่อ (Preview)
@@ -1109,7 +1144,7 @@ export function LoanDetailsView({
                                 </span>
                               </div>
                             </CardContent>
-                          </Card>
+                          </Card> */}
 
                           {/* Review Notes */}
                           {loanData?.reviewNotes && (
@@ -1268,16 +1303,44 @@ export function LoanDetailsView({
                             </div>
                             <div className="space-y-2">
                               <Label>เบอร์โทรศัพท์</Label>
-                              <Input
-                                value={customerFormData.phoneNumber}
-                                onChange={(e) =>
-                                  setCustomerFormData((prev) => ({
-                                    ...prev,
-                                    phoneNumber: e.target.value,
-                                  }))
-                                }
-                                placeholder="เบอร์โทรศัพท์"
-                              />
+                              <div className="flex gap-2">
+                                <Input
+                                  value={customerFormData.phoneNumber}
+                                  onChange={(e) =>
+                                    setCustomerFormData((prev) => ({
+                                      ...prev,
+                                      phoneNumber: e.target.value,
+                                    }))
+                                  }
+                                  placeholder="เบอร์โทรศัพท์"
+                                  className="flex-1"
+                                />
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={handleGeneratePhone}
+                                        disabled={isGeneratingPhone}
+                                      >
+                                        {isGeneratingPhone ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <Dices className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>สุ่มเบอร์อัตโนมัติ</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        สำหรับลูกค้าที่ไม่ยอมให้เบอร์
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="space-y-2">
