@@ -7,7 +7,11 @@ import {
   type MonthlyData,
 } from '../validations';
 
-const MONTH_NAMES = [
+// ============================================
+// CONSTANTS (exported for reuse)
+// ============================================
+
+export const THAI_MONTH_NAMES = [
   'มกราคม',
   'กุมภาพันธ์',
   'มีนาคม',
@@ -20,7 +24,14 @@ const MONTH_NAMES = [
   'ตุลาคม',
   'พฤศจิกายน',
   'ธันวาคม',
-];
+] as const;
+
+/**
+ * Get Thai month name by month number (1-12)
+ */
+export function getThaiMonthName(month: number): string {
+  return THAI_MONTH_NAMES[month - 1] || '';
+}
 
 export const dashboardService = {
   async getDashboardSummary(
@@ -157,7 +168,7 @@ export const dashboardService = {
 
     return {
       month,
-      monthName: MONTH_NAMES[month - 1],
+      monthName: THAI_MONTH_NAMES[month - 1],
       loanAmount,
       totalPayment,
       interestPayment,

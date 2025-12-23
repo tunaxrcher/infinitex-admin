@@ -3,7 +3,6 @@ import 'server-only';
 import { Prisma } from '@prisma/client';
 import amphurData from '@src/data/amphur.json';
 import provinceData from '@src/data/province.json';
-import { landAccountReportService } from '@src/features/land-accounts/services/server';
 import { aiService } from '@src/shared/lib/ai-services';
 import { prisma } from '@src/shared/lib/db';
 import LandsMapsAPI from '@src/shared/lib/LandsMapsAPI';
@@ -24,14 +23,14 @@ import {
 } from '../validations';
 
 // ============================================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS (exported for reuse)
 // ============================================
 
 /**
  * Generate unique loan number
  * Format: LOA + timestamp(8 digits) + random(3 digits)
  */
-function generateLoanNumber(): string {
+export function generateLoanNumber(): string {
   const timestamp = Date.now().toString().slice(-8);
   const random = Math.floor(Math.random() * 1000)
     .toString()
@@ -43,7 +42,7 @@ function generateLoanNumber(): string {
  * Generate unique reference number for payment
  * Format: PAY + timestamp + random(4 digits)
  */
-function generateReferenceNumber(): string {
+export function generateReferenceNumber(): string {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 10000)
     .toString()
@@ -55,7 +54,7 @@ function generateReferenceNumber(): string {
  * Calculate monthly payment (interest only, no principal)
  * Formula: Loan Amount × (Interest Rate / 100) / 12
  */
-function calculateMonthlyPayment(
+export function calculateMonthlyPayment(
   loanAmount: number,
   interestRate: number,
 ): number {
@@ -65,7 +64,7 @@ function calculateMonthlyPayment(
 /**
  * Calculate late fee based on days overdue
  */
-function calculateLateFee(
+export function calculateLateFee(
   originalAmount: number,
   daysLate: number,
   lateFeePerDay: number = 50,
@@ -76,7 +75,7 @@ function calculateLateFee(
 /**
  * Calculate days between two dates
  */
-function calculateDaysBetween(date1: Date, date2: Date): number {
+export function calculateDaysBetween(date1: Date, date2: Date): number {
   const diffTime = Math.abs(date2.getTime() - date1.getTime());
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
@@ -84,7 +83,7 @@ function calculateDaysBetween(date1: Date, date2: Date): number {
 /**
  * Calculate next payment date (1 month after contract date)
  */
-function calculateNextPaymentDate(contractDate: Date): Date {
+export function calculateNextPaymentDate(contractDate: Date): Date {
   const nextDate = new Date(contractDate);
   nextDate.setMonth(nextDate.getMonth() + 1);
   return nextDate;
@@ -93,7 +92,10 @@ function calculateNextPaymentDate(contractDate: Date): Date {
 /**
  * Calculate expiry date based on loan years
  */
-function calculateExpiryDate(contractDate: Date, loanYears: number): Date {
+export function calculateExpiryDate(
+  contractDate: Date,
+  loanYears: number,
+): Date {
   const expiryDate = new Date(contractDate);
   expiryDate.setFullYear(expiryDate.getFullYear() + loanYears);
   return expiryDate;
@@ -102,7 +104,7 @@ function calculateExpiryDate(contractDate: Date, loanYears: number): Date {
 /**
  * Generate installments data for loan
  */
-function generateInstallmentsData(
+export function generateInstallmentsData(
   loanId: string,
   contractDate: Date,
   termMonths: number,
@@ -141,7 +143,7 @@ function generateInstallmentsData(
 /**
  * Format loan data for application creation
  */
-function prepareLoanApplicationData(data: any) {
+export function prepareLoanApplicationData(data: any) {
   return {
     customerData: {
       phoneNumber: data.phoneNumber,
@@ -185,7 +187,7 @@ function prepareLoanApplicationData(data: any) {
 /**
  * Create or update user and profile
  */
-async function upsertCustomer(
+export async function upsertCustomer(
   tx: any,
   phoneNumber: string,
   profileData: {
@@ -233,7 +235,7 @@ async function upsertCustomer(
 /**
  * Update land account balance and create reports
  */
-async function updateLandAccountBalance(
+export async function updateLandAccountBalance(
   tx: any,
   landAccountId: string,
   amount: number,
@@ -296,7 +298,7 @@ async function updateLandAccountBalance(
 /**
  * Mark installments as paid and update loan
  */
-async function markInstallmentsAsPaid(
+export async function markInstallmentsAsPaid(
   tx: any,
   installmentIds: string[],
   paidDate: Date,
@@ -365,7 +367,7 @@ async function markInstallmentsAsPaid(
 /**
  * Find or create loan application
  */
-async function findOrCreateApplication(
+export async function findOrCreateApplication(
   id: string,
 ): Promise<{ application: any; loanId: string | null }> {
   // Try to find as application first
@@ -416,7 +418,7 @@ async function findOrCreateApplication(
 /**
  * Calculate late fee for an installment
  */
-function calculateInstallmentLateFee(
+export function calculateInstallmentLateFee(
   installment: any,
   includeLateFee: boolean,
   providedLateFee?: number,
@@ -448,7 +450,7 @@ function calculateInstallmentLateFee(
 /**
  * Process land account payment
  */
-async function processLandAccountPayment(
+export async function processLandAccountPayment(
   tx: any,
   landAccountId: string,
   amount: number,
@@ -513,6 +515,308 @@ async function processLandAccountPayment(
 }
 
 // ============================================
+// QUERY BUILDERS
+// ============================================
+
+/**
+ * Build search conditions for loan list query
+ */
+function buildLoanSearchConditions(
+  search: string,
+  status?: string,
+): Prisma.LoanApplicationWhereInput[] {
+  const conditions: Prisma.LoanApplicationWhereInput[] = [
+    { customer: { profile: { fullName: { contains: search } } } },
+    { propertyLocation: { contains: search } },
+    { ownerName: { contains: search } },
+  ];
+
+  // Search by loan number
+  const loanSearchCondition: Prisma.LoanWhereInput = {
+    loanNumber: { contains: search },
+  };
+  if (status) loanSearchCondition.status = status;
+  conditions.push({ loan: loanSearchCondition });
+
+  // Search by amount if search is numeric
+  const searchNumber = parseFloat(search.replace(/,/g, ''));
+  if (!isNaN(searchNumber)) {
+    conditions.push(
+      { requestedAmount: { equals: searchNumber } },
+      { approvedAmount: { equals: searchNumber } },
+    );
+
+    const amountCondition: Prisma.LoanWhereInput = {
+      principalAmount: { equals: searchNumber },
+    };
+    if (status) amountCondition.status = status;
+    conditions.push({ loan: amountCondition });
+  }
+
+  return conditions;
+}
+
+/**
+ * Build where clause for loan list query
+ */
+function buildLoanListWhere(
+  search?: string,
+  status?: string,
+): Prisma.LoanApplicationWhereInput {
+  const where: Prisma.LoanApplicationWhereInput = {
+    status: { not: 'DRAFT' },
+  };
+
+  if (search) {
+    where.OR = buildLoanSearchConditions(search, status);
+  } else if (status) {
+    where.loan = { status };
+  }
+
+  return where;
+}
+
+/**
+ * Build order by clause for loan list query
+ */
+function buildLoanListOrderBy(
+  sortBy: string,
+  sortOrder: 'asc' | 'desc',
+): Prisma.LoanApplicationOrderByWithRelationInput {
+  if (sortBy === 'createdAt') {
+    return { createdAt: sortOrder };
+  }
+  return { [sortBy]: sortOrder, createdAt: 'desc' };
+}
+
+/**
+ * Transform application with loan to unified format
+ */
+async function transformApplicationWithLoan(app: any) {
+  const overdueInstallments = await prisma.loanInstallment.findMany({
+    where: {
+      loanId: app.loan.id,
+      isPaid: false,
+      dueDate: { lt: new Date() },
+    },
+    orderBy: { dueDate: 'asc' },
+  });
+
+  return {
+    ...app.loan,
+    application: app,
+    customer: app.customer,
+    hasOverdueInstallments: overdueInstallments.length > 0,
+    overdueCount: overdueInstallments.length,
+    oldestOverdueDate: overdueInstallments[0]?.dueDate || null,
+  };
+}
+
+/**
+ * Transform application without loan to unified format
+ */
+function transformApplicationWithoutLoan(app: any) {
+  return {
+    id: app.id,
+    loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`,
+    customerId: app.customerId,
+    customer: app.customer,
+    agentId: app.agentId,
+    agent: app.agent,
+    applicationId: app.id,
+    application: app,
+    loanType: app.loanType,
+    status: app.status as any,
+    principalAmount: app.approvedAmount || app.requestedAmount || 0,
+    interestRate: 0,
+    termMonths: 0,
+    monthlyPayment: 0,
+    currentInstallment: 0,
+    totalInstallments: 0,
+    remainingBalance: app.approvedAmount || app.requestedAmount || 0,
+    nextPaymentDate: new Date(),
+    contractDate: app.createdAt,
+    expiryDate: app.createdAt,
+    titleDeedNumber: app.landNumber,
+    collateralValue: app.propertyValue,
+    collateralDetails: null,
+    createdAt: app.createdAt,
+    updatedAt: app.updatedAt,
+    payments: [],
+    installments: [],
+    hasOverdueInstallments: false,
+    overdueCount: 0,
+    oldestOverdueDate: null,
+  };
+}
+
+// ============================================
+// UPDATE HELPERS
+// ============================================
+
+/**
+ * Calculate updated loan values (monthly payment, term, balance)
+ */
+function calculateUpdatedLoanValues(existing: any, data: LoanUpdateSchema) {
+  let monthlyPayment = Number(existing.monthlyPayment || 0);
+  let termMonths = existing.termMonths || 48;
+  let remainingBalance = Number(existing.remainingBalance || 0);
+
+  if (data.loanAmount || data.loanYears || data.interestRate) {
+    const loanAmount = data.loanAmount ?? Number(existing.principalAmount || 0);
+    const loanYears =
+      data.loanYears ?? (existing.termMonths ? existing.termMonths / 12 : 4);
+    const interestRate =
+      data.interestRate ?? Number(existing.interestRate || 1);
+
+    termMonths = loanYears * 12;
+    monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate);
+    remainingBalance = loanAmount * (1 + interestRate / 100);
+  }
+
+  return { monthlyPayment, termMonths, remainingBalance };
+}
+
+/**
+ * Update loan record
+ */
+async function updateLoanRecord(
+  tx: any,
+  id: string,
+  data: LoanUpdateSchema,
+  calculatedValues: {
+    monthlyPayment: number;
+    termMonths: number;
+    remainingBalance: number;
+  },
+) {
+  const { monthlyPayment, termMonths, remainingBalance } = calculatedValues;
+
+  const updateData: Prisma.LoanUpdateInput = {
+    ...(data.loanAmount && { principalAmount: data.loanAmount }),
+    ...(data.interestRate && { interestRate: data.interestRate }),
+    ...(data.loanYears && { termMonths, totalInstallments: termMonths }),
+    monthlyPayment,
+    remainingBalance,
+    ...(data.loanStartDate && { contractDate: new Date(data.loanStartDate) }),
+    ...(data.loanDueDate && { expiryDate: new Date(data.loanDueDate) }),
+    ...(data.landNumber && { titleDeedNumber: data.landNumber }),
+    updatedAt: new Date(),
+  };
+
+  return tx.loan.update({
+    where: { id },
+    data: updateData,
+    include: { customer: { include: { profile: true } }, application: true },
+  });
+}
+
+/**
+ * Update customer profile
+ */
+async function updateCustomerProfile(
+  tx: any,
+  customerId: string,
+  data: LoanUpdateSchema,
+) {
+  const hasProfileChanges =
+    data.fullName ||
+    data.email ||
+    data.address ||
+    data.birthDate ||
+    data.idCardImage ||
+    data.idCard;
+  if (!hasProfileChanges) return;
+
+  const profileData: any = {};
+  if (data.fullName) profileData.fullName = data.fullName;
+  if (data.email) profileData.email = data.email;
+  if (data.address) profileData.address = data.address;
+  if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
+  if (data.idCard) profileData.idCardNumber = data.idCard.replace(/\D/g, '');
+  if (data.idCardImage) profileData.idCardFrontImage = data.idCardImage;
+
+  await tx.userProfile.update({
+    where: { userId: customerId },
+    data: profileData,
+  });
+}
+
+/**
+ * Update customer phone number
+ */
+async function updateCustomerPhoneNumber(
+  tx: any,
+  customerId: string,
+  newPhoneNumber: string,
+) {
+  const currentCustomer = await tx.user.findUnique({
+    where: { id: customerId },
+  });
+  if (currentCustomer && newPhoneNumber !== currentCustomer.phoneNumber) {
+    await tx.user.update({
+      where: { id: customerId },
+      data: { phoneNumber: newPhoneNumber },
+    });
+  }
+}
+
+/**
+ * Update loan application data
+ */
+async function updateLoanApplicationData(
+  tx: any,
+  applicationId: string,
+  data: LoanUpdateSchema,
+) {
+  const hasApplicationChanges =
+    data.ownerName ||
+    data.placeName ||
+    data.landArea ||
+    data.landNumber ||
+    data.propertyType ||
+    data.propertyValue !== undefined ||
+    data.requestedAmount !== undefined ||
+    data.maxApprovedAmount !== undefined ||
+    data.loanAmount ||
+    data.titleDeedImages ||
+    data.supportingImages ||
+    data.idCardImage;
+
+  if (!hasApplicationChanges) return;
+
+  const updateData: any = {
+    ...(data.ownerName && { ownerName: data.ownerName }),
+    ...(data.placeName && { propertyLocation: data.placeName }),
+    ...(data.landArea && { propertyArea: data.landArea }),
+    ...(data.landNumber && { landNumber: data.landNumber }),
+    ...(data.propertyType && { propertyType: data.propertyType }),
+    ...(data.propertyValue !== undefined && {
+      propertyValue: data.propertyValue,
+    }),
+    ...(data.requestedAmount !== undefined && {
+      requestedAmount: data.requestedAmount,
+    }),
+    ...(data.maxApprovedAmount !== undefined && {
+      maxApprovedAmount: data.maxApprovedAmount,
+    }),
+    ...(data.loanAmount && { approvedAmount: data.loanAmount }),
+    ...(data.titleDeedImages?.length && {
+      titleDeedImage: data.titleDeedImages[0],
+    }),
+    ...(data.supportingImages !== undefined && {
+      supportingImages: data.supportingImages,
+    }),
+    ...(data.idCardImage && { idCardFrontImage: data.idCardImage }),
+  };
+
+  await tx.loanApplication.update({
+    where: { id: applicationId },
+    data: updateData,
+  });
+}
+
+// ============================================
 // LOAN SERVICE
 // ============================================
 
@@ -527,73 +831,11 @@ export const loanService = {
       sortOrder = 'desc',
     } = filters;
 
-    // Query จาก loan_applications เป็นหลัก เพื่อให้แสดงทั้งที่ยังไม่มี loan
-    const where: Prisma.LoanApplicationWhereInput = {
-      // ไม่แสดง DRAFT
-      status: {
-        not: 'DRAFT',
-      },
-    };
-
-    // Search filter
-    if (search) {
-      const searchConditions: Prisma.LoanApplicationWhereInput[] = [
-        // ค้นหาจากชื่อลูกค้า
-        { customer: { profile: { fullName: { contains: search } } } },
-        // ค้นหาจากที่ตั้งทรัพย์สิน
-        { propertyLocation: { contains: search } },
-        { ownerName: { contains: search } },
-      ];
-
-      // ค้นหาจากเลขที่สินเชื่อ (ใน loan) - รวม status filter ด้วยถ้ามี
-      const loanSearchCondition: Prisma.LoanWhereInput = {
-        loanNumber: { contains: search },
-      };
-      if (status) {
-        loanSearchCondition.status = status;
-      }
-      searchConditions.push({ loan: loanSearchCondition });
-
-      // ถ้า search เป็นตัวเลข ให้ค้นหาจากยอดเงินด้วย
-      const searchNumber = parseFloat(search.replace(/,/g, ''));
-      if (!isNaN(searchNumber)) {
-        searchConditions.push(
-          { requestedAmount: { equals: searchNumber } },
-          { approvedAmount: { equals: searchNumber } },
-        );
-
-        // ค้นหาจาก principal amount ใน loan - รวม status filter ด้วยถ้ามี
-        const amountSearchCondition: Prisma.LoanWhereInput = {
-          principalAmount: { equals: searchNumber },
-        };
-        if (status) {
-          amountSearchCondition.status = status;
-        }
-        searchConditions.push({ loan: amountSearchCondition });
-      }
-
-      where.OR = searchConditions;
-    } else if (status) {
-      // ถ้าไม่มี search แต่มี status filter
-      where.loan = {
-        status: status,
-      };
-    }
-
-    // Build orderBy - เรียงตามวันที่ขอ (createdAt) เป็นค่าเริ่มต้น
-    const orderBy: Prisma.LoanApplicationOrderByWithRelationInput =
-      sortBy === 'createdAt'
-        ? {
-            createdAt: sortOrder,
-          }
-        : {
-            [sortBy]: sortOrder,
-            createdAt: 'desc', // เพิ่มการเรียงตาม createdAt เป็น secondary
-          };
-
-    // Query applications with pagination
+    const where = buildLoanListWhere(search, status);
+    const orderBy = buildLoanListOrderBy(sortBy, sortOrder);
     const skip = (page - 1) * limit;
 
+    // Query applications with pagination
     const [applications, total] = await Promise.all([
       prisma.loanApplication.findMany({
         where,
@@ -601,20 +843,11 @@ export const loanService = {
         take: limit,
         orderBy,
         include: {
-          customer: {
-            include: {
-              profile: true,
-            },
-          },
-          agent: true, // เพิ่ม agent
+          customer: { include: { profile: true } },
+          agent: true,
           loan: {
             include: {
-              installments: {
-                orderBy: {
-                  installmentNumber: 'asc',
-                },
-                take: 1, // เอาแค่งวดแรกเพื่อประหยัด
-              },
+              installments: { orderBy: { installmentNumber: 'asc' }, take: 1 },
             },
           },
         },
@@ -622,70 +855,13 @@ export const loanService = {
       prisma.loanApplication.count({ where }),
     ]);
 
-    // แปลงข้อมูลให้เป็นรูปแบบเดียวกับ Loan และตรวจสอบ overdue
+    // Transform to unified format
     const transformedData = await Promise.all(
-      applications.map(async (app) => {
-        // ถ้ามี loan ให้ใช้ข้อมูลจาก loan
-        if (app.loan) {
-          // ตรวจสอบว่ามีงวดค้างชำระหรือไม่
-          const overdueInstallments = await prisma.loanInstallment.findMany({
-            where: {
-              loanId: app.loan.id,
-              isPaid: false,
-              dueDate: {
-                lt: new Date(),
-              },
-            },
-            orderBy: {
-              dueDate: 'asc',
-            },
-          });
-
-          return {
-            ...app.loan,
-            application: app,
-            customer: app.customer,
-            // เพิ่มข้อมูล overdue
-            hasOverdueInstallments: overdueInstallments.length > 0,
-            overdueCount: overdueInstallments.length,
-            oldestOverdueDate: overdueInstallments[0]?.dueDate || null,
-          };
-        }
-
-        // ถ้ายังไม่มี loan ให้สร้างข้อมูลจาก application
-        return {
-          id: app.id,
-          loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`, // ใช้ application ID เป็น temporary loan number
-          customerId: app.customerId,
-          customer: app.customer,
-          agentId: app.agentId,
-          agent: app.agent,
-          applicationId: app.id,
-          application: app,
-          loanType: app.loanType,
-          status: app.status as any, // ใช้ application status แทน
-          principalAmount: app.approvedAmount || app.requestedAmount || 0,
-          interestRate: 0, // ยังไม่มีข้อมูล
-          termMonths: 0,
-          monthlyPayment: 0,
-          currentInstallment: 0,
-          totalInstallments: 0,
-          remainingBalance: app.approvedAmount || app.requestedAmount || 0,
-          nextPaymentDate: new Date(),
-          contractDate: app.createdAt,
-          expiryDate: app.createdAt,
-          titleDeedNumber: app.landNumber,
-          collateralValue: app.propertyValue,
-          collateralDetails: null,
-          createdAt: app.createdAt,
-          updatedAt: app.updatedAt,
-          payments: [],
-          installments: [],
-          hasOverdueInstallments: false,
-          overdueCount: 0,
-          oldestOverdueDate: null,
-        };
-      }),
+      applications.map((app) =>
+        app.loan
+          ? transformApplicationWithLoan(app)
+          : transformApplicationWithoutLoan(app),
+      ),
     );
 
     return {
@@ -844,208 +1020,51 @@ export const loanService = {
   },
 
   async update(id: string, data: LoanUpdateSchema) {
-    // ตรวจสอบว่ามีสินเชื่อนี้อยู่หรือไม่
     const existing = await this.getById(id);
     if (!existing) {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
-    // ตรวจสอบว่ามี Loan record หรือไม่ (สินเชื่อที่ยังไม่อนุมัติจะไม่มี Loan record)
     const hasLoanRecord = await prisma.loan.findUnique({ where: { id } });
     const isApplicationOnly = !hasLoanRecord;
 
-    // คำนวณข้อมูลใหม่ถ้ามีการเปลี่ยนแปลง
-    let monthlyPayment = Number(existing.monthlyPayment || 0);
-    let termMonths = existing.termMonths || 48;
-    let remainingBalance = Number(existing.remainingBalance || 0);
+    // Calculate updated loan values
+    const calculatedValues = calculateUpdatedLoanValues(existing, data);
 
-    if (data.loanAmount || data.loanYears || data.interestRate) {
-      const loanAmount =
-        data.loanAmount ?? Number(existing.principalAmount || 0);
-      const loanYears =
-        data.loanYears ?? (existing.termMonths ? existing.termMonths / 12 : 4);
-      const interestRate =
-        data.interestRate ?? Number(existing.interestRate || 1);
-
-      termMonths = loanYears * 12;
-
-      // คำนวณงวดชำระรายเดือน (ดอกเบี้ยอย่างเดียว ไม่รวมเงินต้น)
-      monthlyPayment = (loanAmount * (interestRate / 100)) / 12;
-
-      remainingBalance = loanAmount * (1 + interestRate / 100);
-    }
-
-    // Use transaction for update
     return prisma.$transaction(async (tx) => {
       let updatedLoan = null;
 
-      // Step 1: Update Loan (only if loan record exists)
+      // Step 1: Update Loan record (if exists)
       if (!isApplicationOnly) {
-        const updateData: Prisma.LoanUpdateInput = {
-          ...(data.loanAmount && { principalAmount: data.loanAmount }),
-          ...(data.interestRate && { interestRate: data.interestRate }),
-          ...(data.loanYears && {
-            termMonths,
-            totalInstallments: termMonths,
-          }),
-          monthlyPayment,
-          remainingBalance,
-          ...(data.loanStartDate && {
-            contractDate: new Date(data.loanStartDate),
-          }),
-          ...(data.loanDueDate && { expiryDate: new Date(data.loanDueDate) }),
-          ...(data.landNumber && { titleDeedNumber: data.landNumber }),
-          updatedAt: new Date(),
-        };
-
-        updatedLoan = await tx.loan.update({
-          where: { id },
-          data: updateData,
-          include: {
-            customer: {
-              include: {
-                profile: true,
-              },
-            },
-            application: true,
-          },
-        });
+        updatedLoan = await updateLoanRecord(tx, id, data, calculatedValues);
       }
 
-      // Step 2: Update UserProfile ในตาราง user_profiles (ถ้ามีการเปลี่ยนแปลง)
-      if (
-        existing.customerId &&
-        (data.fullName ||
-          data.email ||
-          data.address ||
-          data.birthDate ||
-          data.idCardImage)
-      ) {
-        const profileData: any = {};
-
-        if (data.fullName) {
-          profileData.fullName = data.fullName;
-        }
-        if (data.email) profileData.email = data.email;
-        if (data.address) profileData.address = data.address;
-        if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
-        if (data.idCard)
-          profileData.idCardNumber = data.idCard.replace(/\D/g, '');
-        if (data.idCardImage) profileData.idCardFrontImage = data.idCardImage;
-
-        // อัพเดท UserProfile
-        await tx.userProfile.update({
-          where: { userId: existing.customerId },
-          data: profileData,
-        });
+      // Step 2: Update customer profile
+      if (existing.customerId) {
+        await updateCustomerProfile(tx, existing.customerId, data);
       }
 
-      // Step 3: Update User phone number (ถ้ามีการเปลี่ยนแปลง)
+      // Step 3: Update phone number
       if (existing.customerId && data.phoneNumber) {
-        // Query current customer data
-        const currentCustomer = await tx.user.findUnique({
-          where: { id: existing.customerId },
-        });
-
-        if (
-          currentCustomer &&
-          data.phoneNumber !== currentCustomer.phoneNumber
-        ) {
-          await tx.user.update({
-            where: { id: existing.customerId },
-            data: {
-              phoneNumber: data.phoneNumber,
-            },
-          });
-        }
+        await updateCustomerPhoneNumber(
+          tx,
+          existing.customerId,
+          data.phoneNumber,
+        );
       }
 
-      // Step 4: Update LoanApplication (ถ้ามีการเปลี่ยนแปลง)
-      if (
-        data.ownerName ||
-        data.placeName ||
-        data.landArea ||
-        data.landNumber ||
-        data.propertyType ||
-        data.propertyValue !== undefined ||
-        data.requestedAmount !== undefined ||
-        data.maxApprovedAmount !== undefined ||
-        data.loanAmount ||
-        data.titleDeedImages ||
-        data.supportingImages ||
-        data.idCardImage
-      ) {
-        const updateApplicationData: any = {
-          ...(data.ownerName && { ownerName: data.ownerName }),
-          ...(data.placeName && { propertyLocation: data.placeName }),
-          ...(data.landArea && { propertyArea: data.landArea }),
-          ...(data.landNumber && { landNumber: data.landNumber }),
-          ...(data.propertyType && { propertyType: data.propertyType }),
-          ...(data.propertyValue !== undefined && {
-            propertyValue: data.propertyValue,
-          }),
-          ...(data.requestedAmount !== undefined && {
-            requestedAmount: data.requestedAmount,
-          }),
-          ...(data.maxApprovedAmount !== undefined && {
-            maxApprovedAmount: data.maxApprovedAmount,
-          }),
-          ...(data.loanAmount && { approvedAmount: data.loanAmount }),
-        };
-
-        // Update title deed image (แทนที่รูปเดิม)
-        if (data.titleDeedImages && data.titleDeedImages.length > 0) {
-          // รูปแรกเป็น titleDeedImage
-          updateApplicationData.titleDeedImage = data.titleDeedImages[0];
-
-          console.log('[Service] Replacing title deed image:', {
-            titleDeedImage: updateApplicationData.titleDeedImage,
-          });
-        }
-
-        // Update supporting images (แทนที่รูปเดิม)
-        if (data.supportingImages !== undefined) {
-          updateApplicationData.supportingImages = data.supportingImages;
-
-          console.log('[Service] Replacing supporting images:', {
-            supportingImagesCount: data.supportingImages.length,
-          });
-        }
-
-        // Update ID card image (แทนที่รูปเดิม)
-        if (data.idCardImage) {
-          updateApplicationData.idCardFrontImage = data.idCardImage;
-
-          console.log('[Service] Replacing ID card image:', {
-            idCardFrontImage: data.idCardImage,
-          });
-        }
-
-        await tx.loanApplication.update({
-          where: { id: existing.applicationId },
-          data: updateApplicationData,
-        });
+      // Step 4: Update loan application
+      if (existing.applicationId) {
+        await updateLoanApplicationData(tx, existing.applicationId, data);
       }
 
       // Return updated data
-      if (updatedLoan) {
-        return updatedLoan;
-      }
+      if (updatedLoan) return updatedLoan;
 
-      // If no loan record, return updated application data
-      const updatedApplication = await tx.loanApplication.findUnique({
+      return tx.loanApplication.findUnique({
         where: { id: existing.applicationId },
-        include: {
-          customer: {
-            include: {
-              profile: true,
-            },
-          },
-          loan: true,
-        },
+        include: { customer: { include: { profile: true } }, loan: true },
       });
-
-      return updatedApplication;
     });
   },
 

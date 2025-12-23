@@ -1,120 +1,15 @@
 // src/app/api/loan-check/[id]/approve/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  calculateExpiryDate,
+  calculateMonthlyPayment,
+  calculateNextPaymentDate,
+  generateInstallmentsData,
+  generateLoanNumber,
+  updateLandAccountBalance,
+} from '@src/features/loans/services/server';
 import { prisma } from '@src/shared/lib/db';
 import { sendLoanApprovalToLine } from '@src/shared/lib/line-api';
-
-// Helper functions (same as loan service)
-function generateLoanNumber(): string {
-  const timestamp = Date.now().toString().slice(-8);
-  const random = Math.floor(Math.random() * 1000)
-    .toString()
-    .padStart(3, '0');
-  return `LOA${timestamp}${random}`;
-}
-
-function calculateMonthlyPayment(
-  loanAmount: number,
-  interestRate: number,
-): number {
-  // ดอกเบี้ยต่อเดือน = ยอดเงินกู้ × (อัตราดอกเบี้ยต่อปี / 100) / 12
-  return (loanAmount * (interestRate / 100)) / 12;
-}
-
-function calculateNextPaymentDate(contractDate: Date): Date {
-  const nextDate = new Date(contractDate);
-  nextDate.setMonth(nextDate.getMonth() + 1);
-  return nextDate;
-}
-
-function calculateExpiryDate(contractDate: Date, loanYears: number): Date {
-  const expiryDate = new Date(contractDate);
-  expiryDate.setFullYear(expiryDate.getFullYear() + loanYears);
-  return expiryDate;
-}
-
-function generateInstallmentsData(
-  loanId: string,
-  contractDate: Date,
-  termMonths: number,
-  monthlyPayment: number,
-): Array<{
-  loanId: string;
-  installmentNumber: number;
-  dueDate: Date;
-  principalAmount: number;
-  interestAmount: number;
-  totalAmount: number;
-  isPaid: boolean;
-  isLate: boolean;
-}> {
-  const installments = [];
-
-  for (let i = 1; i <= termMonths; i++) {
-    const dueDate = new Date(contractDate);
-    dueDate.setMonth(dueDate.getMonth() + i);
-
-    installments.push({
-      loanId,
-      installmentNumber: i,
-      dueDate,
-      principalAmount: 0, // Flat rate - principal paid at end
-      interestAmount: monthlyPayment,
-      totalAmount: monthlyPayment,
-      isPaid: false,
-      isLate: false,
-    });
-  }
-
-  return installments;
-}
-
-async function updateLandAccountBalance(
-  tx: any,
-  landAccountId: string,
-  amount: number,
-  operation: 'increment' | 'decrement',
-  detail: string,
-  note: string,
-  adminId?: string,
-  adminName?: string,
-) {
-  // Validate account exists and has sufficient balance if decrementing
-  const account = await tx.landAccount.findUnique({
-    where: { id: landAccountId, deletedAt: null },
-  });
-
-  if (!account) {
-    throw new Error('ไม่พบบัญชีที่เลือก');
-  }
-
-  if (operation === 'decrement' && Number(account.accountBalance) < amount) {
-    throw new Error('ยอดเงินในบัญชีไม่เพียงพอ');
-  }
-
-  // Update account balance
-  const updatedAccount = await tx.landAccount.update({
-    where: { id: landAccountId },
-    data: {
-      accountBalance: { [operation]: amount },
-      updatedAt: new Date(),
-    },
-  });
-
-  // Create report
-  await tx.landAccountReport.create({
-    data: {
-      landAccountId,
-      detail,
-      amount,
-      note,
-      accountBalance: updatedAccount.accountBalance,
-      ...(adminId && { adminId }),
-      adminName: adminName || undefined,
-    },
-  });
-
-  return updatedAccount;
-}
 
 export async function POST(
   request: NextRequest,

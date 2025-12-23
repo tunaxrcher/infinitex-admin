@@ -295,6 +295,11 @@ model LoanApplication {
   landNumber       String?  @db.VarChar(100)
   ownerName        String?  @db.VarChar(255)
 
+  // Property valuation (AI assessment on submit)
+  valuationResult Json?               // ผลการประเมินจาก AI
+  valuationDate   DateTime? @db.DateTime(0) // วันที่ทำการประเมิน
+  estimatedValue  Decimal?  @db.Decimal(15, 2) // มูลค่าประเมินที่บันทึก
+
   // Application metadata
   submittedAt     DateTime? @db.DateTime(0)
   reviewedAt      DateTime? @db.DateTime(0)
@@ -363,11 +368,6 @@ model Loan {
   linkMap         String? @db.Text
   landAccountId   Int?
   landAccountName String? @db.VarChar(200)
-
-  // Property valuation (AI assessment)
-  valuationResult Json? // เก็บผลการประเมินจาก AI
-  valuationDate   DateTime? @db.DateTime(0) // วันที่ทำการประเมิน
-  estimatedValue  Decimal?  @db.Decimal(15, 2) // มูลค่าประเมินที่บันทึก
 
   // Property location (from LandMaps API)
   latitude  String? @db.VarChar(50) // parcellat
