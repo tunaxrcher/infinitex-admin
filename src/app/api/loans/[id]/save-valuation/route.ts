@@ -1,4 +1,5 @@
 // src/app/api/loans/[id]/save-valuation/route.ts
+// Saves valuation result to loan_application (works with both application ID and loan ID)
 import { NextRequest, NextResponse } from 'next/server';
 import { loanService } from '@src/features/loans/services/server';
 
@@ -12,7 +13,8 @@ export async function POST(
 
     const { valuationResult, estimatedValue } = body;
 
-    const updatedLoan = await loanService.saveValuation(
+    // Service now handles both application ID and loan ID
+    const updatedApplication = await loanService.saveValuation(
       id,
       valuationResult,
       estimatedValue,
@@ -20,7 +22,7 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      data: updatedLoan,
+      data: updatedApplication,
     });
   } catch (error: any) {
     const { id } = await params;

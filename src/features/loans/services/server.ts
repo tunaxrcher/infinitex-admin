@@ -609,6 +609,10 @@ async function transformApplicationWithLoan(app: any) {
     hasOverdueInstallments: overdueInstallments.length > 0,
     overdueCount: overdueInstallments.length,
     oldestOverdueDate: overdueInstallments[0]?.dueDate || null,
+    // Include valuation fields from application
+    valuationResult: app.valuationResult || null,
+    valuationDate: app.valuationDate || null,
+    estimatedValue: app.estimatedValue || null,
   };
 }
 
@@ -647,6 +651,10 @@ function transformApplicationWithoutLoan(app: any) {
     hasOverdueInstallments: false,
     overdueCount: 0,
     oldestOverdueDate: null,
+    // Include valuation fields from application
+    valuationResult: app.valuationResult || null,
+    valuationDate: app.valuationDate || null,
+    estimatedValue: app.estimatedValue || null,
   };
 }
 
@@ -897,7 +905,13 @@ export const loanService = {
     });
 
     if (loan) {
-      return loan;
+      // Include valuation fields from application
+      return {
+        ...loan,
+        valuationResult: loan.application?.valuationResult || null,
+        valuationDate: loan.application?.valuationDate || null,
+        estimatedValue: loan.application?.estimatedValue || null,
+      };
     }
 
     // ถ้าไม่เจอ loan ให้ลองหาจาก application
@@ -931,12 +945,16 @@ export const loanService = {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
-    // ถ้ามี loan ใน application ให้ return loan
+    // ถ้ามี loan ใน application ให้ return loan with valuation fields
     if (application.loan) {
       return {
         ...application.loan,
         application,
         customer: application.customer,
+        // Include valuation fields from application
+        valuationResult: application.valuationResult || null,
+        valuationDate: application.valuationDate || null,
+        estimatedValue: application.estimatedValue || null,
       };
     }
 
@@ -971,6 +989,10 @@ export const loanService = {
       updatedAt: application.updatedAt,
       payments: [],
       installments: [],
+      // Include valuation fields from application
+      valuationResult: application.valuationResult || null,
+      valuationDate: application.valuationDate || null,
+      estimatedValue: application.estimatedValue || null,
     };
   },
 
@@ -1227,29 +1249,40 @@ export const loanService = {
   },
 
   /**
-   * Get property valuation for a loan
+   * Get property valuation for a loan application
    */
-  async getValuation(loanId: string) {
-    console.log('[LoanService] Starting valuation for loan:', loanId);
+  async getValuation(applicationId: string) {
+    console.log(
+      '[LoanService] Starting valuation for application:',
+      applicationId,
+    );
 
-    // Fetch loan data with application
-    const loan = await prisma.loan.findUnique({
-      where: { id: loanId },
-      include: {
-        application: true,
-      },
+    // Try to find as application first
+    let application = await prisma.loanApplication.findUnique({
+      where: { id: applicationId },
     });
 
-    if (!loan || !loan.application) {
-      throw new Error('ไม่พบข้อมูลสินเชื่อหรือใบสมัคร');
+    // If not found, try to find by loan ID
+    if (!application) {
+      const loan = await prisma.loan.findUnique({
+        where: { id: applicationId },
+        include: { application: true },
+      });
+      if (loan?.application) {
+        application = loan.application;
+      }
+    }
+
+    if (!application) {
+      throw new Error('ไม่พบข้อมูลใบสมัครสินเชื่อ');
     }
 
     // Get images from application
-    const titleDeedImage = loan.application.titleDeedImage;
-    const supportingImages = loan.application.supportingImages
-      ? typeof loan.application.supportingImages === 'string'
-        ? JSON.parse(loan.application.supportingImages)
-        : loan.application.supportingImages
+    const titleDeedImage = application.titleDeedImage;
+    const supportingImages = application.supportingImages
+      ? typeof application.supportingImages === 'string'
+        ? JSON.parse(application.supportingImages)
+        : application.supportingImages
       : [];
 
     console.log('[LoanService] Image data:', {
@@ -1289,10 +1322,10 @@ export const loanService = {
     console.log('[LoanService] Calling aiService.evaluatePropertyValue...');
 
     // Get title deed data if available
-    const titleDeedData = loan.application.titleDeedData
-      ? typeof loan.application.titleDeedData === 'string'
-        ? JSON.parse(loan.application.titleDeedData)
-        : loan.application.titleDeedData
+    const titleDeedData = application.titleDeedData
+      ? typeof application.titleDeedData === 'string'
+        ? JSON.parse(application.titleDeedData)
+        : application.titleDeedData
       : null;
 
     // Call AI service to evaluate property value
@@ -1311,10 +1344,10 @@ export const loanService = {
   },
 
   /**
-   * Save valuation result for a loan
+   * Save valuation result for a loan application
    */
   async saveValuation(
-    loanId: string,
+    applicationId: string,
     valuationResult: string,
     estimatedValue: number,
   ) {
@@ -1322,9 +1355,29 @@ export const loanService = {
       throw new Error('กรุณาระบุผลการประเมินและมูลค่าประเมิน');
     }
 
-    // Update loan with valuation data
-    const updatedLoan = await prisma.loan.update({
-      where: { id: loanId },
+    // Try to find as application first
+    let application = await prisma.loanApplication.findUnique({
+      where: { id: applicationId },
+    });
+
+    // If not found, try to find by loan ID
+    if (!application) {
+      const loan = await prisma.loan.findUnique({
+        where: { id: applicationId },
+        include: { application: true },
+      });
+      if (loan?.application) {
+        application = loan.application;
+      }
+    }
+
+    if (!application) {
+      throw new Error('ไม่พบข้อมูลใบสมัครสินเชื่อ');
+    }
+
+    // Update loan application with valuation data
+    const updatedApplication = await prisma.loanApplication.update({
+      where: { id: application.id },
       data: {
         valuationResult,
         valuationDate: new Date(),
@@ -1336,11 +1389,11 @@ export const loanService = {
             profile: true,
           },
         },
-        application: true,
+        loan: true,
       },
     });
 
-    return updatedLoan;
+    return updatedApplication;
   },
 
   async delete(id: string) {

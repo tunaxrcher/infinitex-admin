@@ -1,4 +1,5 @@
 // src/app/api/loans/[id]/valuation/route.ts
+// Gets property valuation from AI (works with both application ID and loan ID)
 import { NextRequest, NextResponse } from 'next/server';
 import { loanService } from '@src/features/loans/services/server';
 
@@ -8,6 +9,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    // Service now handles both application ID and loan ID
     const result = await loanService.getValuation(id);
 
     return NextResponse.json(result);
