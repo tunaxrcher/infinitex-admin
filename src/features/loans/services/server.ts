@@ -1988,16 +1988,13 @@ export const paymentService = {
       throw new Error('สินเชื่อนี้ชำระครบแล้ว');
     }
 
-    // Calculate payoff amount - only principal, no interest
-    const principalOnlyAmount = unpaidInstallments.reduce(
-      (sum, inst) => sum + Number(inst.principalAmount),
-      0,
-    );
+    // Calculate payoff amount - use loan's principal amount (วงเงินสินเชื่อ)
+    const loanPrincipal = Number(loan.principalAmount || 0);
     const discount = data.discountAmount || 0;
     const additionalFees = data.additionalFees || 0;
     
-    // Use custom amount if provided, otherwise use calculated principal
-    const baseAmount = data.customAmount !== undefined ? data.customAmount : principalOnlyAmount;
+    // Use custom amount if provided, otherwise use loan's principal amount
+    const baseAmount = data.customAmount !== undefined ? data.customAmount : loanPrincipal;
     const totalPayoffAmount = baseAmount - discount + additionalFees;
 
     const paidDate = new Date();

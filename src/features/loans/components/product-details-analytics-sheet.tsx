@@ -296,15 +296,15 @@ export function ProductDetailsAnalyticsSheet({
     }
   }, [loan]);
 
-  // Set default close loan amount when loan data is loaded
+  // Set default close loan amount to principal amount (วงเงินสินเชื่อ)
   useEffect(() => {
-    if (loan?.remainingBalance) {
+    if (loan?.principalAmount) {
       setCloseLoanForm((prev) => ({
         ...prev,
-        amount: Number(loan.remainingBalance).toLocaleString(),
+        amount: Number(loan.principalAmount).toLocaleString(),
       }));
     }
-  }, [loan?.remainingBalance]);
+  }, [loan?.principalAmount]);
 
   // Calculate Core Financial Ratios (Memoized)
   const financialRatios = useMemo(() => {
@@ -2139,7 +2139,7 @@ export function ProductDetailsAnalyticsSheet({
                                 amount: value ? Number(value).toLocaleString() : '',
                               });
                             }}
-                            placeholder={`ยอดคงเหลือ: ${Number(loan.remainingBalance || 0).toLocaleString()} บาท`}
+                            placeholder={`วงเงินสินเชื่อ: ${Number(loan.principalAmount || 0).toLocaleString()} บาท`}
                             className="pr-12"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
@@ -2236,14 +2236,14 @@ export function ProductDetailsAnalyticsSheet({
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="closeSystemAmount">
-                          ยอดต้นชำระ-ระบบทั้งสิ้น
+                          วงเงินสินเชื่อ (ยอดต้น)
                         </Label>
                         <div className="relative">
                           <Input
                             id="closeSystemAmount"
                             type="text"
                             value={Number(
-                              loan.remainingBalance || 0,
+                              loan.principalAmount || 0,
                             ).toLocaleString()}
                             disabled
                             className="bg-muted pr-12"
