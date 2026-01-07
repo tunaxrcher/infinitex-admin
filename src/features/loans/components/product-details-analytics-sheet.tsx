@@ -271,6 +271,7 @@ export function ProductDetailsAnalyticsSheet({
     landAccountId: '',
     paymentMethod: '',
     receiver: '',
+    amount: '',
   });
 
   // Prevent auto-focus when sheet opens and reset tab
@@ -294,6 +295,16 @@ export function ProductDetailsAnalyticsSheet({
       setValuationResult(null); // Clear previous result
     }
   }, [loan]);
+
+  // Set default close loan amount when loan data is loaded
+  useEffect(() => {
+    if (loan?.remainingBalance) {
+      setCloseLoanForm((prev) => ({
+        ...prev,
+        amount: Number(loan.remainingBalance).toLocaleString(),
+      }));
+    }
+  }, [loan?.remainingBalance]);
 
   // Calculate Core Financial Ratios (Memoized)
   const financialRatios = useMemo(() => {
@@ -2119,11 +2130,17 @@ export function ProductDetailsAnalyticsSheet({
                           <Input
                             id="closeTotalAmount"
                             type="text"
-                            value={Number(
-                              loan.remainingBalance || 0,
-                            ).toLocaleString()}
-                            disabled
-                            className="bg-muted pr-12"
+                            value={closeLoanForm.amount}
+                            onChange={(e) => {
+                              // Allow only numbers and format with commas
+                              const value = e.target.value.replace(/[^0-9]/g, '');
+                              setCloseLoanForm({
+                                ...closeLoanForm,
+                                amount: value ? Number(value).toLocaleString() : '',
+                              });
+                            }}
+                            placeholder={`ยอดคงเหลือ: ${Number(loan.remainingBalance || 0).toLocaleString()} บาท`}
+                            className="pr-12"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                             บาท
@@ -2216,7 +2233,7 @@ export function ProductDetailsAnalyticsSheet({
                     <h3 className="text-base font-semibold mb-4 text-[#B8860B]">
                       ข้อมูลการคำนวนรายการสินเชื่อ
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="closeSystemAmount">
                           ยอดต้นชำระ-ระบบทั้งสิ้น
@@ -2234,20 +2251,6 @@ export function ProductDetailsAnalyticsSheet({
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                             บาท
                           </span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="closeInstallmentsRemaining">
-                          งวดที่เหลือ
-                        </Label>
-                        <div className="relative">
-                          <Input
-                            id="closeInstallmentsRemaining"
-                            type="text"
-                            value={`${(loan.totalInstallments || 0) - (loan.currentInstallment || 0)} งวด`}
-                            disabled
-                            className="bg-muted"
-                          />
                         </div>
                       </div>
                     </div>
@@ -2280,6 +2283,18 @@ export function ProductDetailsAnalyticsSheet({
                           return;
                         }
 
+                        if (!closeLoanForm.amount) {
+                          alert('กรุณาระบุยอดชำระ');
+                          return;
+                        }
+
+                        // Parse amount from formatted string (remove commas)
+                        const customAmount = Number(closeLoanForm.amount.replace(/,/g, ''));
+                        if (isNaN(customAmount) || customAmount <= 0) {
+                          alert('ยอดชำระไม่ถูกต้อง');
+                          return;
+                        }
+
                         // Submit close loan payment
                         closeLoan.mutate(
                           {
@@ -2288,6 +2303,7 @@ export function ProductDetailsAnalyticsSheet({
                             landAccountId: closeLoanForm.landAccountId,
                             discountAmount: 0,
                             additionalFees: 0,
+                            customAmount: customAmount,
                             notes: `ปิดสินเชื่อ - รับชำระโดย ${closeLoanForm.receiver}`,
                           },
                           {
@@ -2301,6 +2317,7 @@ export function ProductDetailsAnalyticsSheet({
                                 paymentMethod: '',
                                 receiver: '',
                                 landAccountId: '',
+                                amount: '',
                               });
                             },
                           },

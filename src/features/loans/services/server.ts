@@ -1988,18 +1988,21 @@ export const paymentService = {
       throw new Error('สินเชื่อนี้ชำระครบแล้ว');
     }
 
-    // Calculate payoff amount
-    const baseAmount = unpaidInstallments.reduce(
-      (sum, inst) => sum + Number(inst.totalAmount),
+    // Calculate payoff amount - only principal, no interest
+    const principalOnlyAmount = unpaidInstallments.reduce(
+      (sum, inst) => sum + Number(inst.principalAmount),
       0,
     );
     const discount = data.discountAmount || 0;
     const additionalFees = data.additionalFees || 0;
+    
+    // Use custom amount if provided, otherwise use calculated principal
+    const baseAmount = data.customAmount !== undefined ? data.customAmount : principalOnlyAmount;
     const totalPayoffAmount = baseAmount - discount + additionalFees;
 
     const paidDate = new Date();
 
-    // Create payment record
+    // Create payment record - only principal amount, no interest
     const payment = await paymentRepository.create({
       user: { connect: { id: payerUserId } },
       loan: { connect: { id: data.loanId } },
@@ -2009,14 +2012,8 @@ export const paymentService = {
       referenceNumber: generateReferenceNumber(),
       dueDate: paidDate,
       paidDate,
-      principalAmount: unpaidInstallments.reduce(
-        (sum, inst) => sum + Number(inst.principalAmount),
-        0,
-      ),
-      interestAmount: unpaidInstallments.reduce(
-        (sum, inst) => sum + Number(inst.interestAmount),
-        0,
-      ),
+      principalAmount: baseAmount, // Use custom amount or calculated principal
+      interestAmount: 0, // ปิดสินเชื่อไม่คิดดอกเบี้ย
       feeAmount: additionalFees,
       bankName: data.bankName,
       accountNumber: data.accountNumber,

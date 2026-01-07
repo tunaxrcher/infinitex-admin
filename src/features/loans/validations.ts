@@ -148,6 +148,9 @@ export const closeLoanSchema = z.object({
   discountAmount: z.number().optional().default(0),
   additionalFees: z.number().optional().default(0),
   notes: z.string().optional(),
+
+  // Custom amount - if provided, use this instead of calculated principal
+  customAmount: z.number().optional(),
 });
 
 export type CloseLoanSchema = z.infer<typeof closeLoanSchema>;
