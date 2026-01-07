@@ -832,7 +832,7 @@ export function ProductDetailsAnalyticsSheet({
                                 </div>
                               </span>
                             </div>
-                            
+
                             <div className="flex flex-col gap-1.5 flex-1">
                               <span className="text-2sm font-normal text-secondary-foreground">
                                 วงเงิน
@@ -869,7 +869,6 @@ export function ProductDetailsAnalyticsSheet({
                                 </Badge>
                               </span>
                             </div>
-                       
                           </div>
                         </CardContent>
                       </Card>
@@ -1966,9 +1965,7 @@ export function ProductDetailsAnalyticsSheet({
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="systemAmount">
-                          ยอดต้นชำระ-ระบบทั้งสิ้น
-                        </Label>
+                        <Label htmlFor="systemAmount">ยอดชำระรวมทั้งสิ้น</Label>
                         <div className="relative">
                           <Input
                             id="systemAmount"
@@ -1986,12 +1983,15 @@ export function ProductDetailsAnalyticsSheet({
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="totalInterest">ดอกเบี้ย</Label>
+                        <Label htmlFor="totalInterest">ยอดสินเชื่อรวม</Label>
                         <div className="relative">
                           <Input
                             id="totalInterest"
                             type="text"
-                            value={(Number(loan?.principalAmount || 0) * (Number(loan?.interestRate || 0) / 100)).toLocaleString()}
+                            value={(
+                              Number(loan?.principalAmount || 0) *
+                              (Number(loan?.interestRate || 0) / 100)
+                            ).toLocaleString()}
                             disabled
                             className="bg-muted pr-12"
                           />
@@ -2120,10 +2120,15 @@ export function ProductDetailsAnalyticsSheet({
                             value={closeLoanForm.amount}
                             onChange={(e) => {
                               // Allow only numbers and format with commas
-                              const value = e.target.value.replace(/[^0-9]/g, '');
+                              const value = e.target.value.replace(
+                                /[^0-9]/g,
+                                '',
+                              );
                               setCloseLoanForm({
                                 ...closeLoanForm,
-                                amount: value ? Number(value).toLocaleString() : '',
+                                amount: value
+                                  ? Number(value).toLocaleString()
+                                  : '',
                               });
                             }}
                             placeholder={`วงเงินสินเชื่อ: ${Number(loan.principalAmount || 0).toLocaleString()} บาท`}
@@ -2276,7 +2281,9 @@ export function ProductDetailsAnalyticsSheet({
                         }
 
                         // Parse amount from formatted string (remove commas)
-                        const customAmount = Number(closeLoanForm.amount.replace(/,/g, ''));
+                        const customAmount = Number(
+                          closeLoanForm.amount.replace(/,/g, ''),
+                        );
                         if (isNaN(customAmount) || customAmount <= 0) {
                           alert('ยอดชำระไม่ถูกต้อง');
                           return;
