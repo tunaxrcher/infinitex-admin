@@ -789,7 +789,7 @@ export function ProductDetailsAnalyticsSheet({
                         </CardHeader>
                         <CardContent>
                           <div className="flex items-start flex-wrap lg:gap-10 gap-5">
-                            <div className="flex flex-col gap-1.5">
+                            <div className="flex flex-col gap-1.5 flex-1">
                               <span className="text-2sm font-normal text-secondary-foreground">
                                 สถานะ
                               </span>
@@ -832,7 +832,8 @@ export function ProductDetailsAnalyticsSheet({
                                 </div>
                               </span>
                             </div>
-                            <div className="flex flex-col gap-1.5">
+                            
+                            <div className="flex flex-col gap-1.5 flex-1">
                               <span className="text-2sm font-normal text-secondary-foreground">
                                 วงเงิน
                               </span>
@@ -845,20 +846,18 @@ export function ProductDetailsAnalyticsSheet({
                                   : '0'}
                               </span>
                             </div>
-                            <div className="flex flex-col gap-1.5">
+                            <div className="flex flex-col gap-1.5 flex-1">
                               <span className="text-2sm font-normal text-secondary-foreground">
-                                ยอดคงเหลือ
+                                ดอกเบี้ย
                               </span>
                               <span className="text-2sm font-medium text-foreground">
-                                ฿
                                 {loan
-                                  ? Number(
-                                      loan.remainingBalance,
-                                    ).toLocaleString()
+                                  ? Number(loan.interestRate).toFixed(2)
                                   : '0'}
+                                %
                               </span>
                             </div>
-                            <div className="flex flex-col gap-1.5">
+                            <div className="flex flex-col gap-1.5 flex-1">
                               <span className="text-2sm font-normal text-secondary-foreground">
                                 งวดที่ชำระ
                               </span>
@@ -870,17 +869,7 @@ export function ProductDetailsAnalyticsSheet({
                                 </Badge>
                               </span>
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                              <span className="text-2sm font-normal text-secondary-foreground">
-                                ดอกเบี้ย
-                              </span>
-                              <span className="text-2sm font-medium text-foreground">
-                                {loan
-                                  ? Number(loan.interestRate).toFixed(2)
-                                  : '0'}
-                                %
-                              </span>
-                            </div>
+                       
                           </div>
                         </CardContent>
                       </Card>
@@ -1997,14 +1986,12 @@ export function ProductDetailsAnalyticsSheet({
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="totalLoan">ยอดสินเชื่อรวม</Label>
+                        <Label htmlFor="totalInterest">ดอกเบี้ย</Label>
                         <div className="relative">
                           <Input
-                            id="totalLoan"
+                            id="totalInterest"
                             type="text"
-                            value={Number(
-                              loan?.remainingBalance || 0,
-                            ).toLocaleString()}
+                            value={(Number(loan?.principalAmount || 0) * (Number(loan?.interestRate || 0) / 100)).toLocaleString()}
                             disabled
                             className="bg-muted pr-12"
                           />

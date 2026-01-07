@@ -1853,7 +1853,7 @@ export const paymentService = {
     );
 
     // Calculate late fee
-    const { isLate, daysLate, lateFee, totalAmount } =
+    const { isLate, daysLate, lateFee } =
       calculateInstallmentLateFee(
         installment,
         data.includeLateFee || false,
@@ -1869,10 +1869,13 @@ export const paymentService = {
       );
     }
 
-    // Validate payment amount
-    if (data.amount < totalAmount) {
+    // Base installment amount (without late fee)
+    const baseAmount = Number(installment.totalAmount);
+
+    // Validate payment amount - only require base installment amount
+    if (data.amount < baseAmount) {
       throw new Error(
-        `จำนวนเงินไม่เพียงพอ ต้องชำระอย่างน้อย ${totalAmount.toLocaleString()} บาท`,
+        `จำนวนเงินไม่เพียงพอ ต้องชำระอย่างน้อย ${baseAmount.toLocaleString()} บาท`,
       );
     }
 
@@ -1924,7 +1927,7 @@ export const paymentService = {
     return {
       payment,
       message: 'ชำระเงินสำเร็จ',
-      totalAmount,
+      totalAmount: baseAmount,
       lateFee,
       daysLate,
       isLate,
