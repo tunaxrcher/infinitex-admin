@@ -12,6 +12,8 @@ const publicPaths = [
   '/loan/check', // Public loan check page (uses PIN instead of login)
   '/api/loan-check', // Public API for loan check
   '/api/auth', // NextAuth API routes
+  '/api/customers/analyze-id-card', // Public API for ID card analysis (used in loan check)
+  '/api/customers/generate-phone', // Public API for generating phone (used in loan check)
 ];
 
 // Static files and assets

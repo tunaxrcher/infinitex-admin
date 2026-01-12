@@ -1853,12 +1853,11 @@ export const paymentService = {
     );
 
     // Calculate late fee
-    const { isLate, daysLate, lateFee } =
-      calculateInstallmentLateFee(
-        installment,
-        data.includeLateFee || false,
-        data.lateFeeAmount,
-      );
+    const { isLate, daysLate, lateFee } = calculateInstallmentLateFee(
+      installment,
+      data.includeLateFee || false,
+      data.lateFeeAmount,
+    );
 
     // Update late fee if applicable
     if (isLate && lateFee > 0) {
@@ -1995,9 +1994,10 @@ export const paymentService = {
     const loanPrincipal = Number(loan.principalAmount || 0);
     const discount = data.discountAmount || 0;
     const additionalFees = data.additionalFees || 0;
-    
+
     // Use custom amount if provided, otherwise use loan's principal amount
-    const baseAmount = data.customAmount !== undefined ? data.customAmount : loanPrincipal;
+    const baseAmount =
+      data.customAmount !== undefined ? data.customAmount : loanPrincipal;
     const totalPayoffAmount = baseAmount - discount + additionalFees;
 
     const paidDate = new Date();
