@@ -86,7 +86,9 @@ export interface IData {
   customerName: string;
   placeName: string;
   area: string;
+  allAreas: string[]; // พื้นที่ทั้งหมด (กรณีหลายโฉนด)
   titleDeedNumber: string;
+  allDeedNumbers: string[]; // เลขโฉนดทั้งหมด (กรณีหลายโฉนด)
   titleDeedType: string;
   titleDeedCount: number; // จำนวนโฉนดทั้งหมด
   requestDate: string;
@@ -240,7 +242,7 @@ export function ProductListTable({
       const titleDeeds = (loanData.titleDeeds as any[]) || (application?.titleDeeds as any[]) || [];
       const primaryDeed = titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
       
-      const propertyType = primaryDeed?.landType || '-';
+      const propertyType = primaryDeed?.landType || '';
       const propertyValue = application?.totalPropertyValue
         ? Number(application.totalPropertyValue)
         : null;
@@ -306,6 +308,14 @@ export function ProductListTable({
         ? new Date(application.createdAt as string)
         : new Date(loanData.contractDate as string);
 
+      // รวบรวมเลขโฉนดและพื้นที่ทั้งหมด
+      const allDeedNumbers = titleDeeds
+        .map((d: any) => d.deedNumber)
+        .filter(Boolean);
+      const allAreas = titleDeeds
+        .map((d: any) => d.landAreaText)
+        .filter(Boolean);
+
       return {
         id: loanData.id as string,
         loanNumber: loanData.loanNumber as string,
@@ -314,8 +324,10 @@ export function ProductListTable({
           ? `${primaryDeed.amphurName || ''} ${primaryDeed.provinceName || ''}`.trim() || '-'
           : '-',
         area: primaryDeed?.landAreaText || '-',
+        allAreas: allAreas.length > 0 ? allAreas : ['-'],
         titleDeedNumber:
           (loanData.titleDeedNumber as string) || landNumber || '-',
+        allDeedNumbers: allDeedNumbers.length > 0 ? allDeedNumbers : ['-'],
         titleDeedType: propertyType,
         titleDeedCount: titleDeeds.length,
         requestDate: requestDateRaw.toLocaleDateString('th-TH', {
@@ -578,10 +590,32 @@ export function ProductListTable({
           <DataGridColumnHeader title="เนื้อที่" column={column} />
         ),
         cell: (info) => {
-          return <span className="text-sm">{info.row.original.area}</span>;
+          const { allAreas, titleDeedCount } = info.row.original;
+          const isMultipleDeed = titleDeedCount > 1;
+          
+          return (
+            <div className="text-sm">
+              {isMultipleDeed ? (
+                <div className="flex flex-col gap-0.5">
+                  {allAreas.slice(0, 2).map((area: string, idx: number) => (
+                    <span key={idx} className="text-xs">
+                      {area}
+                    </span>
+                  ))}
+                  {allAreas.length > 2 && (
+                    <span className="text-xs text-muted-foreground">
+                      +{allAreas.length - 2} อื่นๆ
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <span>{allAreas[0] || '-'}</span>
+              )}
+            </div>
+          );
         },
         enableSorting: true,
-        size: 140,
+        size: 160,
         meta: {
           cellClassName: '',
         },
@@ -593,12 +627,12 @@ export function ProductListTable({
           <DataGridColumnHeader title="โฉนด" column={column} />
         ),
         cell: (info) => {
-          const { titleDeedType, titleDeedNumber, titleDeedCount } = info.row.original;
+          const { titleDeedType, allDeedNumbers, titleDeedCount } = info.row.original;
           const isMultipleDeed = titleDeedCount > 1;
-          
+          console.log(info.row.original)
           return (
             <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center">
                 <span className="text-sm">{titleDeedType}</span>
                 {isMultipleDeed && (
                   <Badge variant="primary" appearance="light" size="sm">
@@ -606,15 +640,21 @@ export function ProductListTable({
                   </Badge>
                 )}
               </div>
-              <span className="text-xs text-muted-foreground">
-                {titleDeedNumber}
-                {isMultipleDeed && ' (หลัก)'}
-              </span>
+              <div className="text-xs text-muted-foreground">
+                {isMultipleDeed ? (
+                  <span title={allDeedNumbers.join(', ')}>
+                    {allDeedNumbers.slice(0, 2).join(', ')}
+                    {allDeedNumbers.length > 2 && ` +${allDeedNumbers.length - 2}`}
+                  </span>
+                ) : (
+                  <span>{allDeedNumbers[0] || '-'}</span>
+                )}
+              </div>
             </div>
           );
         },
         enableSorting: true,
-        size: 160,
+        size: 180,
         meta: {
           cellClassName: '',
         },
