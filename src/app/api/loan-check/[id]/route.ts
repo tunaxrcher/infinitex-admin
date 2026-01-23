@@ -29,6 +29,9 @@ export async function GET(
           include: { profile: true },
         },
         loan: true,
+        titleDeeds: {
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+        },
       },
     });
 
@@ -46,6 +49,9 @@ export async function GET(
                 include: { profile: true },
               },
               loan: true,
+              titleDeeds: {
+                orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+              },
             },
           },
         },
@@ -91,6 +97,9 @@ export async function GET(
       }
     }
 
+    // Get primary title deed for backward compatibility
+    const primaryTitleDeed = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
+
     return NextResponse.json({
       success: true,
       data: {
@@ -115,16 +124,39 @@ export async function GET(
           ? Number(application.transferFee)
           : 0,
         otherFee: application.otherFee ? Number(application.otherFee) : 0,
-        propertyType: application.propertyType,
-        propertyValue: application.propertyValue
-          ? Number(application.propertyValue)
+        // Title deed data from titleDeeds relation
+        deedMode: application.deedMode,
+        totalPropertyValue: application.totalPropertyValue
+          ? Number(application.totalPropertyValue)
           : null,
-        propertyArea: application.propertyArea,
-        propertyLocation: application.propertyLocation,
-        landNumber: application.landNumber,
-        ownerName: application.ownerName,
-        titleDeedImage: application.titleDeedImage,
-        titleDeedData: application.titleDeedData,
+        titleDeeds: application.titleDeeds?.map((td) => ({
+          id: td.id,
+          imageUrl: td.imageUrl,
+          deedNumber: td.deedNumber,
+          provinceName: td.provinceName,
+          amphurName: td.amphurName,
+          parcelNo: td.parcelNo,
+          landAreaText: td.landAreaText,
+          ownerName: td.ownerName,
+          landType: td.landType,
+          latitude: td.latitude,
+          longitude: td.longitude,
+          linkMap: td.linkMap,
+          isPrimary: td.isPrimary,
+          sortOrder: td.sortOrder,
+        })) || [],
+        // Backward compatibility fields from primary title deed
+        propertyType: primaryTitleDeed?.landType || null,
+        propertyValue: application.totalPropertyValue
+          ? Number(application.totalPropertyValue)
+          : null,
+        propertyArea: primaryTitleDeed?.landAreaText || null,
+        propertyLocation: primaryTitleDeed
+          ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || null
+          : null,
+        landNumber: primaryTitleDeed?.deedNumber || null,
+        ownerName: primaryTitleDeed?.ownerName || null,
+        titleDeedImage: primaryTitleDeed?.imageUrl || null,
         supportingImages,
         idCardFrontImage: application.idCardFrontImage,
         idCardBackImage: application.idCardBackImage,

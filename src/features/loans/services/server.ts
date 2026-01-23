@@ -142,8 +142,20 @@ export function generateInstallmentsData(
 
 /**
  * Format loan data for application creation
+ * Updated: Support multiple title deeds (TitleDeed model)
  */
 export function prepareLoanApplicationData(data: any) {
+  // Determine deed mode based on titleDeeds array or legacy titleDeedImages
+  const deedMode = data.deedMode || (data.titleDeeds && data.titleDeeds.length > 1 ? 'MULTIPLE' : 'SINGLE');
+  
+  // Calculate total property value from title deeds if available
+  let totalPropertyValue = data.totalPropertyValue;
+  if (!totalPropertyValue && data.titleDeeds && data.titleDeeds.length > 0) {
+    totalPropertyValue = data.titleDeeds.reduce((sum: number, deed: any) => {
+      return sum + (deed.propertyValue || 0);
+    }, 0);
+  }
+  
   return {
     customerData: {
       phoneNumber: data.phoneNumber,
@@ -159,29 +171,98 @@ export function prepareLoanApplicationData(data: any) {
       loanType: 'HOUSE_LAND_MORTGAGE',
       status: 'SUBMITTED',
       currentStep: 4,
+      deedMode: deedMode,
       requestedAmount: data.requestedAmount ?? data.loanAmount,
       approvedAmount: data.loanAmount,
       maxApprovedAmount: data.maxApprovedAmount ?? data.loanAmount * 1.5,
-      landNumber: data.landNumber,
       ownerName: data.ownerName || data.fullName,
-      propertyLocation: data.placeName,
-      propertyArea: data.landArea,
-      propertyType: data.propertyType || 'ที่ดิน',
       propertyValue: data.propertyValue ?? data.loanAmount * 2,
+      totalPropertyValue: totalPropertyValue || null,
       interestRate: data.interestRate,
       termMonths: data.loanYears * 12,
       operationFee: data.operationFee || 0,
       transferFee: data.transferFee || 0,
       otherFee: data.otherFee || 0,
-      titleDeedImage:
-        data.titleDeedImages && data.titleDeedImages.length > 0
-          ? data.titleDeedImages[0]
-          : null,
-      titleDeedData: data.titleDeedData || null,
       supportingImages: data.supportingImages || [],
       idCardFrontImage: data.idCardImage || null,
     },
+    // Title deeds data for creating TitleDeed records
+    titleDeedsData: prepareTitleDeedsData(data),
   };
+}
+
+/**
+ * Prepare title deeds data from legacy format or new format
+ */
+function prepareTitleDeedsData(data: any): any[] {
+  // If new format (titleDeeds array) is provided, use it
+  if (data.titleDeeds && data.titleDeeds.length > 0) {
+    return data.titleDeeds.map((deed: any, index: number) => ({
+      imageUrl: deed.imageUrl || null,
+      imageKey: deed.imageKey || null,
+      deedNumber: deed.deedNumber || null,
+      provinceName: deed.provinceName || null,
+      amphurName: deed.amphurName || null,
+      parcelNo: deed.parcelNo || null,
+      landAreaText: deed.landAreaText || null,
+      ownerName: deed.ownerName || null,
+      landType: deed.landType || null,
+      titleDeedData: deed.titleDeedData || null,
+      latitude: deed.latitude || null,
+      longitude: deed.longitude || null,
+      linkMap: deed.linkMap || null,
+      sortOrder: deed.sortOrder ?? index,
+      isPrimary: deed.isPrimary ?? (index === 0),
+    }));
+  }
+  
+  // Legacy format: Convert single deed data to array
+  const legacyDeed: any = {
+    sortOrder: 0,
+    isPrimary: true,
+  };
+  
+  // Image from legacy titleDeedImages
+  if (data.titleDeedImages && data.titleDeedImages.length > 0) {
+    legacyDeed.imageUrl = data.titleDeedImages[0];
+  }
+  
+  // Data from legacy titleDeedData
+  if (data.titleDeedData) {
+    legacyDeed.titleDeedData = data.titleDeedData;
+    
+    // Extract data if it's from LandMaps API
+    if (data.titleDeedData.result && data.titleDeedData.result.length > 0) {
+      const apiData = data.titleDeedData.result[0];
+      legacyDeed.deedNumber = apiData.parcelno || apiData.landno || data.landNumber || null;
+      legacyDeed.provinceName = apiData.provname || null;
+      legacyDeed.amphurName = apiData.amphurname || null;
+      legacyDeed.parcelNo = apiData.parcelno || null;
+      legacyDeed.latitude = apiData.parcellat || null;
+      legacyDeed.longitude = apiData.parcellon || null;
+      legacyDeed.linkMap = apiData.qrcode_link || null;
+      
+      // Land area from API
+      if (apiData.rai !== undefined && apiData.ngan !== undefined && apiData.wa !== undefined) {
+        legacyDeed.landAreaText = `${apiData.rai}-${apiData.ngan}-${apiData.wa}`;
+      } else {
+        legacyDeed.landAreaText = data.landArea || null;
+      }
+    } else {
+      legacyDeed.deedNumber = data.landNumber || null;
+      legacyDeed.landAreaText = data.landArea || null;
+    }
+  } else {
+    legacyDeed.deedNumber = data.landNumber || null;
+    legacyDeed.landAreaText = data.landArea || null;
+  }
+  
+  // Only return if there's meaningful data
+  if (legacyDeed.imageUrl || legacyDeed.deedNumber || legacyDeed.titleDeedData) {
+    return [legacyDeed];
+  }
+  
+  return [];
 }
 
 /**
@@ -520,6 +601,7 @@ export async function processLandAccountPayment(
 
 /**
  * Build search conditions for loan list query
+ * Updated: Search in titleDeeds relation instead of application fields
  */
 function buildLoanSearchConditions(
   search: string,
@@ -527,8 +609,12 @@ function buildLoanSearchConditions(
 ): Prisma.LoanApplicationWhereInput[] {
   const conditions: Prisma.LoanApplicationWhereInput[] = [
     { customer: { profile: { fullName: { contains: search } } } },
-    { propertyLocation: { contains: search } },
     { ownerName: { contains: search } },
+    // Search in titleDeeds
+    { titleDeeds: { some: { deedNumber: { contains: search } } } },
+    { titleDeeds: { some: { provinceName: { contains: search } } } },
+    { titleDeeds: { some: { amphurName: { contains: search } } } },
+    { titleDeeds: { some: { parcelNo: { contains: search } } } },
   ];
 
   // Search by loan number
@@ -591,6 +677,7 @@ function buildLoanListOrderBy(
 
 /**
  * Transform application with loan to unified format
+ * Updated: Include titleDeeds and deedMode
  */
 async function transformApplicationWithLoan(app: any) {
   const overdueInstallments = await prisma.loanInstallment.findMany({
@@ -601,6 +688,9 @@ async function transformApplicationWithLoan(app: any) {
     },
     orderBy: { dueDate: 'asc' },
   });
+
+  // Get primary title deed for backward compatibility
+  const primaryDeed = app.titleDeeds?.find((d: any) => d.isPrimary) || app.titleDeeds?.[0];
 
   return {
     ...app.loan,
@@ -613,13 +703,23 @@ async function transformApplicationWithLoan(app: any) {
     valuationResult: app.valuationResult || null,
     valuationDate: app.valuationDate || null,
     estimatedValue: app.estimatedValue || null,
+    // Include title deeds
+    titleDeeds: app.titleDeeds || [],
+    deedMode: app.deedMode || 'SINGLE',
+    // Backward compatibility - get from primary deed if loan doesn't have it
+    titleDeedNumber: app.loan.titleDeedNumber || primaryDeed?.deedNumber || primaryDeed?.parcelNo || null,
   };
 }
 
 /**
  * Transform application without loan to unified format
+ * Updated: Get titleDeedNumber from titleDeeds relation
  */
 function transformApplicationWithoutLoan(app: any) {
+  // Get primary title deed or first title deed
+  const primaryDeed = app.titleDeeds?.find((d: any) => d.isPrimary) || app.titleDeeds?.[0];
+  const titleDeedNumber = primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
+  
   return {
     id: app.id,
     loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`,
@@ -641,8 +741,8 @@ function transformApplicationWithoutLoan(app: any) {
     nextPaymentDate: new Date(),
     contractDate: app.createdAt,
     expiryDate: app.createdAt,
-    titleDeedNumber: app.landNumber,
-    collateralValue: app.propertyValue,
+    titleDeedNumber: titleDeedNumber,
+    collateralValue: app.propertyValue || app.totalPropertyValue,
     collateralDetails: null,
     createdAt: app.createdAt,
     updatedAt: app.updatedAt,
@@ -655,6 +755,9 @@ function transformApplicationWithoutLoan(app: any) {
     valuationResult: app.valuationResult || null,
     valuationDate: app.valuationDate || null,
     estimatedValue: app.estimatedValue || null,
+    // Include title deeds
+    titleDeeds: app.titleDeeds || [],
+    deedMode: app.deedMode || 'SINGLE',
   };
 }
 
@@ -771,6 +874,7 @@ async function updateCustomerPhoneNumber(
 
 /**
  * Update loan application data
+ * Updated: Remove old fields, add titleDeeds management
  */
 async function updateLoanApplicationData(
   tx: any,
@@ -779,28 +883,25 @@ async function updateLoanApplicationData(
 ) {
   const hasApplicationChanges =
     data.ownerName ||
-    data.placeName ||
-    data.landArea ||
-    data.landNumber ||
-    data.propertyType ||
     data.propertyValue !== undefined ||
+    data.totalPropertyValue !== undefined ||
     data.requestedAmount !== undefined ||
     data.maxApprovedAmount !== undefined ||
     data.loanAmount ||
-    data.titleDeedImages ||
     data.supportingImages ||
-    data.idCardImage;
+    data.idCardImage ||
+    data.deedMode ||
+    data.titleDeeds;
 
   if (!hasApplicationChanges) return;
 
   const updateData: any = {
     ...(data.ownerName && { ownerName: data.ownerName }),
-    ...(data.placeName && { propertyLocation: data.placeName }),
-    ...(data.landArea && { propertyArea: data.landArea }),
-    ...(data.landNumber && { landNumber: data.landNumber }),
-    ...(data.propertyType && { propertyType: data.propertyType }),
     ...(data.propertyValue !== undefined && {
       propertyValue: data.propertyValue,
+    }),
+    ...(data.totalPropertyValue !== undefined && {
+      totalPropertyValue: data.totalPropertyValue,
     }),
     ...(data.requestedAmount !== undefined && {
       requestedAmount: data.requestedAmount,
@@ -809,19 +910,142 @@ async function updateLoanApplicationData(
       maxApprovedAmount: data.maxApprovedAmount,
     }),
     ...(data.loanAmount && { approvedAmount: data.loanAmount }),
-    ...(data.titleDeedImages?.length && {
-      titleDeedImage: data.titleDeedImages[0],
-    }),
     ...(data.supportingImages !== undefined && {
       supportingImages: data.supportingImages,
     }),
     ...(data.idCardImage && { idCardFrontImage: data.idCardImage }),
+    ...(data.deedMode && { deedMode: data.deedMode }),
   };
 
   await tx.loanApplication.update({
     where: { id: applicationId },
     data: updateData,
   });
+
+  // Update title deeds if provided
+  if (data.titleDeeds && data.titleDeeds.length > 0) {
+    await updateTitleDeeds(tx, applicationId, data.titleDeeds);
+  } else if (data.titleDeedImages && data.titleDeedImages.length > 0) {
+    // Legacy format: Update using old format
+    await updateTitleDeedsFromLegacy(tx, applicationId, data);
+  }
+}
+
+/**
+ * Update title deeds for an application
+ */
+async function updateTitleDeeds(
+  tx: any,
+  applicationId: string,
+  titleDeeds: any[],
+) {
+  // Get existing title deeds
+  const existingDeeds = await tx.titleDeed.findMany({
+    where: { applicationId },
+  });
+  
+  const existingIds = existingDeeds.map((d: any) => d.id);
+  const updatedIds: string[] = [];
+
+  for (let i = 0; i < titleDeeds.length; i++) {
+    const deed = titleDeeds[i];
+    
+    if (deed.id && existingIds.includes(deed.id)) {
+      // Update existing deed
+      await tx.titleDeed.update({
+        where: { id: deed.id },
+        data: {
+          imageUrl: deed.imageUrl,
+          imageKey: deed.imageKey,
+          deedNumber: deed.deedNumber,
+          provinceName: deed.provinceName,
+          amphurName: deed.amphurName,
+          parcelNo: deed.parcelNo,
+          landAreaText: deed.landAreaText,
+          ownerName: deed.ownerName,
+          landType: deed.landType,
+          titleDeedData: deed.titleDeedData,
+          latitude: deed.latitude,
+          longitude: deed.longitude,
+          linkMap: deed.linkMap,
+          sortOrder: deed.sortOrder ?? i,
+          isPrimary: deed.isPrimary ?? (i === 0),
+        },
+      });
+      updatedIds.push(deed.id);
+    } else {
+      // Create new deed
+      const newDeed = await tx.titleDeed.create({
+        data: {
+          applicationId,
+          imageUrl: deed.imageUrl,
+          imageKey: deed.imageKey,
+          deedNumber: deed.deedNumber,
+          provinceName: deed.provinceName,
+          amphurName: deed.amphurName,
+          parcelNo: deed.parcelNo,
+          landAreaText: deed.landAreaText,
+          ownerName: deed.ownerName,
+          landType: deed.landType,
+          titleDeedData: deed.titleDeedData,
+          latitude: deed.latitude,
+          longitude: deed.longitude,
+          linkMap: deed.linkMap,
+          sortOrder: deed.sortOrder ?? i,
+          isPrimary: deed.isPrimary ?? (i === 0),
+        },
+      });
+      updatedIds.push(newDeed.id);
+    }
+  }
+
+  // Delete removed deeds
+  const idsToDelete = existingIds.filter((id: string) => !updatedIds.includes(id));
+  if (idsToDelete.length > 0) {
+    await tx.titleDeed.deleteMany({
+      where: { id: { in: idsToDelete } },
+    });
+  }
+}
+
+/**
+ * Update title deeds from legacy format (titleDeedImages)
+ */
+async function updateTitleDeedsFromLegacy(
+  tx: any,
+  applicationId: string,
+  data: any,
+) {
+  // Get existing title deeds
+  const existingDeeds = await tx.titleDeed.findMany({
+    where: { applicationId },
+  });
+  
+  if (existingDeeds.length > 0) {
+    // Update first deed with new image
+    await tx.titleDeed.update({
+      where: { id: existingDeeds[0].id },
+      data: {
+        imageUrl: data.titleDeedImages[0],
+        ...(data.titleDeedData && { titleDeedData: data.titleDeedData }),
+        ...(data.landNumber && { deedNumber: data.landNumber }),
+        ...(data.landArea && { landAreaText: data.landArea }),
+      },
+    });
+  } else {
+    // Create new deed
+    await tx.titleDeed.create({
+      data: {
+        applicationId,
+        imageUrl: data.titleDeedImages[0],
+        titleDeedData: data.titleDeedData || null,
+        deedNumber: data.landNumber || null,
+        landAreaText: data.landArea || null,
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    });
+  }
 }
 
 // ============================================
@@ -843,7 +1067,7 @@ export const loanService = {
     const orderBy = buildLoanListOrderBy(sortBy, sortOrder);
     const skip = (page - 1) * limit;
 
-    // Query applications with pagination
+    // Query applications with pagination - include titleDeeds
     const [applications, total] = await Promise.all([
       prisma.loanApplication.findMany({
         where,
@@ -853,6 +1077,7 @@ export const loanService = {
         include: {
           customer: { include: { profile: true } },
           agent: true,
+          titleDeeds: { orderBy: { sortOrder: 'asc' } },
           loan: {
             include: {
               installments: { orderBy: { installmentNumber: 'asc' }, take: 1 },
@@ -891,7 +1116,11 @@ export const loanService = {
           profile: true,
         },
       },
-      application: true,
+      application: {
+        include: {
+          titleDeeds: { orderBy: { sortOrder: 'asc' } },
+        },
+      },
       installments: {
         orderBy: {
           installmentNumber: 'asc',
@@ -905,12 +1134,20 @@ export const loanService = {
     });
 
     if (loan) {
-      // Include valuation fields from application
+      // Get primary title deed for backward compatibility
+      const primaryDeed = loan.application?.titleDeeds?.find((d: any) => d.isPrimary) 
+        || loan.application?.titleDeeds?.[0];
+      
+      // Include valuation fields and title deeds from application
       return {
         ...loan,
         valuationResult: loan.application?.valuationResult || null,
         valuationDate: loan.application?.valuationDate || null,
         estimatedValue: loan.application?.estimatedValue || null,
+        titleDeeds: loan.application?.titleDeeds || [],
+        deedMode: loan.application?.deedMode || 'SINGLE',
+        // Backward compatibility - get from primary deed if loan doesn't have it
+        titleDeedNumber: loan.titleDeedNumber || primaryDeed?.deedNumber || primaryDeed?.parcelNo || null,
       };
     }
 
@@ -923,7 +1160,8 @@ export const loanService = {
             profile: true,
           },
         },
-        agent: true, // เพิ่ม agent
+        agent: true,
+        titleDeeds: { orderBy: { sortOrder: 'asc' } },
         loan: {
           include: {
             installments: {
@@ -945,6 +1183,11 @@ export const loanService = {
       throw new Error('ไม่พบข้อมูลสินเชื่อ');
     }
 
+    // Get primary title deed
+    const primaryDeed = application.titleDeeds?.find((d: any) => d.isPrimary) 
+      || application.titleDeeds?.[0];
+    const titleDeedNumber = primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
+
     // ถ้ามี loan ใน application ให้ return loan with valuation fields
     if (application.loan) {
       return {
@@ -955,6 +1198,9 @@ export const loanService = {
         valuationResult: application.valuationResult || null,
         valuationDate: application.valuationDate || null,
         estimatedValue: application.estimatedValue || null,
+        titleDeeds: application.titleDeeds || [],
+        deedMode: application.deedMode || 'SINGLE',
+        titleDeedNumber: application.loan.titleDeedNumber || titleDeedNumber,
       };
     }
 
@@ -982,8 +1228,8 @@ export const loanService = {
       nextPaymentDate: new Date(),
       contractDate: application.createdAt,
       expiryDate: application.createdAt,
-      titleDeedNumber: application.landNumber,
-      collateralValue: application.propertyValue,
+      titleDeedNumber: titleDeedNumber,
+      collateralValue: application.propertyValue || application.totalPropertyValue,
       collateralDetails: null,
       createdAt: application.createdAt,
       updatedAt: application.updatedAt,
@@ -993,6 +1239,9 @@ export const loanService = {
       valuationResult: application.valuationResult || null,
       valuationDate: application.valuationDate || null,
       estimatedValue: application.estimatedValue || null,
+      // Include title deeds
+      titleDeeds: application.titleDeeds || [],
+      deedMode: application.deedMode || 'SINGLE',
     };
   },
 
@@ -1003,8 +1252,8 @@ export const loanService = {
     const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate);
     const contractDate = new Date(data.loanStartDate);
 
-    // Prepare application data
-    const { customerData, applicationData } = prepareLoanApplicationData({
+    // Prepare application data (now includes titleDeedsData)
+    const { customerData, applicationData, titleDeedsData } = prepareLoanApplicationData({
       ...data,
       loanAmount,
       loanYears,
@@ -1026,16 +1275,30 @@ export const loanService = {
           ...applicationData,
           customerId: customer.id,
         },
+      });
+
+      // Step 3: Create title deeds
+      if (titleDeedsData && titleDeedsData.length > 0) {
+        await tx.titleDeed.createMany({
+          data: titleDeedsData.map((deed: any) => ({
+            ...deed,
+            applicationId: app.id,
+          })),
+        });
+      }
+
+      // Return with relations
+      return tx.loanApplication.findUnique({
+        where: { id: app.id },
         include: {
           customer: {
             include: {
               profile: true,
             },
           },
+          titleDeeds: { orderBy: { sortOrder: 'asc' } },
         },
       });
-
-      return app;
     });
 
     return application;
@@ -1143,6 +1406,7 @@ export const loanService = {
 
   /**
    * Internal: Create new loan from application
+   * Updated: Get titleDeedNumber from TitleDeed relation
    */
   async _createNewLoanFromApplication(
     tx: any,
@@ -1162,6 +1426,19 @@ export const loanService = {
     const expiryDate = calculateExpiryDate(contractDate, loanYears);
     const nextPaymentDate = calculateNextPaymentDate(contractDate);
 
+    // Get title deed number from TitleDeed relation
+    const titleDeeds = await tx.titleDeed.findMany({
+      where: { applicationId: application.id },
+      orderBy: { sortOrder: 'asc' },
+    });
+    const primaryDeed = titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
+    const titleDeedNumber = primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
+    
+    // Get location data from primary deed
+    const latitude = primaryDeed?.latitude || null;
+    const longitude = primaryDeed?.longitude || null;
+    const linkMap = primaryDeed?.linkMap || null;
+
     // Create loan
     const newLoan = await tx.loan.create({
       data: {
@@ -1178,10 +1455,13 @@ export const loanService = {
         nextPaymentDate,
         contractDate,
         expiryDate,
-        titleDeedNumber: application.landNumber,
+        titleDeedNumber: titleDeedNumber,
         customerId: application.customerId,
         applicationId: application.id,
         agentId: application.agentId,
+        latitude: latitude,
+        longitude: longitude,
+        linkMap: linkMap,
       },
     });
 
@@ -1250,6 +1530,7 @@ export const loanService = {
 
   /**
    * Get property valuation for a loan application
+   * Updated: Read title deed data from TitleDeed model
    */
   async getValuation(applicationId: string) {
     console.log(
@@ -1257,16 +1538,25 @@ export const loanService = {
       applicationId,
     );
 
-    // Try to find as application first
+    // Try to find as application first with titleDeeds
     let application = await prisma.loanApplication.findUnique({
       where: { id: applicationId },
+      include: {
+        titleDeeds: { orderBy: { sortOrder: 'asc' } },
+      },
     });
 
     // If not found, try to find by loan ID
     if (!application) {
       const loan = await prisma.loan.findUnique({
         where: { id: applicationId },
-        include: { application: true },
+        include: { 
+          application: {
+            include: {
+              titleDeeds: { orderBy: { sortOrder: 'asc' } },
+            },
+          },
+        },
       });
       if (loan?.application) {
         application = loan.application;
@@ -1277,8 +1567,12 @@ export const loanService = {
       throw new Error('ไม่พบข้อมูลใบสมัครสินเชื่อ');
     }
 
-    // Get images from application
-    const titleDeedImage = application.titleDeedImage;
+    // Get primary title deed image from TitleDeed model
+    const primaryDeed = application.titleDeeds?.find((d: any) => d.isPrimary) 
+      || application.titleDeeds?.[0];
+    const titleDeedImage = primaryDeed?.imageUrl;
+    
+    // Get supporting images from application
     const supportingImages = application.supportingImages
       ? typeof application.supportingImages === 'string'
         ? JSON.parse(application.supportingImages)
@@ -1287,6 +1581,7 @@ export const loanService = {
 
     console.log('[LoanService] Image data:', {
       hasTitleDeedImage: !!titleDeedImage,
+      titleDeedsCount: application.titleDeeds?.length || 0,
       supportingImagesCount: Array.isArray(supportingImages)
         ? supportingImages.length
         : 0,
@@ -1321,11 +1616,11 @@ export const loanService = {
 
     console.log('[LoanService] Calling aiService.evaluatePropertyValue...');
 
-    // Get title deed data if available
-    const titleDeedData = application.titleDeedData
-      ? typeof application.titleDeedData === 'string'
-        ? JSON.parse(application.titleDeedData)
-        : application.titleDeedData
+    // Get title deed data from primary deed
+    const titleDeedData = primaryDeed?.titleDeedData
+      ? typeof primaryDeed.titleDeedData === 'string'
+        ? JSON.parse(primaryDeed.titleDeedData)
+        : primaryDeed.titleDeedData
       : null;
 
     // Call AI service to evaluate property value

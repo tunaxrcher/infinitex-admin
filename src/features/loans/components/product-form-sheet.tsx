@@ -137,7 +137,13 @@ export function ProductFormSheet({
   const [titleDeedData, setTitleDeedData] = useState<any>(null);
   const [showTitleDeedDetails, setShowTitleDeedDetails] = useState(false);
 
-  // File upload - Title Deed Images
+  // Deed mode (SINGLE or MULTIPLE)
+  const [deedMode, setDeedMode] = useState<'SINGLE' | 'MULTIPLE'>('SINGLE');
+
+  // Title deeds array (for multiple deeds support)
+  const [titleDeeds, setTitleDeeds] = useState<any[]>([]);
+
+  // File upload - Title Deed Images (backward compatibility for single deed)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // ไฟล์โฉนดใหม่ที่จะอัปโหลด
   const [existingImages, setExistingImages] = useState<string[]>([]); // รูปโฉนดที่มีอยู่แล้ว (URL)
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -384,6 +390,21 @@ export function ProductFormSheet({
     }
 
     try {
+      // Prepare title deeds data
+      let titleDeedsToSend = titleDeeds;
+      
+      // If using legacy single deed format, convert to titleDeeds array
+      if (titleDeeds.length === 0 && (existingImages.length > 0 || uploadedFiles.length > 0)) {
+        titleDeedsToSend = [{
+          imageUrl: existingImages[0] || null,
+          deedNumber: landNumber || null,
+          landAreaText: landArea || null,
+          titleDeedData: titleDeedData || null,
+          sortOrder: 0,
+          isPrimary: true,
+        }];
+      }
+
       const loanData = {
         customerName: fullName, // ใช้ fullName แทน customerName
         ownerName: fullName, // ใช้ fullName แทน ownerName (ชื่อเจ้าของที่ดินก็คือลูกค้า)
@@ -406,12 +427,14 @@ export function ProductFormSheet({
         transferFee,
         otherFee,
         note,
-        titleDeedFiles: uploadedFiles, // ส่งไฟล์โฉนดใหม่ที่จะอัปโหลด
+        deedMode,
+        titleDeeds: titleDeedsToSend, // ส่งข้อมูลโฉนดทั้งหมด (new format)
+        titleDeedFiles: uploadedFiles, // ส่งไฟล์โฉนดใหม่ที่จะอัปโหลด (backward compatibility)
         existingImageUrls: existingImages, // ส่ง URL ของรูปโฉนดที่มีอยู่แล้ว
         supportingFiles: supportingFiles, // ส่งไฟล์เพิ่มเติมใหม่ที่จะอัปโหลด
         existingSupportingImageUrls: existingSupportingImages, // ส่ง URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
         idCardFile: idCardFile, // ส่งไฟล์บัตรประชาชน
-        titleDeedData: titleDeedData, // ส่งข้อมูลโฉนดทั้งชุดจาก API
+        titleDeedData: titleDeedData, // ส่งข้อมูลโฉนดทั้งชุดจาก API (backward compatibility)
       };
 
       if (isNewMode) {
@@ -449,6 +472,8 @@ export function ProductFormSheet({
     setTransferFee(0);
     setOtherFee(0);
     setNote('');
+    setDeedMode('SINGLE');
+    setTitleDeeds([]);
     setUploadedFiles([]);
     setExistingImages([]);
     setSupportingFiles([]);
@@ -468,8 +493,6 @@ export function ProductFormSheet({
 
       // Section 1: ข้อมูลพื้นฐาน
       setPlaceName(loan.application?.propertyLocation || '');
-      setLandNumber(loan.titleDeedNumber || '');
-      setLandArea(loan.application?.propertyArea || '');
       setLoanAmount(Number(loan.principalAmount));
       setLoanStartDate(new Date(loan.contractDate).toISOString().split('T')[0]);
       setLoanDueDate(new Date(loan.expiryDate).toISOString().split('T')[0]);
@@ -493,12 +516,35 @@ export function ProductFormSheet({
       setInterestRate(Number(loan.interestRate));
       // Note: operation fees ไม่ได้เก็บใน schema ตอนนี้
 
-      // Load existing title deed images
-      const titleDeedImages: string[] = [];
-      if (loan.application?.titleDeedImage) {
-        titleDeedImages.push(loan.application.titleDeedImage);
+      // Load deed mode
+      setDeedMode(loan.deedMode || loan.application?.deedMode || 'SINGLE');
+
+      // Load title deeds from new format
+      if (loan.titleDeeds && loan.titleDeeds.length > 0) {
+        setTitleDeeds(loan.titleDeeds);
+        
+        // Set landNumber and landArea from primary deed for backward compatibility
+        const primaryDeed = loan.titleDeeds.find((d: any) => d.isPrimary) || loan.titleDeeds[0];
+        setLandNumber(primaryDeed?.deedNumber || primaryDeed?.parcelNo || loan.titleDeedNumber || '');
+        setLandArea(primaryDeed?.landAreaText || '');
+        
+        // Set existing images from title deeds
+        const deedImages = loan.titleDeeds
+          .filter((d: any) => d.imageUrl)
+          .map((d: any) => d.imageUrl);
+        setExistingImages(deedImages);
+      } else {
+        // Fallback to old format
+        setLandNumber(loan.titleDeedNumber || '');
+        setLandArea(loan.application?.propertyArea || '');
+        
+        // Load existing title deed images from old format
+        const titleDeedImages: string[] = [];
+        if (loan.application?.titleDeedImage) {
+          titleDeedImages.push(loan.application.titleDeedImage);
+        }
+        setExistingImages(titleDeedImages);
       }
-      setExistingImages(titleDeedImages);
 
       // Load existing supporting images
       const supportingImgs: string[] = [];

@@ -17,22 +17,53 @@ export const loanFiltersSchema = z.object({
 export type LoanFiltersSchema = z.infer<typeof loanFiltersSchema>;
 
 // ============================================
+// TITLE DEED SCHEMA (for multiple deeds support)
+// ============================================
+
+export const titleDeedSchema = z.object({
+  id: z.string().optional(), // สำหรับ edit mode
+  imageUrl: z.string().optional(),
+  imageKey: z.string().optional(),
+  deedNumber: z.string().optional(), // เลขที่โฉนด/ระวาง
+  provinceName: z.string().optional(),
+  amphurName: z.string().optional(),
+  parcelNo: z.string().optional(), // เลขที่โฉนด
+  landAreaText: z.string().optional(), // เนื้อที่ เช่น "2 ไร่ 1 งาน 50 ตร.ว."
+  ownerName: z.string().optional(), // ชื่อเจ้าของในโฉนด
+  landType: z.string().optional(), // ประเภทที่ดิน
+  titleDeedData: z.any().optional(), // ข้อมูลดิบจาก API
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
+  linkMap: z.string().optional(),
+  sortOrder: z.number().optional().default(0),
+  isPrimary: z.boolean().optional().default(false),
+});
+
+export type TitleDeedSchema = z.infer<typeof titleDeedSchema>;
+
+// ============================================
 // CREATE/UPDATE SCHEMAS
 // ============================================
 
 export const loanCreateSchema = z.object({
   // ข้อมูลพื้นฐาน
   customerName: z.string().min(1, 'กรุณากรอกชื่อลูกค้า'),
-  ownerName: z.string().optional(), // ชื่อเจ้าของที่ดิน (จากโฉนด)
+  ownerName: z.string().optional(), // ชื่อเจ้าของที่ดิน (user input)
   placeName: z.string().optional(),
-  landNumber: z.string().min(1, 'กรุณากรอกเลขที่ดิน'),
-  landArea: z.string().optional(),
+  landNumber: z.string().optional(), // ไม่บังคับแล้ว เพราะข้อมูลอยู่ใน titleDeeds
+  landArea: z.string().optional(), // ไม่บังคับแล้ว เพราะข้อมูลอยู่ใน titleDeeds
   loanStartDate: z.string().min(1, 'กรุณาเลือกวันที่ออกสินเชื่อ'),
   loanDueDate: z.string().min(1, 'กรุณาเลือกกำหนดชำระสินเชื่อ'),
   loanAmount: z.number().min(0, 'ยอดสินเชื่อต้องมากกว่า 0'),
 
-  // ข้อมูลทรัพย์สิน (จาก loan_application)
-  propertyType: z.string().optional(), // ประเภททรัพย์ (เช่น บ้านเดี่ยว, คอนโด, ที่ดิน)
+  // โหมดโฉนด (เดี่ยว/หลายใบ)
+  deedMode: z.enum(['SINGLE', 'MULTIPLE']).optional().default('SINGLE'),
+
+  // ข้อมูลโฉนด (รองรับหลายโฉนด)
+  titleDeeds: z.array(titleDeedSchema).optional(), // ข้อมูลโฉนดทั้งหมด
+  totalPropertyValue: z.number().optional(), // มูลค่ารวมของทุกโฉนด
+
+  // ข้อมูลทรัพย์สิน (backward compatibility)
   propertyValue: z.number().optional(), // มูลค่าทรัพย์ประเมิน
   requestedAmount: z.number().optional(), // วงเงินที่ขอ (ถ้าไม่ระบุจะใช้ loanAmount)
   maxApprovedAmount: z.number().optional(), // วงเงินสูงสุดที่อนุมัติได้
@@ -54,14 +85,14 @@ export const loanCreateSchema = z.object({
   otherFee: z.number().min(0).optional().default(0),
   note: z.string().optional(),
 
-  // ไฟล์อัพโหลด
+  // ไฟล์อัพโหลด (backward compatibility - สำหรับโฉนดเดี่ยว)
   titleDeedImages: z.array(z.string()).optional(), // URL ของรูปโฉนดทั้งหมด
   existingImageUrls: z.array(z.string()).optional(), // URL ของรูปโฉนดที่มีอยู่แล้ว
   supportingImages: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมทั้งหมด
   existingSupportingImageUrls: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
   idCardImage: z.string().optional(), // URL ของรูปบัตรประชาชน
 
-  // ข้อมูลโฉนดจาก API (จาก LandsMaps)
+  // ข้อมูลโฉนดจาก API (backward compatibility - สำหรับโฉนดเดี่ยว)
   titleDeedData: z.any().optional(), // ข้อมูลโฉนดทั้งชุดจาก API
 });
 

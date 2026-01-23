@@ -65,6 +65,23 @@ interface ValuationResult {
   details?: Record<string, any>;
 }
 
+interface TitleDeedData {
+  id: string;
+  imageUrl: string | null;
+  deedNumber: string | null;
+  provinceName: string | null;
+  amphurName: string | null;
+  parcelNo: string | null;
+  landAreaText: string | null;
+  ownerName: string | null;
+  landType: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  linkMap: string | null;
+  isPrimary: boolean;
+  sortOrder: number;
+}
+
 interface LoanData {
   id: string;
   status: string;
@@ -77,6 +94,11 @@ interface LoanData {
   operationFee: number;
   transferFee: number;
   otherFee: number;
+  // New title deed structure
+  deedMode: string | null;
+  totalPropertyValue: number | null;
+  titleDeeds: TitleDeedData[];
+  // Backward compatibility fields
   propertyType: string | null;
   propertyValue: number | null;
   propertyArea: string | null;
@@ -181,13 +203,28 @@ export function LoanDetailsView({
     phoneNumber: '',
   });
 
-  // Collect all images
+  // Collect all images from title deeds and supporting images
   const allImages = useMemo(() => {
     const images: string[] = [];
-    if (loanData?.titleDeedImage) images.push(loanData.titleDeedImage);
+    // Add title deed images
+    if (loanData?.titleDeeds?.length) {
+      loanData.titleDeeds.forEach((td) => {
+        if (td.imageUrl) images.push(td.imageUrl);
+      });
+    } else if (loanData?.titleDeedImage) {
+      // Fallback for backward compatibility
+      images.push(loanData.titleDeedImage);
+    }
+    // Add supporting images
     if (loanData?.supportingImages?.length)
       images.push(...loanData.supportingImages);
     return images;
+  }, [loanData]);
+
+  // Get primary title deed
+  const primaryTitleDeed = useMemo(() => {
+    if (!loanData?.titleDeeds?.length) return null;
+    return loanData.titleDeeds.find((td) => td.isPrimary) || loanData.titleDeeds[0];
   }, [loanData]);
 
   // Fetch loan data - preview when locked, full data when authenticated
@@ -927,48 +964,100 @@ export function LoanDetailsView({
 
                                 {/* Property Details - Next to Images */}
                                 <div className="flex-1 space-y-2">
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2sm text-muted-foreground min-w-[80px]">
-                                      เลขโฉนด
-                                    </span>
-                                    <span className="text-2sm font-medium">
-                                      {loanData?.landNumber || '-'}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2sm text-muted-foreground min-w-[80px]">
-                                      เจ้าของ
-                                    </span>
-                                    <span className="text-2sm font-medium">
-                                      {loanData?.ownerName || '-'}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2sm text-muted-foreground min-w-[80px]">
-                                      ที่ตั้ง
-                                    </span>
-                                    <span className="text-2sm font-medium">
-                                      {loanData?.propertyLocation || '-'}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2sm text-muted-foreground min-w-[80px]">
-                                      พื้นที่
-                                    </span>
-                                    <span className="text-2sm font-medium">
-                                      {loanData?.propertyArea || '-'}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2sm text-muted-foreground min-w-[80px]">
-                                      มูลค่าประเมิน
-                                    </span>
-                                    <span className="text-2sm font-medium">
-                                      {loanData?.propertyValue
-                                        ? `฿${formatCurrency(loanData.propertyValue)}`
-                                        : '-'}
-                                    </span>
-                                  </div>
+                                  {/* กรณีโฉนดเดียว - แสดงแบบเดิม */}
+                                  {(!loanData?.titleDeeds || loanData.titleDeeds.length <= 1) && (
+                                    <>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-2sm text-muted-foreground min-w-[80px]">
+                                          เลขโฉนด
+                                        </span>
+                                        <span className="text-2sm font-medium">
+                                          {primaryTitleDeed?.deedNumber || loanData?.landNumber || '-'}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-2sm text-muted-foreground min-w-[80px]">
+                                          เจ้าของ
+                                        </span>
+                                        <span className="text-2sm font-medium">
+                                          {primaryTitleDeed?.ownerName || loanData?.ownerName || '-'}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-2sm text-muted-foreground min-w-[80px]">
+                                          ที่ตั้ง
+                                        </span>
+                                        <span className="text-2sm font-medium">
+                                          {primaryTitleDeed
+                                            ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || '-'
+                                            : loanData?.propertyLocation || '-'}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-2sm text-muted-foreground min-w-[80px]">
+                                          พื้นที่
+                                        </span>
+                                        <span className="text-2sm font-medium">
+                                          {primaryTitleDeed?.landAreaText || loanData?.propertyArea || '-'}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-2sm text-muted-foreground min-w-[80px]">
+                                          มูลค่าประเมิน
+                                        </span>
+                                        <span className="text-2sm font-medium">
+                                          {(loanData?.totalPropertyValue || loanData?.propertyValue)
+                                            ? `฿${formatCurrency(loanData.totalPropertyValue || loanData.propertyValue || 0)}`
+                                            : '-'}
+                                        </span>
+                                      </div>
+                                    </>
+                                  )}
+
+                                  {/* กรณีหลายโฉนด - แสดงรายการทั้งหมด */}
+                                  {loanData?.titleDeeds && loanData.titleDeeds.length > 1 && (
+                                    <>
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <Badge variant="primary" appearance="light">
+                                          {loanData.titleDeeds.length} โฉนด
+                                        </Badge>
+                                        <span className="text-2sm text-muted-foreground">
+                                          มูลค่ารวม: {loanData.totalPropertyValue
+                                            ? `฿${formatCurrency(loanData.totalPropertyValue)}`
+                                            : '-'}
+                                        </span>
+                                      </div>
+                                      <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                                        {loanData.titleDeeds.map((deed, index) => (
+                                          <div
+                                            key={deed.id || index}
+                                            className="p-2.5 bg-accent/50 rounded-md border border-border text-2sm"
+                                          >
+                                            <div className="flex items-center gap-2 mb-1.5">
+                                              <span className="font-medium">โฉนด #{index + 1}</span>
+                                              {deed.isPrimary && (
+                                                <Badge variant="success" appearance="light" size="sm">
+                                                  หลัก
+                                                </Badge>
+                                              )}
+                                            </div>
+                                            <div className="grid grid-cols-[70px_1fr] gap-x-2 gap-y-0.5 text-xs">
+                                              <span className="text-muted-foreground">เลขโฉนด</span>
+                                              <span>{deed.deedNumber || '-'}</span>
+                                              <span className="text-muted-foreground">ที่ตั้ง</span>
+                                              <span>
+                                                {`${deed.amphurName || ''} ${deed.provinceName || ''}`.trim() || '-'}
+                                              </span>
+                                              <span className="text-muted-foreground">พื้นที่</span>
+                                              <span>{deed.landAreaText || '-'}</span>
+                                              <span className="text-muted-foreground">เจ้าของ</span>
+                                              <span>{deed.ownerName || '-'}</span>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </CardContent>

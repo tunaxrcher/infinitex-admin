@@ -73,13 +73,11 @@ export const loanApi = {
       ) {
         // Append existing supporting image URLs as JSON array
         formData.append('existingSupportingImageUrls', JSON.stringify(value));
-      } else if (
-        key === 'titleDeedData' &&
-        value !== undefined &&
-        value !== null
-      ) {
-        // Append titleDeedData as JSON string
-        formData.append('titleDeedData', JSON.stringify(value));
+      } else if (key === 'titleDeeds' && Array.isArray(value)) {
+        // Append titleDeeds array as JSON strings (one per title deed)
+        value.forEach((titleDeed) => {
+          formData.append('titleDeedData', JSON.stringify(titleDeed));
+        });
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }
@@ -138,13 +136,11 @@ export const loanApi = {
       ) {
         // Append existing supporting image URLs as JSON array
         formData.append('existingSupportingImageUrls', JSON.stringify(value));
-      } else if (
-        key === 'titleDeedData' &&
-        value !== undefined &&
-        value !== null
-      ) {
-        // Append titleDeedData as JSON string
-        formData.append('titleDeedData', JSON.stringify(value));
+      } else if (key === 'titleDeeds' && Array.isArray(value)) {
+        // Append titleDeeds array as JSON strings (one per title deed)
+        value.forEach((titleDeed) => {
+          formData.append('titleDeedData', JSON.stringify(titleDeed));
+        });
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }

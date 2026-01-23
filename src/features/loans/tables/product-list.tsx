@@ -88,6 +88,7 @@ export interface IData {
   area: string;
   titleDeedNumber: string;
   titleDeedType: string;
+  titleDeedCount: number; // จำนวนโฉนดทั้งหมด
   requestDate: string;
   requestDateRaw: Date; // เพิ่มฟิลด์ raw date สำหรับการเรียง
   creditLimit: number;
@@ -235,10 +236,13 @@ export function ProductListTable({
         statusVariant = 'warning';
       }
 
-      // ดึงข้อมูลจาก loan_application
-      const propertyType = (application?.propertyType as string) || '-';
-      const propertyValue = application?.propertyValue
-        ? Number(application.propertyValue)
+      // ดึงข้อมูลจาก titleDeeds (primary deed)
+      const titleDeeds = (loanData.titleDeeds as any[]) || (application?.titleDeeds as any[]) || [];
+      const primaryDeed = titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
+      
+      const propertyType = primaryDeed?.landType || '-';
+      const propertyValue = application?.totalPropertyValue
+        ? Number(application.totalPropertyValue)
         : null;
       const requestedAmount = application?.requestedAmount
         ? Number(application.requestedAmount)
@@ -249,8 +253,8 @@ export function ProductListTable({
       const maxApprovedAmount = application?.maxApprovedAmount
         ? Number(application.maxApprovedAmount)
         : null;
-      const ownerName = (application?.ownerName as string) || fullName;
-      const landNumber = (application?.landNumber as string) || '-';
+      const ownerName = primaryDeed?.ownerName || fullName;
+      const landNumber = primaryDeed?.deedNumber || '-';
 
       // แปลง loanType จาก enum ให้เป็นภาษาไทย
       const loanTypeMap: Record<string, string> = {
@@ -306,11 +310,14 @@ export function ProductListTable({
         id: loanData.id as string,
         loanNumber: loanData.loanNumber as string,
         customerName: fullName,
-        placeName: (application?.propertyLocation as string) || '-',
-        area: (application?.propertyArea as string) || '-',
+        placeName: primaryDeed
+          ? `${primaryDeed.amphurName || ''} ${primaryDeed.provinceName || ''}`.trim() || '-'
+          : '-',
+        area: primaryDeed?.landAreaText || '-',
         titleDeedNumber:
           (loanData.titleDeedNumber as string) || landNumber || '-',
         titleDeedType: propertyType,
+        titleDeedCount: titleDeeds.length,
         requestDate: requestDateRaw.toLocaleDateString('th-TH', {
           year: 'numeric',
           month: 'short',
@@ -586,17 +593,28 @@ export function ProductListTable({
           <DataGridColumnHeader title="โฉนด" column={column} />
         ),
         cell: (info) => {
+          const { titleDeedType, titleDeedNumber, titleDeedCount } = info.row.original;
+          const isMultipleDeed = titleDeedCount > 1;
+          
           return (
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm">{info.row.original.titleDeedType}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">{titleDeedType}</span>
+                {isMultipleDeed && (
+                  <Badge variant="primary" appearance="light" size="sm">
+                    {titleDeedCount} โฉนด
+                  </Badge>
+                )}
+              </div>
               <span className="text-xs text-muted-foreground">
-                {info.row.original.titleDeedNumber}
+                {titleDeedNumber}
+                {isMultipleDeed && ' (หลัก)'}
               </span>
             </div>
           );
         },
         enableSorting: true,
-        size: 140,
+        size: 160,
         meta: {
           cellClassName: '',
         },

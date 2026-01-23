@@ -10,6 +10,7 @@ import { storage } from '@src/shared/lib/storage';
 
 /**
  * Parse FormData and extract fields and files
+ * Updated: Support titleDeeds array for multiple deeds
  */
 function parseFormDataFields(formData: FormData) {
   const data: any = {};
@@ -26,12 +27,19 @@ function parseFormDataFields(formData: FormData) {
       idCardFile = value;
     } else if (
       key === 'existingImageUrls' ||
-      key === 'existingSupportingImageUrls'
+      key === 'existingSupportingImageUrls' ||
+      key === 'titleDeeds'
     ) {
       try {
         data[key] = JSON.parse(value as string);
       } catch {
-        data[key] = [];
+        data[key] = key === 'titleDeeds' ? [] : [];
+      }
+    } else if (key === 'titleDeedData') {
+      try {
+        data[key] = JSON.parse(value as string);
+      } catch {
+        data[key] = null;
       }
     } else {
       if (value === 'undefined' || value === 'null') {
@@ -44,6 +52,8 @@ function parseFormDataFields(formData: FormData) {
           'operationFee',
           'transferFee',
           'otherFee',
+          'totalPropertyValue',
+          'propertyValue',
         ].includes(key)
       ) {
         data[key] = parseFloat(value as string);
@@ -179,6 +189,20 @@ export async function PUT(
       existingSupportingUrls,
       'supporting images',
     );
+
+    // If titleDeeds array is provided (new format), update image URLs for new uploads
+    if (data.titleDeeds && data.titleDeeds.length > 0 && newTitleDeedUrls.length > 0) {
+      // Find deeds without imageUrl and assign new uploads
+      let newUrlIndex = 0;
+      data.titleDeeds = data.titleDeeds.map((deed: any) => {
+        if (!deed.imageUrl && newTitleDeedUrls[newUrlIndex]) {
+          const updatedDeed = { ...deed, imageUrl: newTitleDeedUrls[newUrlIndex] };
+          newUrlIndex++;
+          return updatedDeed;
+        }
+        return deed;
+      });
+    }
 
     // Add ID card image if uploaded
     if (idCardUrl) {

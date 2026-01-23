@@ -35,6 +35,9 @@ export async function POST(
         customer: {
           include: { profile: true },
         },
+        titleDeeds: {
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+        },
       },
     });
 
@@ -44,14 +47,19 @@ export async function POST(
     // Send LINE notification
     if (application) {
       try {
+        // Get primary title deed for notification
+        const primaryTitleDeed = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
+        
         await sendLoanRejectionToLine({
           amount: `฿${Number(application.requestedAmount).toLocaleString('th-TH')}`,
           ownerName:
-            application.ownerName ||
+            primaryTitleDeed?.ownerName ||
             application.customer?.profile?.fullName ||
             '',
-          propertyLocation: application.propertyLocation || undefined,
-          parcelNo: application.landNumber || undefined,
+          propertyLocation: primaryTitleDeed
+            ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || undefined
+            : undefined,
+          parcelNo: primaryTitleDeed?.deedNumber || undefined,
           reason: reviewNotes,
           status: 'rejected',
         });

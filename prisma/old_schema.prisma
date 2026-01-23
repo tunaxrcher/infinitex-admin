@@ -232,11 +232,6 @@ enum LoanType {
   FINX_PLUS // สินเชื่อ FinX พลัส (future)
 }
 
-enum DeedMode {
-  SINGLE // โฉนดเดี่ยว (1 ใบ)
-  MULTIPLE // โฉนดชุด (หลายใบ)
-}
-
 enum ApplicationStatus {
   DRAFT
   SUBMITTED
@@ -260,7 +255,6 @@ model LoanApplication {
   loanType     LoanType          @default(HOUSE_LAND_MORTGAGE)
   hirePurchase Boolean           @default(false)
   status       ApplicationStatus @default(DRAFT)
-  deedMode     DeedMode          @default(SINGLE) // โฉนดเดี่ยว หรือ โฉนดชุด
 
   // Multi-step form tracking
   currentStep      Int     @default(1)
@@ -268,20 +262,18 @@ model LoanApplication {
   isNewUser        Boolean @default(false)
   submittedByAgent Boolean @default(false)
 
-  // Title deeds relation (all deed info stored here - both single and multiple mode)
-  titleDeeds TitleDeed[]
+  // Step 1: Title deed information
+  titleDeedImage String? @db.VarChar(500)
+  titleDeedData  Json?
 
-  // Total property value (sum of all title deeds)
-  totalPropertyValue Decimal? @db.Decimal(15, 2)
-
-  // Supporting documents
+  // Step 2: Supporting documents
   supportingImages Json @default("[]") // Array of image URLs
 
-  // ID Card (for new users)
+  // Step 3: ID Card (for new users)
   idCardFrontImage String? @db.VarChar(500)
   idCardBackImage  String? @db.VarChar(500)
 
-  // Loan amount
+  // Step 4: Loan amount
   requestedAmount   Decimal  @default(0) @db.Decimal(15, 2)
   approvedAmount    Decimal? @db.Decimal(15, 2)
   maxApprovedAmount Decimal? @db.Decimal(15, 2) // System calculated maximum
@@ -295,13 +287,17 @@ model LoanApplication {
   transferFee  Decimal? @default(0) @db.Decimal(15, 2)
   otherFee     Decimal? @default(0) @db.Decimal(15, 2)
 
-  // Owner name (user input - may differ from deed owner)
-  ownerName String? @db.VarChar(255)
+  // Property information (from AI processing)
+  propertyType     String?  @db.VarChar(100)
+  propertyValue    Decimal? @db.Decimal(15, 2)
+  propertyArea     String?  @db.VarChar(100)
+  propertyLocation String?  @db.Text
+  landNumber       String?  @db.VarChar(100)
+  ownerName        String?  @db.VarChar(255)
 
   // Property valuation (AI assessment on submit)
-  propertyValue   Decimal?  @db.Decimal(15, 2) // มูลค่าประเมินรวม
-  valuationResult Json?                        // ผลการประเมินจาก AI
-  valuationDate   DateTime? @db.DateTime(0)    // วันที่ทำการประเมิน
+  valuationResult Json?               // ผลการประเมินจาก AI
+  valuationDate   DateTime? @db.DateTime(0) // วันที่ทำการประเมิน
   estimatedValue  Decimal?  @db.Decimal(15, 2) // มูลค่าประเมินที่บันทึก
 
   // Application metadata
@@ -322,46 +318,6 @@ model LoanApplication {
   @@index([status])
   @@index([reviewedBy])
   @@map("loan_applications")
-}
-
-// Title deed for multiple deeds support
-model TitleDeed {
-  id            String          @id @default(cuid())
-  applicationId String
-  application   LoanApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  // Image information (optional - old data may not have image)
-  imageUrl String? @db.VarChar(500)
-  imageKey String? @db.VarChar(500)
-
-  // Title deed information (from AI or manual input)
-  deedNumber   String? @db.VarChar(100) // เลขที่โฉนด/ระวาง
-  provinceName String? @db.VarChar(100)
-  amphurName   String? @db.VarChar(100)
-  parcelNo     String? @db.VarChar(100) // เลขที่โฉนด
-
-  // Land information
-  landAreaText String?  @db.VarChar(100) // เช่น "2 ไร่ 1 งาน 50 ตร.ว."
-  ownerName    String?  @db.VarChar(255)
-  landType     String?  @db.VarChar(100) // ประเภทที่ดิน
-
-  // Raw data from LandMaps API
-  titleDeedData Json? // ข้อมูลดิบจาก API
-
-  // Location data (from LandMaps API)
-  latitude  String? @db.VarChar(50)
-  longitude String? @db.VarChar(50)
-  linkMap   String? @db.Text
-
-  // Meta
-  sortOrder Int     @default(0)
-  isPrimary Boolean @default(false) // โฉนดหลักในกรณีหลายโฉนด
-
-  createdAt DateTime @default(now()) @db.DateTime(0)
-  updatedAt DateTime @updatedAt @db.DateTime(0)
-
-  @@index([applicationId])
-  @@map("title_deeds")
 }
 
 enum LoanStatus {

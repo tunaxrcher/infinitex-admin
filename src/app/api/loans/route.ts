@@ -14,6 +14,7 @@ import { storage } from '@src/shared/lib/storage';
 
 /**
  * Parse FormData and extract fields and files
+ * Updated: Support titleDeeds array for multiple deeds
  */
 function parseFormDataFields(formData: FormData) {
   const data: any = {};
@@ -30,12 +31,19 @@ function parseFormDataFields(formData: FormData) {
       idCardFile = value;
     } else if (
       key === 'existingImageUrls' ||
-      key === 'existingSupportingImageUrls'
+      key === 'existingSupportingImageUrls' ||
+      key === 'titleDeeds'
     ) {
       try {
         data[key] = JSON.parse(value as string);
       } catch {
-        data[key] = [];
+        data[key] = key === 'titleDeeds' ? [] : [];
+      }
+    } else if (key === 'titleDeedData') {
+      try {
+        data[key] = JSON.parse(value as string);
+      } catch {
+        data[key] = null;
       }
     } else {
       if (value === 'undefined' || value === 'null') {
@@ -48,6 +56,8 @@ function parseFormDataFields(formData: FormData) {
           'operationFee',
           'transferFee',
           'otherFee',
+          'totalPropertyValue',
+          'propertyValue',
         ].includes(key)
       ) {
         data[key] = parseFloat(value as string);
@@ -143,12 +153,34 @@ export async function POST(request: NextRequest) {
         : Promise.resolve(null),
     ]);
 
-    // Combine images (existing + new)
+    // Combine images (existing + new) for backward compatibility
     const existingTitleDeedUrls = data.existingImageUrls || [];
     const existingSupportingUrls = data.existingSupportingImageUrls || [];
 
     data.titleDeedImages = [...existingTitleDeedUrls, ...newTitleDeedUrls];
     data.supportingImages = [...existingSupportingUrls, ...newSupportingUrls];
+
+    // If titleDeeds array is provided (new format), update image URLs
+    if (data.titleDeeds && data.titleDeeds.length > 0 && newTitleDeedUrls.length > 0) {
+      // Match uploaded files to titleDeeds by index
+      data.titleDeeds = data.titleDeeds.map((deed: any, index: number) => {
+        // If this deed doesn't have an imageUrl and we have a new upload for it
+        if (!deed.imageUrl && newTitleDeedUrls[index]) {
+          return { ...deed, imageUrl: newTitleDeedUrls[index] };
+        }
+        return deed;
+      });
+    } else if (!data.titleDeeds && data.titleDeedImages.length > 0) {
+      // Legacy format: Create titleDeeds from titleDeedImages
+      data.titleDeeds = data.titleDeedImages.map((url: string, index: number) => ({
+        imageUrl: url,
+        sortOrder: index,
+        isPrimary: index === 0,
+        titleDeedData: index === 0 ? data.titleDeedData : null,
+        deedNumber: index === 0 ? data.landNumber : null,
+        landAreaText: index === 0 ? data.landArea : null,
+      }));
+    }
 
     // Add ID card image if uploaded
     if (idCardUrl) {

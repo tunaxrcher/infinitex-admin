@@ -207,8 +207,12 @@ export function ProductDetailsAnalyticsSheet({
     }),
   );
 
-  // Prepare images for display
-  const titleDeedImage = loan?.application?.titleDeedImage;
+  // Prepare images for display - get from titleDeeds relation
+  const titleDeeds = loan?.application?.titleDeeds || [];
+  const primaryTitleDeed = titleDeeds.find((td: any) => td.isPrimary) || titleDeeds[0];
+  const titleDeedImages = titleDeeds
+    .filter((td: any) => td.imageUrl)
+    .map((td: any) => td.imageUrl);
   const supportingImages = loan?.application?.supportingImages
     ? typeof loan.application.supportingImages === 'string'
       ? JSON.parse(loan.application.supportingImages)
@@ -218,9 +222,9 @@ export function ProductDetailsAnalyticsSheet({
   // Create images array with fallbacks
   const allImages: string[] = [];
 
-  // Add title deed image or fallback
-  if (titleDeedImage) {
-    allImages.push(titleDeedImage);
+  // Add title deed images or fallback
+  if (titleDeedImages.length > 0) {
+    allImages.push(...titleDeedImages);
   } else {
     allImages.push('/images/loan.png');
   }
@@ -409,26 +413,30 @@ export function ProductDetailsAnalyticsSheet({
     try {
       setIsValuating(true);
 
-      // Validate that we have required data
-      const titleDeedImage = loan?.application?.titleDeedImage;
-      const supportingImages = loan?.application?.supportingImages
+      // Validate that we have required data - check titleDeeds relation
+      const titleDeedsForValuation = loan?.application?.titleDeeds || [];
+      const titleDeedImagesForValuation = titleDeedsForValuation
+        .filter((td: any) => td.imageUrl)
+        .map((td: any) => td.imageUrl);
+      const supportingImagesForValuation = loan?.application?.supportingImages
         ? typeof loan.application.supportingImages === 'string'
           ? JSON.parse(loan.application.supportingImages)
           : loan.application.supportingImages
         : [];
 
       console.log('[Valuation] Data check:', {
-        hasTitleDeedImage: !!titleDeedImage,
-        supportingImagesCount: supportingImages.length,
+        hasTitleDeedImages: titleDeedImagesForValuation.length > 0,
+        titleDeedImagesCount: titleDeedImagesForValuation.length,
+        supportingImagesCount: supportingImagesForValuation.length,
       });
 
-      if (!titleDeedImage) {
+      if (titleDeedImagesForValuation.length === 0) {
         alert('ต้องมีรูปโฉนดเพื่อทำการประเมิน');
         setIsValuating(false);
         return;
       }
 
-      if (!Array.isArray(supportingImages) || supportingImages.length === 0) {
+      if (!Array.isArray(supportingImagesForValuation) || supportingImagesForValuation.length === 0) {
         alert('ต้องมีรูปเพิ่มเติมอย่างน้อย 1 รูปเพื่อทำการประเมิน');
         setIsValuating(false);
         return;
@@ -1171,53 +1179,119 @@ export function ProductDetailsAnalyticsSheet({
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            สถานที่
-                          </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            {loan?.application?.propertyLocation || '-'}
-                            {loan?.application?.propertyArea
-                              ? ` (${loan.application.propertyArea})`
-                              : ''}
-                          </div>
-                        </div>
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            ประเภททรัพย์
-                          </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            {loan?.application?.propertyType || '-'}
-                          </div>
-                        </div>
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            มูลค่าประเมิน
-                          </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            {loan?.application?.propertyValue
-                              ? `฿${Number(loan.application.propertyValue).toLocaleString()}`
-                              : '-'}
-                          </div>
-                        </div>
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            โฉนด
-                          </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            {loan?.titleDeedNumber ||
-                              loan?.application?.landNumber ||
-                              '-'}
-                          </div>
-                        </div>
-                        <div className="flex items-center lg:gap-13 gap-5">
-                          <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
-                            เจ้าของ
-                          </div>
-                          <div className="text-2sm text-secondary-foreground font-medium">
-                            {loan?.application?.ownerName || '-'}
-                          </div>
-                        </div>
+                        {/* แสดงข้อมูลโฉนด - กรณีโฉนดเดียว */}
+                        {titleDeeds.length <= 1 && (
+                          <>
+                            <div className="flex items-center lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                                สถานที่
+                              </div>
+                              <div className="text-2sm text-secondary-foreground font-medium">
+                                {primaryTitleDeed
+                                  ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || '-'
+                                  : '-'}
+                                {primaryTitleDeed?.landAreaText
+                                  ? ` (${primaryTitleDeed.landAreaText})`
+                                  : ''}
+                              </div>
+                            </div>
+                            <div className="flex items-center lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                                ประเภททรัพย์
+                              </div>
+                              <div className="text-2sm text-secondary-foreground font-medium">
+                                {primaryTitleDeed?.landType || '-'}
+                              </div>
+                            </div>
+                            <div className="flex items-center lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                                มูลค่าประเมิน
+                              </div>
+                              <div className="text-2sm text-secondary-foreground font-medium">
+                                {loan?.application?.totalPropertyValue
+                                  ? `฿${Number(loan.application.totalPropertyValue).toLocaleString()}`
+                                  : '-'}
+                              </div>
+                            </div>
+                            <div className="flex items-center lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                                โฉนด
+                              </div>
+                              <div className="text-2sm text-secondary-foreground font-medium">
+                                {loan?.titleDeedNumber ||
+                                  primaryTitleDeed?.deedNumber ||
+                                  '-'}
+                              </div>
+                            </div>
+                            <div className="flex items-center lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                                เจ้าของ
+                              </div>
+                              <div className="text-2sm text-secondary-foreground font-medium">
+                                {primaryTitleDeed?.ownerName || '-'}
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {/* แสดงข้อมูลโฉนด - กรณีหลายโฉนด */}
+                        {titleDeeds.length > 1 && (
+                          <>
+                            <div className="flex items-center lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
+                                มูลค่าประเมินรวม
+                              </div>
+                              <div className="text-2sm text-secondary-foreground font-medium">
+                                {loan?.application?.totalPropertyValue
+                                  ? `฿${Number(loan.application.totalPropertyValue).toLocaleString()}`
+                                  : '-'}
+                              </div>
+                            </div>
+                            <div className="flex items-start lg:gap-13 gap-5">
+                              <div className="text-2sm text-secondary-foreground font-normal min-w-[90px] pt-2">
+                                โฉนดที่ดิน
+                              </div>
+                              <div className="flex-1">
+                                <Badge variant="primary" appearance="light" className="mb-3">
+                                  {titleDeeds.length} โฉนด
+                                </Badge>
+                                <div className="space-y-3">
+                                  {titleDeeds.map((deed: any, index: number) => (
+                                    <div
+                                      key={deed.id || index}
+                                      className="p-3 bg-accent/50 rounded-lg border border-border"
+                                    >
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-sm font-medium">
+                                          โฉนด #{index + 1}
+                                        </span>
+                                        {deed.isPrimary && (
+                                          <Badge variant="success" appearance="light" size="sm">
+                                            หลัก
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-2sm">
+                                        <div className="text-muted-foreground">เลขโฉนด</div>
+                                        <div className="font-medium">{deed.deedNumber || '-'}</div>
+                                        <div className="text-muted-foreground">สถานที่</div>
+                                        <div className="font-medium">
+                                          {`${deed.amphurName || ''} ${deed.provinceName || ''}`.trim() || '-'}
+                                        </div>
+                                        <div className="text-muted-foreground">พื้นที่</div>
+                                        <div className="font-medium">{deed.landAreaText || '-'}</div>
+                                        <div className="text-muted-foreground">ประเภท</div>
+                                        <div className="font-medium">{deed.landType || '-'}</div>
+                                        <div className="text-muted-foreground">เจ้าของ</div>
+                                        <div className="font-medium">{deed.ownerName || '-'}</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
                         <div className="flex items-center lg:gap-13 gap-5">
                           <div className="text-2sm text-secondary-foreground font-normal min-w-[90px]">
                             วงเงินที่ขอ

@@ -48,7 +48,7 @@ export async function POST(
       );
     }
 
-    // Find application with customer
+    // Find application with customer and title deeds
     const application = await prisma.loanApplication.findUnique({
       where: { id },
       include: {
@@ -57,6 +57,9 @@ export async function POST(
         },
         agent: true,
         loan: true,
+        titleDeeds: {
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+        },
       },
     });
 
@@ -145,6 +148,9 @@ export async function POST(
         );
         await tx.loanInstallment.createMany({ data: installmentsData });
       } else {
+        // Get title deed number from primary title deed
+        const primaryTitleDeed = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
+        
         // 3. Create new loan
         loan = await tx.loan.create({
           data: {
@@ -162,7 +168,7 @@ export async function POST(
             nextPaymentDate,
             contractDate,
             expiryDate,
-            titleDeedNumber: application.landNumber,
+            titleDeedNumber: primaryTitleDeed?.deedNumber || null,
             customerId: application.customerId,
             applicationId: application.id,
             agentId: application.agentId,
@@ -197,16 +203,21 @@ export async function POST(
 
     // 6. Send LINE notification
     try {
+      // Get primary title deed for notification
+      const primaryTitleDeedForNotification = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
+      
       await sendLoanApprovalToLine({
         loanNumber: result.loanNumber,
         amount: `฿${Number(loanAmount).toLocaleString('th-TH')}`,
         ownerName:
-          application.ownerName ||
+          primaryTitleDeedForNotification?.ownerName ||
           application.customer?.profile?.fullName ||
           '',
-        propertyLocation: application.propertyLocation || undefined,
-        propertyArea: application.propertyArea || undefined,
-        parcelNo: application.landNumber || undefined,
+        propertyLocation: primaryTitleDeedForNotification
+          ? `${primaryTitleDeedForNotification.amphurName || ''} ${primaryTitleDeedForNotification.provinceName || ''}`.trim() || undefined
+          : undefined,
+        propertyArea: primaryTitleDeedForNotification?.landAreaText || undefined,
+        parcelNo: primaryTitleDeedForNotification?.deedNumber || undefined,
         interestRate: finalInterestRate?.toString(),
         termMonths: finalTermMonths?.toString(),
         status: 'approved',
