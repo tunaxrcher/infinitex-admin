@@ -16,6 +16,7 @@ function parseFormDataFields(formData: FormData) {
   const data: any = {};
   const titleDeedFiles: File[] = [];
   const supportingFiles: File[] = [];
+  const titleDeedsArray: any[] = []; // Collect multiple titleDeeds entries
   let idCardFile: File | null = null;
 
   for (const [key, value] of formData.entries()) {
@@ -25,15 +26,22 @@ function parseFormDataFields(formData: FormData) {
       supportingFiles.push(value);
     } else if (key === 'idCardFile' && value instanceof File) {
       idCardFile = value;
+    } else if (key === 'titleDeeds') {
+      // Each titleDeed is sent as a separate JSON string
+      try {
+        const parsed = JSON.parse(value as string);
+        titleDeedsArray.push(parsed);
+      } catch {
+        // Skip invalid entries
+      }
     } else if (
       key === 'existingImageUrls' ||
-      key === 'existingSupportingImageUrls' ||
-      key === 'titleDeeds'
+      key === 'existingSupportingImageUrls'
     ) {
       try {
         data[key] = JSON.parse(value as string);
       } catch {
-        data[key] = key === 'titleDeeds' ? [] : [];
+        data[key] = [];
       }
     } else if (key === 'titleDeedData') {
       try {
@@ -62,6 +70,9 @@ function parseFormDataFields(formData: FormData) {
       }
     }
   }
+
+  // Assign collected titleDeeds array
+  data.titleDeeds = titleDeedsArray.length > 0 ? titleDeedsArray : [];
 
   return { data, titleDeedFiles, supportingFiles, idCardFile };
 }
@@ -191,23 +202,29 @@ export async function PUT(
     );
 
     // If titleDeeds array is provided (new format), update image URLs for new uploads
-    if (
-      data.titleDeeds &&
-      data.titleDeeds.length > 0 &&
-      newTitleDeedUrls.length > 0
-    ) {
+    if (data.titleDeeds && data.titleDeeds.length > 0) {
       // Find deeds without imageUrl and assign new uploads
       let newUrlIndex = 0;
       data.titleDeeds = data.titleDeeds.map((deed: any) => {
-        if (!deed.imageUrl && newTitleDeedUrls[newUrlIndex]) {
-          const updatedDeed = {
-            ...deed,
-            imageUrl: newTitleDeedUrls[newUrlIndex],
-          };
+        const updatedDeed = { ...deed };
+
+        // Assign URL if this deed needs a new upload
+        if (!updatedDeed.imageUrl && newTitleDeedUrls[newUrlIndex]) {
+          updatedDeed.imageUrl = newTitleDeedUrls[newUrlIndex];
           newUrlIndex++;
-          return updatedDeed;
         }
-        return deed;
+
+        // Assign titleDeedData to primary deed (from AI analysis)
+        // titleDeedData ควรเก็บเฉพาะข้อมูล raw จาก LandMaps API
+        if (
+          updatedDeed.isPrimary &&
+          data.titleDeedData &&
+          !updatedDeed.titleDeedData
+        ) {
+          updatedDeed.titleDeedData = data.titleDeedData;
+        }
+
+        return updatedDeed;
       });
     }
 

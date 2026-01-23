@@ -791,7 +791,13 @@ function calculateUpdatedLoanValues(existing: any, data: LoanUpdateSchema) {
   let termMonths = existing.termMonths || 48;
   let remainingBalance = Number(existing.remainingBalance || 0);
 
-  if (data.loanAmount || data.loanYears || data.interestRate) {
+  // Check if any loan calculation fields are provided (use !== undefined for proper check)
+  const hasLoanChanges =
+    data.loanAmount !== undefined ||
+    data.loanYears !== undefined ||
+    data.interestRate !== undefined;
+
+  if (hasLoanChanges) {
     const loanAmount = data.loanAmount ?? Number(existing.principalAmount || 0);
     const loanYears =
       data.loanYears ?? (existing.termMonths ? existing.termMonths / 12 : 4);
@@ -822,9 +828,12 @@ async function updateLoanRecord(
   const { monthlyPayment, termMonths, remainingBalance } = calculatedValues;
 
   const updateData: Prisma.LoanUpdateInput = {
-    ...(data.loanAmount && { principalAmount: data.loanAmount }),
-    ...(data.interestRate && { interestRate: data.interestRate }),
-    ...(data.loanYears && { termMonths, totalInstallments: termMonths }),
+    ...(data.loanAmount !== undefined && { principalAmount: data.loanAmount }),
+    ...(data.interestRate !== undefined && { interestRate: data.interestRate }),
+    ...(data.loanYears !== undefined && {
+      termMonths,
+      totalInstallments: termMonths,
+    }),
     monthlyPayment,
     remainingBalance,
     ...(data.loanStartDate && { contractDate: new Date(data.loanStartDate) }),

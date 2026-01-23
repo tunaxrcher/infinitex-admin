@@ -346,7 +346,7 @@ model TitleDeed {
   landType     String?  @db.VarChar(100) // ประเภทที่ดิน
 
   // Raw data from LandMaps API
-  titleDeedData Json? // ข้อมูลดิบจาก API
+  titleDeedData Json? // ข้อมูลดิบจาก LandMap API
 
   // Location data (from LandMaps API)
   latitude  String? @db.VarChar(50)

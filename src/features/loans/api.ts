@@ -76,8 +76,11 @@ export const loanApi = {
       } else if (key === 'titleDeeds' && Array.isArray(value)) {
         // Append titleDeeds array as JSON strings (one per title deed)
         value.forEach((titleDeed) => {
-          formData.append('titleDeedData', JSON.stringify(titleDeed));
+          formData.append('titleDeeds', JSON.stringify(titleDeed));
         });
+      } else if (key === 'titleDeedData' && typeof value === 'object') {
+        // Append titleDeedData as JSON string (LandMap API data)
+        formData.append('titleDeedData', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }
@@ -139,8 +142,11 @@ export const loanApi = {
       } else if (key === 'titleDeeds' && Array.isArray(value)) {
         // Append titleDeeds array as JSON strings (one per title deed)
         value.forEach((titleDeed) => {
-          formData.append('titleDeedData', JSON.stringify(titleDeed));
+          formData.append('titleDeeds', JSON.stringify(titleDeed));
         });
+      } else if (key === 'titleDeedData' && typeof value === 'object') {
+        // Append titleDeedData as JSON string (LandMap API data)
+        formData.append('titleDeedData', JSON.stringify(value));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }

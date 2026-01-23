@@ -21,22 +21,22 @@ export type LoanFiltersSchema = z.infer<typeof loanFiltersSchema>;
 // ============================================
 
 export const titleDeedSchema = z.object({
-  id: z.string().optional(), // สำหรับ edit mode
-  imageUrl: z.string().optional(),
-  imageKey: z.string().optional(),
-  deedNumber: z.string().optional(), // เลขที่โฉนด/ระวาง
-  provinceName: z.string().optional(),
-  amphurName: z.string().optional(),
-  parcelNo: z.string().optional(), // เลขที่โฉนด
-  landAreaText: z.string().optional(), // เนื้อที่ เช่น "2 ไร่ 1 งาน 50 ตร.ว."
-  ownerName: z.string().optional(), // ชื่อเจ้าของในโฉนด
-  landType: z.string().optional(), // ประเภทที่ดิน
-  titleDeedData: z.any().optional(), // ข้อมูลดิบจาก API
-  latitude: z.string().optional(),
-  longitude: z.string().optional(),
-  linkMap: z.string().optional(),
-  sortOrder: z.number().optional().default(0),
-  isPrimary: z.boolean().optional().default(false),
+  id: z.string().nullish(), // สำหรับ edit mode
+  imageUrl: z.string().nullish(),
+  imageKey: z.string().nullish(),
+  deedNumber: z.string().nullish(), // เลขที่โฉนด/ระวาง
+  provinceName: z.string().nullish(),
+  amphurName: z.string().nullish(),
+  parcelNo: z.string().nullish(), // เลขที่โฉนด
+  landAreaText: z.string().nullish(), // เนื้อที่ เช่น "2 ไร่ 1 งาน 50 ตร.ว."
+  ownerName: z.string().nullish(), // ชื่อเจ้าของในโฉนด
+  landType: z.string().nullish(), // ประเภทที่ดิน
+  titleDeedData: z.any().nullish(), // ข้อมูลดิบจาก LandMap API
+  latitude: z.string().nullish(),
+  longitude: z.string().nullish(),
+  linkMap: z.string().nullish(),
+  sortOrder: z.number().nullish().default(0),
+  isPrimary: z.boolean().nullish().default(false),
 });
 
 export type TitleDeedSchema = z.infer<typeof titleDeedSchema>;
@@ -92,8 +92,8 @@ export const loanCreateSchema = z.object({
   existingSupportingImageUrls: z.array(z.string()).optional(), // URL ของรูปเพิ่มเติมที่มีอยู่แล้ว
   idCardImage: z.string().optional(), // URL ของรูปบัตรประชาชน
 
-  // ข้อมูลโฉนดจาก API (backward compatibility - สำหรับโฉนดเดี่ยว)
-  titleDeedData: z.any().optional(), // ข้อมูลโฉนดทั้งชุดจาก API
+  // ข้อมูลจาก LandMap API (backward compatibility - สำหรับโฉนดเดี่ยว)
+  titleDeedData: z.any().optional(), // ข้อมูลดิบจาก LandMap API
 });
 
 export type LoanCreateSchema = z.infer<typeof loanCreateSchema>;
