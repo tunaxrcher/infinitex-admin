@@ -191,12 +191,19 @@ export async function PUT(
     );
 
     // If titleDeeds array is provided (new format), update image URLs for new uploads
-    if (data.titleDeeds && data.titleDeeds.length > 0 && newTitleDeedUrls.length > 0) {
+    if (
+      data.titleDeeds &&
+      data.titleDeeds.length > 0 &&
+      newTitleDeedUrls.length > 0
+    ) {
       // Find deeds without imageUrl and assign new uploads
       let newUrlIndex = 0;
       data.titleDeeds = data.titleDeeds.map((deed: any) => {
         if (!deed.imageUrl && newTitleDeedUrls[newUrlIndex]) {
-          const updatedDeed = { ...deed, imageUrl: newTitleDeedUrls[newUrlIndex] };
+          const updatedDeed = {
+            ...deed,
+            imageUrl: newTitleDeedUrls[newUrlIndex],
+          };
           newUrlIndex++;
           return updatedDeed;
         }

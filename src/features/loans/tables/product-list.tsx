@@ -85,6 +85,7 @@ export interface IData {
   loanNumber: string;
   customerName: string;
   placeName: string;
+  allPlaceNames: string[]; // สถานที่ทั้งหมด (กรณีหลายโฉนด)
   area: string;
   allAreas: string[]; // พื้นที่ทั้งหมด (กรณีหลายโฉนด)
   titleDeedNumber: string;
@@ -239,9 +240,13 @@ export function ProductListTable({
       }
 
       // ดึงข้อมูลจาก titleDeeds (primary deed)
-      const titleDeeds = (loanData.titleDeeds as any[]) || (application?.titleDeeds as any[]) || [];
-      const primaryDeed = titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
-      
+      const titleDeeds =
+        (loanData.titleDeeds as any[]) ||
+        (application?.titleDeeds as any[]) ||
+        [];
+      const primaryDeed =
+        titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
+
       const propertyType = primaryDeed?.landType || '';
       const propertyValue = application?.totalPropertyValue
         ? Number(application.totalPropertyValue)
@@ -308,12 +313,15 @@ export function ProductListTable({
         ? new Date(application.createdAt as string)
         : new Date(loanData.contractDate as string);
 
-      // รวบรวมเลขโฉนดและพื้นที่ทั้งหมด
+      // รวบรวมเลขโฉนด, พื้นที่, และสถานที่ทั้งหมด
       const allDeedNumbers = titleDeeds
         .map((d: any) => d.deedNumber)
         .filter(Boolean);
       const allAreas = titleDeeds
         .map((d: any) => d.landAreaText)
+        .filter(Boolean);
+      const allPlaceNames = titleDeeds
+        .map((d: any) => `${d.amphurName || ''} ${d.provinceName || ''}`.trim())
         .filter(Boolean);
 
       return {
@@ -321,8 +329,10 @@ export function ProductListTable({
         loanNumber: loanData.loanNumber as string,
         customerName: fullName,
         placeName: primaryDeed
-          ? `${primaryDeed.amphurName || ''} ${primaryDeed.provinceName || ''}`.trim() || '-'
+          ? `${primaryDeed.amphurName || ''} ${primaryDeed.provinceName || ''}`.trim() ||
+            '-'
           : '-',
+        allPlaceNames: allPlaceNames.length > 0 ? allPlaceNames : ['-'],
         area: primaryDeed?.landAreaText || '-',
         allAreas: allAreas.length > 0 ? allAreas : ['-'],
         titleDeedNumber:
@@ -506,14 +516,19 @@ export function ProductListTable({
           />
         ),
         cell: (info) => {
-          // return (
-          //   <span
-          //     className="text-sm font-medium text-foreground cursor-pointer hover:text-primary transition-colors"
-          //     onClick={() => setIsProductDetailsOpen(true)}
-          //   >
-          //     {info.row.original.loanNumber}
-          //   </span>
-          // );
+          const { placeName, allPlaceNames, titleDeedCount, loanNumber } =
+            info.row.original;
+          const isMultipleDeed = titleDeedCount > 1;
+
+          // สร้างชื่อแสดงผล
+          const displayName = isMultipleDeed
+            ? `โฉนดชุด (${allPlaceNames.join(', ')})`
+            : placeName;
+
+          // Full text สำหรับ tooltip
+          const fullDisplayName = isMultipleDeed
+            ? `โฉนดชุด (${allPlaceNames.join(', ')})`
+            : placeName;
 
           return (
             <div className="flex items-center gap-2.5">
@@ -526,7 +541,7 @@ export function ProductListTable({
                 />
               </Card>
               <div className="flex flex-col gap-1">
-                {info.row.original.placeName.length > 20 ? (
+                {displayName.length > 25 ? (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -534,11 +549,11 @@ export function ProductListTable({
                           className="text-sm font-medium text-foreground leading-3.5 truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors"
                           onClick={() => handleViewDetails(info.row.original)}
                         >
-                          {info.row.original.placeName}
+                          {displayName}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{info.row.original.placeName}</p>
+                        <p>{fullDisplayName}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -547,13 +562,13 @@ export function ProductListTable({
                     className="text-sm font-medium text-foreground leading-3.5 cursor-pointer hover:text-primary transition-colors"
                     onClick={() => handleViewDetails(info.row.original)}
                   >
-                    {info.row.original.placeName}
+                    {displayName}
                   </span>
                 )}
                 <span className="text-xs text-muted-foreground uppercase">
                   เลขที่สินเชื่อ:{' '}
                   <span className="text-xs font-medium text-secondary-foreground">
-                    {info.row.original.loanNumber}
+                    {loanNumber}
                   </span>
                 </span>
               </div>
@@ -592,7 +607,7 @@ export function ProductListTable({
         cell: (info) => {
           const { allAreas, titleDeedCount } = info.row.original;
           const isMultipleDeed = titleDeedCount > 1;
-          
+
           return (
             <div className="text-sm">
               {isMultipleDeed ? (
@@ -627,29 +642,28 @@ export function ProductListTable({
           <DataGridColumnHeader title="โฉนด" column={column} />
         ),
         cell: (info) => {
-          const { titleDeedType, allDeedNumbers, titleDeedCount } = info.row.original;
-          const isMultipleDeed = titleDeedCount > 1;
-          console.log(info.row.original)
+          const { titleDeedType, allDeedNumbers } = info.row.original;
+          const deedNumbersText = allDeedNumbers.join(', ') || '-';
+
           return (
             <div className="flex flex-col gap-0.5">
-              <div className="flex items-center">
+              {titleDeedType && (
                 <span className="text-sm">{titleDeedType}</span>
-                {isMultipleDeed && (
-                  <Badge variant="primary" appearance="light" size="sm">
-                    {titleDeedCount} โฉนด
-                  </Badge>
-                )}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {isMultipleDeed ? (
-                  <span title={allDeedNumbers.join(', ')}>
-                    {allDeedNumbers.slice(0, 2).join(', ')}
-                    {allDeedNumbers.length > 2 && ` +${allDeedNumbers.length - 2}`}
-                  </span>
-                ) : (
-                  <span>{allDeedNumbers[0] || '-'}</span>
-                )}
-              </div>
+              )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="text-xs text-muted-foreground truncate max-w-[150px] cursor-default">
+                      {deedNumbersText}
+                    </span>
+                  </TooltipTrigger>
+                  {deedNumbersText.length > 20 && (
+                    <TooltipContent>
+                      <p>{deedNumbersText}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
           );
         },

@@ -209,7 +209,8 @@ export function ProductDetailsAnalyticsSheet({
 
   // Prepare images for display - get from titleDeeds relation
   const titleDeeds = loan?.application?.titleDeeds || [];
-  const primaryTitleDeed = titleDeeds.find((td: any) => td.isPrimary) || titleDeeds[0];
+  const primaryTitleDeed =
+    titleDeeds.find((td: any) => td.isPrimary) || titleDeeds[0];
   const titleDeedImages = titleDeeds
     .filter((td: any) => td.imageUrl)
     .map((td: any) => td.imageUrl);
@@ -436,7 +437,10 @@ export function ProductDetailsAnalyticsSheet({
         return;
       }
 
-      if (!Array.isArray(supportingImagesForValuation) || supportingImagesForValuation.length === 0) {
+      if (
+        !Array.isArray(supportingImagesForValuation) ||
+        supportingImagesForValuation.length === 0
+      ) {
         alert('ต้องมีรูปเพิ่มเติมอย่างน้อย 1 รูปเพื่อทำการประเมิน');
         setIsValuating(false);
         return;
@@ -1188,7 +1192,8 @@ export function ProductDetailsAnalyticsSheet({
                               </div>
                               <div className="text-2sm text-secondary-foreground font-medium">
                                 {primaryTitleDeed
-                                  ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || '-'
+                                  ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() ||
+                                    '-'
                                   : '-'}
                                 {primaryTitleDeed?.landAreaText
                                   ? ` (${primaryTitleDeed.landAreaText})`
@@ -1252,41 +1257,70 @@ export function ProductDetailsAnalyticsSheet({
                                 โฉนดที่ดิน
                               </div>
                               <div className="flex-1">
-                                <Badge variant="primary" appearance="light" className="mb-3">
+                                <Badge
+                                  variant="primary"
+                                  appearance="light"
+                                  className="mb-3"
+                                >
                                   {titleDeeds.length} โฉนด
                                 </Badge>
                                 <div className="space-y-3">
-                                  {titleDeeds.map((deed: any, index: number) => (
-                                    <div
-                                      key={deed.id || index}
-                                      className="p-3 bg-accent/50 rounded-lg border border-border"
-                                    >
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-sm font-medium">
-                                          โฉนด #{index + 1}
-                                        </span>
-                                        {deed.isPrimary && (
-                                          <Badge variant="success" appearance="light" size="sm">
-                                            หลัก
-                                          </Badge>
-                                        )}
-                                      </div>
-                                      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-2sm">
-                                        <div className="text-muted-foreground">เลขโฉนด</div>
-                                        <div className="font-medium">{deed.deedNumber || '-'}</div>
-                                        <div className="text-muted-foreground">สถานที่</div>
-                                        <div className="font-medium">
-                                          {`${deed.amphurName || ''} ${deed.provinceName || ''}`.trim() || '-'}
+                                  {titleDeeds.map(
+                                    (deed: any, index: number) => (
+                                      <div
+                                        key={deed.id || index}
+                                        className="p-3 bg-accent/50 rounded-lg border border-border"
+                                      >
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <span className="text-sm font-medium">
+                                            โฉนด #{index + 1}
+                                          </span>
+                                          {deed.isPrimary && (
+                                            <Badge
+                                              variant="success"
+                                              appearance="light"
+                                              size="sm"
+                                            >
+                                              หลัก
+                                            </Badge>
+                                          )}
                                         </div>
-                                        <div className="text-muted-foreground">พื้นที่</div>
-                                        <div className="font-medium">{deed.landAreaText || '-'}</div>
-                                        <div className="text-muted-foreground">ประเภท</div>
-                                        <div className="font-medium">{deed.landType || '-'}</div>
-                                        <div className="text-muted-foreground">เจ้าของ</div>
-                                        <div className="font-medium">{deed.ownerName || '-'}</div>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-2sm">
+                                          <div className="text-muted-foreground">
+                                            เลขโฉนด
+                                          </div>
+                                          <div className="font-medium">
+                                            {deed.deedNumber || '-'}
+                                          </div>
+                                          <div className="text-muted-foreground">
+                                            สถานที่
+                                          </div>
+                                          <div className="font-medium">
+                                            {`${deed.amphurName || ''} ${deed.provinceName || ''}`.trim() ||
+                                              '-'}
+                                          </div>
+                                          <div className="text-muted-foreground">
+                                            พื้นที่
+                                          </div>
+                                          <div className="font-medium">
+                                            {deed.landAreaText || '-'}
+                                          </div>
+                                          <div className="text-muted-foreground">
+                                            ประเภท
+                                          </div>
+                                          <div className="font-medium">
+                                            {deed.landType || '-'}
+                                          </div>
+                                          <div className="text-muted-foreground">
+                                            เจ้าของ
+                                          </div>
+                                          <div className="font-medium">
+                                            {deed.ownerName || '-'}
+                                          </div>
+                                        </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    ),
+                                  )}
                                 </div>
                               </div>
                             </div>

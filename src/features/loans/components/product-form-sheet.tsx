@@ -392,17 +392,22 @@ export function ProductFormSheet({
     try {
       // Prepare title deeds data
       let titleDeedsToSend = titleDeeds;
-      
+
       // If using legacy single deed format, convert to titleDeeds array
-      if (titleDeeds.length === 0 && (existingImages.length > 0 || uploadedFiles.length > 0)) {
-        titleDeedsToSend = [{
-          imageUrl: existingImages[0] || null,
-          deedNumber: landNumber || null,
-          landAreaText: landArea || null,
-          titleDeedData: titleDeedData || null,
-          sortOrder: 0,
-          isPrimary: true,
-        }];
+      if (
+        titleDeeds.length === 0 &&
+        (existingImages.length > 0 || uploadedFiles.length > 0)
+      ) {
+        titleDeedsToSend = [
+          {
+            imageUrl: existingImages[0] || null,
+            deedNumber: landNumber || null,
+            landAreaText: landArea || null,
+            titleDeedData: titleDeedData || null,
+            sortOrder: 0,
+            isPrimary: true,
+          },
+        ];
       }
 
       const loanData = {
@@ -522,12 +527,18 @@ export function ProductFormSheet({
       // Load title deeds from new format
       if (loan.titleDeeds && loan.titleDeeds.length > 0) {
         setTitleDeeds(loan.titleDeeds);
-        
+
         // Set landNumber and landArea from primary deed for backward compatibility
-        const primaryDeed = loan.titleDeeds.find((d: any) => d.isPrimary) || loan.titleDeeds[0];
-        setLandNumber(primaryDeed?.deedNumber || primaryDeed?.parcelNo || loan.titleDeedNumber || '');
+        const primaryDeed =
+          loan.titleDeeds.find((d: any) => d.isPrimary) || loan.titleDeeds[0];
+        setLandNumber(
+          primaryDeed?.deedNumber ||
+            primaryDeed?.parcelNo ||
+            loan.titleDeedNumber ||
+            '',
+        );
         setLandArea(primaryDeed?.landAreaText || '');
-        
+
         // Set existing images from title deeds
         const deedImages = loan.titleDeeds
           .filter((d: any) => d.imageUrl)
@@ -537,7 +548,7 @@ export function ProductFormSheet({
         // Fallback to old format
         setLandNumber(loan.titleDeedNumber || '');
         setLandArea(loan.application?.propertyArea || '');
-        
+
         // Load existing title deed images from old format
         const titleDeedImages: string[] = [];
         if (loan.application?.titleDeedImage) {

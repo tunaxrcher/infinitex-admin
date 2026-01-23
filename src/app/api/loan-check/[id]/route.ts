@@ -98,7 +98,9 @@ export async function GET(
     }
 
     // Get primary title deed for backward compatibility
-    const primaryTitleDeed = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
+    const primaryTitleDeed =
+      application.titleDeeds?.find((td) => td.isPrimary) ||
+      application.titleDeeds?.[0];
 
     return NextResponse.json({
       success: true,
@@ -129,22 +131,23 @@ export async function GET(
         totalPropertyValue: application.totalPropertyValue
           ? Number(application.totalPropertyValue)
           : null,
-        titleDeeds: application.titleDeeds?.map((td) => ({
-          id: td.id,
-          imageUrl: td.imageUrl,
-          deedNumber: td.deedNumber,
-          provinceName: td.provinceName,
-          amphurName: td.amphurName,
-          parcelNo: td.parcelNo,
-          landAreaText: td.landAreaText,
-          ownerName: td.ownerName,
-          landType: td.landType,
-          latitude: td.latitude,
-          longitude: td.longitude,
-          linkMap: td.linkMap,
-          isPrimary: td.isPrimary,
-          sortOrder: td.sortOrder,
-        })) || [],
+        titleDeeds:
+          application.titleDeeds?.map((td) => ({
+            id: td.id,
+            imageUrl: td.imageUrl,
+            deedNumber: td.deedNumber,
+            provinceName: td.provinceName,
+            amphurName: td.amphurName,
+            parcelNo: td.parcelNo,
+            landAreaText: td.landAreaText,
+            ownerName: td.ownerName,
+            landType: td.landType,
+            latitude: td.latitude,
+            longitude: td.longitude,
+            linkMap: td.linkMap,
+            isPrimary: td.isPrimary,
+            sortOrder: td.sortOrder,
+          })) || [],
         // Backward compatibility fields from primary title deed
         propertyType: primaryTitleDeed?.landType || null,
         propertyValue: application.totalPropertyValue
@@ -152,7 +155,8 @@ export async function GET(
           : null,
         propertyArea: primaryTitleDeed?.landAreaText || null,
         propertyLocation: primaryTitleDeed
-          ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || null
+          ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() ||
+            null
           : null,
         landNumber: primaryTitleDeed?.deedNumber || null,
         ownerName: primaryTitleDeed?.ownerName || null,

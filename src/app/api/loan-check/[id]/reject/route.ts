@@ -48,8 +48,10 @@ export async function POST(
     if (application) {
       try {
         // Get primary title deed for notification
-        const primaryTitleDeed = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
-        
+        const primaryTitleDeed =
+          application.titleDeeds?.find((td) => td.isPrimary) ||
+          application.titleDeeds?.[0];
+
         await sendLoanRejectionToLine({
           amount: `฿${Number(application.requestedAmount).toLocaleString('th-TH')}`,
           ownerName:
@@ -57,7 +59,8 @@ export async function POST(
             application.customer?.profile?.fullName ||
             '',
           propertyLocation: primaryTitleDeed
-            ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() || undefined
+            ? `${primaryTitleDeed.amphurName || ''} ${primaryTitleDeed.provinceName || ''}`.trim() ||
+              undefined
             : undefined,
           parcelNo: primaryTitleDeed?.deedNumber || undefined,
           reason: reviewNotes,

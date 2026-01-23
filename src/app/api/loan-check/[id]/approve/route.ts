@@ -149,8 +149,10 @@ export async function POST(
         await tx.loanInstallment.createMany({ data: installmentsData });
       } else {
         // Get title deed number from primary title deed
-        const primaryTitleDeed = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
-        
+        const primaryTitleDeed =
+          application.titleDeeds?.find((td) => td.isPrimary) ||
+          application.titleDeeds?.[0];
+
         // 3. Create new loan
         loan = await tx.loan.create({
           data: {
@@ -204,8 +206,10 @@ export async function POST(
     // 6. Send LINE notification
     try {
       // Get primary title deed for notification
-      const primaryTitleDeedForNotification = application.titleDeeds?.find((td) => td.isPrimary) || application.titleDeeds?.[0];
-      
+      const primaryTitleDeedForNotification =
+        application.titleDeeds?.find((td) => td.isPrimary) ||
+        application.titleDeeds?.[0];
+
       await sendLoanApprovalToLine({
         loanNumber: result.loanNumber,
         amount: `฿${Number(loanAmount).toLocaleString('th-TH')}`,
@@ -214,9 +218,11 @@ export async function POST(
           application.customer?.profile?.fullName ||
           '',
         propertyLocation: primaryTitleDeedForNotification
-          ? `${primaryTitleDeedForNotification.amphurName || ''} ${primaryTitleDeedForNotification.provinceName || ''}`.trim() || undefined
+          ? `${primaryTitleDeedForNotification.amphurName || ''} ${primaryTitleDeedForNotification.provinceName || ''}`.trim() ||
+            undefined
           : undefined,
-        propertyArea: primaryTitleDeedForNotification?.landAreaText || undefined,
+        propertyArea:
+          primaryTitleDeedForNotification?.landAreaText || undefined,
         parcelNo: primaryTitleDeedForNotification?.deedNumber || undefined,
         interestRate: finalInterestRate?.toString(),
         termMonths: finalTermMonths?.toString(),

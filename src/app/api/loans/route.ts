@@ -161,7 +161,11 @@ export async function POST(request: NextRequest) {
     data.supportingImages = [...existingSupportingUrls, ...newSupportingUrls];
 
     // If titleDeeds array is provided (new format), update image URLs
-    if (data.titleDeeds && data.titleDeeds.length > 0 && newTitleDeedUrls.length > 0) {
+    if (
+      data.titleDeeds &&
+      data.titleDeeds.length > 0 &&
+      newTitleDeedUrls.length > 0
+    ) {
       // Match uploaded files to titleDeeds by index
       data.titleDeeds = data.titleDeeds.map((deed: any, index: number) => {
         // If this deed doesn't have an imageUrl and we have a new upload for it
@@ -172,14 +176,16 @@ export async function POST(request: NextRequest) {
       });
     } else if (!data.titleDeeds && data.titleDeedImages.length > 0) {
       // Legacy format: Create titleDeeds from titleDeedImages
-      data.titleDeeds = data.titleDeedImages.map((url: string, index: number) => ({
-        imageUrl: url,
-        sortOrder: index,
-        isPrimary: index === 0,
-        titleDeedData: index === 0 ? data.titleDeedData : null,
-        deedNumber: index === 0 ? data.landNumber : null,
-        landAreaText: index === 0 ? data.landArea : null,
-      }));
+      data.titleDeeds = data.titleDeedImages.map(
+        (url: string, index: number) => ({
+          imageUrl: url,
+          sortOrder: index,
+          isPrimary: index === 0,
+          titleDeedData: index === 0 ? data.titleDeedData : null,
+          deedNumber: index === 0 ? data.landNumber : null,
+          landAreaText: index === 0 ? data.landArea : null,
+        }),
+      );
     }
 
     // Add ID card image if uploaded

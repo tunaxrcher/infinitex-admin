@@ -146,8 +146,10 @@ export function generateInstallmentsData(
  */
 export function prepareLoanApplicationData(data: any) {
   // Determine deed mode based on titleDeeds array or legacy titleDeedImages
-  const deedMode = data.deedMode || (data.titleDeeds && data.titleDeeds.length > 1 ? 'MULTIPLE' : 'SINGLE');
-  
+  const deedMode =
+    data.deedMode ||
+    (data.titleDeeds && data.titleDeeds.length > 1 ? 'MULTIPLE' : 'SINGLE');
+
   // Calculate total property value from title deeds if available
   let totalPropertyValue = data.totalPropertyValue;
   if (!totalPropertyValue && data.titleDeeds && data.titleDeeds.length > 0) {
@@ -155,7 +157,7 @@ export function prepareLoanApplicationData(data: any) {
       return sum + (deed.propertyValue || 0);
     }, 0);
   }
-  
+
   return {
     customerData: {
       phoneNumber: data.phoneNumber,
@@ -212,38 +214,43 @@ function prepareTitleDeedsData(data: any): any[] {
       longitude: deed.longitude || null,
       linkMap: deed.linkMap || null,
       sortOrder: deed.sortOrder ?? index,
-      isPrimary: deed.isPrimary ?? (index === 0),
+      isPrimary: deed.isPrimary ?? index === 0,
     }));
   }
-  
+
   // Legacy format: Convert single deed data to array
   const legacyDeed: any = {
     sortOrder: 0,
     isPrimary: true,
   };
-  
+
   // Image from legacy titleDeedImages
   if (data.titleDeedImages && data.titleDeedImages.length > 0) {
     legacyDeed.imageUrl = data.titleDeedImages[0];
   }
-  
+
   // Data from legacy titleDeedData
   if (data.titleDeedData) {
     legacyDeed.titleDeedData = data.titleDeedData;
-    
+
     // Extract data if it's from LandMaps API
     if (data.titleDeedData.result && data.titleDeedData.result.length > 0) {
       const apiData = data.titleDeedData.result[0];
-      legacyDeed.deedNumber = apiData.parcelno || apiData.landno || data.landNumber || null;
+      legacyDeed.deedNumber =
+        apiData.parcelno || apiData.landno || data.landNumber || null;
       legacyDeed.provinceName = apiData.provname || null;
       legacyDeed.amphurName = apiData.amphurname || null;
       legacyDeed.parcelNo = apiData.parcelno || null;
       legacyDeed.latitude = apiData.parcellat || null;
       legacyDeed.longitude = apiData.parcellon || null;
       legacyDeed.linkMap = apiData.qrcode_link || null;
-      
+
       // Land area from API
-      if (apiData.rai !== undefined && apiData.ngan !== undefined && apiData.wa !== undefined) {
+      if (
+        apiData.rai !== undefined &&
+        apiData.ngan !== undefined &&
+        apiData.wa !== undefined
+      ) {
         legacyDeed.landAreaText = `${apiData.rai}-${apiData.ngan}-${apiData.wa}`;
       } else {
         legacyDeed.landAreaText = data.landArea || null;
@@ -256,12 +263,16 @@ function prepareTitleDeedsData(data: any): any[] {
     legacyDeed.deedNumber = data.landNumber || null;
     legacyDeed.landAreaText = data.landArea || null;
   }
-  
+
   // Only return if there's meaningful data
-  if (legacyDeed.imageUrl || legacyDeed.deedNumber || legacyDeed.titleDeedData) {
+  if (
+    legacyDeed.imageUrl ||
+    legacyDeed.deedNumber ||
+    legacyDeed.titleDeedData
+  ) {
     return [legacyDeed];
   }
-  
+
   return [];
 }
 
@@ -690,7 +701,8 @@ async function transformApplicationWithLoan(app: any) {
   });
 
   // Get primary title deed for backward compatibility
-  const primaryDeed = app.titleDeeds?.find((d: any) => d.isPrimary) || app.titleDeeds?.[0];
+  const primaryDeed =
+    app.titleDeeds?.find((d: any) => d.isPrimary) || app.titleDeeds?.[0];
 
   return {
     ...app.loan,
@@ -707,7 +719,11 @@ async function transformApplicationWithLoan(app: any) {
     titleDeeds: app.titleDeeds || [],
     deedMode: app.deedMode || 'SINGLE',
     // Backward compatibility - get from primary deed if loan doesn't have it
-    titleDeedNumber: app.loan.titleDeedNumber || primaryDeed?.deedNumber || primaryDeed?.parcelNo || null,
+    titleDeedNumber:
+      app.loan.titleDeedNumber ||
+      primaryDeed?.deedNumber ||
+      primaryDeed?.parcelNo ||
+      null,
   };
 }
 
@@ -717,9 +733,11 @@ async function transformApplicationWithLoan(app: any) {
  */
 function transformApplicationWithoutLoan(app: any) {
   // Get primary title deed or first title deed
-  const primaryDeed = app.titleDeeds?.find((d: any) => d.isPrimary) || app.titleDeeds?.[0];
-  const titleDeedNumber = primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
-  
+  const primaryDeed =
+    app.titleDeeds?.find((d: any) => d.isPrimary) || app.titleDeeds?.[0];
+  const titleDeedNumber =
+    primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
+
   return {
     id: app.id,
     loanNumber: `APP-${app.id.slice(0, 8).toUpperCase()}`,
@@ -943,13 +961,13 @@ async function updateTitleDeeds(
   const existingDeeds = await tx.titleDeed.findMany({
     where: { applicationId },
   });
-  
+
   const existingIds = existingDeeds.map((d: any) => d.id);
   const updatedIds: string[] = [];
 
   for (let i = 0; i < titleDeeds.length; i++) {
     const deed = titleDeeds[i];
-    
+
     if (deed.id && existingIds.includes(deed.id)) {
       // Update existing deed
       await tx.titleDeed.update({
@@ -969,7 +987,7 @@ async function updateTitleDeeds(
           longitude: deed.longitude,
           linkMap: deed.linkMap,
           sortOrder: deed.sortOrder ?? i,
-          isPrimary: deed.isPrimary ?? (i === 0),
+          isPrimary: deed.isPrimary ?? i === 0,
         },
       });
       updatedIds.push(deed.id);
@@ -992,7 +1010,7 @@ async function updateTitleDeeds(
           longitude: deed.longitude,
           linkMap: deed.linkMap,
           sortOrder: deed.sortOrder ?? i,
-          isPrimary: deed.isPrimary ?? (i === 0),
+          isPrimary: deed.isPrimary ?? i === 0,
         },
       });
       updatedIds.push(newDeed.id);
@@ -1000,7 +1018,9 @@ async function updateTitleDeeds(
   }
 
   // Delete removed deeds
-  const idsToDelete = existingIds.filter((id: string) => !updatedIds.includes(id));
+  const idsToDelete = existingIds.filter(
+    (id: string) => !updatedIds.includes(id),
+  );
   if (idsToDelete.length > 0) {
     await tx.titleDeed.deleteMany({
       where: { id: { in: idsToDelete } },
@@ -1020,7 +1040,7 @@ async function updateTitleDeedsFromLegacy(
   const existingDeeds = await tx.titleDeed.findMany({
     where: { applicationId },
   });
-  
+
   if (existingDeeds.length > 0) {
     // Update first deed with new image
     await tx.titleDeed.update({
@@ -1135,9 +1155,10 @@ export const loanService = {
 
     if (loan) {
       // Get primary title deed for backward compatibility
-      const primaryDeed = loan.application?.titleDeeds?.find((d: any) => d.isPrimary) 
-        || loan.application?.titleDeeds?.[0];
-      
+      const primaryDeed =
+        loan.application?.titleDeeds?.find((d: any) => d.isPrimary) ||
+        loan.application?.titleDeeds?.[0];
+
       // Include valuation fields and title deeds from application
       return {
         ...loan,
@@ -1147,7 +1168,11 @@ export const loanService = {
         titleDeeds: loan.application?.titleDeeds || [],
         deedMode: loan.application?.deedMode || 'SINGLE',
         // Backward compatibility - get from primary deed if loan doesn't have it
-        titleDeedNumber: loan.titleDeedNumber || primaryDeed?.deedNumber || primaryDeed?.parcelNo || null,
+        titleDeedNumber:
+          loan.titleDeedNumber ||
+          primaryDeed?.deedNumber ||
+          primaryDeed?.parcelNo ||
+          null,
       };
     }
 
@@ -1184,9 +1209,11 @@ export const loanService = {
     }
 
     // Get primary title deed
-    const primaryDeed = application.titleDeeds?.find((d: any) => d.isPrimary) 
-      || application.titleDeeds?.[0];
-    const titleDeedNumber = primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
+    const primaryDeed =
+      application.titleDeeds?.find((d: any) => d.isPrimary) ||
+      application.titleDeeds?.[0];
+    const titleDeedNumber =
+      primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
 
     // ถ้ามี loan ใน application ให้ return loan with valuation fields
     if (application.loan) {
@@ -1229,7 +1256,8 @@ export const loanService = {
       contractDate: application.createdAt,
       expiryDate: application.createdAt,
       titleDeedNumber: titleDeedNumber,
-      collateralValue: application.propertyValue || application.totalPropertyValue,
+      collateralValue:
+        application.propertyValue || application.totalPropertyValue,
       collateralDetails: null,
       createdAt: application.createdAt,
       updatedAt: application.updatedAt,
@@ -1253,12 +1281,13 @@ export const loanService = {
     const contractDate = new Date(data.loanStartDate);
 
     // Prepare application data (now includes titleDeedsData)
-    const { customerData, applicationData, titleDeedsData } = prepareLoanApplicationData({
-      ...data,
-      loanAmount,
-      loanYears,
-      interestRate,
-    });
+    const { customerData, applicationData, titleDeedsData } =
+      prepareLoanApplicationData({
+        ...data,
+        loanAmount,
+        loanYears,
+        interestRate,
+      });
 
     // Use transaction to ensure data consistency
     const application = await prisma.$transaction(async (tx) => {
@@ -1431,9 +1460,11 @@ export const loanService = {
       where: { applicationId: application.id },
       orderBy: { sortOrder: 'asc' },
     });
-    const primaryDeed = titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
-    const titleDeedNumber = primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
-    
+    const primaryDeed =
+      titleDeeds.find((d: any) => d.isPrimary) || titleDeeds[0];
+    const titleDeedNumber =
+      primaryDeed?.deedNumber || primaryDeed?.parcelNo || null;
+
     // Get location data from primary deed
     const latitude = primaryDeed?.latitude || null;
     const longitude = primaryDeed?.longitude || null;
@@ -1550,7 +1581,7 @@ export const loanService = {
     if (!application) {
       const loan = await prisma.loan.findUnique({
         where: { id: applicationId },
-        include: { 
+        include: {
           application: {
             include: {
               titleDeeds: { orderBy: { sortOrder: 'asc' } },
@@ -1568,10 +1599,11 @@ export const loanService = {
     }
 
     // Get primary title deed image from TitleDeed model
-    const primaryDeed = application.titleDeeds?.find((d: any) => d.isPrimary) 
-      || application.titleDeeds?.[0];
+    const primaryDeed =
+      application.titleDeeds?.find((d: any) => d.isPrimary) ||
+      application.titleDeeds?.[0];
     const titleDeedImage = primaryDeed?.imageUrl;
-    
+
     // Get supporting images from application
     const supportingImages = application.supportingImages
       ? typeof application.supportingImages === 'string'
