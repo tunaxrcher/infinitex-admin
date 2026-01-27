@@ -111,7 +111,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       },
       {
         title: 'Maps',
-        path: '/test2',
+        path: '/maps',
       },
     ],
   },

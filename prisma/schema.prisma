@@ -919,3 +919,334 @@ model RealInvestment {
 
   @@map("real_investment")
 }
+
+// ============================================
+// ASSET SCRAPER SYSTEM (จาก otherdb)
+// ============================================
+
+/// แหล่งข้อมูลทรัพย์สิน
+enum DataSource {
+  LED   // กรมบังคับคดี (Legal Execution Department)
+  BAAC  // ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร
+  NHA   // การเคหะแห่งชาติ
+  GSB   // ธนาคารออมสิน
+  GHB   // ธนาคารอาคารสงเคราะห์
+  SAM   // บริษัทบริหารสินทรัพย์สุขุมวิท
+}
+
+enum AssetStatus {
+  ACTIVE    // ยังขายอยู่
+  SOLD      // ขายแล้ว
+  CANCELLED // ยกเลิก
+  EXPIRED   // หมดอายุ
+}
+
+enum ScrapeStatus {
+  RUNNING   // กำลังทำงาน
+  COMPLETED // เสร็จสิ้น
+  FAILED    // ล้มเหลว
+  PARTIAL   // เสร็จบางส่วน
+}
+
+enum IssueType {
+  MISSING_DEED      // ไม่มีเลขที่โฉนด
+  MISSING_LOCATION  // ไม่มีข้อมูลที่ตั้ง
+  MISSING_PRICE     // ไม่มีราคา
+  FETCH_FAILED      // ดึงข้อมูล detail ไม่ได้
+  PARSE_ERROR       // parse ข้อมูลไม่ได้
+  LANDDEED_FAILED   // ดึงข้อมูลโฉนดไม่ได้
+  INCOMPLETE_DATA   // ข้อมูลไม่ครบ (ทั่วไป)
+}
+
+enum IssueStatus {
+  PENDING   // รอแก้ไข
+  RETRYING  // กำลัง retry
+  RESOLVED  // แก้ไขแล้ว
+  IGNORED   // ไม่สนใจ
+}
+
+/// ทรัพย์สินจากหลายแหล่ง
+model Asset {
+  id Int @id @default(autoincrement())
+
+  // Multi-source support
+  source        DataSource  @default(LED)           // แหล่งที่มา
+  sourceAssetId String?     @db.VarChar(100)        // ID จากต้นทาง
+  sourceUrl     String?     @db.VarChar(500)        // URL ต้นทาง
+
+  // ข้อมูลหลัก
+  auctionLot String  @db.VarChar(100)  // ล็อตประมูล เช่น "LOM 23/68"
+  bidNumber  String  @db.VarChar(50)   // ลำดับที่ขาย เช่น "2 - 1"
+  caseNumber String? @db.VarChar(100)  // เลขที่คดี (บาง source อาจไม่มี)
+  deedNo     String? @db.VarChar(500)  // เลขที่โฉนด (อาจมีหลายเลขคั่นด้วย comma)
+
+  // ประเภททรัพย์สิน
+  assetType   String  @db.VarChar(100) // ที่ดินว่างเปล่า, ที่ดินพร้อมสิ่งปลูกสร้าง
+  assetTypeId String? @db.VarChar(10)  // รหัสประเภท
+
+  // ขนาด
+  rai  Decimal @default(0) @db.Decimal(10, 2) // ไร่
+  ngan Decimal @default(0) @db.Decimal(10, 2) // งาน
+  sqWa Decimal @default(0) @db.Decimal(10, 2) // ตารางวา
+
+  // ราคา
+  appraisalPrice Decimal? @db.Decimal(15, 2) // ราคาประเมิน
+  reserveFund    Decimal? @db.Decimal(15, 2) // เงินมัดจำ
+  reserveFund1   Decimal? @db.Decimal(15, 2) // เงินมัดจำรอบถัดไป
+
+  // ที่ตั้ง
+  address  String? @db.VarChar(255)
+  tambol   String? @db.VarChar(100) // ตำบล
+  ampur    String? @db.VarChar(100) // อำเภอ
+  province String? @db.VarChar(100) // จังหวัด
+
+  // สถานะ
+  status AssetStatus @default(ACTIVE)
+
+  // Timestamps
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @updatedAt @db.DateTime(0)
+  scrapedAt DateTime @default(now()) @db.DateTime(0) // วันที่ scrape ข้อมูล
+
+  // Relations
+  detail       AssetDetail?
+  bidSchedules BidSchedule[]
+  landDeedInfo LandDeedInfo?
+  scrapeLog    ScrapeLog?    @relation(fields: [scrapeLogId], references: [id])
+  scrapeLogId  Int?
+
+  // Indexes สำหรับค้นหา
+  @@index([source, auctionLot, bidNumber, deedNo, assetTypeId])
+  @@index([source, sourceAssetId])
+  @@index([source])
+  @@index([province])
+  @@index([ampur])
+  @@index([assetType])
+  @@index([appraisalPrice])
+  @@index([caseNumber])
+  @@index([deedNo])
+  @@index([scrapedAt])
+  @@index([scrapeLogId])
+  @@map("Asset")
+}
+
+/// รายละเอียดทรัพย์สิน (1:1 กับ Asset)
+model AssetDetail {
+  id      Int   @id @default(autoincrement())
+  assetId Int   @unique
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  // ข้อมูลคดี
+  courtName   String? @db.VarChar(100) // ชื่อศาล
+  courtId     String? @db.VarChar(10)  // รหัสศาล
+  lawSuitNo   String? @db.VarChar(50)  // เลขที่คดี
+  lawSuitYear String? @db.VarChar(10)  // ปีคดี
+
+  // ข้อมูลโฉนด
+  deedNo     String? @db.VarChar(500) // เลขที่โฉนด (อาจมีหลายเลขคั่นด้วย comma)
+  deedTambol String? @db.VarChar(100)
+  deedAmpur  String? @db.VarChar(100)
+  deedCity   String? @db.VarChar(100)
+  landType   String? @db.VarChar(100) // ประเภทโฉนด
+  landDesc   String? @db.VarChar(255) // รายละเอียด
+
+  // ข้อมูลบุคคล
+  ownerName     String? @db.VarChar(255) // เจ้าของ
+  ownerSuitName String? @db.VarChar(255) // ชื่อในคดี
+  plaintiff     String? @db.VarChar(255) // โจทก์
+  defendant     String? @db.VarChar(255) // จำเลย
+  occupant      String? @db.VarChar(255) // ผู้ครอบครอง
+
+  // สถานที่ขาย
+  saleLocation1 String? @db.Text
+  saleLocation2 String? @db.Text
+  saleTime1     String? @db.VarChar(20)
+  saleTime2     String? @db.VarChar(20)
+  saleType      String? @db.VarChar(100) // ประเภทการขาย
+
+  // ราคาแต่ละรอบ
+  price1 Decimal? @db.Decimal(15, 2)
+  price2 Decimal? @db.Decimal(15, 2)
+  price3 Decimal? @db.Decimal(15, 2)
+  price4 Decimal? @db.Decimal(15, 2)
+  price5 Decimal? @db.Decimal(15, 2)
+  price6 Decimal? @db.Decimal(15, 2)
+  price7 Decimal? @db.Decimal(15, 2)
+  price8 Decimal? @db.Decimal(15, 2)
+
+  // ข้อมูลอื่นๆ
+  tel     String? @db.VarChar(50)
+  remark  String? @db.Text
+  remark1 String? @db.Text
+  eauc    String? @db.VarChar(10) // ประมูลออนไลน์
+
+  // รูปภาพ (paths)
+  landPicture String? @db.VarChar(500)
+  map         String? @db.VarChar(500)
+  mapJot      String? @db.VarChar(500)
+
+  // Timestamps
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @updatedAt @db.DateTime(0)
+
+  @@index([assetId])
+  @@index([deedNo])
+  @@index([ownerName])
+  @@map("AssetDetail")
+}
+
+/// กำหนดการประมูล
+model BidSchedule {
+  id      Int   @id @default(autoincrement())
+  assetId Int
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  roundNumber Int      // รอบที่ 1-8
+  bidDate     DateTime @db.DateTime(0) // วันประมูล
+  price       Decimal? @db.Decimal(15, 2) // ราคารอบนั้น
+  isSale      Boolean  @default(true) // เปิดขายหรือไม่
+
+  createdAt DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([assetId, roundNumber])
+  @@index([assetId])
+  @@index([bidDate])
+  @@map("BidSchedule")
+}
+
+/// ข้อมูลโฉนดจาก LandsMaps API
+model LandDeedInfo {
+  id      Int   @id @default(autoincrement())
+  assetId Int   @unique
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  // ข้อมูลที่ตั้ง
+  provName   String? @db.VarChar(100)
+  amphurName String? @db.VarChar(100)
+  tumbolName String? @db.VarChar(100)
+  landOffice String? @db.VarChar(255)
+
+  // ข้อมูลที่ดิน
+  parcelType String? @db.VarChar(100) // ประเภทโฉนด
+  parcelNo   String? @db.VarChar(50)  // เลขที่โฉนด (masked)
+  landNo     String? @db.VarChar(50)  // เลขที่ดิน
+  surveyNo   String? @db.VarChar(50)  // เลขที่รังวัด
+  utm        String? @db.VarChar(100) // ระวาง
+
+  // ขนาด
+  rai  Int     @default(0)
+  ngan Int     @default(0)
+  wa   Decimal @default(0) @db.Decimal(10, 2)
+
+  // ราคาประเมิน
+  landPrice String? @db.VarChar(50) // ราคา บาท/ตร.ว.
+
+  // พิกัด GPS
+  latitude  Decimal? @db.Decimal(12, 8)
+  longitude Decimal? @db.Decimal(12, 8)
+  utmZone   String?  @db.VarChar(10)
+  utmN      Decimal? @db.Decimal(20, 6)
+  utmE      Decimal? @db.Decimal(20, 6)
+
+  // รหัสพื้นที่
+  provId       String? @db.VarChar(10)
+  amphurId     String? @db.VarChar(10)
+  tambolId     String? @db.VarChar(10)
+  landOfficeId String? @db.VarChar(20)
+
+  // ลิงก์
+  qrcodeLink      String? @db.VarChar(500)
+  surveyPriceLink String? @db.VarChar(500)
+
+  // ติดต่อ
+  orgTel String? @db.VarChar(50)
+
+  // Raw data
+  rawJson Json? // เก็บ JSON ดิบ
+
+  // Timestamps
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @updatedAt @db.DateTime(0)
+  fetchedAt DateTime @default(now()) @db.DateTime(0) // วันที่ดึงข้อมูล
+
+  @@index([assetId])
+  @@index([provName])
+  @@index([amphurName])
+  @@index([parcelNo])
+  @@map("LandDeedInfo")
+}
+
+/// Log การ Scrape
+model ScrapeLog {
+  id Int @id @default(autoincrement())
+
+  // Source
+  source DataSource @default(LED)
+
+  // ข้อมูล Session
+  searchProvince String? @db.VarChar(100)
+  searchParams   Json?   // เก็บ search parameters
+  startPage      Int     @default(1)
+  endPage        Int?
+  totalResults   Int     @default(0)
+  totalPages     Int     @default(0)
+
+  // สถิติ
+  itemsScraped Int @default(0)
+  itemsNew     Int @default(0)
+  itemsUpdated Int @default(0)
+  itemsFailed  Int @default(0)
+
+  // สถานะ
+  status       ScrapeStatus @default(RUNNING)
+  errorMessage String?      @db.Text
+
+  // Timestamps
+  startedAt   DateTime  @default(now()) @db.DateTime(0)
+  completedAt DateTime? @db.DateTime(0)
+
+  // Relations
+  assets Asset[]
+  issues ScrapeIssue[]
+
+  @@index([source])
+  @@index([startedAt])
+  @@map("ScrapeLog")
+}
+
+/// Log ปัญหาการ scrape ข้อมูลไม่ครบ
+model ScrapeIssue {
+  id Int @id @default(autoincrement())
+
+  source      DataSource
+  scrapeLogId Int?
+  scrapeLog   ScrapeLog? @relation(fields: [scrapeLogId], references: [id])
+
+  // ข้อมูลระบุตัวตน
+  pageNumber Int?
+  itemIndex  Int?
+  auctionLot String? @db.VarChar(100)
+  bidNumber  String? @db.VarChar(50)
+  sourceUrl  String? @db.VarChar(500)
+  assetId    Int?    // ถ้าบันทึก asset สำเร็จแต่ข้อมูลไม่ครบ
+
+  // ปัญหาที่พบ
+  issueType     IssueType         // ประเภทปัญหา
+  missingFields String? @db.Text  // JSON array ของ fields ที่หาย
+  errorMessage  String? @db.Text  // ข้อความ error
+  rawData       Json?             // เก็บ raw data สำหรับ debug
+
+  // สถานะ
+  status     IssueStatus @default(PENDING)
+  retryCount Int         @default(0)
+
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  updatedAt  DateTime  @updatedAt @db.DateTime(0)
+  resolvedAt DateTime? @db.DateTime(0)
+
+  @@index([source, status])
+  @@index([scrapeLogId])
+  @@index([issueType])
+  @@index([createdAt])
+  @@map("ScrapeIssue")
+}
