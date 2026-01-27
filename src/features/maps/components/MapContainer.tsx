@@ -19,6 +19,7 @@ interface MapContainerProps {
   provinceStats?: ProvinceStats[];
   onProvinceSelect: (provinceName: string) => void;
   onPropertySelect: (property: MapProperty) => void;
+  onVisiblePropertiesChange?: (visibleProperties: MapProperty[]) => void;
 }
 
 type MapStyle = 'standard' | 'satellite';
@@ -30,6 +31,7 @@ export function MapContainer({
   provinceStats,
   onProvinceSelect,
   onPropertySelect,
+  onVisiblePropertiesChange,
 }: MapContainerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -474,6 +476,9 @@ export function MapContainer({
       return bounds.contains([p.lng, p.lat]);
     });
     
+    // Notify parent about visible properties
+    onVisiblePropertiesChange?.(visibleProperties);
+    
     // Track which markers to keep
     const clusterIdsToShow = new Set<string>();
     const pointIdsToShow = new Set<string>();
@@ -550,7 +555,7 @@ export function MapContainer({
         markersRef.current.delete(id);
       }
     });
-  }, [properties, createMarkerElement, createClusterElement, computeClusters]);
+  }, [properties, createMarkerElement, createClusterElement, computeClusters, onVisiblePropertiesChange]);
 
   // Setup marker updates on map events
   useEffect(() => {

@@ -56,6 +56,7 @@ export default function MapsFullscreenPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [displayLimit, setDisplayLimit] = useState(50); // Number of items to show in list
+  const [visiblePropertyIds, setVisiblePropertyIds] = useState<Set<string>>(new Set());
   
   const { data, isLoading } = useMapProperties({
     ...filters,
@@ -68,7 +69,7 @@ export default function MapsFullscreenPage() {
   const totalCount = stats ? stats.totalInternal + stats.totalLED : 0;
 
   // Sort properties based on selected sort option
-  const properties = useMemo(() => {
+  const sortedProperties = useMemo(() => {
     const sorted = [...rawProperties];
     
     switch (sortOption) {
@@ -96,9 +97,21 @@ export default function MapsFullscreenPage() {
     }
   }, [rawProperties, sortOption]);
 
+  // Filter to show only properties visible in map viewport (or all if no viewport filter)
+  const displayProperties = useMemo(() => {
+    if (visiblePropertyIds.size === 0) return sortedProperties;
+    return sortedProperties.filter(p => visiblePropertyIds.has(p.id));
+  }, [sortedProperties, visiblePropertyIds]);
+
   const handleFilterChange = useCallback((newFilters: Partial<MapFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
     setDisplayLimit(50); // Reset display limit when filters change
+  }, []);
+
+  // Handle visible properties change from map viewport
+  const handleVisiblePropertiesChange = useCallback((visibleProps: MapProperty[]) => {
+    setVisiblePropertyIds(new Set(visibleProps.map(p => p.id)));
+    setDisplayLimit(50); // Reset display limit when viewport changes
   }, []);
 
   const handleProvinceSelect = useCallback((provinceName: string) => {
@@ -165,11 +178,12 @@ export default function MapsFullscreenPage() {
         {/* Map - Full Area */}
         <div className="absolute inset-0 z-0">
           <MapContainer
-            properties={properties}
+            properties={sortedProperties}
             selectedProperty={selectedProperty}
             provinceStats={stats?.provinceStats}
             onProvinceSelect={handleProvinceSelect}
             onPropertySelect={handlePropertyClick}
+            onVisiblePropertiesChange={handleVisiblePropertiesChange}
           />
         </div>
 
@@ -235,7 +249,7 @@ export default function MapsFullscreenPage() {
             <div className="h-12 px-4 flex items-center justify-between border-b border-gray-100 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-gray-800">รายการทรัพย์</span>
-                <span className="text-sm text-gray-500">({properties.length.toLocaleString()})</span>
+                <span className="text-sm text-gray-500">({displayProperties.length.toLocaleString()})</span>
               </div>
             </div>
 
@@ -247,15 +261,15 @@ export default function MapsFullscreenPage() {
                     <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
                   ))}
                 </div>
-              ) : properties.length === 0 ? (
+              ) : displayProperties.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
                   <KeenIcon icon="map" className="text-5xl text-gray-300 mb-4" />
-                  <p className="text-gray-600 font-medium">ไม่พบทรัพย์</p>
-                  <p className="text-gray-500 text-sm mt-1">ลองเลือกจังหวัดอื่นบนแผนที่</p>
+                  <p className="text-gray-600 font-medium">ไม่พบทรัพย์ในพื้นที่นี้</p>
+                  <p className="text-gray-500 text-sm mt-1">ลองเลื่อนหรือซูมแผนที่</p>
                 </div>
               ) : (
                 <div className="p-3 space-y-2">
-                  {properties.slice(0, displayLimit).map((property) => (
+                  {displayProperties.slice(0, displayLimit).map((property) => (
                     <PropertyCard
                       key={property.id}
                       property={property}
@@ -263,21 +277,21 @@ export default function MapsFullscreenPage() {
                       onClick={() => handlePropertyClick(property)}
                     />
                   ))}
-                  {properties.length > displayLimit ? (
+                  {displayProperties.length > displayLimit ? (
                     <div className="text-center py-4 space-y-2">
                       <p className="text-sm text-gray-500">
-                        แสดง {displayLimit.toLocaleString()} จาก {properties.length.toLocaleString()} รายการ
+                        แสดง {displayLimit.toLocaleString()} จาก {displayProperties.length.toLocaleString()} รายการ
                       </p>
                       <button
-                        onClick={() => setDisplayLimit(prev => Math.min(prev + 50, properties.length))}
+                        onClick={() => setDisplayLimit(prev => Math.min(prev + 50, displayProperties.length))}
                         className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
                       >
                         โหลดเพิ่มอีก 50 รายการ
                       </button>
                     </div>
-                  ) : properties.length > 50 ? (
+                  ) : displayProperties.length > 50 ? (
                     <div className="text-center py-4 text-sm text-gray-500">
-                      แสดงทั้งหมด {properties.length.toLocaleString()} รายการ
+                      แสดงทั้งหมด {displayProperties.length.toLocaleString()} รายการ
                     </div>
                   ) : null}
                 </div>
