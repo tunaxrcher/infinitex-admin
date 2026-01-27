@@ -115,13 +115,13 @@
   animation: cluster-float 3s ease-in-out infinite;
 }
 
-/* Main cluster circle */
+/* Main cluster circle - Purple color */
 .cluster-3d .cluster-count {
   min-width: 44px;
   min-height: 44px;
   padding: 8px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #ff6b6b 0%, #c62828 50%, #8b0000 100%);
+  background: linear-gradient(145deg, #a855f7 0%, #7c3aed 50%, #5b21b6 100%);
   color: white;
   font-weight: 800;
   font-size: 14px;
@@ -130,7 +130,7 @@
   justify-content: center;
   border: 3px solid white;
   box-shadow: 
-    0 4px 15px rgba(198, 40, 40, 0.5),
+    0 4px 15px rgba(124, 58, 237, 0.5),
     0 8px 25px rgba(0, 0, 0, 0.3),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -161,14 +161,14 @@
   font-size: 19px;
 }
 
-/* Outer glow ring */
+/* Outer glow ring - Purple */
 .cluster-3d .cluster-ring {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 2px solid rgba(255, 107, 107, 0.4);
+  border: 2px solid rgba(168, 85, 247, 0.4);
   animation: cluster-pulse 2s ease-out infinite;
 }
 
@@ -177,14 +177,14 @@
 .cluster-3d.size-lg .cluster-ring { width: 85px; height: 85px; }
 .cluster-3d.size-xl .cluster-ring { width: 100px; height: 100px; }
 
-/* Second ring for larger clusters */
+/* Second ring for larger clusters - Purple */
 .cluster-3d .cluster-ring-2 {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid rgba(255, 107, 107, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.2);
   animation: cluster-pulse 2s ease-out infinite 0.5s;
 }
 
@@ -192,11 +192,11 @@
 .cluster-3d.size-lg .cluster-ring-2 { width: 100px; height: 100px; }
 .cluster-3d.size-xl .cluster-ring-2 { width: 120px; height: 120px; }
 
-/* Cluster pole */
+/* Cluster pole - Purple */
 .cluster-3d .cluster-pole {
   width: 4px;
   height: 25px;
-  background: linear-gradient(180deg, #c62828 0%, rgba(198, 40, 40, 0.4) 50%, transparent 100%);
+  background: linear-gradient(180deg, #7c3aed 0%, rgba(124, 58, 237, 0.4) 50%, transparent 100%);
   margin-top: -3px;
 }
 
@@ -239,7 +239,7 @@
 
 .cluster-3d:hover .cluster-count {
   box-shadow: 
-    0 6px 20px rgba(198, 40, 40, 0.6),
+    0 6px 20px rgba(124, 58, 237, 0.6),
     0 12px 35px rgba(0, 0, 0, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
 }
