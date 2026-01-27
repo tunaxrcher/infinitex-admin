@@ -23,12 +23,13 @@
 
 /* LED markers - blue color */
 .marker-3d .marker-tag.led {
-  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%) !important;
 }
 
-/* Sold markers - gray color */
-.marker-3d .marker-tag.sold {
-  background: linear-gradient(180deg, #9e9e9e 0%, #616161 100%);
+/* Sold markers - gray color (higher priority than LED) */
+.marker-3d .marker-tag.sold,
+.marker-3d .marker-tag.sold.led {
+  background: linear-gradient(180deg, #9e9e9e 0%, #616161 100%) !important;
 }
 
 /* Connecting pole */
@@ -43,8 +44,10 @@
   background: linear-gradient(180deg, #1d4ed8 0%, rgba(29,78,216,0.3) 50%, transparent 100%);
 }
 
-.marker-3d .marker-tag.sold + .marker-pole {
-  background: linear-gradient(180deg, #616161 0%, rgba(97,97,97,0.3) 50%, transparent 100%);
+/* Sold pole - gray (higher priority) */
+.marker-3d .marker-tag.sold + .marker-pole,
+.marker-3d .marker-tag.sold.led + .marker-pole {
+  background: linear-gradient(180deg, #616161 0%, rgba(97,97,97,0.3) 50%, transparent 100%) !important;
 }
 
 /* Ground shadow */
@@ -352,4 +355,187 @@
   font-size: 18px;
   font-weight: 700;
   color: #dc2626;
+}
+
+/* ============================================
+   Display Settings Button & Panel
+   ============================================ */
+.display-settings-btn {
+  position: absolute;
+  bottom: 100px;
+  left: 16px;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  transition: all 0.2s;
+  z-index: 10;
+  color: #333;
+}
+
+.display-settings-btn:hover { 
+  background: #f5f5f5; 
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.display-settings-panel {
+  position: absolute;
+  bottom: 160px;
+  left: 16px;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  z-index: 100;
+  min-width: 280px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.settings-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.settings-close:hover {
+  background: #f0f0f0;
+}
+
+.settings-section {
+  margin-bottom: 16px;
+}
+
+.settings-section:last-child { 
+  margin-bottom: 0; 
+}
+
+.settings-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.style-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.style-option {
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.style-option:hover { 
+  background: #eee; 
+}
+
+.style-option.active { 
+  border-color: #dc2626; 
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.style-option svg,
+.style-option i { 
+  font-size: 24px; 
+  color: #666;
+}
+
+.style-option.active svg,
+.style-option.active i { 
+  color: #dc2626;
+}
+
+.style-option span { 
+  font-size: 11px; 
+  font-weight: 500;
+  color: #333;
+}
+
+.preset-options {
+  display: flex;
+  gap: 6px;
+}
+
+.preset-option {
+  flex: 1;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 8px 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  font-size: 10px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #666;
+}
+
+.preset-option:hover { 
+  background: #eee; 
+}
+
+.preset-option.active { 
+  border-color: #dc2626; 
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.preset-option svg,
+.preset-option i { 
+  font-size: 16px; 
 }

@@ -51,8 +51,8 @@ export function PropertyCard({ property, onClick, isSelected }: PropertyCardProp
         
         {/* Source Badge */}
         <Badge
-          variant={isLED ? 'outline' : 'default'}
-          className={`absolute top-2 right-2 ${isLED ? 'bg-orange-500/90 text-white border-0' : 'bg-primary/90'}`}
+          variant="outline"
+          className={`absolute top-2 right-2 text-white border-0 ${isLED ? 'bg-blue-500/90' : 'bg-red-500/90'}`}
         >
           {isLED ? 'LED' : 'FINX'}
         </Badge>
@@ -82,15 +82,6 @@ export function PropertyCard({ property, onClick, isSelected }: PropertyCardProp
         <div className="text-lg font-bold text-primary">
           {property.formattedPrice}
         </div>
-        
-        {/* LED specific info */}
-        {isLED && property.auctionLot && (
-          <div className="mt-2 pt-2 border-t border-dashed">
-            <div className="text-xs text-muted-foreground">
-              ล็อต: {property.auctionLot}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

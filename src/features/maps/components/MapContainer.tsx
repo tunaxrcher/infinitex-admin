@@ -8,13 +8,6 @@ import './map-styles.css';
 import { MapProperty, ProvinceStats, PROVINCE_NAMES_TH } from '../types';
 import { Button } from '@src/shared/components/ui/button';
 import { KeenIcon } from '@src/shared/components/keenicons';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@src/shared/components/ui/select';
 
 // Mapbox access token
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
@@ -48,6 +41,7 @@ export function MapContainer({
   const [lightPreset, setLightPreset] = useState<LightPreset>('night');
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
   const [styleVersion, setStyleVersion] = useState(0); // To trigger re-add clustering after style change
+  const [showSettings, setShowSettings] = useState(false);
   
   // Initialize map
   useEffect(() => {
@@ -707,30 +701,85 @@ export function MapContainer({
         </div>
       )}
 
-      {/* Display Settings */}
-      <div className="absolute bottom-24 left-4 space-y-2 z-10">
-        <Select value={mapStyle} onValueChange={(v) => changeMapStyle(v as MapStyle)}>
-          <SelectTrigger className="w-[130px] bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="standard">🗺️ Standard</SelectItem>
-            <SelectItem value="satellite">🛰️ Satellite</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value={lightPreset} onValueChange={(v) => changeLightPreset(v as LightPreset)}>
-          <SelectTrigger className="w-[130px] bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="dawn">🌅 Dawn</SelectItem>
-            <SelectItem value="day">☀️ Day</SelectItem>
-            <SelectItem value="dusk">🌆 Dusk</SelectItem>
-            <SelectItem value="night">🌙 Night</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Display Settings Button */}
+      <button
+        className="display-settings-btn"
+        onClick={() => setShowSettings(!showSettings)}
+      >
+        <KeenIcon icon="setting-2" className="text-lg" />
+        <span>Display Settings</span>
+      </button>
+
+      {/* Display Settings Panel */}
+      {showSettings && (
+        <div className="display-settings-panel">
+          <div className="settings-header">
+            <h3>
+              <KeenIcon icon="setting-2" className="text-lg" />
+              Display Settings
+            </h3>
+            <button className="settings-close" onClick={() => setShowSettings(false)}>
+              <KeenIcon icon="cross" />
+            </button>
+          </div>
+          
+          {/* Map Style */}
+          <div className="settings-section">
+            <span className="settings-label">🗺️ Map Style</span>
+            <div className="style-options">
+              <div 
+                className={`style-option ${mapStyle === 'standard' ? 'active' : ''}`}
+                onClick={() => changeMapStyle('standard')}
+              >
+                <KeenIcon icon="map" className="text-2xl" />
+                <span>Standard</span>
+              </div>
+              <div 
+                className={`style-option ${mapStyle === 'satellite' ? 'active' : ''}`}
+                onClick={() => changeMapStyle('satellite')}
+              >
+                <KeenIcon icon="geolocation" className="text-2xl" />
+                <span>Satellite</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Light Preset */}
+          <div className="settings-section">
+            <span className="settings-label">💡 Light Preset</span>
+            <div className="preset-options">
+              <div 
+                className={`preset-option ${lightPreset === 'dawn' ? 'active' : ''}`}
+                onClick={() => changeLightPreset('dawn')}
+              >
+                🌅
+                <span>Dawn</span>
+              </div>
+              <div 
+                className={`preset-option ${lightPreset === 'day' ? 'active' : ''}`}
+                onClick={() => changeLightPreset('day')}
+              >
+                ☀️
+                <span>Day</span>
+              </div>
+              <div 
+                className={`preset-option ${lightPreset === 'dusk' ? 'active' : ''}`}
+                onClick={() => changeLightPreset('dusk')}
+              >
+                🌆
+                <span>Dusk</span>
+              </div>
+              <div 
+                className={`preset-option ${lightPreset === 'night' ? 'active' : ''}`}
+                onClick={() => changeLightPreset('night')}
+              >
+                🌙
+                <span>Night</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Controls */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
@@ -781,11 +830,11 @@ export function MapContainer({
         }
 
         .marker-3d .marker-tag.sold {
-          background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%);
+          background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%) !important;
         }
 
         .marker-3d .marker-tag.led {
-          background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+          background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
         }
 
         .marker-3d .marker-pole {
@@ -793,6 +842,14 @@ export function MapContainer({
           height: 20px;
           background: linear-gradient(180deg, #dc2626 0%, rgba(220,38,38,0.3) 50%, transparent 100%);
           margin-top: -2px;
+        }
+
+        .marker-3d .marker-tag.led + .marker-pole {
+          background: linear-gradient(180deg, #2563eb 0%, rgba(37,99,235,0.3) 50%, transparent 100%);
+        }
+
+        .marker-3d .marker-tag.sold + .marker-pole {
+          background: linear-gradient(180deg, #6b7280 0%, rgba(107,114,128,0.3) 50%, transparent 100%);
         }
 
         .marker-3d .marker-shadow {
