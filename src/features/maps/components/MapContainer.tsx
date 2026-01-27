@@ -665,7 +665,7 @@ export function MapContainer({
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainer} className="w-full h-full rounded-3xl overflow-hidden" />
+      <div ref={mapContainer} className="w-full h-full overflow-hidden" />
       
       {/* Province Stats Tooltip */}
       {hoveredProvince && provinceStats && (
