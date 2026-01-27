@@ -363,7 +363,7 @@
 .display-settings-btn {
   position: absolute;
   bottom: 100px;
-  left: 16px;
+  right: 16px;
   background: white;
   border: none;
   border-radius: 12px;
@@ -389,7 +389,7 @@
 .display-settings-panel {
   position: absolute;
   bottom: 160px;
-  left: 16px;
+  right: 16px;
   background: white;
   border-radius: 16px;
   padding: 20px;
