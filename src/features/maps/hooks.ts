@@ -19,8 +19,9 @@ function buildQueryString(filters: MapFilters): string {
   if (filters.priceMax !== undefined) params.set('priceMax', filters.priceMax.toString());
   if (filters.status) params.set('status', filters.status);
   if (filters.search) params.set('search', filters.search);
-  if (filters.page) params.set('page', filters.page.toString());
-  if (filters.limit) params.set('limit', filters.limit.toString());
+  if (filters.page !== undefined) params.set('page', filters.page.toString());
+  // Use !== undefined because limit=0 means "fetch all"
+  if (filters.limit !== undefined) params.set('limit', filters.limit.toString());
   
   return params.toString();
 }

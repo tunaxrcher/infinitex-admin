@@ -55,6 +55,7 @@ export default function MapsFullscreenPage() {
   const [selectedProperty, setSelectedProperty] = useState<MapProperty | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('default');
+  const [displayLimit, setDisplayLimit] = useState(50); // Number of items to show in list
   
   const { data, isLoading } = useMapProperties({
     ...filters,
@@ -97,6 +98,7 @@ export default function MapsFullscreenPage() {
 
   const handleFilterChange = useCallback((newFilters: Partial<MapFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
+    setDisplayLimit(50); // Reset display limit when filters change
   }, []);
 
   const handleProvinceSelect = useCallback((provinceName: string) => {
@@ -203,7 +205,7 @@ export default function MapsFullscreenPage() {
             {/* Sort Filter */}
             <select
               value={sortOption}
-              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              onChange={(e) => { setSortOption(e.target.value as SortOption); setDisplayLimit(50); }}
               className="h-9 px-3 pr-8 bg-white rounded-lg shadow-md text-sm text-gray-700 appearance-none cursor-pointer border-0 focus:outline-none focus:ring-2 focus:ring-red-500"
               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
             >
@@ -253,7 +255,7 @@ export default function MapsFullscreenPage() {
                 </div>
               ) : (
                 <div className="p-3 space-y-2">
-                  {properties.slice(0, 50).map((property) => (
+                  {properties.slice(0, displayLimit).map((property) => (
                     <PropertyCard
                       key={property.id}
                       property={property}
@@ -261,11 +263,23 @@ export default function MapsFullscreenPage() {
                       onClick={() => handlePropertyClick(property)}
                     />
                   ))}
-                  {properties.length > 50 && (
-                    <div className="text-center py-4 text-sm text-gray-500">
-                      แสดง 50 จาก {properties.length.toLocaleString()} รายการ
+                  {properties.length > displayLimit ? (
+                    <div className="text-center py-4 space-y-2">
+                      <p className="text-sm text-gray-500">
+                        แสดง {displayLimit.toLocaleString()} จาก {properties.length.toLocaleString()} รายการ
+                      </p>
+                      <button
+                        onClick={() => setDisplayLimit(prev => Math.min(prev + 50, properties.length))}
+                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
+                      >
+                        โหลดเพิ่มอีก 50 รายการ
+                      </button>
                     </div>
-                  )}
+                  ) : properties.length > 50 ? (
+                    <div className="text-center py-4 text-sm text-gray-500">
+                      แสดงทั้งหมด {properties.length.toLocaleString()} รายการ
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>
