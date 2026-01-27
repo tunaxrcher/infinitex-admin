@@ -25,6 +25,25 @@ const MapContainer = dynamic(
   }
 );
 
+type SortOption = 'default' | 'price-asc' | 'price-desc' | 'area-asc' | 'area-desc' | 'discount-desc';
+
+// Helper function to parse area string to number (in ตร.ว.)
+function parseArea(sizeStr: string): number {
+  if (!sizeStr) return 0;
+  
+  // Try to parse "X ไร่ Y งาน Z ตร.ว."
+  const raiMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*ไร่/);
+  const nganMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*งาน/);
+  const waMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*(?:ตร\.?ว\.?|ตารางวา)/);
+  
+  let totalWa = 0;
+  if (raiMatch) totalWa += parseFloat(raiMatch[1]) * 400; // 1 ไร่ = 400 ตร.ว.
+  if (nganMatch) totalWa += parseFloat(nganMatch[1]) * 100; // 1 งาน = 100 ตร.ว.
+  if (waMatch) totalWa += parseFloat(waMatch[1]);
+  
+  return totalWa;
+}
+
 export default function MapsFullscreenPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<MapFilters>({
@@ -35,6 +54,7 @@ export default function MapsFullscreenPage() {
   const [selectedProvince, setSelectedProvince] = useState<string | undefined>();
   const [selectedProperty, setSelectedProperty] = useState<MapProperty | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState<SortOption>('default');
   
   const { data, isLoading } = useMapProperties({
     ...filters,
@@ -42,9 +62,38 @@ export default function MapsFullscreenPage() {
     search: searchQuery || undefined,
   });
 
-  const properties = useMemo(() => data?.data || [], [data]);
+  const rawProperties = useMemo(() => data?.data || [], [data]);
   const stats = useMemo(() => data?.stats, [data]);
   const totalCount = stats ? stats.totalInternal + stats.totalLED : 0;
+
+  // Sort properties based on selected sort option
+  const properties = useMemo(() => {
+    const sorted = [...rawProperties];
+    
+    switch (sortOption) {
+      case 'price-asc':
+        return sorted.sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return sorted.sort((a, b) => b.price - a.price);
+      case 'area-asc':
+        return sorted.sort((a, b) => parseArea(a.size) - parseArea(b.size));
+      case 'area-desc':
+        return sorted.sort((a, b) => parseArea(b.size) - parseArea(a.size));
+      case 'discount-desc':
+        // Calculate discount percentage: (appraisalPrice - price) / appraisalPrice
+        return sorted.sort((a, b) => {
+          const discountA = a.appraisalPrice && a.appraisalPrice > 0 
+            ? (a.appraisalPrice - a.price) / a.appraisalPrice 
+            : -Infinity;
+          const discountB = b.appraisalPrice && b.appraisalPrice > 0 
+            ? (b.appraisalPrice - b.price) / b.appraisalPrice 
+            : -Infinity;
+          return discountB - discountA; // Higher discount first
+        });
+      default:
+        return sorted;
+    }
+  }, [rawProperties, sortOption]);
 
   const handleFilterChange = useCallback((newFilters: Partial<MapFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -126,7 +175,7 @@ export default function MapsFullscreenPage() {
         <div className="absolute top-4 left-4 bottom-4 z-10 flex flex-col gap-3" style={{ width: '380px' }}>
           
           {/* Filters - Above Panel */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             {/* Source Filter */}
             <select
               value={filters.source || 'ALL'}
@@ -149,6 +198,21 @@ export default function MapsFullscreenPage() {
               <option value="ALL">ทุกสถานะ</option>
               <option value="ขาย">ขาย</option>
               <option value="ขายแล้ว">ขายแล้ว</option>
+            </select>
+
+            {/* Sort Filter */}
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              className="h-9 px-3 pr-8 bg-white rounded-lg shadow-md text-sm text-gray-700 appearance-none cursor-pointer border-0 focus:outline-none focus:ring-2 focus:ring-red-500"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+            >
+              <option value="default">เรียงตาม: ค่าเริ่มต้น</option>
+              <option value="price-asc">ราคา (น้อย → มาก)</option>
+              <option value="price-desc">ราคา (มาก → น้อย)</option>
+              <option value="area-asc">พื้นที่ (น้อย → มาก)</option>
+              <option value="area-desc">พื้นที่ (มาก → น้อย)</option>
+              <option value="discount-desc">ถูกกว่าราคาตลาด</option>
             </select>
 
             {/* Province Badge */}
