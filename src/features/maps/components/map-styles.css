@@ -93,6 +93,165 @@
 .marker-3d:nth-child(3n) .marker-tag { animation-delay: 1s; }
 .marker-3d:nth-child(3n) .marker-shadow { animation-delay: 1s; }
 
+/* ============================================
+   3D Cluster Markers
+   ============================================ */
+.cluster-3d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cluster-3d .cluster-bubble {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cluster-float 3s ease-in-out infinite;
+}
+
+/* Main cluster circle */
+.cluster-3d .cluster-count {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ff6b6b 0%, #c62828 50%, #8b0000 100%);
+  color: white;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 
+    0 4px 15px rgba(198, 40, 40, 0.5),
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Cluster sizes */
+.cluster-3d.size-sm .cluster-count {
+  min-width: 40px;
+  min-height: 40px;
+  font-size: 13px;
+}
+
+.cluster-3d.size-md .cluster-count {
+  min-width: 50px;
+  min-height: 50px;
+  font-size: 15px;
+}
+
+.cluster-3d.size-lg .cluster-count {
+  min-width: 60px;
+  min-height: 60px;
+  font-size: 17px;
+}
+
+.cluster-3d.size-xl .cluster-count {
+  min-width: 70px;
+  min-height: 70px;
+  font-size: 19px;
+}
+
+/* Outer glow ring */
+.cluster-3d .cluster-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 107, 107, 0.4);
+  animation: cluster-pulse 2s ease-out infinite;
+}
+
+.cluster-3d.size-sm .cluster-ring { width: 55px; height: 55px; }
+.cluster-3d.size-md .cluster-ring { width: 70px; height: 70px; }
+.cluster-3d.size-lg .cluster-ring { width: 85px; height: 85px; }
+.cluster-3d.size-xl .cluster-ring { width: 100px; height: 100px; }
+
+/* Second ring for larger clusters */
+.cluster-3d .cluster-ring-2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  animation: cluster-pulse 2s ease-out infinite 0.5s;
+}
+
+.cluster-3d.size-md .cluster-ring-2 { width: 85px; height: 85px; }
+.cluster-3d.size-lg .cluster-ring-2 { width: 100px; height: 100px; }
+.cluster-3d.size-xl .cluster-ring-2 { width: 120px; height: 120px; }
+
+/* Cluster pole */
+.cluster-3d .cluster-pole {
+  width: 4px;
+  height: 25px;
+  background: linear-gradient(180deg, #c62828 0%, rgba(198, 40, 40, 0.4) 50%, transparent 100%);
+  margin-top: -3px;
+}
+
+/* Cluster shadow */
+.cluster-3d .cluster-shadow {
+  width: 30px;
+  height: 10px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.5) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: shadow-scale 3s ease-in-out infinite;
+}
+
+/* Float animation for clusters */
+@keyframes cluster-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Pulse animation for rings */
+@keyframes cluster-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Hover effects */
+.cluster-3d:hover {
+  z-index: 1000 !important;
+}
+
+.cluster-3d:hover .cluster-bubble {
+  animation: none;
+  transform: translateY(-8px) scale(1.1);
+}
+
+.cluster-3d:hover .cluster-count {
+  box-shadow: 
+    0 6px 20px rgba(198, 40, 40, 0.6),
+    0 12px 35px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.cluster-3d:hover .cluster-shadow {
+  animation: none;
+  transform: scale(0.6);
+  opacity: 0.8;
+}
+
+/* Stagger cluster animations */
+.cluster-3d:nth-child(odd) .cluster-bubble { animation-delay: 0s; }
+.cluster-3d:nth-child(even) .cluster-bubble { animation-delay: 1s; }
+.cluster-3d:nth-child(3n) .cluster-bubble { animation-delay: 0.5s; }
+
 /* Mapbox Popup Styling */
 .mapboxgl-popup {
   max-width: 300px !important;

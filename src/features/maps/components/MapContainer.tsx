@@ -346,55 +346,241 @@ export function MapContainer({
     onPropertySelect(property);
   }, [onPropertySelect]);
 
-  // Update markers when properties change (3D floating markers)
+  // Simple grid-based clustering for 3D markers
+  const ZOOM_THRESHOLD = 9; // Show individual 3D markers when zoom > this value
+  const clusterMarkersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
+  
+  // Create 3D marker element for individual property
+  const createMarkerElement = useCallback((property: MapProperty) => {
+    const el = document.createElement('div');
+    el.className = 'marker-3d';
+    
+    const isSold = property.status === 'ขายแล้ว';
+    const isLED = property.source === 'LED';
+    
+    el.innerHTML = `
+      <div class="marker-tag ${isSold ? 'sold' : ''} ${isLED ? 'led' : ''}">
+        ${isSold ? 'ขายแล้ว' : formatPriceShort(property.price)}
+      </div>
+      <div class="marker-pole"></div>
+      <div class="marker-shadow"></div>
+    `;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      map.current?.flyTo({
+        center: [property.lng, property.lat],
+        zoom: 15,
+        pitch: 55,
+        duration: 1200,
+      });
+      setTimeout(() => showPropertyPopup(property), 600);
+    });
+
+    return el;
+  }, [showPropertyPopup]);
+
+  // Create 3D cluster element
+  const createClusterElement = useCallback((count: number, centerLng: number, centerLat: number) => {
+    const el = document.createElement('div');
+    
+    // Determine size class based on count
+    let sizeClass = 'size-sm';
+    if (count >= 100) sizeClass = 'size-xl';
+    else if (count >= 50) sizeClass = 'size-lg';
+    else if (count >= 10) sizeClass = 'size-md';
+    
+    el.className = `cluster-3d ${sizeClass}`;
+    el.innerHTML = `
+      <div class="cluster-bubble">
+        <div class="cluster-ring"></div>
+        ${count >= 10 ? '<div class="cluster-ring-2"></div>' : ''}
+        <div class="cluster-count">${count >= 1000 ? Math.floor(count / 1000) + 'K' : count}</div>
+      </div>
+      <div class="cluster-pole"></div>
+      <div class="cluster-shadow"></div>
+    `;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!map.current) return;
+      
+      // Zoom in to cluster
+      map.current.flyTo({
+        center: [centerLng, centerLat],
+        zoom: Math.min(map.current.getZoom() + 3, 15),
+        duration: 1000,
+      });
+    });
+
+    return el;
+  }, []);
+
+  // Simple grid-based clustering algorithm
+  const computeClusters = useCallback((props: MapProperty[], zoom: number) => {
+    if (props.length === 0) return { clusters: [], singles: [] };
+    
+    // Grid size based on zoom level (smaller grid = more clusters when zoomed out)
+    const gridSize = Math.max(0.5, 5 / Math.pow(2, zoom - 4));
+    
+    const grid = new Map<string, MapProperty[]>();
+    
+    props.forEach((p) => {
+      if (p.lat === 0 && p.lng === 0) return;
+      const cellX = Math.floor(p.lng / gridSize);
+      const cellY = Math.floor(p.lat / gridSize);
+      const key = `${cellX},${cellY}`;
+      
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key)!.push(p);
+    });
+    
+    const clusters: { id: string; lng: number; lat: number; count: number; properties: MapProperty[] }[] = [];
+    const singles: MapProperty[] = [];
+    
+    grid.forEach((cellProps, key) => {
+      if (cellProps.length >= 3) {
+        // Create cluster
+        const avgLng = cellProps.reduce((sum, p) => sum + p.lng, 0) / cellProps.length;
+        const avgLat = cellProps.reduce((sum, p) => sum + p.lat, 0) / cellProps.length;
+        clusters.push({
+          id: `cluster-${key}`,
+          lng: avgLng,
+          lat: avgLat,
+          count: cellProps.length,
+          properties: cellProps,
+        });
+      } else {
+        // Add as singles
+        singles.push(...cellProps);
+      }
+    });
+    
+    return { clusters, singles };
+  }, []);
+
+  // Update all markers
+  const updateAllMarkers = useCallback(() => {
+    if (!map.current) return;
+    
+    const zoom = map.current.getZoom();
+    const bounds = map.current.getBounds();
+    
+    // Filter properties in viewport
+    const visibleProperties = properties.filter((p) => {
+      if (p.lat === 0 && p.lng === 0) return false;
+      return bounds.contains([p.lng, p.lat]);
+    });
+    
+    // Track which markers to keep
+    const clusterIdsToShow = new Set<string>();
+    const pointIdsToShow = new Set<string>();
+    
+    if (zoom < ZOOM_THRESHOLD) {
+      // Zoomed out - show clusters
+      const { clusters, singles } = computeClusters(visibleProperties, zoom);
+      
+      // Create cluster markers
+      clusters.forEach((cluster) => {
+        clusterIdsToShow.add(cluster.id);
+        
+        if (!clusterMarkersRef.current.has(cluster.id)) {
+          const el = createClusterElement(cluster.count, cluster.lng, cluster.lat);
+          const marker = new mapboxgl.Marker({
+            element: el,
+            anchor: 'bottom',
+          })
+            .setLngLat([cluster.lng, cluster.lat])
+            .addTo(map.current!);
+          
+          clusterMarkersRef.current.set(cluster.id, marker);
+        }
+      });
+      
+      // Show singles as 3D markers (limit for performance)
+      const maxSingles = 30;
+      singles.slice(0, maxSingles).forEach((property) => {
+        pointIdsToShow.add(property.id);
+        
+        if (!markersRef.current.has(property.id)) {
+          const el = createMarkerElement(property);
+          const marker = new mapboxgl.Marker({
+            element: el,
+            anchor: 'bottom',
+          })
+            .setLngLat([property.lng, property.lat])
+            .addTo(map.current!);
+          
+          markersRef.current.set(property.id, marker);
+        }
+      });
+    } else {
+      // Zoomed in - show individual markers only
+      const maxMarkers = 80;
+      visibleProperties.slice(0, maxMarkers).forEach((property) => {
+        pointIdsToShow.add(property.id);
+        
+        if (!markersRef.current.has(property.id)) {
+          const el = createMarkerElement(property);
+          const marker = new mapboxgl.Marker({
+            element: el,
+            anchor: 'bottom',
+          })
+            .setLngLat([property.lng, property.lat])
+            .addTo(map.current!);
+          
+          markersRef.current.set(property.id, marker);
+        }
+      });
+    }
+    
+    // Remove markers that are no longer visible
+    clusterMarkersRef.current.forEach((marker, id) => {
+      if (!clusterIdsToShow.has(id)) {
+        marker.remove();
+        clusterMarkersRef.current.delete(id);
+      }
+    });
+    
+    markersRef.current.forEach((marker, id) => {
+      if (!pointIdsToShow.has(id)) {
+        marker.remove();
+        markersRef.current.delete(id);
+      }
+    });
+  }, [properties, createMarkerElement, createClusterElement, computeClusters]);
+
+  // Setup marker updates on map events
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
     
     // Remove old markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current.clear();
+    clusterMarkersRef.current.forEach((marker) => marker.remove());
+    clusterMarkersRef.current.clear();
 
-    // Add new 3D markers
-    properties.forEach((property) => {
-      if (property.lat === 0 && property.lng === 0) return;
-      
-      // Create 3D marker element
-      const el = document.createElement('div');
-      el.className = 'marker-3d';
-      
-      // Determine marker style based on status and source
-      const isSold = property.status === 'ขายแล้ว';
-      const isLED = property.source === 'LED';
-      
-      el.innerHTML = `
-        <div class="marker-tag ${isSold ? 'sold' : ''} ${isLED ? 'led' : ''}">
-          ${isSold ? 'ขายแล้ว' : formatPriceShort(property.price)}
-        </div>
-        <div class="marker-pole"></div>
-        <div class="marker-shadow"></div>
-      `;
+    // Update markers on zoom/move with debouncing
+    let updateTimeout: NodeJS.Timeout;
+    const debouncedUpdate = () => {
+      clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(updateAllMarkers, 100);
+    };
+    
+    map.current.on('zoom', debouncedUpdate);
+    map.current.on('move', debouncedUpdate);
+    
+    // Initial update
+    updateAllMarkers();
 
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        map.current?.flyTo({
-          center: [property.lng, property.lat],
-          zoom: 15,
-          pitch: 55,
-          duration: 1200,
-        });
-        setTimeout(() => showPropertyPopup(property), 600);
-      });
-
-      const marker = new mapboxgl.Marker({
-        element: el,
-        anchor: 'bottom',
-      })
-        .setLngLat([property.lng, property.lat])
-        .addTo(map.current!);
-
-      markersRef.current.set(property.id, marker);
-    });
-  }, [properties, mapLoaded, showPropertyPopup, styleVersion]);
+    return () => {
+      clearTimeout(updateTimeout);
+      if (map.current) {
+        map.current.off('zoom', debouncedUpdate);
+        map.current.off('move', debouncedUpdate);
+      }
+    };
+  }, [properties, mapLoaded, styleVersion, updateAllMarkers]);
 
   // Fly to selected property
   useEffect(() => {
