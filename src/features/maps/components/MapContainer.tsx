@@ -41,15 +41,16 @@ export function MapContainer({
 
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapStyle, setMapStyle] = useState<MapStyle>('standard');
-  
+
   // Get light preset based on current time
   const getTimeBasedPreset = (): LightPreset => {
     const hour = new Date().getHours();
-    if (hour >= 6 && hour < 18) return 'day';   // 06:00 - 17:59
-    return 'night';                              // 18:00 - 05:59
+    if (hour >= 6 && hour < 18) return 'day'; // 06:00 - 17:59
+    return 'night'; // 18:00 - 05:59
   };
-  
-  const [lightPreset, setLightPreset] = useState<LightPreset>(getTimeBasedPreset());
+
+  const [lightPreset, setLightPreset] =
+    useState<LightPreset>(getTimeBasedPreset());
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
   const [styleVersion, setStyleVersion] = useState(0); // To trigger re-add clustering after style change
   const [showSettings, setShowSettings] = useState(false);

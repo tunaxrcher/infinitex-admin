@@ -312,9 +312,9 @@ export default function MapsFullscreenPage() {
             className="absolute -right-8 top-1/2 -translate-y-1/2 w-8 h-16 bg-white shadow-lg rounded-r-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-20 border border-l-0 border-gray-200"
             title={isPanelCollapsed ? 'แสดงรายการ' : 'ซ่อนรายการ'}
           >
-            <KeenIcon 
-              icon={isPanelCollapsed ? 'arrow-right' : 'arrow-left'} 
-              className="text-gray-600 text-sm" 
+            <KeenIcon
+              icon={isPanelCollapsed ? 'arrow-right' : 'arrow-left'}
+              className="text-gray-600 text-sm"
             />
           </button>
           {/* Filters - Above Panel */}
@@ -336,7 +336,7 @@ export default function MapsFullscreenPage() {
               <option value="INTERNAL">
                 FINX ({stats?.totalInternal || 0})
               </option>
-              <option value="LED">กรมบังคับคดี  ({stats?.totalLED || 0})</option>
+              <option value="LED">กรมบังคับคดี ({stats?.totalLED || 0})</option>
             </select>
 
             {/* Status Filter */}
