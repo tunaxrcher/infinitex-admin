@@ -682,7 +682,7 @@ export function MapContainer({
       
       {/* Province Stats Tooltip */}
       {hoveredProvince && provinceStats && (
-        <div className="absolute top-4 left-4 bg-card border rounded-xl p-4 shadow-lg min-w-[200px] pointer-events-none z-10">
+        <div className="absolute top-4 right-4 bg-card border rounded-xl p-4 shadow-lg min-w-[200px] pointer-events-none z-10">
           <h4 className="font-semibold flex items-center gap-2 mb-3">
             <span className="text-primary">📍</span>
             {hoveredProvince}

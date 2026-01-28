@@ -192,7 +192,7 @@ export default function MapsFullscreenPage() {
         </div>
 
         {/* ===== LEFT SIDE - Filters + Listings ===== */}
-        <div className="absolute top-4 left-4 bottom-4 z-10 flex flex-col gap-3" style={{ width: '380px' }}>
+        <div className="absolute top-4 left-4 bottom-4 z-10 flex flex-col gap-3" style={{ width: '400px' }}>
           
           {/* Filters - Above Panel */}
           <div className="flex flex-wrap items-center gap-2 shrink-0">
