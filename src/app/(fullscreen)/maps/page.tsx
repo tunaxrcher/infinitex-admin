@@ -79,6 +79,7 @@ export default function MapsFullscreenPage() {
   const [mapInitialized, setMapInitialized] = useState(false); // Track if map has sent first viewport update
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false); // Panel collapse state
+  const [showInfoDialog, setShowInfoDialog] = useState(true); // Info dialog on first load
   const searchInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<HTMLDivElement>(null);
 
@@ -471,6 +472,77 @@ export default function MapsFullscreenPage() {
           </div>
         </div>
       </div>
+
+      {/* Info Dialog */}
+      {showInfoDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-in fade-in zoom-in duration-200">
+            {/* Header */}
+            <div className="bg-linear-to-r from-blue-500 to-blue-600 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  <KeenIcon icon="information-2" className="text-white text-xl" />
+                </div>
+                <div>
+                  <h2 className="text-white font-semibold text-lg">คำแนะนำ</h2>
+                </div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="px-6 py-5 space-y-4">
+              {/* FINX Info */}
+              <div className="flex gap-3">
+                <div className="shrink-0 w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <span className="text-red-600 font-bold text-xs">FINX</span>
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-800 text-sm mb-1">ข้อมูล FINX</h3>
+                  <p className="text-gray-600 text-xs leading-relaxed">
+                    มาจากทรัพย์(โฉนด) สินเชื่อในระบบ รวมทั้งที่อนุมัติ ไม่อนุมัติ และปิดไปแล้ว
+                  </p>
+                </div>
+              </div>
+
+              {/* Price Info */}
+              <div className="flex gap-3">
+                <div className="shrink-0 w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <KeenIcon icon="dollar" className="text-amber-600 text-sm" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-800 text-sm mb-1">ราคาทรัพย์</h3>
+                  <p className="text-gray-600 text-xs leading-relaxed">
+                    แสดงจาก <span className="font-medium text-gray-700">วงเงินอนุมัติ</span> (ถ้ามี) หรือ <span className="font-medium text-gray-700">วงเงินขอกู้</span> (ถ้าไม่มี)
+                  </p>
+                </div>
+              </div>
+
+              {/* LED Info */}
+              <div className="flex gap-3">
+                <div className="shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <span className="text-blue-600 font-bold text-xs">กรม</span>
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-800 text-sm mb-1">ข้อมูลกรมบังคับคดี</h3>
+                  <p className="text-gray-600 text-xs leading-relaxed">
+                    ปัจจุบันมีข้อมูลเฉพาะ <span className="font-medium text-gray-700">จังหวัดอุบลราชธานี</span> เท่านั้น
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+              <button
+                onClick={() => setShowInfoDialog(false)}
+                className="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
+              >
+                โอเค
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
