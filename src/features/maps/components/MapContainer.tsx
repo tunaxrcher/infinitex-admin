@@ -523,7 +523,8 @@ export function MapContainer({
 
     // Use clustering only when zoomed way out
     // At higher zoom (> 10), always show individual markers regardless of count
-    const shouldCluster = zoom < ZOOM_THRESHOLD || (zoom < 10 && visibleProperties.length > 300);
+    const shouldCluster =
+      zoom < ZOOM_THRESHOLD || (zoom < 10 && visibleProperties.length > 300);
 
     if (shouldCluster) {
       // Show clusters
