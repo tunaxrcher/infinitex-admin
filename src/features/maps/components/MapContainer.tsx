@@ -478,8 +478,8 @@ export function MapContainer({
     const singles: MapProperty[] = [];
 
     grid.forEach((cellProps, key) => {
-      if (cellProps.length >= 3) {
-        // Create cluster
+      if (cellProps.length >= 2) {
+        // Create cluster when 2 or more properties are nearby
         const avgLng =
           cellProps.reduce((sum, p) => sum + p.lng, 0) / cellProps.length;
         const avgLat =
@@ -492,7 +492,7 @@ export function MapContainer({
           properties: cellProps,
         });
       } else {
-        // Add as singles
+        // Add as singles (only 1 property in cell)
         singles.push(...cellProps);
       }
     });
@@ -546,7 +546,7 @@ export function MapContainer({
       });
 
       // Show singles as 3D markers (limit for performance)
-      const maxSingles = 30;
+      const maxSingles = 100;
       singles.slice(0, maxSingles).forEach((property) => {
         pointIdsToShow.add(property.id);
 
@@ -564,7 +564,7 @@ export function MapContainer({
       });
     } else {
       // Zoomed in - show individual markers only
-      const maxMarkers = 80;
+      const maxMarkers = 150;
       visibleProperties.slice(0, maxMarkers).forEach((property) => {
         pointIdsToShow.add(property.id);
 
