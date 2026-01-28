@@ -380,7 +380,7 @@ export function MapContainer({
       // Icon: FINX = house, LED = gavel (legal)
       const icon = isLED
         ? '<svg class="marker-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm13 14h-3v2H9v-2H6v-2h12v2zM4.5 7.5L12 2l7.5 5.5H4.5z"/></svg>'
-        : '<svg class="marker-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 9v12h16V9l-8-6zm0 2.5l5 3.75V18h-3v-4H10v4H7V9.25l5-3.75z"/></svg>';
+        : '<img class="marker-icon" src="/icon.png" alt="FINX" style="width:18px;height:18px;object-fit:contain;" />';
 
       const priceText = isSold ? 'ขายแล้ว' : formatPriceShort(property.price);
 
