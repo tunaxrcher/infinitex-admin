@@ -507,6 +507,7 @@ export function MapContainer({
 
     const zoom = map.current.getZoom();
     const bounds = map.current.getBounds();
+    if (!bounds) return;
 
     // Filter properties in viewport
     const visibleProperties = properties.filter((p) => {
@@ -521,13 +522,17 @@ export function MapContainer({
     const clusterIdsToShow = new Set<string>();
     const pointIdsToShow = new Set<string>();
 
-    // Use clustering only when zoomed way out
-    // At higher zoom (> 10), always show individual markers regardless of count
-    const shouldCluster =
-      zoom < ZOOM_THRESHOLD || (zoom < 10 && visibleProperties.length > 300);
+    // Smart clustering logic:
+    // - At zoom >= 12 (after ~2 clicks): always show individuals (area is small enough)
+    // - At lower zoom: cluster if too many properties
+    const MAX_INDIVIDUAL_MARKERS = 350;
+    const FORCE_INDIVIDUAL_ZOOM = 12; // After 2 clicks from initial zoom 5.5 → ~13.5
+    const shouldShowIndividuals = 
+      zoom >= FORCE_INDIVIDUAL_ZOOM || 
+      (zoom >= ZOOM_THRESHOLD && visibleProperties.length <= MAX_INDIVIDUAL_MARKERS);
 
-    if (shouldCluster) {
-      // Show clusters
+    if (!shouldShowIndividuals) {
+      // Use clustering
       const { clusters, singles } = computeClusters(visibleProperties, zoom);
 
       // Create cluster markers
@@ -551,8 +556,8 @@ export function MapContainer({
         }
       });
 
-      // Show singles as 3D markers (no limit)
-      singles.forEach((property) => {
+      // Show singles (properties not in any cluster)
+      singles.slice(0, 200).forEach((property) => {
         pointIdsToShow.add(property.id);
 
         if (!markersRef.current.has(property.id)) {
@@ -568,8 +573,8 @@ export function MapContainer({
         }
       });
     } else {
-      // Show individual markers (no limit - viewport already limits visible count)
-      visibleProperties.forEach((property) => {
+      // Show individual markers (limit 350)
+      visibleProperties.slice(0, 350).forEach((property) => {
         pointIdsToShow.add(property.id);
 
         if (!markersRef.current.has(property.id)) {
