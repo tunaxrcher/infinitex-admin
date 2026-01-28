@@ -78,6 +78,7 @@ export default function MapsFullscreenPage() {
   );
   const [mapInitialized, setMapInitialized] = useState(false); // Track if map has sent first viewport update
   const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [isPanelCollapsed, setIsPanelCollapsed] = useState(false); // Panel collapse state
   const searchInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<HTMLDivElement>(null);
 
@@ -300,9 +301,22 @@ export default function MapsFullscreenPage() {
 
         {/* ===== LEFT SIDE - Filters + Listings ===== */}
         <div
-          className="absolute top-4 left-4 bottom-4 z-10 flex flex-col gap-3"
+          className={`absolute top-4 bottom-4 z-10 flex flex-col gap-3 transition-all duration-300 ${
+            isPanelCollapsed ? '-left-[360px]' : 'left-4'
+          }`}
           style={{ width: '400px' }}
         >
+          {/* Collapse/Expand Button */}
+          <button
+            onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
+            className="absolute -right-8 top-1/2 -translate-y-1/2 w-8 h-16 bg-white shadow-lg rounded-r-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-20 border border-l-0 border-gray-200"
+            title={isPanelCollapsed ? 'แสดงรายการ' : 'ซ่อนรายการ'}
+          >
+            <KeenIcon 
+              icon={isPanelCollapsed ? 'arrow-right' : 'arrow-left'} 
+              className="text-gray-600 text-sm" 
+            />
+          </button>
           {/* Filters - Above Panel */}
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             {/* Source Filter */}
