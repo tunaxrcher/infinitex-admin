@@ -164,9 +164,11 @@ export default function MapsFullscreenPage() {
   const displayProperties = useMemo(() => {
     // If map hasn't initialized yet, show all properties (loading state)
     if (!mapInitialized) return sortedProperties;
-    // After map is initialized, always filter by viewport
+    // If a province is selected, show all properties from that province (not filtered by viewport)
+    if (selectedProvince) return sortedProperties;
+    // Otherwise, filter by viewport
     return sortedProperties.filter((p) => visiblePropertyIds.has(p.id));
-  }, [sortedProperties, visiblePropertyIds, mapInitialized]);
+  }, [sortedProperties, visiblePropertyIds, mapInitialized, selectedProvince]);
 
   const handleFilterChange = useCallback((newFilters: Partial<MapFilters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
