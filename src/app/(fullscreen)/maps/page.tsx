@@ -574,7 +574,7 @@ function PropertyCard({
 
   return (
     <div
-      onClick={handleOpenGoogleMaps}
+      onClick={onClick}
       className={`flex flex-col bg-white rounded-xl border overflow-hidden cursor-pointer transition-all hover:shadow-md ${
         isSelected
           ? 'border-red-500 shadow-md ring-1 ring-red-500'
@@ -610,6 +610,14 @@ function PropertyCard({
             ขายแล้ว
           </span>
         )}
+        {/* Google Maps Button */}
+        <button
+          onClick={handleOpenGoogleMaps}
+          className="absolute top-1.5 right-1.5 w-6 h-6 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
+          title="เปิดใน Google Maps"
+        >
+          <KeenIcon icon="geolocation" className="text-xs text-gray-700" />
+        </button>
       </div>
 
       {/* Content */}
