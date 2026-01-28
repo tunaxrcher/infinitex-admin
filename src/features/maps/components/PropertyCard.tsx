@@ -1,10 +1,10 @@
 // src/features/maps/components/PropertyCard.tsx
 'use client';
 
-import { MapProperty } from '../types';
-import { KeenIcon } from '@src/shared/components/keenicons';
-import { Badge } from '@src/shared/components/ui/badge';
 import Image from 'next/image';
+import { Badge } from '@src/shared/components/ui/badge';
+import { KeenIcon } from '@src/shared/components/keenicons';
+import { MapProperty } from '../types';
 
 interface PropertyCardProps {
   property: MapProperty;
@@ -12,7 +12,11 @@ interface PropertyCardProps {
   isSelected?: boolean;
 }
 
-export function PropertyCard({ property, onClick, isSelected }: PropertyCardProps) {
+export function PropertyCard({
+  property,
+  onClick,
+  isSelected,
+}: PropertyCardProps) {
   const isSold = property.status === 'ขายแล้ว';
   const isLED = property.source === 'LED';
 
@@ -37,10 +41,13 @@ export function PropertyCard({ property, onClick, isSelected }: PropertyCardProp
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted">
-            <KeenIcon icon="picture" className="text-4xl text-muted-foreground" />
+            <KeenIcon
+              icon="picture"
+              className="text-4xl text-muted-foreground"
+            />
           </div>
         )}
-        
+
         {/* Status Badge */}
         <Badge
           variant={isSold ? 'secondary' : 'default'}
@@ -48,7 +55,7 @@ export function PropertyCard({ property, onClick, isSelected }: PropertyCardProp
         >
           {property.status}
         </Badge>
-        
+
         {/* Source Badge */}
         <Badge
           variant="outline"
@@ -64,20 +71,20 @@ export function PropertyCard({ property, onClick, isSelected }: PropertyCardProp
         <h3 className="font-medium text-sm line-clamp-2 mb-1.5 group-hover:text-primary transition-colors">
           {property.title}
         </h3>
-        
+
         {/* Location */}
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
           <KeenIcon icon="geolocation" className="text-sm" />
           <span className="line-clamp-1">{property.location}</span>
         </div>
-        
+
         {/* Details */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
           <span>{property.size}</span>
           <span className="w-[1px] h-3 bg-border" />
           <span className="line-clamp-1">{property.type}</span>
         </div>
-        
+
         {/* Price */}
         <div className="text-lg font-bold text-primary">
           {property.formattedPrice}

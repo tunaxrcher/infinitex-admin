@@ -78,7 +78,11 @@ export const loanApi = {
         value.forEach((titleDeed) => {
           formData.append('titleDeeds', JSON.stringify(titleDeed));
         });
-      } else if (key === 'titleDeedData' && value && typeof value === 'object') {
+      } else if (
+        key === 'titleDeedData' &&
+        value &&
+        typeof value === 'object'
+      ) {
         // Append titleDeedData as JSON string (LandMap API data)
         // Note: typeof null === 'object' in JS, so we need to check value is truthy
         formData.append('titleDeedData', JSON.stringify(value));
@@ -145,7 +149,11 @@ export const loanApi = {
         value.forEach((titleDeed) => {
           formData.append('titleDeeds', JSON.stringify(titleDeed));
         });
-      } else if (key === 'titleDeedData' && value && typeof value === 'object') {
+      } else if (
+        key === 'titleDeedData' &&
+        value &&
+        typeof value === 'object'
+      ) {
         // Append titleDeedData as JSON string (LandMap API data)
         // Note: typeof null === 'object' in JS, so we need to check value is truthy
         formData.append('titleDeedData', JSON.stringify(value));

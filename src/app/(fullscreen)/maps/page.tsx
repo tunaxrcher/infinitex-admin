@@ -1,18 +1,25 @@
 // src/app/(fullscreen)/maps/page.tsx
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import provinceData from '@src/data/province.json';
 import { useMapProperties } from '@src/features/maps/hooks';
-import { MapProperty, MapFilters } from '@src/features/maps/types';
+import { MapFilters, MapProperty } from '@src/features/maps/types';
 import { KeenIcon } from '@src/shared/components/keenicons';
+
+// Filter out the placeholder option
+const provinces = provinceData.filter((p) => p.pvcode !== '00');
 
 // Dynamically import MapContainer
 const MapContainer = dynamic(
-  () => import('@src/features/maps/components/MapContainer').then(mod => mod.MapContainer),
-  { 
+  () =>
+    import('@src/features/maps/components/MapContainer').then(
+      (mod) => mod.MapContainer,
+    ),
+  {
     ssr: false,
     loading: () => (
       <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -22,25 +29,31 @@ const MapContainer = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
-type SortOption = 'default' | 'price-asc' | 'price-desc' | 'area-asc' | 'area-desc' | 'discount-desc';
+type SortOption =
+  | 'default'
+  | 'price-asc'
+  | 'price-desc'
+  | 'area-asc'
+  | 'area-desc'
+  | 'discount-desc';
 
 // Helper function to parse area string to number (in ตร.ว.)
 function parseArea(sizeStr: string): number {
   if (!sizeStr) return 0;
-  
+
   // Try to parse "X ไร่ Y งาน Z ตร.ว."
   const raiMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*ไร่/);
   const nganMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*งาน/);
   const waMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*(?:ตร\.?ว\.?|ตารางวา)/);
-  
+
   let totalWa = 0;
   if (raiMatch) totalWa += parseFloat(raiMatch[1]) * 400; // 1 ไร่ = 400 ตร.ว.
   if (nganMatch) totalWa += parseFloat(nganMatch[1]) * 100; // 1 งาน = 100 ตร.ว.
   if (waMatch) totalWa += parseFloat(waMatch[1]);
-  
+
   return totalWa;
 }
 
@@ -51,14 +64,59 @@ export default function MapsFullscreenPage() {
     status: 'ALL',
     limit: 0,
   });
-  const [selectedProvince, setSelectedProvince] = useState<string | undefined>();
-  const [selectedProperty, setSelectedProperty] = useState<MapProperty | undefined>();
+  const [selectedProvince, setSelectedProvince] = useState<
+    string | undefined
+  >();
+  const [selectedProperty, setSelectedProperty] = useState<
+    MapProperty | undefined
+  >();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [displayLimit, setDisplayLimit] = useState(50); // Number of items to show in list
-  const [visiblePropertyIds, setVisiblePropertyIds] = useState<Set<string>>(new Set());
+  const [visiblePropertyIds, setVisiblePropertyIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [mapInitialized, setMapInitialized] = useState(false); // Track if map has sent first viewport update
-  
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<HTMLDivElement>(null);
+
+  // Filter provinces based on search query
+  const filteredProvinces = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase();
+    return provinces
+      .filter(
+        (p) =>
+          p.pvnamethai.toLowerCase().includes(query) ||
+          p.pvnameeng.toLowerCase().includes(query),
+      )
+      .slice(0, 10);
+  }, [searchQuery]);
+
+  // Close autocomplete when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        autocompleteRef.current &&
+        !autocompleteRef.current.contains(event.target as Node) &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setShowAutocomplete(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Handle province selection from autocomplete
+  const handleProvinceAutocomplete = useCallback((provinceName: string) => {
+    setSelectedProvince(provinceName);
+    setSearchQuery('');
+    setShowAutocomplete(false);
+  }, []);
+
   const { data, isLoading } = useMapProperties({
     ...filters,
     province: selectedProvince,
@@ -72,7 +130,7 @@ export default function MapsFullscreenPage() {
   // Sort properties based on selected sort option
   const sortedProperties = useMemo(() => {
     const sorted = [...rawProperties];
-    
+
     switch (sortOption) {
       case 'price-asc':
         return sorted.sort((a, b) => a.price - b.price);
@@ -85,12 +143,14 @@ export default function MapsFullscreenPage() {
       case 'discount-desc':
         // Calculate discount percentage: (appraisalPrice - price) / appraisalPrice
         return sorted.sort((a, b) => {
-          const discountA = a.appraisalPrice && a.appraisalPrice > 0 
-            ? (a.appraisalPrice - a.price) / a.appraisalPrice 
-            : -Infinity;
-          const discountB = b.appraisalPrice && b.appraisalPrice > 0 
-            ? (b.appraisalPrice - b.price) / b.appraisalPrice 
-            : -Infinity;
+          const discountA =
+            a.appraisalPrice && a.appraisalPrice > 0
+              ? (a.appraisalPrice - a.price) / a.appraisalPrice
+              : -Infinity;
+          const discountB =
+            b.appraisalPrice && b.appraisalPrice > 0
+              ? (b.appraisalPrice - b.price) / b.appraisalPrice
+              : -Infinity;
           return discountB - discountA; // Higher discount first
         });
       default:
@@ -103,20 +163,23 @@ export default function MapsFullscreenPage() {
     // If map hasn't initialized yet, show all properties (loading state)
     if (!mapInitialized) return sortedProperties;
     // After map is initialized, always filter by viewport
-    return sortedProperties.filter(p => visiblePropertyIds.has(p.id));
+    return sortedProperties.filter((p) => visiblePropertyIds.has(p.id));
   }, [sortedProperties, visiblePropertyIds, mapInitialized]);
 
   const handleFilterChange = useCallback((newFilters: Partial<MapFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters((prev) => ({ ...prev, ...newFilters }));
     setDisplayLimit(50); // Reset display limit when filters change
   }, []);
 
   // Handle visible properties change from map viewport
-  const handleVisiblePropertiesChange = useCallback((visibleProps: MapProperty[]) => {
-    setVisiblePropertyIds(new Set(visibleProps.map(p => p.id)));
-    setDisplayLimit(50); // Reset display limit when viewport changes
-    if (!mapInitialized) setMapInitialized(true); // Mark map as initialized
-  }, [mapInitialized]);
+  const handleVisiblePropertiesChange = useCallback(
+    (visibleProps: MapProperty[]) => {
+      setVisiblePropertyIds(new Set(visibleProps.map((p) => p.id)));
+      setDisplayLimit(50); // Reset display limit when viewport changes
+      if (!mapInitialized) setMapInitialized(true); // Mark map as initialized
+    },
+    [mapInitialized],
+  );
 
   const handleProvinceSelect = useCallback((provinceName: string) => {
     setSelectedProvince(provinceName);
@@ -138,7 +201,7 @@ export default function MapsFullscreenPage() {
       <header className="h-16 bg-white border-b border-gray-200 shrink-0 z-40">
         <div className="h-full max-w-7xl mx-auto px-4 flex items-center">
           {/* Back Button - Left */}
-          <button 
+          <button
             onClick={() => router.back()}
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
           >
@@ -149,24 +212,68 @@ export default function MapsFullscreenPage() {
           <div className="flex-1" />
 
           {/* Search Box - Center */}
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md relative">
             <div className="relative flex items-center">
-              <svg 
-                className="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none z-10"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="ค้นหาทรัพย์, จังหวัด..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowAutocomplete(true);
+                }}
+                onFocus={() => setShowAutocomplete(true)}
                 className="w-full h-10 pl-10 pr-4 bg-gray-100 border border-gray-200 rounded-full text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent focus:bg-white"
               />
             </div>
+
+            {/* Province Autocomplete Dropdown */}
+            {showAutocomplete && filteredProvinces.length > 0 && (
+              <div
+                ref={autocompleteRef}
+                className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50"
+              >
+                <div className="py-1">
+                  <div className="px-3 py-1.5 text-xs text-gray-500 font-medium border-b border-gray-100">
+                    จังหวัด
+                  </div>
+                  {filteredProvinces.map((province) => (
+                    <button
+                      key={province.pvcode}
+                      onClick={() =>
+                        handleProvinceAutocomplete(province.pvnamethai)
+                      }
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-red-50 flex items-center gap-2 transition-colors"
+                    >
+                      <KeenIcon
+                        icon="geolocation"
+                        className="text-red-500 text-xs"
+                      />
+                      <span className="text-gray-800">
+                        {province.pvnamethai}
+                      </span>
+                      <span className="text-gray-400 text-xs">
+                        ({province.pvnameeng})
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Spacer */}
@@ -192,28 +299,44 @@ export default function MapsFullscreenPage() {
         </div>
 
         {/* ===== LEFT SIDE - Filters + Listings ===== */}
-        <div className="absolute top-4 left-4 bottom-4 z-10 flex flex-col gap-3" style={{ width: '400px' }}>
-          
+        <div
+          className="absolute top-4 left-4 bottom-4 z-10 flex flex-col gap-3"
+          style={{ width: '400px' }}
+        >
           {/* Filters - Above Panel */}
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             {/* Source Filter */}
             <select
               value={filters.source || 'ALL'}
-              onChange={(e) => handleFilterChange({ source: e.target.value as any })}
+              onChange={(e) =>
+                handleFilterChange({ source: e.target.value as any })
+              }
               className="h-9 px-3 pr-8 bg-white rounded-lg shadow-md text-sm text-gray-700 appearance-none cursor-pointer border-0 focus:outline-none focus:ring-2 focus:ring-red-500"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 10px center',
+              }}
             >
               <option value="ALL">ทั้งหมด ({totalCount})</option>
-              <option value="INTERNAL">FINX ({stats?.totalInternal || 0})</option>
+              <option value="INTERNAL">
+                FINX ({stats?.totalInternal || 0})
+              </option>
               <option value="LED">LED ({stats?.totalLED || 0})</option>
             </select>
 
             {/* Status Filter */}
             <select
               value={filters.status || 'ALL'}
-              onChange={(e) => handleFilterChange({ status: e.target.value as any })}
+              onChange={(e) =>
+                handleFilterChange({ status: e.target.value as any })
+              }
               className="h-9 px-3 pr-8 bg-white rounded-lg shadow-md text-sm text-gray-700 appearance-none cursor-pointer border-0 focus:outline-none focus:ring-2 focus:ring-red-500"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 10px center',
+              }}
             >
               <option value="ALL">ทุกสถานะ</option>
               <option value="ขาย">ขาย</option>
@@ -223,9 +346,16 @@ export default function MapsFullscreenPage() {
             {/* Sort Filter */}
             <select
               value={sortOption}
-              onChange={(e) => { setSortOption(e.target.value as SortOption); setDisplayLimit(50); }}
+              onChange={(e) => {
+                setSortOption(e.target.value as SortOption);
+                setDisplayLimit(50);
+              }}
               className="h-9 px-3 pr-8 bg-white rounded-lg shadow-md text-sm text-gray-700 appearance-none cursor-pointer border-0 focus:outline-none focus:ring-2 focus:ring-red-500"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 10px center',
+              }}
             >
               <option value="default">เรียงตาม: ค่าเริ่มต้น</option>
               <option value="price-asc">ราคา (น้อย → มาก)</option>
@@ -240,7 +370,10 @@ export default function MapsFullscreenPage() {
               <span className="inline-flex items-center gap-2 bg-red-500 text-white text-sm h-9 px-3 rounded-lg shadow-md">
                 <KeenIcon icon="geolocation" className="text-xs" />
                 {selectedProvince}
-                <button onClick={handleClearProvince} className="hover:bg-red-600 rounded-full p-0.5">
+                <button
+                  onClick={handleClearProvince}
+                  className="hover:bg-red-600 rounded-full p-0.5"
+                >
                   <KeenIcon icon="cross" className="text-xs" />
                 </button>
               </span>
@@ -252,8 +385,12 @@ export default function MapsFullscreenPage() {
             {/* Panel Header */}
             <div className="h-12 px-4 flex items-center justify-between border-b border-gray-100 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-800">รายการทรัพย์</span>
-                <span className="text-sm text-gray-500">({displayProperties.length.toLocaleString()})</span>
+                <span className="font-semibold text-gray-800">
+                  รายการทรัพย์
+                </span>
+                <span className="text-sm text-gray-500">
+                  ({displayProperties.length.toLocaleString()})
+                </span>
               </div>
             </div>
 
@@ -262,14 +399,24 @@ export default function MapsFullscreenPage() {
               {isLoading ? (
                 <div className="p-3 space-y-2">
                   {[...Array(6)].map((_, i) => (
-                    <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+                    <div
+                      key={i}
+                      className="h-24 bg-gray-100 rounded-xl animate-pulse"
+                    />
                   ))}
                 </div>
               ) : displayProperties.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                  <KeenIcon icon="map" className="text-5xl text-gray-300 mb-4" />
-                  <p className="text-gray-600 font-medium">ไม่พบทรัพย์ในพื้นที่นี้</p>
-                  <p className="text-gray-500 text-sm mt-1">ลองเลื่อนหรือซูมแผนที่</p>
+                  <KeenIcon
+                    icon="map"
+                    className="text-5xl text-gray-300 mb-4"
+                  />
+                  <p className="text-gray-600 font-medium">
+                    ไม่พบทรัพย์ในพื้นที่นี้
+                  </p>
+                  <p className="text-gray-500 text-sm mt-1">
+                    ลองเลื่อนหรือซูมแผนที่
+                  </p>
                 </div>
               ) : (
                 <div className="p-3 space-y-2">
@@ -284,10 +431,15 @@ export default function MapsFullscreenPage() {
                   {displayProperties.length > displayLimit ? (
                     <div className="text-center py-4 space-y-2">
                       <p className="text-sm text-gray-500">
-                        แสดง {displayLimit.toLocaleString()} จาก {displayProperties.length.toLocaleString()} รายการ
+                        แสดง {displayLimit.toLocaleString()} จาก{' '}
+                        {displayProperties.length.toLocaleString()} รายการ
                       </p>
                       <button
-                        onClick={() => setDisplayLimit(prev => Math.min(prev + 50, displayProperties.length))}
+                        onClick={() =>
+                          setDisplayLimit((prev) =>
+                            Math.min(prev + 50, displayProperties.length),
+                          )
+                        }
                         className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
                       >
                         โหลดเพิ่มอีก 50 รายการ
@@ -295,7 +447,8 @@ export default function MapsFullscreenPage() {
                     </div>
                   ) : displayProperties.length > 50 ? (
                     <div className="text-center py-4 text-sm text-gray-500">
-                      แสดงทั้งหมด {displayProperties.length.toLocaleString()} รายการ
+                      แสดงทั้งหมด {displayProperties.length.toLocaleString()}{' '}
+                      รายการ
                     </div>
                   ) : null}
                 </div>
@@ -309,11 +462,11 @@ export default function MapsFullscreenPage() {
 }
 
 // Property Card
-function PropertyCard({ 
-  property, 
+function PropertyCard({
+  property,
   isSelected,
-  onClick 
-}: { 
+  onClick,
+}: {
   property: MapProperty;
   isSelected?: boolean;
   onClick?: () => void;
@@ -321,11 +474,25 @@ function PropertyCard({
   const isSold = property.status === 'ขายแล้ว';
   const isLED = property.source === 'LED';
 
+  // Open Google Maps in new tab
+  const handleOpenGoogleMaps = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (property.lat && property.lng) {
+        const url = `https://www.google.com/maps?q=${property.lat},${property.lng}`;
+        window.open(url, '_blank');
+      }
+    },
+    [property.lat, property.lng],
+  );
+
   return (
     <div
-      onClick={onClick}
+      onClick={handleOpenGoogleMaps}
       className={`flex bg-white rounded-xl border overflow-hidden cursor-pointer transition-all hover:shadow-md ${
-        isSelected ? 'border-red-500 shadow-md ring-1 ring-red-500' : 'border-gray-200 hover:border-gray-300'
+        isSelected
+          ? 'border-red-500 shadow-md ring-1 ring-red-500'
+          : 'border-gray-200 hover:border-gray-300'
       }`}
     >
       {/* Image */}
@@ -344,9 +511,11 @@ function PropertyCard({
           </div>
         )}
         {/* Source Badge */}
-        <span className={`absolute top-1.5 left-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded ${
-          isLED ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
-        }`}>
+        <span
+          className={`absolute top-1.5 left-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded ${
+            isLED ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
+          }`}
+        >
           {isLED ? 'LED' : 'FINX'}
         </span>
         {/* Sold Badge */}
@@ -365,7 +534,9 @@ function PropertyCard({
         <p className="text-xs text-gray-500 line-clamp-1 mb-2">
           📍 {property.location}
         </p>
-        <p className={`font-bold text-base text-right ${isSold ? 'text-gray-500' : 'text-red-500'}`}>
+        <p
+          className={`font-bold text-base text-right ${isSold ? 'text-gray-500' : 'text-red-500'}`}
+        >
           {property.formattedPrice}
         </p>
       </div>

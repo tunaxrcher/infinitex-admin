@@ -16,7 +16,7 @@
   font-size: 12px;
   white-space: nowrap;
   border: 2px solid white;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
   animation: marker-float 2s ease-in-out infinite;
   position: relative;
   display: flex;
@@ -46,39 +46,66 @@
 .marker-3d .marker-pole {
   width: 3px;
   height: 20px;
-  background: linear-gradient(180deg, #c62828 0%, rgba(198,40,40,0.3) 50%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    #c62828 0%,
+    rgba(198, 40, 40, 0.3) 50%,
+    transparent 100%
+  );
   margin-top: -2px;
 }
 
 .marker-3d .marker-tag.led + .marker-pole {
-  background: linear-gradient(180deg, #1d4ed8 0%, rgba(29,78,216,0.3) 50%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    #1d4ed8 0%,
+    rgba(29, 78, 216, 0.3) 50%,
+    transparent 100%
+  );
 }
 
 /* Sold pole - gray (higher priority) */
 .marker-3d .marker-tag.sold + .marker-pole,
 .marker-3d .marker-tag.sold.led + .marker-pole {
-  background: linear-gradient(180deg, #616161 0%, rgba(97,97,97,0.3) 50%, transparent 100%) !important;
+  background: linear-gradient(
+    180deg,
+    #616161 0%,
+    rgba(97, 97, 97, 0.3) 50%,
+    transparent 100%
+  ) !important;
 }
 
 /* Ground shadow */
 .marker-3d .marker-shadow {
   width: 20px;
   height: 8px;
-  background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
   border-radius: 50%;
   animation: shadow-scale 2s ease-in-out infinite;
 }
 
 /* Float animation */
 @keyframes marker-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* Shadow scale animation */
 @keyframes shadow-scale {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(0.6); opacity: 0.6; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
 }
 
 /* Hover effect */
@@ -89,7 +116,7 @@
 .marker-3d:hover .marker-tag {
   animation: none;
   transform: translateY(-10px) scale(1.15);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .marker-3d:hover .marker-shadow {
@@ -99,12 +126,24 @@
 }
 
 /* Stagger animations - different timing for variety */
-.marker-3d:nth-child(odd) .marker-tag { animation-delay: 0s; }
-.marker-3d:nth-child(odd) .marker-shadow { animation-delay: 0s; }
-.marker-3d:nth-child(even) .marker-tag { animation-delay: 0.5s; }
-.marker-3d:nth-child(even) .marker-shadow { animation-delay: 0.5s; }
-.marker-3d:nth-child(3n) .marker-tag { animation-delay: 1s; }
-.marker-3d:nth-child(3n) .marker-shadow { animation-delay: 1s; }
+.marker-3d:nth-child(odd) .marker-tag {
+  animation-delay: 0s;
+}
+.marker-3d:nth-child(odd) .marker-shadow {
+  animation-delay: 0s;
+}
+.marker-3d:nth-child(even) .marker-tag {
+  animation-delay: 0.5s;
+}
+.marker-3d:nth-child(even) .marker-shadow {
+  animation-delay: 0.5s;
+}
+.marker-3d:nth-child(3n) .marker-tag {
+  animation-delay: 1s;
+}
+.marker-3d:nth-child(3n) .marker-shadow {
+  animation-delay: 1s;
+}
 
 /* ============================================
    3D Cluster Markers
@@ -139,7 +178,7 @@
   align-items: center;
   justify-content: center;
   border: 3px solid white;
-  box-shadow: 
+  box-shadow:
     0 4px 15px rgba(124, 58, 237, 0.5),
     0 8px 25px rgba(0, 0, 0, 0.3),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
@@ -182,10 +221,22 @@
   animation: cluster-pulse 2s ease-out infinite;
 }
 
-.cluster-3d.size-sm .cluster-ring { width: 55px; height: 55px; }
-.cluster-3d.size-md .cluster-ring { width: 70px; height: 70px; }
-.cluster-3d.size-lg .cluster-ring { width: 85px; height: 85px; }
-.cluster-3d.size-xl .cluster-ring { width: 100px; height: 100px; }
+.cluster-3d.size-sm .cluster-ring {
+  width: 55px;
+  height: 55px;
+}
+.cluster-3d.size-md .cluster-ring {
+  width: 70px;
+  height: 70px;
+}
+.cluster-3d.size-lg .cluster-ring {
+  width: 85px;
+  height: 85px;
+}
+.cluster-3d.size-xl .cluster-ring {
+  width: 100px;
+  height: 100px;
+}
 
 /* Second ring for larger clusters - Purple */
 .cluster-3d .cluster-ring-2 {
@@ -198,15 +249,29 @@
   animation: cluster-pulse 2s ease-out infinite 0.5s;
 }
 
-.cluster-3d.size-md .cluster-ring-2 { width: 85px; height: 85px; }
-.cluster-3d.size-lg .cluster-ring-2 { width: 100px; height: 100px; }
-.cluster-3d.size-xl .cluster-ring-2 { width: 120px; height: 120px; }
+.cluster-3d.size-md .cluster-ring-2 {
+  width: 85px;
+  height: 85px;
+}
+.cluster-3d.size-lg .cluster-ring-2 {
+  width: 100px;
+  height: 100px;
+}
+.cluster-3d.size-xl .cluster-ring-2 {
+  width: 120px;
+  height: 120px;
+}
 
 /* Cluster pole - Purple */
 .cluster-3d .cluster-pole {
   width: 4px;
   height: 25px;
-  background: linear-gradient(180deg, #7c3aed 0%, rgba(124, 58, 237, 0.4) 50%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    #7c3aed 0%,
+    rgba(124, 58, 237, 0.4) 50%,
+    transparent 100%
+  );
   margin-top: -3px;
 }
 
@@ -221,8 +286,13 @@
 
 /* Float animation for clusters */
 @keyframes cluster-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 /* Pulse animation for rings */
@@ -248,7 +318,7 @@
 }
 
 .cluster-3d:hover .cluster-count {
-  box-shadow: 
+  box-shadow:
     0 6px 20px rgba(124, 58, 237, 0.6),
     0 12px 35px rgba(0, 0, 0, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
@@ -261,9 +331,15 @@
 }
 
 /* Stagger cluster animations */
-.cluster-3d:nth-child(odd) .cluster-bubble { animation-delay: 0s; }
-.cluster-3d:nth-child(even) .cluster-bubble { animation-delay: 1s; }
-.cluster-3d:nth-child(3n) .cluster-bubble { animation-delay: 0.5s; }
+.cluster-3d:nth-child(odd) .cluster-bubble {
+  animation-delay: 0s;
+}
+.cluster-3d:nth-child(even) .cluster-bubble {
+  animation-delay: 1s;
+}
+.cluster-3d:nth-child(3n) .cluster-bubble {
+  animation-delay: 0.5s;
+}
 
 /* Mapbox Popup Styling */
 .mapboxgl-popup {
@@ -275,7 +351,7 @@
   padding: 0;
   border-radius: 12px;
   border: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   background: white;
 }
@@ -384,16 +460,16 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 500;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.2s;
   z-index: 10;
   color: #333;
 }
 
-.display-settings-btn:hover { 
-  background: #f5f5f5; 
+.display-settings-btn:hover {
+  background: #f5f5f5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .display-settings-panel {
@@ -403,15 +479,21 @@
   background: white;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   z-index: 100;
   min-width: 280px;
   animation: slideUp 0.3s ease;
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .settings-header {
@@ -454,8 +536,8 @@
   margin-bottom: 16px;
 }
 
-.settings-section:last-child { 
-  margin-bottom: 0; 
+.settings-section:last-child {
+  margin-bottom: 0;
 }
 
 .settings-label {
@@ -486,28 +568,28 @@
   gap: 4px;
 }
 
-.style-option:hover { 
-  background: #eee; 
+.style-option:hover {
+  background: #eee;
 }
 
-.style-option.active { 
-  border-color: #dc2626; 
+.style-option.active {
+  border-color: #dc2626;
   background: rgba(220, 38, 38, 0.1);
 }
 
 .style-option svg,
-.style-option i { 
-  font-size: 24px; 
+.style-option i {
+  font-size: 24px;
   color: #666;
 }
 
 .style-option.active svg,
-.style-option.active i { 
+.style-option.active i {
   color: #dc2626;
 }
 
-.style-option span { 
-  font-size: 11px; 
+.style-option span {
+  font-size: 11px;
   font-weight: 500;
   color: #333;
 }
@@ -535,17 +617,17 @@
   color: #666;
 }
 
-.preset-option:hover { 
-  background: #eee; 
+.preset-option:hover {
+  background: #eee;
 }
 
-.preset-option.active { 
-  border-color: #dc2626; 
+.preset-option.active {
+  border-color: #dc2626;
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
 }
 
 .preset-option svg,
-.preset-option i { 
-  font-size: 16px; 
+.preset-option i {
+  font-size: 16px;
 }

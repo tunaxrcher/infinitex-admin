@@ -1,7 +1,11 @@
 // src/app/api/maps/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  MapProperty,
+  PropertySource,
+  ProvinceStats,
+} from '@src/features/maps/types';
 import { prisma } from '@src/shared/lib/db';
-import { MapProperty, ProvinceStats, PropertySource } from '@src/features/maps/types';
 
 // ============================================
 // Helper Functions
@@ -37,18 +41,21 @@ function transformTitleDeed(deed: any): MapProperty | null {
   // Need valid coordinates
   const lat = parseFloat(deed.latitude || '0');
   const lng = parseFloat(deed.longitude || '0');
-  
+
   // Skip if no valid coordinates
   if (lat === 0 && lng === 0) return null;
 
-  const price = Number(deed.application?.approvedAmount || deed.application?.requestedAmount || 0);
-  
+  const price = Number(
+    deed.application?.approvedAmount || deed.application?.requestedAmount || 0,
+  );
+
   return {
     id: `internal-${deed.id}`,
-    title: deed.application?.ownerName 
+    title: deed.application?.ownerName
       ? `ที่ดิน ${deed.application.ownerName}`
       : `ที่ดิน ${deed.provinceName || ''} ${deed.amphurName || ''}`.trim(),
-    location: [deed.amphurName, deed.provinceName].filter(Boolean).join(', ') || '-',
+    location:
+      [deed.amphurName, deed.provinceName].filter(Boolean).join(', ') || '-',
     province: deed.provinceName || '',
     amphur: deed.amphurName || '',
     price: price,
@@ -71,9 +78,13 @@ function transformTitleDeed(deed: any): MapProperty | null {
  */
 function transformAsset(asset: any): MapProperty | null {
   // Need valid coordinates from LandDeedInfo
-  const lat = asset.landDeedInfo?.latitude ? parseFloat(asset.landDeedInfo.latitude) : 0;
-  const lng = asset.landDeedInfo?.longitude ? parseFloat(asset.landDeedInfo.longitude) : 0;
-  
+  const lat = asset.landDeedInfo?.latitude
+    ? parseFloat(asset.landDeedInfo.latitude)
+    : 0;
+  const lng = asset.landDeedInfo?.longitude
+    ? parseFloat(asset.landDeedInfo.longitude)
+    : 0;
+
   // Skip if no valid coordinates
   if (lat === 0 && lng === 0) return null;
 
@@ -82,10 +93,11 @@ function transformAsset(asset: any): MapProperty | null {
   const ngan = Number(asset.ngan || 0);
   const sqWa = Number(asset.sqWa || 0);
   const landArea = formatLandArea(rai, ngan, sqWa);
-  
+
   return {
     id: `led-${asset.id}`,
-    title: `${asset.assetType || 'ทรัพย์'} ${landArea !== '-' ? landArea : ''}`.trim(),
+    title:
+      `${asset.assetType || 'ทรัพย์'} ${landArea !== '-' ? landArea : ''}`.trim(),
     location: [asset.ampur, asset.province].filter(Boolean).join(', ') || '-',
     province: asset.province || '',
     amphur: asset.ampur || '',
@@ -95,9 +107,7 @@ function transformAsset(asset: any): MapProperty | null {
     type: 'กรมบังคับคดี',
     status: asset.status === 'SOLD' ? 'ขายแล้ว' : 'ขาย',
     source: 'LED' as PropertySource,
-    images: asset.detail?.landPicture 
-      ? [asset.detail.landPicture] 
-      : [],
+    images: asset.detail?.landPicture ? [asset.detail.landPicture] : [],
     lat,
     lng,
     deedNumber: asset.deedNo || undefined,
@@ -117,10 +127,10 @@ function transformAsset(asset: any): MapProperty | null {
  */
 function calculateProvinceStats(properties: MapProperty[]): ProvinceStats[] {
   const statsMap = new Map<string, { count: number; prices: number[] }>();
-  
+
   for (const prop of properties) {
     if (!prop.province) continue;
-    
+
     const existing = statsMap.get(prop.province) || { count: 0, prices: [] };
     existing.count++;
     if (prop.price > 0) {
@@ -128,15 +138,16 @@ function calculateProvinceStats(properties: MapProperty[]): ProvinceStats[] {
     }
     statsMap.set(prop.province, existing);
   }
-  
+
   const stats: ProvinceStats[] = [];
   for (const [province, data] of statsMap) {
-    const avgPrice = data.prices.length > 0 
-      ? data.prices.reduce((a, b) => a + b, 0) / data.prices.length 
-      : 0;
+    const avgPrice =
+      data.prices.length > 0
+        ? data.prices.reduce((a, b) => a + b, 0) / data.prices.length
+        : 0;
     const minPrice = data.prices.length > 0 ? Math.min(...data.prices) : 0;
     const maxPrice = data.prices.length > 0 ? Math.max(...data.prices) : 0;
-    
+
     stats.push({
       province,
       count: data.count,
@@ -145,7 +156,7 @@ function calculateProvinceStats(properties: MapProperty[]): ProvinceStats[] {
       maxPrice,
     });
   }
-  
+
   return stats.sort((a, b) => b.count - a.count);
 }
 
@@ -156,14 +167,22 @@ function calculateProvinceStats(properties: MapProperty[]): ProvinceStats[] {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    
+
     // Parse filters
     const province = searchParams.get('province') || undefined;
     const amphur = searchParams.get('amphur') || undefined;
-    const source = searchParams.get('source') as PropertySource | 'ALL' | undefined || 'ALL';
-    const priceMin = searchParams.get('priceMin') ? parseFloat(searchParams.get('priceMin')!) : undefined;
-    const priceMax = searchParams.get('priceMax') ? parseFloat(searchParams.get('priceMax')!) : undefined;
-    const status = searchParams.get('status') as 'ขาย' | 'ขายแล้ว' | 'ALL' | undefined || 'ALL';
+    const source =
+      (searchParams.get('source') as PropertySource | 'ALL' | undefined) ||
+      'ALL';
+    const priceMin = searchParams.get('priceMin')
+      ? parseFloat(searchParams.get('priceMin')!)
+      : undefined;
+    const priceMax = searchParams.get('priceMax')
+      ? parseFloat(searchParams.get('priceMax')!)
+      : undefined;
+    const status =
+      (searchParams.get('status') as 'ขาย' | 'ขายแล้ว' | 'ALL' | undefined) ||
+      'ALL';
     const search = searchParams.get('search') || undefined;
     const page = parseInt(searchParams.get('page') || '1');
     // limit=0 means fetch all, default increased to 1000
@@ -183,7 +202,7 @@ export async function GET(request: NextRequest) {
         const validApplicationIds = await prisma.loanApplication.findMany({
           select: { id: true },
         });
-        const validIds = new Set(validApplicationIds.map(a => a.id));
+        const validIds = new Set(validApplicationIds.map((a) => a.id));
 
         // Build where clause
         const internalWhere: any = {
@@ -195,7 +214,7 @@ export async function GET(request: NextRequest) {
         if (province) {
           internalWhere.provinceName = { contains: province };
         }
-        
+
         // Filter by amphur
         if (amphur) {
           internalWhere.amphurName = { contains: amphur };
@@ -231,7 +250,7 @@ export async function GET(request: NextRequest) {
         for (const deed of titleDeeds) {
           // Skip if no valid coordinates
           if (!deed.latitude || !deed.longitude) continue;
-          
+
           const property = transformTitleDeed(deed);
           if (property) {
             allProperties.push(property);
@@ -239,7 +258,10 @@ export async function GET(request: NextRequest) {
           }
         }
       } catch (internalError) {
-        console.error('[API] Error fetching internal properties:', internalError);
+        console.error(
+          '[API] Error fetching internal properties:',
+          internalError,
+        );
         // Continue with LED data even if internal fails
       }
     }
@@ -250,10 +272,7 @@ export async function GET(request: NextRequest) {
     if (source === 'ALL' || source === 'LED') {
       const assetWhere: any = {
         landDeedInfo: {
-          AND: [
-            { latitude: { not: null } },
-            { longitude: { not: null } },
-          ],
+          AND: [{ latitude: { not: null } }, { longitude: { not: null } }],
         },
       };
 
@@ -261,7 +280,7 @@ export async function GET(request: NextRequest) {
       if (province) {
         assetWhere.province = { contains: province };
       }
-      
+
       // Filter by amphur
       if (amphur) {
         assetWhere.ampur = { contains: amphur };
@@ -303,18 +322,18 @@ export async function GET(request: NextRequest) {
     // ============================================
     // 3. Apply additional filters
     // ============================================
-    
+
     // Price filter
     if (priceMin !== undefined) {
-      allProperties = allProperties.filter(p => p.price >= priceMin);
+      allProperties = allProperties.filter((p) => p.price >= priceMin);
     }
     if (priceMax !== undefined) {
-      allProperties = allProperties.filter(p => p.price <= priceMax);
+      allProperties = allProperties.filter((p) => p.price <= priceMax);
     }
 
     // Status filter (for combined results)
     if (status && status !== 'ALL') {
-      allProperties = allProperties.filter(p => p.status === status);
+      allProperties = allProperties.filter((p) => p.status === status);
     }
 
     // ============================================
@@ -322,11 +341,11 @@ export async function GET(request: NextRequest) {
     // ============================================
     const provinceStats = calculateProvinceStats(allProperties);
     const total = allProperties.length;
-    
+
     // If limit=0, return all results without pagination
     let paginatedProperties: MapProperty[];
     let totalPages: number;
-    
+
     if (limit === 0) {
       paginatedProperties = allProperties;
       totalPages = 1;

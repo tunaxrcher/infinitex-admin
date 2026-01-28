@@ -1,9 +1,6 @@
 // src/features/maps/components/PropertyListings.tsx
 'use client';
 
-import { MapProperty, MapFilters, ProvinceStats } from '../types';
-import { PropertyCard } from './PropertyCard';
-import { KeenIcon } from '@src/shared/components/keenicons';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { Input } from '@src/shared/components/ui/input';
@@ -15,6 +12,9 @@ import {
   SelectValue,
 } from '@src/shared/components/ui/select';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { KeenIcon } from '@src/shared/components/keenicons';
+import { MapFilters, MapProperty, ProvinceStats } from '../types';
+import { PropertyCard } from './PropertyCard';
 
 interface PropertyListingsProps {
   properties: MapProperty[];
@@ -52,7 +52,11 @@ export function PropertyListings({
         {/* Tabs */}
         <div className="flex gap-2 border-b pb-3">
           <Button
-            variant={filters.source === 'ALL' || !filters.source ? 'default' : 'outline'}
+            variant={
+              filters.source === 'ALL' || !filters.source
+                ? 'default'
+                : 'outline'
+            }
             size="sm"
             onClick={() => onFilterChange({ source: 'ALL' })}
             className="gap-2"
@@ -112,7 +116,9 @@ export function PropertyListings({
         {/* Result Count */}
         <p className="text-sm text-muted-foreground">
           เจอทรัพย์ที่ตรงตามเงื่อนไขของคุณ{' '}
-          <strong className="text-foreground">{total.toLocaleString()} ทรัพย์</strong>
+          <strong className="text-foreground">
+            {total.toLocaleString()} ทรัพย์
+          </strong>
         </p>
 
         {/* Filters */}
@@ -156,15 +162,23 @@ export function PropertyListings({
           </div>
         ) : properties.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-12 text-center">
-            <KeenIcon icon="search-normal" className="text-5xl text-muted-foreground mb-4" />
+            <KeenIcon
+              icon="search-normal"
+              className="text-5xl text-muted-foreground mb-4"
+            />
             <h3 className="text-lg font-medium text-muted-foreground mb-2">
               ไม่พบทรัพย์
             </h3>
             <p className="text-sm text-muted-foreground">
-              ลองเปลี่ยนเงื่อนไขการค้นหา หรือกด &quot;รีเซ็ต&quot; เพื่อดูทรัพย์ทั้งหมด
+              ลองเปลี่ยนเงื่อนไขการค้นหา หรือกด &quot;รีเซ็ต&quot;
+              เพื่อดูทรัพย์ทั้งหมด
             </p>
             {selectedProvince && (
-              <Button variant="outline" className="mt-4" onClick={onClearProvince}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={onClearProvince}
+              >
                 รีเซ็ตมุมมอง
               </Button>
             )}

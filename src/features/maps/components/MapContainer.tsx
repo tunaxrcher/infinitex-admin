@@ -1,17 +1,18 @@
 // src/features/maps/components/MapContainer.tsx
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './map-styles.css';
-import { MapProperty, ProvinceStats, PROVINCE_NAMES_TH } from '../types';
 import { Button } from '@src/shared/components/ui/button';
 import { KeenIcon } from '@src/shared/components/keenicons';
+import { MapProperty, PROVINCE_NAMES_TH, ProvinceStats } from '../types';
 
 // Mapbox access token
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
-const THAILAND_PROVINCES_URL = 'https://raw.githubusercontent.com/apisit/thailand.json/master/thailand.json';
+const THAILAND_PROVINCES_URL =
+  'https://raw.githubusercontent.com/apisit/thailand.json/master/thailand.json';
 
 interface MapContainerProps {
   properties: MapProperty[];
@@ -37,20 +38,20 @@ export function MapContainer({
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
   const popupRef = useRef<mapboxgl.Popup | null>(null);
-  
+
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapStyle, setMapStyle] = useState<MapStyle>('standard');
   const [lightPreset, setLightPreset] = useState<LightPreset>('night');
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
   const [styleVersion, setStyleVersion] = useState(0); // To trigger re-add clustering after style change
   const [showSettings, setShowSettings] = useState(false);
-  
+
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
-    
+
     mapboxgl.accessToken = MAPBOX_TOKEN;
-    
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/standard',
@@ -66,7 +67,7 @@ export function MapContainer({
     // Add controls
     map.current.addControl(
       new mapboxgl.NavigationControl({ visualizePitch: true }),
-      'top-right'
+      'top-right',
     );
     map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
     map.current.addControl(
@@ -75,16 +76,16 @@ export function MapContainer({
         trackUserLocation: true,
         showUserHeading: true,
       }),
-      'top-right'
+      'top-right',
     );
     map.current.addControl(
       new mapboxgl.ScaleControl({ maxWidth: 100, unit: 'metric' }),
-      'bottom-right'
+      'bottom-right',
     );
 
     map.current.on('load', () => {
       if (!map.current) return;
-      
+
       // Set light preset
       try {
         map.current.setConfigProperty('basemap', 'lightPreset', lightPreset);
@@ -118,7 +119,7 @@ export function MapContainer({
 
       // Load provinces
       loadProvinces();
-      
+
       setMapLoaded(true);
     });
 
@@ -133,17 +134,17 @@ export function MapContainer({
   // Load Thai provinces GeoJSON
   const loadProvinces = useCallback(async () => {
     if (!map.current) return;
-    
+
     try {
       const response = await fetch(THAILAND_PROVINCES_URL);
       const data = await response.json();
-      
+
       // Add Thai names to features
       data.features = data.features.map((feature: any, index: number) => {
         const props = feature.properties;
         const engName = props.name || props.NAME_1 || '';
         const thaiName = PROVINCE_NAMES_TH[engName] || engName;
-        
+
         return {
           ...feature,
           id: index,
@@ -191,10 +192,14 @@ export function MapContainer({
               'interpolate',
               ['linear'],
               ['zoom'],
-              4, 1,
-              6, 1.5,
-              10, 2.5,
-              14, 3,
+              4,
+              1,
+              6,
+              1.5,
+              10,
+              2.5,
+              14,
+              3,
             ],
             'line-opacity': 0.8,
           },
@@ -212,10 +217,14 @@ export function MapContainer({
               'interpolate',
               ['linear'],
               ['zoom'],
-              4, 10,
-              6, 13,
-              8, 16,
-              10, 18,
+              4,
+              10,
+              6,
+              13,
+              8,
+              16,
+              10,
+              18,
             ],
             'text-anchor': 'center',
             'text-allow-overlap': false,
@@ -238,28 +247,28 @@ export function MapContainer({
   // Province hover and click interactions
   const setupProvinceInteractions = useCallback(() => {
     if (!map.current) return;
-    
+
     let hoveredId: number | null = null;
 
     // Mouse move (hover)
     map.current.on('mousemove', 'province-fill', (e) => {
       if (!map.current || e.features?.length === 0) return;
-      
+
       const feature = e.features![0];
-      
+
       if (hoveredId !== null) {
         map.current.setFeatureState(
           { source: 'thailand-provinces', id: hoveredId },
-          { hover: false }
+          { hover: false },
         );
       }
-      
+
       hoveredId = feature.id as number;
       map.current.setFeatureState(
         { source: 'thailand-provinces', id: hoveredId },
-        { hover: true }
+        { hover: true },
       );
-      
+
       map.current.getCanvas().style.cursor = 'pointer';
       setHoveredProvince(feature.properties?.name_th || null);
     });
@@ -267,11 +276,11 @@ export function MapContainer({
     // Mouse leave
     map.current.on('mouseleave', 'province-fill', () => {
       if (!map.current) return;
-      
+
       if (hoveredId !== null) {
         map.current.setFeatureState(
           { source: 'thailand-provinces', id: hoveredId },
-          { hover: false }
+          { hover: false },
         );
       }
       hoveredId = null;
@@ -282,18 +291,19 @@ export function MapContainer({
     // Click to select province
     map.current.on('click', 'province-fill', (e) => {
       if (!map.current || e.features?.length === 0) return;
-      
+
       const feature = e.features![0];
       const provinceName = feature.properties?.name_th || '';
-      
+
       // Fly to province
       const bounds = new mapboxgl.LngLatBounds();
-      const coords = feature.geometry.type === 'Polygon' 
-        ? (feature.geometry as GeoJSON.Polygon).coordinates[0]
-        : (feature.geometry as GeoJSON.MultiPolygon).coordinates[0][0];
-      
+      const coords =
+        feature.geometry.type === 'Polygon'
+          ? (feature.geometry as GeoJSON.Polygon).coordinates[0]
+          : (feature.geometry as GeoJSON.MultiPolygon).coordinates[0][0];
+
       coords.forEach((coord: any) => bounds.extend(coord as [number, number]));
-      
+
       map.current.flyTo({
         center: bounds.getCenter(),
         zoom: 9,
@@ -307,18 +317,20 @@ export function MapContainer({
   }, [onProvinceSelect]);
 
   // Show property popup (defined before useEffects that use it)
-  const showPropertyPopup = useCallback((property: MapProperty) => {
-    if (!map.current) return;
-    
-    // Remove existing popup
-    popupRef.current?.remove();
+  const showPropertyPopup = useCallback(
+    (property: MapProperty) => {
+      if (!map.current) return;
 
-    const popupContent = `
+      // Remove existing popup
+      popupRef.current?.remove();
+
+      const popupContent = `
       <div class="property-popup">
         <div class="popup-image">
-          ${property.images.length > 0 
-            ? `<img src="${property.images[0]}" alt="${property.title}" />`
-            : '<div class="no-image">ไม่มีรูป</div>'
+          ${
+            property.images.length > 0
+              ? `<img src="${property.images[0]}" alt="${property.title}" />`
+              : '<div class="no-image">ไม่มีรูป</div>'
           }
           <span class="popup-tag ${property.status === 'ขายแล้ว' ? 'sold' : ''}">${property.status}</span>
         </div>
@@ -330,38 +342,41 @@ export function MapContainer({
       </div>
     `;
 
-    popupRef.current = new mapboxgl.Popup({ 
-      closeButton: true, 
-      maxWidth: '280px',
-      offset: 25,
-    })
-      .setLngLat([property.lng, property.lat])
-      .setHTML(popupContent)
-      .addTo(map.current);
+      popupRef.current = new mapboxgl.Popup({
+        closeButton: true,
+        maxWidth: '280px',
+        offset: 25,
+      })
+        .setLngLat([property.lng, property.lat])
+        .setHTML(popupContent)
+        .addTo(map.current);
 
-    onPropertySelect(property);
-  }, [onPropertySelect]);
+      onPropertySelect(property);
+    },
+    [onPropertySelect],
+  );
 
   // Simple grid-based clustering for 3D markers
   const ZOOM_THRESHOLD = 9; // Show individual 3D markers when zoom > this value
   const clusterMarkersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
-  
+
   // Create 3D marker element for individual property
-  const createMarkerElement = useCallback((property: MapProperty) => {
-    const el = document.createElement('div');
-    el.className = 'marker-3d';
-    
-    const isSold = property.status === 'ขายแล้ว';
-    const isLED = property.source === 'LED';
-    
-    // Icon: FINX = house, LED = gavel (legal)
-    const icon = isLED 
-      ? '<svg class="marker-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm13 14h-3v2H9v-2H6v-2h12v2zM4.5 7.5L12 2l7.5 5.5H4.5z"/></svg>'
-      : '<svg class="marker-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 9v12h16V9l-8-6zm0 2.5l5 3.75V18h-3v-4H10v4H7V9.25l5-3.75z"/></svg>';
-    
-    const priceText = isSold ? 'ขายแล้ว' : formatPriceShort(property.price);
-    
-    el.innerHTML = `
+  const createMarkerElement = useCallback(
+    (property: MapProperty) => {
+      const el = document.createElement('div');
+      el.className = 'marker-3d';
+
+      const isSold = property.status === 'ขายแล้ว';
+      const isLED = property.source === 'LED';
+
+      // Icon: FINX = house, LED = gavel (legal)
+      const icon = isLED
+        ? '<svg class="marker-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm13 14h-3v2H9v-2H6v-2h12v2zM4.5 7.5L12 2l7.5 5.5H4.5z"/></svg>'
+        : '<svg class="marker-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 9v12h16V9l-8-6zm0 2.5l5 3.75V18h-3v-4H10v4H7V9.25l5-3.75z"/></svg>';
+
+      const priceText = isSold ? 'ขายแล้ว' : formatPriceShort(property.price);
+
+      el.innerHTML = `
       <div class="marker-tag ${isSold ? 'sold' : ''} ${isLED ? 'led' : ''}">
         ${icon}
         <span>${priceText}</span>
@@ -370,32 +385,35 @@ export function MapContainer({
       <div class="marker-shadow"></div>
     `;
 
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      map.current?.flyTo({
-        center: [property.lng, property.lat],
-        zoom: 15,
-        pitch: 55,
-        duration: 1200,
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        map.current?.flyTo({
+          center: [property.lng, property.lat],
+          zoom: 15,
+          pitch: 55,
+          duration: 1200,
+        });
+        setTimeout(() => showPropertyPopup(property), 600);
       });
-      setTimeout(() => showPropertyPopup(property), 600);
-    });
 
-    return el;
-  }, [showPropertyPopup]);
+      return el;
+    },
+    [showPropertyPopup],
+  );
 
   // Create 3D cluster element
-  const createClusterElement = useCallback((count: number, centerLng: number, centerLat: number) => {
-    const el = document.createElement('div');
-    
-    // Determine size class based on count
-    let sizeClass = 'size-sm';
-    if (count >= 100) sizeClass = 'size-xl';
-    else if (count >= 50) sizeClass = 'size-lg';
-    else if (count >= 10) sizeClass = 'size-md';
-    
-    el.className = `cluster-3d ${sizeClass}`;
-    el.innerHTML = `
+  const createClusterElement = useCallback(
+    (count: number, centerLng: number, centerLat: number) => {
+      const el = document.createElement('div');
+
+      // Determine size class based on count
+      let sizeClass = 'size-sm';
+      if (count >= 100) sizeClass = 'size-xl';
+      else if (count >= 50) sizeClass = 'size-lg';
+      else if (count >= 10) sizeClass = 'size-md';
+
+      el.className = `cluster-3d ${sizeClass}`;
+      el.innerHTML = `
       <div class="cluster-bubble">
         <div class="cluster-ring"></div>
         ${count >= 10 ? '<div class="cluster-ring-2"></div>' : ''}
@@ -405,48 +423,58 @@ export function MapContainer({
       <div class="cluster-shadow"></div>
     `;
 
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!map.current) return;
-      
-      // Zoom in to cluster
-      map.current.flyTo({
-        center: [centerLng, centerLat],
-        zoom: Math.min(map.current.getZoom() + 3, 15),
-        duration: 1000,
-      });
-    });
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!map.current) return;
 
-    return el;
-  }, []);
+        // Zoom in to cluster
+        map.current.flyTo({
+          center: [centerLng, centerLat],
+          zoom: Math.min(map.current.getZoom() + 3, 15),
+          duration: 1000,
+        });
+      });
+
+      return el;
+    },
+    [],
+  );
 
   // Simple grid-based clustering algorithm
   const computeClusters = useCallback((props: MapProperty[], zoom: number) => {
     if (props.length === 0) return { clusters: [], singles: [] };
-    
+
     // Grid size based on zoom level (smaller grid = more clusters when zoomed out)
     const gridSize = Math.max(0.5, 5 / Math.pow(2, zoom - 4));
-    
+
     const grid = new Map<string, MapProperty[]>();
-    
+
     props.forEach((p) => {
       if (p.lat === 0 && p.lng === 0) return;
       const cellX = Math.floor(p.lng / gridSize);
       const cellY = Math.floor(p.lat / gridSize);
       const key = `${cellX},${cellY}`;
-      
+
       if (!grid.has(key)) grid.set(key, []);
       grid.get(key)!.push(p);
     });
-    
-    const clusters: { id: string; lng: number; lat: number; count: number; properties: MapProperty[] }[] = [];
+
+    const clusters: {
+      id: string;
+      lng: number;
+      lat: number;
+      count: number;
+      properties: MapProperty[];
+    }[] = [];
     const singles: MapProperty[] = [];
-    
+
     grid.forEach((cellProps, key) => {
       if (cellProps.length >= 3) {
         // Create cluster
-        const avgLng = cellProps.reduce((sum, p) => sum + p.lng, 0) / cellProps.length;
-        const avgLat = cellProps.reduce((sum, p) => sum + p.lat, 0) / cellProps.length;
+        const avgLng =
+          cellProps.reduce((sum, p) => sum + p.lng, 0) / cellProps.length;
+        const avgLat =
+          cellProps.reduce((sum, p) => sum + p.lat, 0) / cellProps.length;
         clusters.push({
           id: `cluster-${key}`,
           lng: avgLng,
@@ -459,56 +487,60 @@ export function MapContainer({
         singles.push(...cellProps);
       }
     });
-    
+
     return { clusters, singles };
   }, []);
 
   // Update all markers
   const updateAllMarkers = useCallback(() => {
     if (!map.current) return;
-    
+
     const zoom = map.current.getZoom();
     const bounds = map.current.getBounds();
-    
+
     // Filter properties in viewport
     const visibleProperties = properties.filter((p) => {
       if (p.lat === 0 && p.lng === 0) return false;
       return bounds.contains([p.lng, p.lat]);
     });
-    
+
     // Notify parent about visible properties
     onVisiblePropertiesChange?.(visibleProperties);
-    
+
     // Track which markers to keep
     const clusterIdsToShow = new Set<string>();
     const pointIdsToShow = new Set<string>();
-    
+
     if (zoom < ZOOM_THRESHOLD) {
       // Zoomed out - show clusters
       const { clusters, singles } = computeClusters(visibleProperties, zoom);
-      
+
       // Create cluster markers
       clusters.forEach((cluster) => {
         clusterIdsToShow.add(cluster.id);
-        
+
         if (!clusterMarkersRef.current.has(cluster.id)) {
-          const el = createClusterElement(cluster.count, cluster.lng, cluster.lat);
+          const el = createClusterElement(
+            cluster.count,
+            cluster.lng,
+            cluster.lat,
+          );
           const marker = new mapboxgl.Marker({
             element: el,
             anchor: 'bottom',
           })
             .setLngLat([cluster.lng, cluster.lat])
             .addTo(map.current!);
-          
+
           clusterMarkersRef.current.set(cluster.id, marker);
         }
       });
-      
+
       // Show singles as 3D markers (limit for performance)
       const maxSingles = 30;
       singles.slice(0, maxSingles).forEach((property) => {
         pointIdsToShow.add(property.id);
-        
+
         if (!markersRef.current.has(property.id)) {
           const el = createMarkerElement(property);
           const marker = new mapboxgl.Marker({
@@ -517,7 +549,7 @@ export function MapContainer({
           })
             .setLngLat([property.lng, property.lat])
             .addTo(map.current!);
-          
+
           markersRef.current.set(property.id, marker);
         }
       });
@@ -526,7 +558,7 @@ export function MapContainer({
       const maxMarkers = 80;
       visibleProperties.slice(0, maxMarkers).forEach((property) => {
         pointIdsToShow.add(property.id);
-        
+
         if (!markersRef.current.has(property.id)) {
           const el = createMarkerElement(property);
           const marker = new mapboxgl.Marker({
@@ -535,12 +567,12 @@ export function MapContainer({
           })
             .setLngLat([property.lng, property.lat])
             .addTo(map.current!);
-          
+
           markersRef.current.set(property.id, marker);
         }
       });
     }
-    
+
     // Remove markers that are no longer visible
     clusterMarkersRef.current.forEach((marker, id) => {
       if (!clusterIdsToShow.has(id)) {
@@ -548,19 +580,25 @@ export function MapContainer({
         clusterMarkersRef.current.delete(id);
       }
     });
-    
+
     markersRef.current.forEach((marker, id) => {
       if (!pointIdsToShow.has(id)) {
         marker.remove();
         markersRef.current.delete(id);
       }
     });
-  }, [properties, createMarkerElement, createClusterElement, computeClusters, onVisiblePropertiesChange]);
+  }, [
+    properties,
+    createMarkerElement,
+    createClusterElement,
+    computeClusters,
+    onVisiblePropertiesChange,
+  ]);
 
   // Setup marker updates on map events
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
-    
+
     // Remove old markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current.clear();
@@ -573,10 +611,10 @@ export function MapContainer({
       clearTimeout(updateTimeout);
       updateTimeout = setTimeout(updateAllMarkers, 100);
     };
-    
+
     map.current.on('zoom', debouncedUpdate);
     map.current.on('move', debouncedUpdate);
-    
+
     // Initial update
     updateAllMarkers();
 
@@ -592,7 +630,7 @@ export function MapContainer({
   // Fly to selected property
   useEffect(() => {
     if (!map.current || !selectedProperty) return;
-    
+
     map.current.flyTo({
       center: [selectedProperty.lng, selectedProperty.lat],
       zoom: 14,
@@ -607,7 +645,7 @@ export function MapContainer({
   // Reset view
   const resetView = useCallback(() => {
     if (!map.current) return;
-    
+
     map.current.flyTo({
       center: [100.5, 13.5],
       zoom: 5.5,
@@ -618,56 +656,60 @@ export function MapContainer({
   }, []);
 
   // Change map style
-  const changeMapStyle = useCallback((style: MapStyle) => {
-    if (!map.current) return;
-    
-    setMapStyle(style);
-    const styleUrl = style === 'satellite' 
-      ? 'mapbox://styles/mapbox/standard-satellite'
-      : 'mapbox://styles/mapbox/standard';
-    
-    const center = map.current.getCenter();
-    const zoom = map.current.getZoom();
-    const pitch = map.current.getPitch();
-    const bearing = map.current.getBearing();
-    
-    map.current.setStyle(styleUrl);
-    
-    map.current.once('style.load', () => {
+  const changeMapStyle = useCallback(
+    (style: MapStyle) => {
       if (!map.current) return;
-      map.current.setCenter(center);
-      map.current.setZoom(zoom);
-      map.current.setPitch(pitch);
-      map.current.setBearing(bearing);
-      
-      try {
-        map.current.setConfigProperty('basemap', 'lightPreset', lightPreset);
-      } catch (e) {
-        // Ignore
-      }
-      
-      // Re-add terrain and provinces
-      if (!map.current.getSource('mapbox-dem')) {
-        map.current.addSource('mapbox-dem', {
-          type: 'raster-dem',
-          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-          tileSize: 512,
-          maxzoom: 14,
-        });
-      }
-      map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 2.0 });
-      
-      loadProvinces();
-      
-      // Trigger re-add clustering layers
-      setStyleVersion(v => v + 1);
-    });
-  }, [lightPreset, loadProvinces]);
+
+      setMapStyle(style);
+      const styleUrl =
+        style === 'satellite'
+          ? 'mapbox://styles/mapbox/standard-satellite'
+          : 'mapbox://styles/mapbox/standard';
+
+      const center = map.current.getCenter();
+      const zoom = map.current.getZoom();
+      const pitch = map.current.getPitch();
+      const bearing = map.current.getBearing();
+
+      map.current.setStyle(styleUrl);
+
+      map.current.once('style.load', () => {
+        if (!map.current) return;
+        map.current.setCenter(center);
+        map.current.setZoom(zoom);
+        map.current.setPitch(pitch);
+        map.current.setBearing(bearing);
+
+        try {
+          map.current.setConfigProperty('basemap', 'lightPreset', lightPreset);
+        } catch (e) {
+          // Ignore
+        }
+
+        // Re-add terrain and provinces
+        if (!map.current.getSource('mapbox-dem')) {
+          map.current.addSource('mapbox-dem', {
+            type: 'raster-dem',
+            url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+            tileSize: 512,
+            maxzoom: 14,
+          });
+        }
+        map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 2.0 });
+
+        loadProvinces();
+
+        // Trigger re-add clustering layers
+        setStyleVersion((v) => v + 1);
+      });
+    },
+    [lightPreset, loadProvinces],
+  );
 
   // Change light preset
   const changeLightPreset = useCallback((preset: LightPreset) => {
     if (!map.current) return;
-    
+
     setLightPreset(preset);
     try {
       map.current.setConfigProperty('basemap', 'lightPreset', preset);
@@ -679,7 +721,7 @@ export function MapContainer({
   return (
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full overflow-hidden" />
-      
+
       {/* Province Stats Tooltip */}
       {hoveredProvince && provinceStats && (
         <div className="absolute top-4 right-4 bg-card border rounded-xl p-4 shadow-lg min-w-[200px] pointer-events-none z-10">
@@ -688,25 +730,38 @@ export function MapContainer({
             {hoveredProvince}
           </h4>
           {(() => {
-            const stats = provinceStats.find(s => s.province === hoveredProvince);
-            if (!stats) return <p className="text-sm text-muted-foreground">ไม่มีข้อมูล</p>;
+            const stats = provinceStats.find(
+              (s) => s.province === hoveredProvince,
+            );
+            if (!stats)
+              return (
+                <p className="text-sm text-muted-foreground">ไม่มีข้อมูล</p>
+              );
             return (
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">จำนวนทรัพย์</span>
-                  <span className="font-semibold text-primary">{stats.count}</span>
+                  <span className="font-semibold text-primary">
+                    {stats.count}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">ราคาเฉลี่ย</span>
-                  <span className="font-medium">{formatPriceShort(stats.avgPrice)}</span>
+                  <span className="font-medium">
+                    {formatPriceShort(stats.avgPrice)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">ราคาต่ำสุด</span>
-                  <span className="font-medium">{formatPriceShort(stats.minPrice)}</span>
+                  <span className="font-medium">
+                    {formatPriceShort(stats.minPrice)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">ราคาสูงสุด</span>
-                  <span className="font-medium">{formatPriceShort(stats.maxPrice)}</span>
+                  <span className="font-medium">
+                    {formatPriceShort(stats.maxPrice)}
+                  </span>
                 </div>
               </div>
             );
@@ -731,23 +786,26 @@ export function MapContainer({
               <KeenIcon icon="setting-2" className="text-lg" />
               Display Settings
             </h3>
-            <button className="settings-close" onClick={() => setShowSettings(false)}>
+            <button
+              className="settings-close"
+              onClick={() => setShowSettings(false)}
+            >
               <KeenIcon icon="cross" />
             </button>
           </div>
-          
+
           {/* Map Style */}
           <div className="settings-section">
             <span className="settings-label">🗺️ Map Style</span>
             <div className="style-options">
-              <div 
+              <div
                 className={`style-option ${mapStyle === 'standard' ? 'active' : ''}`}
                 onClick={() => changeMapStyle('standard')}
               >
                 <KeenIcon icon="map" className="text-2xl" />
                 <span>Standard</span>
               </div>
-              <div 
+              <div
                 className={`style-option ${mapStyle === 'satellite' ? 'active' : ''}`}
                 onClick={() => changeMapStyle('satellite')}
               >
@@ -756,33 +814,33 @@ export function MapContainer({
               </div>
             </div>
           </div>
-          
+
           {/* Light Preset */}
           <div className="settings-section">
             <span className="settings-label">💡 Light Preset</span>
             <div className="preset-options">
-              <div 
+              <div
                 className={`preset-option ${lightPreset === 'dawn' ? 'active' : ''}`}
                 onClick={() => changeLightPreset('dawn')}
               >
                 🌅
                 <span>Dawn</span>
               </div>
-              <div 
+              <div
                 className={`preset-option ${lightPreset === 'day' ? 'active' : ''}`}
                 onClick={() => changeLightPreset('day')}
               >
                 ☀️
                 <span>Day</span>
               </div>
-              <div 
+              <div
                 className={`preset-option ${lightPreset === 'dusk' ? 'active' : ''}`}
                 onClick={() => changeLightPreset('dusk')}
               >
                 🌆
                 <span>Dusk</span>
               </div>
-              <div 
+              <div
                 className={`preset-option ${lightPreset === 'night' ? 'active' : ''}`}
                 onClick={() => changeLightPreset('night')}
               >
@@ -838,12 +896,16 @@ export function MapContainer({
           font-size: 12px;
           white-space: nowrap;
           border: 2px solid white;
-          box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
           animation: marker-float 2s ease-in-out infinite;
         }
 
         .marker-3d .marker-tag.sold {
-          background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%) !important;
+          background: linear-gradient(
+            180deg,
+            #9ca3af 0%,
+            #6b7280 100%
+          ) !important;
         }
 
         .marker-3d .marker-tag.led {
@@ -853,34 +915,65 @@ export function MapContainer({
         .marker-3d .marker-pole {
           width: 3px;
           height: 20px;
-          background: linear-gradient(180deg, #dc2626 0%, rgba(220,38,38,0.3) 50%, transparent 100%);
+          background: linear-gradient(
+            180deg,
+            #dc2626 0%,
+            rgba(220, 38, 38, 0.3) 50%,
+            transparent 100%
+          );
           margin-top: -2px;
         }
 
         .marker-3d .marker-tag.led + .marker-pole {
-          background: linear-gradient(180deg, #2563eb 0%, rgba(37,99,235,0.3) 50%, transparent 100%);
+          background: linear-gradient(
+            180deg,
+            #2563eb 0%,
+            rgba(37, 99, 235, 0.3) 50%,
+            transparent 100%
+          );
         }
 
         .marker-3d .marker-tag.sold + .marker-pole {
-          background: linear-gradient(180deg, #6b7280 0%, rgba(107,114,128,0.3) 50%, transparent 100%);
+          background: linear-gradient(
+            180deg,
+            #6b7280 0%,
+            rgba(107, 114, 128, 0.3) 50%,
+            transparent 100%
+          );
         }
 
         .marker-3d .marker-shadow {
           width: 20px;
           height: 8px;
-          background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
+          background: radial-gradient(
+            ellipse,
+            rgba(0, 0, 0, 0.4) 0%,
+            transparent 70%
+          );
           border-radius: 50%;
           animation: shadow-scale 2s ease-in-out infinite;
         }
 
         @keyframes marker-float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-8px);
+          }
         }
 
         @keyframes shadow-scale {
-          0%, 100% { transform: scale(1); opacity: 0.4; }
-          50% { transform: scale(0.6); opacity: 0.6; }
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.4;
+          }
+          50% {
+            transform: scale(0.6);
+            opacity: 0.6;
+          }
         }
 
         .marker-3d:hover {
@@ -889,7 +982,7 @@ export function MapContainer({
         .marker-3d:hover .marker-tag {
           animation: none;
           transform: translateY(-10px) scale(1.15);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
         }
         .marker-3d:hover .marker-shadow {
           animation: none;
@@ -924,7 +1017,7 @@ export function MapContainer({
           position: absolute;
           top: 8px;
           left: 8px;
-          background: rgba(0,0,0,0.6);
+          background: rgba(0, 0, 0, 0.6);
           color: white;
           padding: 4px 8px;
           border-radius: 4px;
@@ -958,7 +1051,7 @@ export function MapContainer({
           overflow: hidden;
         }
         .mapboxgl-popup-close-button {
-          background: rgba(255,255,255,0.9);
+          background: rgba(255, 255, 255, 0.9);
           border-radius: 50%;
           width: 24px;
           height: 24px;

@@ -25,8 +25,6 @@ export default function FullscreenLayout({
   }
 
   return session ? (
-    <div className="min-h-screen bg-background">
-      {children}
-    </div>
+    <div className="min-h-screen bg-background">{children}</div>
   ) : null;
 }
