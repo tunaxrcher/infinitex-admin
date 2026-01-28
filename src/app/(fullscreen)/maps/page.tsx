@@ -365,7 +365,7 @@ function PropertyCard({
         <p className="text-xs text-gray-500 line-clamp-1 mb-2">
           📍 {property.location}
         </p>
-        <p className={`font-bold text-sm ${isSold ? 'text-gray-500' : 'text-red-500'}`}>
+        <p className={`font-bold text-base text-right ${isSold ? 'text-gray-500' : 'text-red-500'}`}>
           {property.formattedPrice}
         </p>
       </div>

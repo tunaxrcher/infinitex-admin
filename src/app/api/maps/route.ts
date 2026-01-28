@@ -81,10 +81,11 @@ function transformAsset(asset: any): MapProperty | null {
   const rai = Number(asset.rai || 0);
   const ngan = Number(asset.ngan || 0);
   const sqWa = Number(asset.sqWa || 0);
+  const landArea = formatLandArea(rai, ngan, sqWa);
   
   return {
     id: `led-${asset.id}`,
-    title: `${asset.assetType || 'ทรัพย์'} ${asset.auctionLot || ''}`.trim(),
+    title: `${asset.assetType || 'ทรัพย์'} ${landArea !== '-' ? landArea : ''}`.trim(),
     location: [asset.ampur, asset.province].filter(Boolean).join(', ') || '-',
     province: asset.province || '',
     amphur: asset.ampur || '',
