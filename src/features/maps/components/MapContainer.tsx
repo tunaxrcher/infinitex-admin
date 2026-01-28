@@ -366,7 +366,7 @@ export function MapContainer({
   );
 
   // Simple grid-based clustering for 3D markers
-  const ZOOM_THRESHOLD = 9; // Show individual 3D markers when zoom > this value
+  const ZOOM_THRESHOLD = 4; // Show individual 3D markers when zoom > this value (initial zoom is 5.5)
   const clusterMarkersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
 
   // Create 3D marker element for individual property
@@ -436,10 +436,10 @@ export function MapContainer({
         e.stopPropagation();
         if (!map.current) return;
 
-        // Zoom in to cluster
+        // Zoom in to cluster (zoom +4 per click, so 2 clicks should break apart)
         map.current.flyTo({
           center: [centerLng, centerLat],
-          zoom: Math.min(map.current.getZoom() + 3, 15),
+          zoom: Math.min(map.current.getZoom() + 4, 15),
           duration: 1000,
         });
       });
@@ -453,8 +453,9 @@ export function MapContainer({
   const computeClusters = useCallback((props: MapProperty[], zoom: number) => {
     if (props.length === 0) return { clusters: [], singles: [] };
 
-    // Grid size based on zoom level (smaller grid = more clusters when zoomed out)
-    const gridSize = Math.max(0.5, 5 / Math.pow(2, zoom - 4));
+    // Grid size based on zoom level (larger grid = fewer clusters)
+    // Adjusted for Thailand scale: fewer but larger clusters
+    const gridSize = Math.max(0.5, 10 / Math.pow(2, zoom - 5));
 
     const grid = new Map<string, MapProperty[]>();
 
@@ -478,8 +479,8 @@ export function MapContainer({
     const singles: MapProperty[] = [];
 
     grid.forEach((cellProps, key) => {
-      if (cellProps.length >= 2) {
-        // Create cluster when 2 or more properties are nearby
+      if (cellProps.length >= 3) {
+        // Create cluster when 3 or more properties are nearby
         const avgLng =
           cellProps.reduce((sum, p) => sum + p.lng, 0) / cellProps.length;
         const avgLat =
@@ -520,8 +521,12 @@ export function MapContainer({
     const clusterIdsToShow = new Set<string>();
     const pointIdsToShow = new Set<string>();
 
-    if (zoom < ZOOM_THRESHOLD) {
-      // Zoomed out - show clusters
+    // Use clustering only when zoomed way out
+    // At higher zoom (> 10), always show individual markers regardless of count
+    const shouldCluster = zoom < ZOOM_THRESHOLD || (zoom < 10 && visibleProperties.length > 300);
+
+    if (shouldCluster) {
+      // Show clusters
       const { clusters, singles } = computeClusters(visibleProperties, zoom);
 
       // Create cluster markers
@@ -545,9 +550,8 @@ export function MapContainer({
         }
       });
 
-      // Show singles as 3D markers (limit for performance)
-      const maxSingles = 100;
-      singles.slice(0, maxSingles).forEach((property) => {
+      // Show singles as 3D markers (no limit)
+      singles.forEach((property) => {
         pointIdsToShow.add(property.id);
 
         if (!markersRef.current.has(property.id)) {
@@ -563,9 +567,8 @@ export function MapContainer({
         }
       });
     } else {
-      // Zoomed in - show individual markers only
-      const maxMarkers = 150;
-      visibleProperties.slice(0, maxMarkers).forEach((property) => {
+      // Show individual markers (no limit - viewport already limits visible count)
+      visibleProperties.forEach((property) => {
         pointIdsToShow.add(property.id);
 
         if (!markersRef.current.has(property.id)) {

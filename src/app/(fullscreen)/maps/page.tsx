@@ -526,7 +526,7 @@ export default function MapsFullscreenPage() {
                   <h3 className="font-medium text-gray-800 text-sm mb-1">ข้อมูลกรมบังคับคดี</h3>
                   <p className="text-gray-600 text-xs leading-relaxed">
                     ปัจจุบันมีข้อมูลเฉพาะ <span className="font-medium text-gray-700">จังหวัดอุบลราชธานี</span> เท่านั้น
-                  </p>
+                  </p>อ
                 </div>
               </div>
             </div>
