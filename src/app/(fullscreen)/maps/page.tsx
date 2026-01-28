@@ -57,6 +57,7 @@ export default function MapsFullscreenPage() {
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [displayLimit, setDisplayLimit] = useState(50); // Number of items to show in list
   const [visiblePropertyIds, setVisiblePropertyIds] = useState<Set<string>>(new Set());
+  const [mapInitialized, setMapInitialized] = useState(false); // Track if map has sent first viewport update
   
   const { data, isLoading } = useMapProperties({
     ...filters,
@@ -97,11 +98,13 @@ export default function MapsFullscreenPage() {
     }
   }, [rawProperties, sortOption]);
 
-  // Filter to show only properties visible in map viewport (or all if no viewport filter)
+  // Filter to show only properties visible in map viewport
   const displayProperties = useMemo(() => {
-    if (visiblePropertyIds.size === 0) return sortedProperties;
+    // If map hasn't initialized yet, show all properties (loading state)
+    if (!mapInitialized) return sortedProperties;
+    // After map is initialized, always filter by viewport
     return sortedProperties.filter(p => visiblePropertyIds.has(p.id));
-  }, [sortedProperties, visiblePropertyIds]);
+  }, [sortedProperties, visiblePropertyIds, mapInitialized]);
 
   const handleFilterChange = useCallback((newFilters: Partial<MapFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -112,7 +115,8 @@ export default function MapsFullscreenPage() {
   const handleVisiblePropertiesChange = useCallback((visibleProps: MapProperty[]) => {
     setVisiblePropertyIds(new Set(visibleProps.map(p => p.id)));
     setDisplayLimit(50); // Reset display limit when viewport changes
-  }, []);
+    if (!mapInitialized) setMapInitialized(true); // Mark map as initialized
+  }, [mapInitialized]);
 
   const handleProvinceSelect = useCallback((provinceName: string) => {
     setSelectedProvince(provinceName);
