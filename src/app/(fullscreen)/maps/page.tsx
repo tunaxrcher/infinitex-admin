@@ -304,7 +304,7 @@ export default function MapsFullscreenPage() {
           className={`absolute top-4 bottom-4 z-10 flex flex-col gap-3 transition-all duration-300 ${
             isPanelCollapsed ? '-left-[360px]' : 'left-4'
           }`}
-          style={{ width: '400px' }}
+          style={{ width: '430px' }}
         >
           {/* Collapse/Expand Button */}
           <button
@@ -336,7 +336,7 @@ export default function MapsFullscreenPage() {
               <option value="INTERNAL">
                 FINX ({stats?.totalInternal || 0})
               </option>
-              <option value="LED">LED ({stats?.totalLED || 0})</option>
+              <option value="LED">กรมบังคับคดี  ({stats?.totalLED || 0})</option>
             </select>
 
             {/* Status Filter */}
@@ -411,11 +411,11 @@ export default function MapsFullscreenPage() {
             {/* Listings */}
             <div className="flex-1 overflow-y-auto">
               {isLoading ? (
-                <div className="p-3 space-y-2">
+                <div className="p-3 grid grid-cols-2 gap-2">
                   {[...Array(6)].map((_, i) => (
                     <div
                       key={i}
-                      className="h-24 bg-gray-100 rounded-xl animate-pulse"
+                      className="aspect-3/4 bg-gray-100 rounded-xl animate-pulse"
                     />
                   ))}
                 </div>
@@ -433,7 +433,7 @@ export default function MapsFullscreenPage() {
                   </p>
                 </div>
               ) : (
-                <div className="p-3 space-y-2">
+                <div className="p-3 grid grid-cols-2 gap-2">
                   {displayProperties.slice(0, displayLimit).map((property) => (
                     <PropertyCard
                       key={property.id}
@@ -443,7 +443,7 @@ export default function MapsFullscreenPage() {
                     />
                   ))}
                   {displayProperties.length > displayLimit ? (
-                    <div className="text-center py-4 space-y-2">
+                    <div className="col-span-2 text-center py-4 space-y-2">
                       <p className="text-sm text-gray-500">
                         แสดง {displayLimit.toLocaleString()} จาก{' '}
                         {displayProperties.length.toLocaleString()} รายการ
@@ -460,7 +460,7 @@ export default function MapsFullscreenPage() {
                       </button>
                     </div>
                   ) : displayProperties.length > 50 ? (
-                    <div className="text-center py-4 text-sm text-gray-500">
+                    <div className="col-span-2 text-center py-4 text-sm text-gray-500">
                       แสดงทั้งหมด {displayProperties.length.toLocaleString()}{' '}
                       รายการ
                     </div>
@@ -503,21 +503,21 @@ function PropertyCard({
   return (
     <div
       onClick={handleOpenGoogleMaps}
-      className={`flex bg-white rounded-xl border overflow-hidden cursor-pointer transition-all hover:shadow-md ${
+      className={`flex flex-col bg-white rounded-xl border overflow-hidden cursor-pointer transition-all hover:shadow-md ${
         isSelected
           ? 'border-red-500 shadow-md ring-1 ring-red-500'
           : 'border-gray-200 hover:border-gray-300'
       }`}
     >
       {/* Image */}
-      <div className="relative w-28 h-24 shrink-0 bg-gray-100">
+      <div className="relative w-full aspect-4/3 bg-gray-100">
         {property.images.length > 0 ? (
           <Image
             src={property.images[0]}
             alt={property.title}
             fill
             className="object-cover"
-            sizes="112px"
+            sizes="200px"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -530,7 +530,7 @@ function PropertyCard({
             isLED ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
           }`}
         >
-          {isLED ? 'LED' : 'FINX'}
+          {isLED ? 'กรมบังคับคดี' : 'FINX'}
         </span>
         {/* Sold Badge */}
         {isSold && (
@@ -541,15 +541,15 @@ function PropertyCard({
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-2.5 min-w-0">
-        <h3 className="font-medium text-sm text-gray-800 line-clamp-2 leading-tight mb-1">
+      <div className="p-2 min-w-0">
+        <h3 className="font-medium text-xs text-gray-800 line-clamp-2 leading-tight mb-1">
           {property.title}
         </h3>
-        <p className="text-xs text-gray-500 line-clamp-1 mb-2">
+        <p className="text-[10px] text-gray-500 line-clamp-1 mb-1">
           📍 {property.location}
         </p>
         <p
-          className={`font-bold text-base text-right ${isSold ? 'text-gray-500' : 'text-red-500'}`}
+          className={`font-bold text-sm text-right ${isSold ? 'text-gray-500' : 'text-red-500'}`}
         >
           {property.formattedPrice}
         </p>
