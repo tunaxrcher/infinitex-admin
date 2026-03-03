@@ -1292,7 +1292,9 @@ export const taxSubmissionReportService = {
             imageUrl: (d as any).imageUrl || null,
           })),
           primaryImageUrl:
-            (resolvedTitleDeeds[0] as any)?.imageUrl || null,
+            (resolvedTitleDeeds.find((d) => d.isPrimary) as any)?.imageUrl ||
+            (resolvedTitleDeeds[0] as any)?.imageUrl ||
+            null,
           supportingImages: (() => {
             const raw = payment.loan?.application?.supportingImages;
             if (!raw) return [] as string[];

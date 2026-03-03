@@ -50,6 +50,71 @@ const PDF_FONT_FAMILY = 'SarabunPDF';
 const PDF_FONT_FLAG_KEY = '__tax_submission_pdf_font_registered__';
 const PDF_FONT_READY_KEY = '__tax_submission_pdf_font_ready__';
 
+/** แปลง URL → absolute */
+const toAbsoluteUrl = (url?: string | null): string | null => {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
+  }
+  return url;
+};
+
+/** แปลง ArrayBuffer → base64 data URI */
+const bufToBase64 = (buf: ArrayBuffer, contentType: string) => {
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return `data:${contentType};base64,${btoa(binary)}`;
+};
+
+/** fetch image → base64
+ *  - URL ภายนอก (S3 / DigitalOcean Spaces) ผ่าน /api/proxy-image เพื่อหลีก CORS
+ *  - URL ภายใน (/uploads/...) fetch โดยตรง */
+const fetchImageAsBase64 = async (url?: string | null): Promise<string | null> => {
+  if (!url) return null;
+  if (url.startsWith('data:')) return url;
+  try {
+    const fetchUrl =
+      url.startsWith('http://') || url.startsWith('https://')
+        ? `/api/proxy-image?url=${encodeURIComponent(url)}`
+        : toAbsoluteUrl(url) || url;
+
+    const res = await fetch(fetchUrl, { credentials: 'include' });
+    if (!res.ok) return null;
+    const buf = await res.arrayBuffer();
+    const contentType = res.headers.get('content-type') || 'image/jpeg';
+    return bufToBase64(buf, contentType);
+  } catch {
+    return null;
+  }
+};
+
+/** แปลง image URLs ทั้งหมดใน TaxFeeLoanItem เป็น base64 (async) */
+const resolveImageUrls = async (loan: TaxFeeLoanItem): Promise<TaxFeeLoanItem> => {
+  const [primaryBase64, ...supportBase64s] = await Promise.all([
+    fetchImageAsBase64(loan.primaryImageUrl),
+    ...(loan.supportingImages || []).map(fetchImageAsBase64),
+  ]);
+
+  const titleDeedsWithBase64 = await Promise.all(
+    (loan.titleDeeds || []).map(async (d) => ({
+      ...d,
+      imageUrl: await fetchImageAsBase64(d.imageUrl),
+    })),
+  );
+
+  return {
+    ...loan,
+    primaryImageUrl: primaryBase64,
+    supportingImages: supportBase64s.filter((u): u is string => Boolean(u)),
+    titleDeeds: titleDeedsWithBase64,
+  };
+};
+
 const generateYearOptions = () => {
   const currentYear = new Date().getFullYear();
   const years = [];
@@ -770,7 +835,8 @@ export default function TaxSubmissionReportPage() {
           toast.error('ไม่พบรายการชำระค่าธรรมเนียมของเดือนนี้');
           return;
         }
-        await openPrintPreview(items, monthName);
+        const itemsWithImages = await Promise.all(items.map(resolveImageUrls));
+        await openPrintPreview(itemsWithImages, monthName);
       } catch (error) {
         toast.error('ไม่สามารถสร้างเอกสาร PDF ได้');
       } finally {
@@ -782,7 +848,8 @@ export default function TaxSubmissionReportPage() {
 
   const handlePrintSingleLoanPackage = useCallback(
     async (loan: TaxFeeLoanItem) => {
-      await openPrintPreview([loan], 'เอกสารรายสินเชื่อ');
+      const loanWithImages = await resolveImageUrls(loan);
+      await openPrintPreview([loanWithImages], 'เอกสารรายสินเชื่อ');
     },
     [openPrintPreview],
   );
