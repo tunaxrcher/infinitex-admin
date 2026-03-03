@@ -179,6 +179,30 @@ const formatDateOrDash = (value?: string | Date | null) => {
   }
 };
 
+// Keep full reference numbers, but inject soft-wrap points to avoid layout overflow.
+const wrapDocCode = (value?: string | null, chunkSize = 12) => {
+  const raw = String(value || '-');
+  if (raw === '-') return raw;
+  const softBreak = '\u200b';
+  let result = '';
+  let tokenCount = 0;
+
+  for (const ch of raw) {
+    result += ch;
+    if (/[A-Za-z0-9]/.test(ch)) {
+      tokenCount += 1;
+      if (tokenCount >= chunkSize) {
+        result += softBreak;
+        tokenCount = 0;
+      }
+    } else {
+      tokenCount = 0;
+    }
+  }
+
+  return result;
+};
+
 const toThaiBahtText = (amount: number): string => {
   const numberText = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
   const digitText = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
@@ -232,12 +256,56 @@ const buildLoanPackageHtml = (
     .muted { color: #6b7280; font-size: 12px; }
     .title-th { font-size: 34px; font-weight: 700; line-height: 1.15; margin: 0 0 2px; }
     .title-en { font-size: 14px; color: #4b5563; margin: 0; }
-    .receipt-box { border: 1px solid #d1d5db; padding: 10px; min-height: 94px; }
-    .grid-2 { display: grid; grid-template-columns: 1.2fr 2fr; gap: 12px; }
-    .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .doc-item { border: 1px solid #d1d5db; }
-    .doc-item .label { background: #f3f4f6; color: #4b5563; font-size: 11px; padding: 4px 6px; border-bottom: 1px solid #d1d5db; }
-    .doc-item .value { padding: 6px; font-weight: 600; font-size: 13px; min-height: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr 2fr; gap: 12px; align-items: stretch; }
+    .receipt-box {
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      min-height: 142px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .doc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(2, 68px);
+      gap: 6px;
+      min-height: 142px;
+      height: 100%;
+    }
+    .doc-item {
+      border: 1px solid #d1d5db;
+      display: flex;
+      align-items: stretch;
+      min-height: 68px;
+      max-height: 68px;
+      overflow: hidden;
+    }
+    .doc-item .label {
+      width: 40%;
+      background: #f3f4f6;
+      color: #4b5563;
+      font-size: 10px;
+      line-height: 1.2;
+      padding: 6px;
+      border-right: 1px solid #d1d5db;
+      display: flex;
+      align-items: center;
+    }
+    .doc-item .value {
+      width: 60%;
+      padding: 7px 6px 6px;
+      font-weight: 600;
+      font-size: 10px;
+      line-height: 1.15;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .doc-item .value.right { justify-content: flex-end; word-break: normal; text-align: right; }
     .table-title { color: #1d4ed8; font-size: 18px; font-weight: 700; margin-top: 18px; margin-bottom: 8px; }
     table.simple { width: 100%; border-collapse: collapse; font-size: 13px; }
     table.simple th, table.simple td { padding: 8px 6px; }
@@ -304,10 +372,10 @@ const buildLoanPackageHtml = (
             <div style="margin-top:10px; font-size:12px;">เลขประจำตัวผู้เสียภาษี / TAX ID. ${escapeHtml(loan.customerTaxId || '-')}</div>
           </div>
           <div class="doc-grid">
-            <div class="doc-item"><div class="label">เลขที่ / No.</div><div class="value">${escapeHtml(loan.loanNumber || '-')}</div></div>
-            <div class="doc-item"><div class="label">เลขที่ใบเสร็จ / Receipt No.</div><div class="value">${escapeHtml(loan.paymentRef || '-')}</div></div>
-            <div class="doc-item"><div class="label">เลขที่ทำรายการ / Transaction No.</div><div class="value">${escapeHtml(loan.transactionId || loan.id || '-')}</div></div>
-            <div class="doc-item"><div class="label">วันออกใบเสร็จ / Receipt Date</div><div class="value">${escapeHtml(formatDateOrDash(loan.date))}</div></div>
+            <div class="doc-item"><div class="label">เลขที่ / No.</div><div class="value right">${escapeHtml(loan.loanNumber || '-')}</div></div>
+            <div class="doc-item"><div class="label">เลขที่ใบเสร็จ / Receipt No.</div><div class="value">${escapeHtml(wrapDocCode(loan.paymentRef))}</div></div>
+            <div class="doc-item"><div class="label">เลขที่ทำรายการ / Transaction No.</div><div class="value">${escapeHtml(wrapDocCode(loan.transactionId || loan.id || '-'))}</div></div>
+            <div class="doc-item"><div class="label">วันออกใบเสร็จ / Receipt Date</div><div class="value right">${escapeHtml(formatDateOrDash(loan.date))}</div></div>
           </div>
         </div>
         <div class="table-title">รายการ / List</div>
@@ -605,8 +673,8 @@ function TaxSubmissionPackagePdf({
             </PdfView>
 
             {/* 3) Customer + doc info */}
-            <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 18 }}>
-              <PdfView style={{ ...pdfStyles.box, width: '39%', minHeight: 90 }}>
+            <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 18, alignItems: 'stretch' }}>
+              <PdfView style={{ ...pdfStyles.box, width: '39%', minHeight: 110 }}>
                 <PdfText style={{ fontSize: 16, fontWeight: 700 }}>{loan.customerName || '-'}</PdfText>
                 <PdfText style={{ marginTop: 10, fontSize: 12 }}>{loan.customerAddress || '-'}</PdfText>
                 <PdfText style={{ marginTop: 12, fontSize: 10 }}>
@@ -614,47 +682,58 @@ function TaxSubmissionPackagePdf({
                 </PdfText>
               </PdfView>
 
-              <PdfView style={{ width: '59%' }}>
+              <PdfView style={{ width: '59%', minHeight: 110 }}>
                 <PdfView style={pdfStyles.rowBetween}>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
-                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
                       <PdfView
                         style={{
-                          width: '46%',
+                          width: '48%',
                           backgroundColor: '#f3f4f6',
-                          justifyContent: 'center',
-                          paddingHorizontal: 6,
+                          justifyContent: 'flex-start',
+                          paddingHorizontal: 7,
+                          paddingTop: 7,
                           borderRightWidth: 1,
                           borderRightColor: '#d1d5db',
                           borderRightStyle: 'solid',
                         }}
                       >
-                        <PdfText style={{ fontSize: 10 }}>เลขที่ / No.</PdfText>
+                        <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>เลขที่</PdfText>
+                        <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>No.</PdfText>
                       </PdfView>
-                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
-                        <PdfText style={{ fontSize: 12, fontWeight: 700, textAlign: 'right' }}>
+                      <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                        <PdfText style={{ fontSize: 11.5, fontWeight: 700, textAlign: 'right' }}>
                           {loan.loanNumber || '-'}
                         </PdfText>
                       </PdfView>
                     </PdfView>
                   </PdfView>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
-                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
                       <PdfView
                         style={{
-                          width: '46%',
+                          width: '48%',
                           backgroundColor: '#f3f4f6',
-                          justifyContent: 'center',
-                          paddingHorizontal: 6,
+                          justifyContent: 'flex-start',
+                          paddingHorizontal: 7,
+                          paddingTop: 7,
                           borderRightWidth: 1,
                           borderRightColor: '#d1d5db',
                           borderRightStyle: 'solid',
                         }}
                       >
-                        <PdfText style={{ fontSize: 10 }}>เลขที่ใบเสร็จ / Receipt No.</PdfText>
+                        <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>เลขที่ใบเสร็จ</PdfText>
+                        <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>Receipt No.</PdfText>
                       </PdfView>
-                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
-                        <PdfText style={{ fontSize: 12, fontWeight: 700, textAlign: 'right' }}>
+                      <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                        <PdfText
+                          style={{
+                            fontSize: 8.7,
+                            fontWeight: 700,
+                            textAlign: 'left',
+                            lineHeight: 1.1,
+                          }}
+                        >
                           {loan.paymentRef || '-'}
                         </PdfText>
                       </PdfView>
@@ -662,45 +741,55 @@ function TaxSubmissionPackagePdf({
                   </PdfView>
                 </PdfView>
                 <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 6 }}>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
-                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
                       <PdfView
                         style={{
-                          width: '46%',
+                          width: '48%',
                           backgroundColor: '#f3f4f6',
-                          justifyContent: 'center',
-                          paddingHorizontal: 6,
+                          justifyContent: 'flex-start',
+                          paddingHorizontal: 7,
+                          paddingTop: 7,
                           borderRightWidth: 1,
                           borderRightColor: '#d1d5db',
                           borderRightStyle: 'solid',
                         }}
                       >
-                        <PdfText style={{ fontSize: 10 }}>เลขที่ทำรายการ / Transaction No.</PdfText>
+                        <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>เลขที่ทำรายการ</PdfText>
+                        <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>Transaction No.</PdfText>
                       </PdfView>
-                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
-                        <PdfText style={{ fontSize: 12, textAlign: 'right' }}>
+                      <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                        <PdfText
+                          style={{
+                            fontSize: 8.7,
+                            textAlign: 'left',
+                            lineHeight: 1.1,
+                          }}
+                        >
                           {loan.transactionId || loan.id}
                         </PdfText>
                       </PdfView>
                     </PdfView>
                   </PdfView>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
-                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
                       <PdfView
                         style={{
-                          width: '46%',
+                          width: '48%',
                           backgroundColor: '#f3f4f6',
-                          justifyContent: 'center',
-                          paddingHorizontal: 6,
+                          justifyContent: 'flex-start',
+                          paddingHorizontal: 7,
+                          paddingTop: 7,
                           borderRightWidth: 1,
                           borderRightColor: '#d1d5db',
                           borderRightStyle: 'solid',
                         }}
                       >
-                        <PdfText style={{ fontSize: 10 }}>วันออกใบเสร็จ / Receipt Date</PdfText>
+                        <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>วันออกใบเสร็จ</PdfText>
+                        <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>Receipt Date</PdfText>
                       </PdfView>
-                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
-                        <PdfText style={{ fontSize: 12, textAlign: 'right' }}>
+                      <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                        <PdfText style={{ fontSize: 11, textAlign: 'right' }}>
                           {formatDateOrDash(loan.date)}
                         </PdfText>
                       </PdfView>
