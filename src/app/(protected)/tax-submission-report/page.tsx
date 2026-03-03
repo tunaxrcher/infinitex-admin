@@ -548,6 +548,13 @@ function TaxSubmissionPackagePdf({
         const vat = subtotal * 0.07;
         const grand = subtotal + vat;
         const titleDeed = loan.titleDeeds?.[0];
+        const propertyType = (titleDeed?.landType || '').trim();
+        const propertyLocation = [titleDeed?.amphurName, titleDeed?.provinceName]
+          .filter(Boolean)
+          .join(' ');
+        const receiptItemName = `ประเภท${propertyType ? ` ${propertyType}` : ''}${
+          propertyLocation ? ` ${propertyLocation}` : ''
+        }`;
         const netValue = Number(loan.estimatedValue || loan.propertyValue || 0);
         const compareRows = [
           ['1', 'บ้านทาวน์เฮ้าส์ใกล้เคียง', netValue * 0.98],
@@ -609,39 +616,95 @@ function TaxSubmissionPackagePdf({
 
               <PdfView style={{ width: '59%' }}>
                 <PdfView style={pdfStyles.rowBetween}>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0 }}>
-                    <PdfView style={{ backgroundColor: '#f3f4f6', paddingHorizontal: 6, paddingVertical: 4 }}>
-                      <PdfText style={{ fontSize: 10 }}>เลขที่ / No.</PdfText>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                      <PdfView
+                        style={{
+                          width: '46%',
+                          backgroundColor: '#f3f4f6',
+                          justifyContent: 'center',
+                          paddingHorizontal: 6,
+                          borderRightWidth: 1,
+                          borderRightColor: '#d1d5db',
+                          borderRightStyle: 'solid',
+                        }}
+                      >
+                        <PdfText style={{ fontSize: 10 }}>เลขที่ / No.</PdfText>
+                      </PdfView>
+                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
+                        <PdfText style={{ fontSize: 12, fontWeight: 700, textAlign: 'right' }}>
+                          {loan.loanNumber || '-'}
+                        </PdfText>
+                      </PdfView>
                     </PdfView>
-                    <PdfText style={{ paddingHorizontal: 6, paddingVertical: 6, fontSize: 12, fontWeight: 700, textAlign: 'right' }}>
-                      {loan.loanNumber || '-'}
-                    </PdfText>
                   </PdfView>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0 }}>
-                    <PdfView style={{ backgroundColor: '#f3f4f6', paddingHorizontal: 6, paddingVertical: 4 }}>
-                      <PdfText style={{ fontSize: 10 }}>เลขที่ใบเสร็จ / Receipt No.</PdfText>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                      <PdfView
+                        style={{
+                          width: '46%',
+                          backgroundColor: '#f3f4f6',
+                          justifyContent: 'center',
+                          paddingHorizontal: 6,
+                          borderRightWidth: 1,
+                          borderRightColor: '#d1d5db',
+                          borderRightStyle: 'solid',
+                        }}
+                      >
+                        <PdfText style={{ fontSize: 10 }}>เลขที่ใบเสร็จ / Receipt No.</PdfText>
+                      </PdfView>
+                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
+                        <PdfText style={{ fontSize: 12, fontWeight: 700, textAlign: 'right' }}>
+                          {loan.paymentRef || '-'}
+                        </PdfText>
+                      </PdfView>
                     </PdfView>
-                    <PdfText style={{ paddingHorizontal: 6, paddingVertical: 6, fontSize: 12, fontWeight: 700, textAlign: 'right' }}>
-                      {loan.paymentRef || '-'}
-                    </PdfText>
                   </PdfView>
                 </PdfView>
                 <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 6 }}>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0 }}>
-                    <PdfView style={{ backgroundColor: '#f3f4f6', paddingHorizontal: 6, paddingVertical: 4 }}>
-                      <PdfText style={{ fontSize: 10 }}>เลขที่ทำรายการ / Transaction No.</PdfText>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                      <PdfView
+                        style={{
+                          width: '46%',
+                          backgroundColor: '#f3f4f6',
+                          justifyContent: 'center',
+                          paddingHorizontal: 6,
+                          borderRightWidth: 1,
+                          borderRightColor: '#d1d5db',
+                          borderRightStyle: 'solid',
+                        }}
+                      >
+                        <PdfText style={{ fontSize: 10 }}>เลขที่ทำรายการ / Transaction No.</PdfText>
+                      </PdfView>
+                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
+                        <PdfText style={{ fontSize: 12, textAlign: 'right' }}>
+                          {loan.transactionId || loan.id}
+                        </PdfText>
+                      </PdfView>
                     </PdfView>
-                    <PdfText style={{ paddingHorizontal: 6, paddingVertical: 6, fontSize: 12, textAlign: 'right' }}>
-                      {loan.transactionId || loan.id}
-                    </PdfText>
                   </PdfView>
-                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0 }}>
-                    <PdfView style={{ backgroundColor: '#f3f4f6', paddingHorizontal: 6, paddingVertical: 4 }}>
-                      <PdfText style={{ fontSize: 10 }}>วันออกใบเสร็จ / Receipt Date</PdfText>
+                  <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 42 }}>
+                    <PdfView style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                      <PdfView
+                        style={{
+                          width: '46%',
+                          backgroundColor: '#f3f4f6',
+                          justifyContent: 'center',
+                          paddingHorizontal: 6,
+                          borderRightWidth: 1,
+                          borderRightColor: '#d1d5db',
+                          borderRightStyle: 'solid',
+                        }}
+                      >
+                        <PdfText style={{ fontSize: 10 }}>วันออกใบเสร็จ / Receipt Date</PdfText>
+                      </PdfView>
+                      <PdfView style={{ width: '54%', justifyContent: 'center', paddingHorizontal: 6 }}>
+                        <PdfText style={{ fontSize: 12, textAlign: 'right' }}>
+                          {formatDateOrDash(loan.date)}
+                        </PdfText>
+                      </PdfView>
                     </PdfView>
-                    <PdfText style={{ paddingHorizontal: 6, paddingVertical: 6, fontSize: 12, textAlign: 'right' }}>
-                      {formatDateOrDash(loan.date)}
-                    </PdfText>
                   </PdfView>
                 </PdfView>
               </PdfView>
@@ -667,10 +730,10 @@ function TaxSubmissionPackagePdf({
             </PdfView>
             <PdfView style={{ flexDirection: 'row', paddingVertical: 8 }}>
               <PdfText style={{ width: '40%', fontSize: 12 }}>
-                บันทึกชำระค่าธรรมเนียม สัญญาเลขที่ {loan.loanNumber}
+                {receiptItemName}
               </PdfText>
               <PdfText style={{ width: '40%', fontSize: 12 }}>
-                - ค่าธรรมเนียมเงินกู้{'\n'}- ค่าดำเนินการ
+                - ค่าธรรมเนียมบริการ{'\n'}- ค่าดำเนินการ โอน-ไถ่ถอน
               </PdfText>
               <PdfText style={{ width: '20%', fontSize: 12, textAlign: 'right' }}>
                 {formatCurrency(subtotal)}
