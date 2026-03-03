@@ -246,7 +246,7 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
       }}
     >
       {/* ── 1. HEADER ─────────────────────────────────────────────────── */}
-      <PdfText style={{ fontSize: 26, fontWeight: 700, textAlign: 'center', marginBottom: 12 }}>
+      <PdfText style={{ fontSize: 22, fontWeight: 700, textAlign: 'center', marginBottom: 12 }}>
         ใบปิดเคสค่านายหน้า
       </PdfText>
       <PdfView style={{ borderTopWidth: 1, borderTopColor: T.borderMid, borderTopStyle: 'solid', marginBottom: 10 }} />

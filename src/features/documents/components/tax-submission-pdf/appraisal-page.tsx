@@ -328,7 +328,7 @@ export function AppraisalPage({
       style={{ fontFamily, backgroundColor: T.bg, color: T.text, paddingHorizontal: 28, paddingVertical: 20, fontSize: 9 }}
     >
       {/* ── HEADER ── */}
-      <PdfText style={{ fontSize: 20, fontWeight: 700, textAlign: 'center', marginBottom: 3 }}>
+      <PdfText style={{ fontSize: 22, fontWeight: 700, textAlign: 'center', marginBottom: 3 }}>
         ใบประเมินมูลค่าทรัพย์สิน
       </PdfText>
       <PdfView style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
