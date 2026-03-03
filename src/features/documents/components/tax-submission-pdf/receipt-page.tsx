@@ -16,9 +16,11 @@ import {
 export function ReceiptPage({
   loan,
   fontFamily,
+  logoSrc,
 }: {
   loan: TaxFeeLoanItem;
   fontFamily: string;
+  logoSrc?: string | null;
 }) {
   const subtotal = Number(loan.feeAmount || 0);
   const vat = subtotal * 0.07;
@@ -71,10 +73,12 @@ export function ReceiptPage({
     >
       <PdfView style={pdfStyles.rowBetween}>
         <PdfView style={{ width: '35%' }}>
-          <PdfImage
-            src="/images/logo.png"
-            style={{ width: 140, height: 48, objectFit: 'contain' }}
-          />
+                {logoSrc && (
+                  <PdfImage
+                    src={logoSrc}
+                    style={{ width: 140, height: 48, objectFit: 'contain' }}
+                  />
+                )}
         </PdfView>
         <PdfView style={{ width: '63%' }}>
           <PdfText

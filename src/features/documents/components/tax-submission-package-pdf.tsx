@@ -11,11 +11,13 @@ export function TaxSubmissionPackagePdf({
   monthName,
   buddhistYear,
   fontFamily,
+  logoSrc,
 }: {
   loans: TaxFeeLoanItem[];
   monthName: string;
   buddhistYear: number;
   fontFamily: string;
+  logoSrc?: string | null;
 }) {
   return (
     <PdfDocument
@@ -24,7 +26,12 @@ export function TaxSubmissionPackagePdf({
       subject="Tax submission package"
     >
       {loans.flatMap((loan) => [
-        <ReceiptPage key={`r-${loan.id}`} loan={loan} fontFamily={fontFamily} />,
+        <ReceiptPage
+          key={`r-${loan.id}`}
+          loan={loan}
+          fontFamily={fontFamily}
+          logoSrc={logoSrc}
+        />,
         <CloseCasePage key={`c-${loan.id}`} loan={loan} fontFamily={fontFamily} />,
         <AppraisalPage key={`a-${loan.id}`} loan={loan} fontFamily={fontFamily} />,
       ])}

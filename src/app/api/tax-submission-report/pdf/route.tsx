@@ -95,6 +95,18 @@ export async function POST(request: NextRequest) {
 
     const fontFamily = ensureFonts();
 
+    // อ่านโลโก้จาก public/images/ (server-side ใช้ fs ได้เลย)
+    let logoSrc: string | null = null;
+    try {
+      const logoPath = path.join(process.cwd(), 'public', 'images', 'logo.png');
+      if (fs.existsSync(logoPath)) {
+        const logoData = fs.readFileSync(logoPath);
+        logoSrc = `data:image/png;base64,${logoData.toString('base64')}`;
+      }
+    } catch {
+      // ถ้าอ่านไม่ได้ ใบเสร็จจะไม่แสดงโลโก้
+    }
+
     // Fetch images server-side (ไม่มี CORS, ไม่ต้อง proxy)
     const loansWithImages = await Promise.all(loans.map(resolveImages));
 
@@ -105,6 +117,7 @@ export async function POST(request: NextRequest) {
         monthName={monthName || ''}
         buddhistYear={buddhistYear || new Date().getFullYear() + 543}
         fontFamily={fontFamily}
+        logoSrc={logoSrc}
       />,
     ).toBuffer();
 
