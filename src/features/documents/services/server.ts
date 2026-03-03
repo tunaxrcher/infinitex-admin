@@ -1161,6 +1161,7 @@ export const taxSubmissionReportService = {
                 valuationDate: true,
                 titleDeeds: {
                   select: {
+                    isPrimary: true,
                     deedNumber: true,
                     provinceName: true,
                     amphurName: true,
@@ -1205,6 +1206,33 @@ export const taxSubmissionReportService = {
     const feePayments = payments
       .filter((payment) => payment.installmentId != null && payment.installmentId !== '')
       .map((payment) => {
+        // Follow product-list logic exactly: use titleDeeds from LoanApplication include.
+        const resolvedTitleDeeds = payment.loan?.application?.titleDeeds || [];
+        const primaryDeed =
+          resolvedTitleDeeds.find((deed) => deed.isPrimary) || resolvedTitleDeeds[0];
+        const collateralDetails = payment.loan?.collateralDetails as
+          | Record<string, any>
+          | null
+          | undefined;
+        const allPlaceNames = resolvedTitleDeeds
+          .map((deed) => `${deed.amphurName || ''} ${deed.provinceName || ''}`.trim())
+          .filter(Boolean);
+        const titleDeedCount = resolvedTitleDeeds.length;
+        // Keep behavior aligned with /loan/product-list:
+        // placeName is derived from title deed location only (amphur + province).
+        const placeName = primaryDeed
+          ? `${primaryDeed.amphurName || ''} ${primaryDeed.provinceName || ''}`.trim() ||
+            '-'
+          : '-';
+        const placeDisplay =
+          titleDeedCount > 1
+            ? `โฉนดชุด (${allPlaceNames.join(', ') || '-'})`
+            : placeName || '-';
+        const propertyType =
+          primaryDeed?.landType ||
+          collateralDetails?.landType ||
+          collateralDetails?.propertyType ||
+          '';
         const loanPrincipal = Number(payment.loan?.principalAmount || 0);
         const feeAmount = round2(loanPrincipal * rateDecimal);
         return {
@@ -1235,10 +1263,15 @@ export const taxSubmissionReportService = {
             payment.loan?.application?.ownerName ||
             payment.loan?.customer?.profile?.fullName ||
             '-',
+          placeName,
+          placeDisplay,
+          allPlaceNames: allPlaceNames.length > 0 ? allPlaceNames : ['-'],
+          titleDeedCount,
+          propertyType,
           propertyValue: Number(payment.loan?.application?.propertyValue || 0),
           estimatedValue: Number(payment.loan?.application?.estimatedValue || 0),
           valuationDate: payment.loan?.application?.valuationDate || null,
-          titleDeeds: payment.loan?.application?.titleDeeds || [],
+          titleDeeds: resolvedTitleDeeds,
           taxRate,
           feeAmount,
         };

@@ -132,6 +132,11 @@ interface TaxFeeLoanItem {
   loanId?: string;
   loanNumber: string;
   customerName: string;
+  placeName?: string;
+  placeDisplay?: string;
+  allPlaceNames?: string[];
+  titleDeedCount?: number;
+  propertyType?: string;
   customerAddress?: string;
   customerTaxId?: string;
   paymentRef?: string;
@@ -149,6 +154,7 @@ interface TaxFeeLoanItem {
   estimatedValue?: number;
   valuationDate?: string | null;
   titleDeeds?: Array<{
+    isPrimary?: boolean | null;
     deedNumber?: string | null;
     provinceName?: string | null;
     amphurName?: string | null;
@@ -615,14 +621,38 @@ function TaxSubmissionPackagePdf({
         const subtotal = Number(loan.feeAmount || 0);
         const vat = subtotal * 0.07;
         const grand = subtotal + vat;
-        const titleDeed = loan.titleDeeds?.[0];
-        const propertyType = (titleDeed?.landType || '').trim();
-        const propertyLocation = [titleDeed?.amphurName, titleDeed?.provinceName]
+        const primaryDeed =
+          loan.titleDeeds?.find((deed) => deed.isPrimary) || loan.titleDeeds?.[0];
+        const titleDeed = primaryDeed;
+        const propertyType = (loan.propertyType || primaryDeed?.landType || '').trim();
+        const normalizedAllPlaceNames = (loan.allPlaceNames || [])
+          .map((name) => String(name || '').trim().replace(/\s+/g, ' '))
+          .filter((name) => name && name !== '-');
+        const placeNameFromLoan = String(loan.placeName || '')
+          .trim()
+          .replace(/\s+/g, ' ');
+        const fallbackPlaceName =
+          placeNameFromLoan ||
+          normalizedAllPlaceNames[0] ||
+          [primaryDeed?.amphurName, primaryDeed?.provinceName]
+            .filter(Boolean)
+            .join(' ')
+            .trim()
+            .replace(/\s+/g, ' ');
+        const isMultipleDeed = Number(loan.titleDeedCount || 0) > 1;
+        // Match /loan/product-list display logic for place name.
+        const productListPlaceDisplay = isMultipleDeed
+          ? `โฉนดชุด (${normalizedAllPlaceNames.join(', ') || fallbackPlaceName || '-'})`
+          : fallbackPlaceName || '-';
+        const propertyLocation =
+          productListPlaceDisplay && productListPlaceDisplay !== '-'
+            ? productListPlaceDisplay
+            : '';
+        const displayType = (propertyType || titleDeed?.landType || 'ที่ดิน').trim();
+        const receiptItemName = [displayType, propertyLocation]
           .filter(Boolean)
-          .join(' ');
-        const receiptItemName = `ประเภท${propertyType ? ` ${propertyType}` : ''}${
-          propertyLocation ? ` ${propertyLocation}` : ''
-        }`;
+          .join(' ')
+          .trim();
         const netValue = Number(loan.estimatedValue || loan.propertyValue || 0);
         const compareRows = [
           ['1', 'บ้านทาวน์เฮ้าส์ใกล้เคียง', netValue * 0.98],
@@ -810,12 +840,21 @@ function TaxSubmissionPackagePdf({
                 borderBottomColor: '#111827',
                 borderTopStyle: 'solid',
                 borderBottomStyle: 'solid',
-                paddingVertical: 7,
+                paddingVertical: 8,
               }}
             >
-              <PdfText style={{ width: '40%', fontSize: 11, textAlign: 'center' }}>ชื่อรายการ</PdfText>
-              <PdfText style={{ width: '40%', fontSize: 11, textAlign: 'center' }}>รายละเอียด</PdfText>
-              <PdfText style={{ width: '20%', fontSize: 11, textAlign: 'right' }}>ค่าธรรมเนียม</PdfText>
+              <PdfText style={{ width: '40%', fontSize: 11, textAlign: 'center', lineHeight: 1.25 }}>
+                ชื่อรายการ{'\n'}
+                <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Item name</PdfText>
+              </PdfText>
+              <PdfText style={{ width: '40%', fontSize: 11, textAlign: 'center', lineHeight: 1.25 }}>
+                รายละเอียด{'\n'}
+                <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Details</PdfText>
+              </PdfText>
+              <PdfText style={{ width: '20%', fontSize: 11, textAlign: 'right', lineHeight: 1.25 }}>
+                ค่าธรรมเนียม{'\n'}
+                <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Fee</PdfText>
+              </PdfText>
             </PdfView>
             <PdfView style={{ flexDirection: 'row', paddingVertical: 8 }}>
               <PdfText style={{ width: '40%', fontSize: 12 }}>
@@ -1732,6 +1771,18 @@ export default function TaxSubmissionReportPage() {
           existing.feeAmount = Number(existing.feeAmount || 0) + Number(item.feeAmount || 0);
           if (!existing.date && item.date) {
             existing.date = item.date;
+          }
+          if ((!existing.placeDisplay || existing.placeDisplay === '-') && item.placeDisplay) {
+            existing.placeDisplay = item.placeDisplay;
+          }
+          if ((!existing.placeName || existing.placeName === '-') && item.placeName) {
+            existing.placeName = item.placeName;
+          }
+          if ((!existing.propertyType || existing.propertyType === 'ที่ดิน') && item.propertyType) {
+            existing.propertyType = item.propertyType;
+          }
+          if ((!existing.allPlaceNames || existing.allPlaceNames.length === 0) && item.allPlaceNames) {
+            existing.allPlaceNames = item.allPlaceNames;
           }
         }
         const items = Array.from(itemsMap.values());
