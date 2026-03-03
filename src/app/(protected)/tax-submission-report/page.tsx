@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Font, pdf } from '@react-pdf/renderer';
+import { taxSubmissionReportApi } from '@src/features/documents/api';
 import {
   TaxSubmissionPackagePdf,
   type TaxFeeLoanItem,
 } from '@src/features/documents/components/tax-submission-package-pdf';
-import { taxSubmissionReportApi } from '@src/features/documents/api';
 import { useGetTaxSubmissionReport } from '@src/features/documents/hooks';
 import { format } from 'date-fns';
 import { Loader2, Printer, Search, Settings2, X } from 'lucide-react';
@@ -197,7 +197,10 @@ function DetailModal({
     }
 
     if (type === 'fee-payment') {
-      return filteredData.reduce((sum, item) => sum + Number(item.feeAmount || 0), 0);
+      return filteredData.reduce(
+        (sum, item) => sum + Number(item.feeAmount || 0),
+        0,
+      );
     }
 
     if (type === 'income-expense-total') {
@@ -207,7 +210,10 @@ function DetailModal({
       }, 0);
     }
 
-    return filteredData.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    return filteredData.reduce(
+      (sum, item) => sum + Number(item.amount || 0),
+      0,
+    );
   }, [filteredData, type]);
 
   const renderContent = () => {
@@ -244,7 +250,9 @@ function DetailModal({
               {filteredData.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell>
-                    {item.date ? format(new Date(item.date), 'dd/MM/yyyy') : '-'}
+                    {item.date
+                      ? format(new Date(item.date), 'dd/MM/yyyy')
+                      : '-'}
                   </TableCell>
                   <TableCell>{item.loanNumber || '-'}</TableCell>
                   <TableCell>{item.customerName || '-'}</TableCell>
@@ -277,7 +285,9 @@ function DetailModal({
               {filteredData.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell>
-                    {item.date ? format(new Date(item.date), 'dd/MM/yyyy') : '-'}
+                    {item.date
+                      ? format(new Date(item.date), 'dd/MM/yyyy')
+                      : '-'}
                   </TableCell>
                   <TableCell>{item.docNumber || '-'}</TableCell>
                   <TableCell>{item.title || '-'}</TableCell>
@@ -311,7 +321,9 @@ function DetailModal({
               {filteredData.map((item: any) => (
                 <TableRow key={`${item.type}-${item.id}`}>
                   <TableCell>
-                    {item.date ? format(new Date(item.date), 'dd/MM/yyyy') : '-'}
+                    {item.date
+                      ? format(new Date(item.date), 'dd/MM/yyyy')
+                      : '-'}
                   </TableCell>
                   <TableCell>
                     {item.type === 'income' ? 'รายรับ' : 'รายจ่าย'}
@@ -355,7 +367,9 @@ function DetailModal({
                   {type === 'fee-payment' ? 'ชำระค่าธรรมเนียม' : 'จำนวนเงิน'}
                 </TableHead>
               )}
-              {type === 'fee-payment' && <TableHead className="w-[80px] text-center">พิมพ์</TableHead>}
+              {type === 'fee-payment' && (
+                <TableHead className="w-[80px] text-center">พิมพ์</TableHead>
+              )}
               {type === 'close-payment' && (
                 <TableHead className="text-right">ชำระปิดบัญชี</TableHead>
               )}
@@ -374,7 +388,9 @@ function DetailModal({
               return (
                 <TableRow key={`${item.type || type}-${item.id}`}>
                   <TableCell>
-                    {item.date ? format(new Date(item.date), 'dd/MM/yyyy') : '-'}
+                    {item.date
+                      ? format(new Date(item.date), 'dd/MM/yyyy')
+                      : '-'}
                   </TableCell>
                   <TableCell>{item.loanNumber || '-'}</TableCell>
                   <TableCell>{item.customerName || '-'}</TableCell>
@@ -421,7 +437,9 @@ function DetailModal({
                   )}
 
                   {type === 'loan-total' && (
-                    <TableCell>{isFeeRow ? 'ค่าธรรมเนียม' : 'ปิดบัญชี'}</TableCell>
+                    <TableCell>
+                      {isFeeRow ? 'ค่าธรรมเนียม' : 'ปิดบัญชี'}
+                    </TableCell>
                   )}
                 </TableRow>
               );
@@ -472,7 +490,9 @@ function DetailModal({
           )}
         </div>
 
-        <ScrollArea className="max-h-[calc(90vh-300px)]">{renderContent()}</ScrollArea>
+        <ScrollArea className="max-h-[calc(90vh-300px)]">
+          {renderContent()}
+        </ScrollArea>
 
         <div className="mt-4 flex items-center justify-between border-t pt-4">
           <div className="text-sm text-gray-500">
@@ -546,7 +566,12 @@ export default function TaxSubmissionReportPage() {
   const yearOptions = generateYearOptions();
 
   const handleCellClick = useCallback(
-    async (month: number, monthName: string, type: DetailType, title: string) => {
+    async (
+      month: number,
+      monthName: string,
+      type: DetailType,
+      title: string,
+    ) => {
       setModalLoading(true);
       setModalTitle(`${title} - ${monthName} ${selectedYear + 543}`);
       setModalType(type);
@@ -710,20 +735,33 @@ export default function TaxSubmissionReportPage() {
             itemsMap.set(key, { ...item });
             continue;
           }
-          existing.feeAmount = Number(existing.feeAmount || 0) + Number(item.feeAmount || 0);
+          existing.feeAmount =
+            Number(existing.feeAmount || 0) + Number(item.feeAmount || 0);
           if (!existing.date && item.date) {
             existing.date = item.date;
           }
-          if ((!existing.placeDisplay || existing.placeDisplay === '-') && item.placeDisplay) {
+          if (
+            (!existing.placeDisplay || existing.placeDisplay === '-') &&
+            item.placeDisplay
+          ) {
             existing.placeDisplay = item.placeDisplay;
           }
-          if ((!existing.placeName || existing.placeName === '-') && item.placeName) {
+          if (
+            (!existing.placeName || existing.placeName === '-') &&
+            item.placeName
+          ) {
             existing.placeName = item.placeName;
           }
-          if ((!existing.propertyType || existing.propertyType === 'ที่ดิน') && item.propertyType) {
+          if (
+            (!existing.propertyType || existing.propertyType === 'ที่ดิน') &&
+            item.propertyType
+          ) {
             existing.propertyType = item.propertyType;
           }
-          if ((!existing.allPlaceNames || existing.allPlaceNames.length === 0) && item.allPlaceNames) {
+          if (
+            (!existing.allPlaceNames || existing.allPlaceNames.length === 0) &&
+            item.allPlaceNames
+          ) {
             existing.allPlaceNames = item.allPlaceNames;
           }
         }
@@ -833,7 +871,9 @@ export default function TaxSubmissionReportPage() {
             <CardContent>
               <div
                 className={`text-2xl font-bold ${
-                  totals.incomeExpenseTotal >= 0 ? 'text-green-600' : 'text-red-600'
+                  totals.incomeExpenseTotal >= 0
+                    ? 'text-green-600'
+                    : 'text-red-600'
                 }`}
               >
                 {formatCurrency(totals.incomeExpenseTotal)}
@@ -846,7 +886,9 @@ export default function TaxSubmissionReportPage() {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-2 text-muted-foreground">กำลังโหลดข้อมูล...</span>
+            <span className="ml-2 text-muted-foreground">
+              กำลังโหลดข้อมูล...
+            </span>
           </div>
         ) : (
           <div className="rounded-md border">
@@ -866,14 +908,20 @@ export default function TaxSubmissionReportPage() {
                   <TableHead className="text-right font-semibold">
                     ชำระค่าธรรมเนียม
                   </TableHead>
-                  <TableHead className="text-right font-semibold">รายจ่าย</TableHead>
-                  <TableHead className="text-right font-semibold">รวมรับ/จ่าย</TableHead>
+                  <TableHead className="text-right font-semibold">
+                    รายจ่าย
+                  </TableHead>
+                  <TableHead className="text-right font-semibold">
+                    รวมรับ/จ่าย
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {monthlyData.map((month: any) => (
                   <TableRow key={month.month}>
-                    <TableCell className="font-medium">{month.monthName}</TableCell>
+                    <TableCell className="font-medium">
+                      {month.monthName}
+                    </TableCell>
                     <TableCell className="text-right font-mono">
                       <span
                         className="cursor-pointer underline decoration-dotted hover:text-primary"
@@ -941,7 +989,10 @@ export default function TaxSubmissionReportPage() {
                           disabled={printingMonth === month.month}
                           className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
                           onClick={() =>
-                            handlePrintMonthPackage(month.month, month.monthName)
+                            handlePrintMonthPackage(
+                              month.month,
+                              month.monthName,
+                            )
                           }
                         >
                           {printingMonth === month.month ? (
@@ -1057,7 +1108,10 @@ export default function TaxSubmissionReportPage() {
               </p>
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setRateDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setRateDialogOpen(false)}
+              >
                 ยกเลิก
               </Button>
               <Button onClick={saveTaxRate}>บันทึก</Button>

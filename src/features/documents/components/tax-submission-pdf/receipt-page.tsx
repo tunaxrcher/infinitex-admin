@@ -26,9 +26,17 @@ export function ReceiptPage({
   const primaryDeed =
     loan.titleDeeds?.find((deed) => deed.isPrimary) || loan.titleDeeds?.[0];
   const titleDeed = primaryDeed;
-  const propertyType = (loan.propertyType || primaryDeed?.landType || '').trim();
+  const propertyType = (
+    loan.propertyType ||
+    primaryDeed?.landType ||
+    ''
+  ).trim();
   const normalizedAllPlaceNames = (loan.allPlaceNames || [])
-    .map((name) => String(name || '').trim().replace(/\s+/g, ' '))
+    .map((name) =>
+      String(name || '')
+        .trim()
+        .replace(/\s+/g, ' '),
+    )
     .filter((name) => name && name !== '-');
   const placeNameFromLoan = String(loan.placeName || '')
     .trim()
@@ -56,7 +64,11 @@ export function ReceiptPage({
     .trim();
 
   return (
-    <PdfPage key={`r-${loan.id}`} size="A4" style={[pdfStyles.page, { fontFamily }]}>
+    <PdfPage
+      key={`r-${loan.id}`}
+      size="A4"
+      style={[pdfStyles.page, { fontFamily }]}
+    >
       <PdfView style={pdfStyles.rowBetween}>
         <PdfView style={{ width: '35%' }}>
           <PdfImage
@@ -65,10 +77,14 @@ export function ReceiptPage({
           />
         </PdfView>
         <PdfView style={{ width: '63%' }}>
-          <PdfText style={{ fontSize: 26, fontWeight: 700, textAlign: 'right' }}>
+          <PdfText
+            style={{ fontSize: 26, fontWeight: 700, textAlign: 'right' }}
+          >
             บริษัท อินฟินิทเอ็กซ์ ไทย จำกัด
           </PdfText>
-          <PdfText style={{ ...pdfStyles.muted, ...pdfStyles.textRight, marginTop: 3 }}>
+          <PdfText
+            style={{ ...pdfStyles.muted, ...pdfStyles.textRight, marginTop: 3 }}
+          >
             ที่อยู่ 11/2 ซอย เอ็นเจ์เนีย 1 ถนนเชียงเมือง ตำบลในเมือง
           </PdfText>
           <PdfText style={{ ...pdfStyles.muted, ...pdfStyles.textRight }}>
@@ -95,10 +111,20 @@ export function ReceiptPage({
         </PdfView>
       </PdfView>
 
-      <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 18, alignItems: 'stretch' }}>
+      <PdfView
+        style={{
+          ...pdfStyles.rowBetween,
+          marginTop: 18,
+          alignItems: 'stretch',
+        }}
+      >
         <PdfView style={{ ...pdfStyles.box, width: '39%', minHeight: 110 }}>
-          <PdfText style={{ fontSize: 16, fontWeight: 700 }}>{loan.customerName || '-'}</PdfText>
-          <PdfText style={{ marginTop: 10, fontSize: 12 }}>{loan.customerAddress || '-'}</PdfText>
+          <PdfText style={{ fontSize: 16, fontWeight: 700 }}>
+            {loan.customerName || '-'}
+          </PdfText>
+          <PdfText style={{ marginTop: 10, fontSize: 12 }}>
+            {loan.customerAddress || '-'}
+          </PdfText>
           <PdfText style={{ marginTop: 12, fontSize: 10 }}>
             เลขประจำตัวผู้เสียภาษี / TAX ID. {loan.customerTaxId || '-'}
           </PdfText>
@@ -106,8 +132,22 @@ export function ReceiptPage({
 
         <PdfView style={{ width: '59%', minHeight: 110 }}>
           <PdfView style={pdfStyles.rowBetween}>
-            <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
-              <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
+            <PdfView
+              style={{
+                ...pdfStyles.box,
+                width: '49%',
+                padding: 0,
+                minHeight: 52,
+                maxHeight: 52,
+              }}
+            >
+              <PdfView
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'stretch',
+                  height: '100%',
+                }}
+              >
                 <PdfView
                   style={{
                     width: '48%',
@@ -120,18 +160,51 @@ export function ReceiptPage({
                     borderRightStyle: 'solid',
                   }}
                 >
-                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>เลขที่</PdfText>
-                  <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>No.</PdfText>
+                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>
+                    เลขที่
+                  </PdfText>
+                  <PdfText
+                    style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}
+                  >
+                    No.
+                  </PdfText>
                 </PdfView>
-                <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
-                  <PdfText style={{ fontSize: 11.5, fontWeight: 700, textAlign: 'right' }}>
+                <PdfView
+                  style={{
+                    width: '52%',
+                    justifyContent: 'flex-start',
+                    paddingHorizontal: 6,
+                    paddingTop: 7,
+                  }}
+                >
+                  <PdfText
+                    style={{
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      textAlign: 'right',
+                    }}
+                  >
                     {loan.loanNumber || '-'}
                   </PdfText>
                 </PdfView>
               </PdfView>
             </PdfView>
-            <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
-              <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
+            <PdfView
+              style={{
+                ...pdfStyles.box,
+                width: '49%',
+                padding: 0,
+                minHeight: 52,
+                maxHeight: 52,
+              }}
+            >
+              <PdfView
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'stretch',
+                  height: '100%',
+                }}
+              >
                 <PdfView
                   style={{
                     width: '48%',
@@ -144,10 +217,23 @@ export function ReceiptPage({
                     borderRightStyle: 'solid',
                   }}
                 >
-                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>เลขที่ใบเสร็จ</PdfText>
-                  <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>Receipt No.</PdfText>
+                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>
+                    เลขที่ใบเสร็จ
+                  </PdfText>
+                  <PdfText
+                    style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}
+                  >
+                    Receipt No.
+                  </PdfText>
                 </PdfView>
-                <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                <PdfView
+                  style={{
+                    width: '52%',
+                    justifyContent: 'flex-start',
+                    paddingHorizontal: 6,
+                    paddingTop: 7,
+                  }}
+                >
                   <PdfText
                     style={{
                       fontSize: 8.7,
@@ -163,8 +249,22 @@ export function ReceiptPage({
             </PdfView>
           </PdfView>
           <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 6 }}>
-            <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
-              <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
+            <PdfView
+              style={{
+                ...pdfStyles.box,
+                width: '49%',
+                padding: 0,
+                minHeight: 52,
+                maxHeight: 52,
+              }}
+            >
+              <PdfView
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'stretch',
+                  height: '100%',
+                }}
+              >
                 <PdfView
                   style={{
                     width: '48%',
@@ -177,10 +277,23 @@ export function ReceiptPage({
                     borderRightStyle: 'solid',
                   }}
                 >
-                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>เลขที่ทำรายการ</PdfText>
-                  <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>Transaction No.</PdfText>
+                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>
+                    เลขที่ทำรายการ
+                  </PdfText>
+                  <PdfText
+                    style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}
+                  >
+                    Transaction No.
+                  </PdfText>
                 </PdfView>
-                <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                <PdfView
+                  style={{
+                    width: '52%',
+                    justifyContent: 'flex-start',
+                    paddingHorizontal: 6,
+                    paddingTop: 7,
+                  }}
+                >
                   <PdfText
                     style={{
                       fontSize: 8.7,
@@ -193,8 +306,22 @@ export function ReceiptPage({
                 </PdfView>
               </PdfView>
             </PdfView>
-            <PdfView style={{ ...pdfStyles.box, width: '49%', padding: 0, minHeight: 52, maxHeight: 52 }}>
-              <PdfView style={{ flexDirection: 'row', alignItems: 'stretch', height: '100%' }}>
+            <PdfView
+              style={{
+                ...pdfStyles.box,
+                width: '49%',
+                padding: 0,
+                minHeight: 52,
+                maxHeight: 52,
+              }}
+            >
+              <PdfView
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'stretch',
+                  height: '100%',
+                }}
+              >
                 <PdfView
                   style={{
                     width: '48%',
@@ -207,10 +334,23 @@ export function ReceiptPage({
                     borderRightStyle: 'solid',
                   }}
                 >
-                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>วันออกใบเสร็จ</PdfText>
-                  <PdfText style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}>Receipt Date</PdfText>
+                  <PdfText style={{ fontSize: 9.8, lineHeight: 1.1 }}>
+                    วันออกใบเสร็จ
+                  </PdfText>
+                  <PdfText
+                    style={{ fontSize: 8.6, lineHeight: 1.1, color: '#6b7280' }}
+                  >
+                    Receipt Date
+                  </PdfText>
                 </PdfView>
-                <PdfView style={{ width: '52%', justifyContent: 'flex-start', paddingHorizontal: 6, paddingTop: 7 }}>
+                <PdfView
+                  style={{
+                    width: '52%',
+                    justifyContent: 'flex-start',
+                    paddingHorizontal: 6,
+                    paddingTop: 7,
+                  }}
+                >
                   <PdfText style={{ fontSize: 11, textAlign: 'right' }}>
                     {formatDateOrDash(loan.date)}
                   </PdfText>
@@ -234,21 +374,44 @@ export function ReceiptPage({
           paddingVertical: 8,
         }}
       >
-        <PdfText style={{ width: '40%', fontSize: 11, textAlign: 'center', lineHeight: 1.25 }}>
+        <PdfText
+          style={{
+            width: '40%',
+            fontSize: 11,
+            textAlign: 'center',
+            lineHeight: 1.25,
+          }}
+        >
           ชื่อรายการ{'\n'}
           <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Item name</PdfText>
         </PdfText>
-        <PdfText style={{ width: '40%', fontSize: 11, textAlign: 'center', lineHeight: 1.25 }}>
+        <PdfText
+          style={{
+            width: '40%',
+            fontSize: 11,
+            textAlign: 'center',
+            lineHeight: 1.25,
+          }}
+        >
           รายละเอียด{'\n'}
           <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Details</PdfText>
         </PdfText>
-        <PdfText style={{ width: '20%', fontSize: 11, textAlign: 'right', lineHeight: 1.25 }}>
+        <PdfText
+          style={{
+            width: '20%',
+            fontSize: 11,
+            textAlign: 'right',
+            lineHeight: 1.25,
+          }}
+        >
           ค่าธรรมเนียม{'\n'}
           <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Fee</PdfText>
         </PdfText>
       </PdfView>
       <PdfView style={{ flexDirection: 'row', paddingVertical: 8 }}>
-        <PdfText style={{ width: '40%', fontSize: 12 }}>{receiptItemName}</PdfText>
+        <PdfText style={{ width: '40%', fontSize: 12 }}>
+          {receiptItemName}
+        </PdfText>
         <PdfText style={{ width: '40%', fontSize: 12 }}>
           - ค่าธรรมเนียมบริการ{'\n'}- ค่าดำเนินการ โอน-ไถ่ถอน
         </PdfText>
@@ -256,14 +419,29 @@ export function ReceiptPage({
           {formatCurrency(subtotal)}
         </PdfText>
       </PdfView>
-      <PdfView style={{ borderBottomWidth: 1, borderBottomColor: '#111827', borderBottomStyle: 'solid', paddingBottom: 6 }}>
+      <PdfView
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: '#111827',
+          borderBottomStyle: 'solid',
+          paddingBottom: 6,
+        }}
+      >
         <PdfText style={{ textAlign: 'right', fontSize: 12 }}>
           ค่าธรรมเนียมรวมทั้งสิ้น {formatCurrency(subtotal)} บาท
         </PdfText>
       </PdfView>
 
-      <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 14, alignItems: 'flex-end' }}>
-        <PdfText style={{ width: '55%', fontSize: 12 }}>{toThaiBahtText(grand)}</PdfText>
+      <PdfView
+        style={{
+          ...pdfStyles.rowBetween,
+          marginTop: 14,
+          alignItems: 'flex-end',
+        }}
+      >
+        <PdfText style={{ width: '55%', fontSize: 12 }}>
+          {toThaiBahtText(grand)}
+        </PdfText>
         <PdfView style={{ width: '43%' }}>
           <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
             <PdfText>ยอดรวมก่อนภาษี (Subtotal)</PdfText>
@@ -282,13 +460,24 @@ export function ReceiptPage({
               paddingTop: 4,
             }}
           >
-            <PdfText style={{ fontWeight: 700 }}>ยอดรวมทั้งสิ้น (Grand Total)</PdfText>
-            <PdfText style={{ fontWeight: 700 }}>{formatCurrency(grand)}</PdfText>
+            <PdfText style={{ fontWeight: 700 }}>
+              ยอดรวมทั้งสิ้น (Grand Total)
+            </PdfText>
+            <PdfText style={{ fontWeight: 700 }}>
+              {formatCurrency(grand)}
+            </PdfText>
           </PdfView>
         </PdfView>
       </PdfView>
 
-      <PdfText style={{ marginTop: 20, color: '#1d4ed8', fontSize: 14, fontWeight: 700 }}>
+      <PdfText
+        style={{
+          marginTop: 20,
+          color: '#1d4ed8',
+          fontSize: 14,
+          fontWeight: 700,
+        }}
+      >
         หมายเหตุ
       </PdfText>
       <PdfText style={{ marginTop: 6, color: '#6b7280' }}>-</PdfText>

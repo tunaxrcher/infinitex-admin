@@ -1,4 +1,8 @@
-import { Page as PdfPage, Text as PdfText, View as PdfView } from '@react-pdf/renderer';
+import {
+  Page as PdfPage,
+  Text as PdfText,
+  View as PdfView,
+} from '@react-pdf/renderer';
 import {
   formatCurrency,
   formatDateOrDash,
@@ -24,11 +28,17 @@ export function AppraisalPage({
   ];
 
   return (
-    <PdfPage key={`a-${loan.id}`} size="A4" style={[pdfStyles.page, { fontFamily }]}>
+    <PdfPage
+      key={`a-${loan.id}`}
+      size="A4"
+      style={[pdfStyles.page, { fontFamily }]}
+    >
       <PdfText style={{ fontSize: 40, fontWeight: 700, textAlign: 'center' }}>
         ใบประเมินมูลค่าทรัพย์สิน
       </PdfText>
-      <PdfView style={{ ...pdfStyles.rowBetween, alignItems: 'center', marginTop: 4 }}>
+      <PdfView
+        style={{ ...pdfStyles.rowBetween, alignItems: 'center', marginTop: 4 }}
+      >
         <PdfView
           style={{
             width: '28%',
@@ -51,14 +61,18 @@ export function AppraisalPage({
       </PdfView>
       <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 10 }}>
         <PdfView>
-          <PdfText style={{ fontWeight: 700 }}>หลักทรัพย์ : {loan.loanNumber || '-'}</PdfText>
+          <PdfText style={{ fontWeight: 700 }}>
+            หลักทรัพย์ : {loan.loanNumber || '-'}
+          </PdfText>
           <PdfText style={{ marginTop: 2 }}>คำรับ : วางหลักทรัพย์จำนอง</PdfText>
         </PdfView>
         <PdfView style={pdfStyles.textRight}>
           <PdfText style={{ fontWeight: 700 }}>
             วันที่ประเมิน : {formatDateOrDash(loan.valuationDate || loan.date)}
           </PdfText>
-          <PdfText style={{ marginTop: 2 }}>เลขที่รายงาน : AV-REP-{loan.loanNumber || '-'}</PdfText>
+          <PdfText style={{ marginTop: 2 }}>
+            เลขที่รายงาน : AV-REP-{loan.loanNumber || '-'}
+          </PdfText>
         </PdfView>
       </PdfView>
 
@@ -80,7 +94,9 @@ export function AppraisalPage({
             <PdfView style={{ marginTop: 4 }}>
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>ประเภททรัพย์</PdfText>
-                <PdfText>{titleDeed?.landType || 'ที่ดินพร้อมสิ่งปลูกสร้าง'}</PdfText>
+                <PdfText>
+                  {titleDeed?.landType || 'ที่ดินพร้อมสิ่งปลูกสร้าง'}
+                </PdfText>
               </PdfView>
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>เนื้อที่ดิน</PdfText>
@@ -89,12 +105,15 @@ export function AppraisalPage({
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>ที่ตั้ง</PdfText>
                 <PdfText>
-                  {titleDeed?.amphurName || '-'} / {titleDeed?.provinceName || '-'}
+                  {titleDeed?.amphurName || '-'} /{' '}
+                  {titleDeed?.provinceName || '-'}
                 </PdfText>
               </PdfView>
               <PdfView style={{ ...pdfStyles.kvRow, ...pdfStyles.noBottom }}>
                 <PdfText>ผู้ถือกรรมสิทธิ์</PdfText>
-                <PdfText>{titleDeed?.ownerName || loan.ownerName || '-'}</PdfText>
+                <PdfText>
+                  {titleDeed?.ownerName || loan.ownerName || '-'}
+                </PdfText>
               </PdfView>
             </PdfView>
           </PdfView>
@@ -119,12 +138,20 @@ export function AppraisalPage({
               </PdfView>
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>มูลค่าปรับอุปสงค์</PdfText>
-                <PdfText>{formatCurrency((loan.propertyValue || 0) * 0.92)}</PdfText>
+                <PdfText>
+                  {formatCurrency((loan.propertyValue || 0) * 0.92)}
+                </PdfText>
               </PdfView>
-              <PdfView style={{ backgroundColor: '#f3f4f6', padding: 8, marginTop: 6 }}>
+              <PdfView
+                style={{ backgroundColor: '#f3f4f6', padding: 8, marginTop: 6 }}
+              >
                 <PdfView style={pdfStyles.rowBetween}>
-                  <PdfText style={{ fontSize: 19, fontWeight: 700 }}>มูลค่าประเมินสุทธิ</PdfText>
-                  <PdfText style={{ fontSize: 28, fontWeight: 700 }}>{formatCurrency(netValue)}</PdfText>
+                  <PdfText style={{ fontSize: 19, fontWeight: 700 }}>
+                    มูลค่าประเมินสุทธิ
+                  </PdfText>
+                  <PdfText style={{ fontSize: 28, fontWeight: 700 }}>
+                    {formatCurrency(netValue)}
+                  </PdfText>
                 </PdfView>
               </PdfView>
             </PdfView>
@@ -144,10 +171,26 @@ export function AppraisalPage({
               สรุปการเปรียบเทียบตลาด
             </PdfText>
             <PdfView style={{ marginTop: 6 }}>
-              <PdfView style={{ flexDirection: 'row', backgroundColor: '#f1f5f9', paddingVertical: 5 }}>
-                <PdfText style={{ width: '12%', textAlign: 'center', fontWeight: 700 }}>ลำดับ</PdfText>
-                <PdfText style={{ width: '58%', fontWeight: 700 }}>ทรัพย์จดเทียบเคียง</PdfText>
-                <PdfText style={{ width: '30%', textAlign: 'right', fontWeight: 700 }}>ราคาขาย</PdfText>
+              <PdfView
+                style={{
+                  flexDirection: 'row',
+                  backgroundColor: '#f1f5f9',
+                  paddingVertical: 5,
+                }}
+              >
+                <PdfText
+                  style={{ width: '12%', textAlign: 'center', fontWeight: 700 }}
+                >
+                  ลำดับ
+                </PdfText>
+                <PdfText style={{ width: '58%', fontWeight: 700 }}>
+                  ทรัพย์จดเทียบเคียง
+                </PdfText>
+                <PdfText
+                  style={{ width: '30%', textAlign: 'right', fontWeight: 700 }}
+                >
+                  ราคาขาย
+                </PdfText>
               </PdfView>
               {compareRows.map((r, idx) => (
                 <PdfView
@@ -158,7 +201,9 @@ export function AppraisalPage({
                     backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
                   }}
                 >
-                  <PdfText style={{ width: '12%', textAlign: 'center' }}>{r[0]}</PdfText>
+                  <PdfText style={{ width: '12%', textAlign: 'center' }}>
+                    {r[0]}
+                  </PdfText>
                   <PdfText style={{ width: '58%' }}>{r[1]}</PdfText>
                   <PdfText style={{ width: '30%', textAlign: 'right' }}>
                     {formatCurrency(Number(r[2]))}
@@ -167,15 +212,26 @@ export function AppraisalPage({
               ))}
               <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 4 }}>
                 <PdfText style={{ fontWeight: 700 }}>ค่ายสื่อกลาง</PdfText>
-                <PdfText style={{ fontWeight: 700 }}>{formatCurrency(netValue * 0.96)}</PdfText>
+                <PdfText style={{ fontWeight: 700 }}>
+                  {formatCurrency(netValue * 0.96)}
+                </PdfText>
               </PdfView>
             </PdfView>
           </PdfView>
         </PdfView>
 
         <PdfView style={{ width: '39%' }}>
-          <PdfView style={{ ...pdfStyles.box, height: 190, justifyContent: 'center', alignItems: 'center' }}>
-            <PdfText style={{ color: '#6b7280' }}>แผนผังที่ดิน (Placeholder)</PdfText>
+          <PdfView
+            style={{
+              ...pdfStyles.box,
+              height: 190,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <PdfText style={{ color: '#6b7280' }}>
+              แผนผังที่ดิน (Placeholder)
+            </PdfText>
           </PdfView>
 
           <PdfView style={{ ...pdfStyles.box, marginTop: 12 }}>
@@ -194,19 +250,27 @@ export function AppraisalPage({
             <PdfView style={{ marginTop: 6 }}>
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>ราคาที่ดิน</PdfText>
-                <PdfText>{formatCurrency((loan.propertyValue || 0) * 0.55)}</PdfText>
+                <PdfText>
+                  {formatCurrency((loan.propertyValue || 0) * 0.55)}
+                </PdfText>
               </PdfView>
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>สิ่งปลูกสร้าง</PdfText>
-                <PdfText>{formatCurrency((loan.propertyValue || 0) * 0.40)}</PdfText>
+                <PdfText>
+                  {formatCurrency((loan.propertyValue || 0) * 0.4)}
+                </PdfText>
               </PdfView>
               <PdfView style={pdfStyles.kvRow}>
                 <PdfText>ค่าเสื่อม/ปรับปรุง</PdfText>
-                <PdfText>-{formatCurrency((loan.propertyValue || 0) * 0.03)}</PdfText>
+                <PdfText>
+                  -{formatCurrency((loan.propertyValue || 0) * 0.03)}
+                </PdfText>
               </PdfView>
               <PdfView style={{ ...pdfStyles.kvRow, ...pdfStyles.noBottom }}>
                 <PdfText style={{ fontWeight: 700 }}>รวม</PdfText>
-                <PdfText style={{ fontWeight: 700 }}>{formatCurrency(netValue)}</PdfText>
+                <PdfText style={{ fontWeight: 700 }}>
+                  {formatCurrency(netValue)}
+                </PdfText>
               </PdfView>
             </PdfView>
           </PdfView>
@@ -250,7 +314,9 @@ export function AppraisalPage({
                   marginBottom: 6,
                 }}
               >
-                <PdfText style={{ fontSize: 10, color: '#6b7280' }}>รูปทรัพย์ {n}</PdfText>
+                <PdfText style={{ fontSize: 10, color: '#6b7280' }}>
+                  รูปทรัพย์ {n}
+                </PdfText>
               </PdfView>
             ))}
           </PdfView>
@@ -258,7 +324,15 @@ export function AppraisalPage({
       </PdfView>
 
       <PdfView style={{ marginTop: 20, alignItems: 'flex-end' }}>
-        <PdfView style={{ width: 280, borderBottomWidth: 1, borderBottomColor: '#6b7280', borderBottomStyle: 'dashed', paddingBottom: 18 }}>
+        <PdfView
+          style={{
+            width: 280,
+            borderBottomWidth: 1,
+            borderBottomColor: '#6b7280',
+            borderBottomStyle: 'dashed',
+            paddingBottom: 18,
+          }}
+        >
           <PdfText style={{ textAlign: 'center', color: '#6b7280' }}>
             วันที่ ......... เดือน ......... พ.ศ. .........
           </PdfText>

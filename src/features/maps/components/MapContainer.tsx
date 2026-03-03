@@ -527,9 +527,10 @@ export function MapContainer({
     // - At lower zoom: cluster if too many properties
     const MAX_INDIVIDUAL_MARKERS = 350;
     const FORCE_INDIVIDUAL_ZOOM = 12; // After 2 clicks from initial zoom 5.5 → ~13.5
-    const shouldShowIndividuals = 
-      zoom >= FORCE_INDIVIDUAL_ZOOM || 
-      (zoom >= ZOOM_THRESHOLD && visibleProperties.length <= MAX_INDIVIDUAL_MARKERS);
+    const shouldShowIndividuals =
+      zoom >= FORCE_INDIVIDUAL_ZOOM ||
+      (zoom >= ZOOM_THRESHOLD &&
+        visibleProperties.length <= MAX_INDIVIDUAL_MARKERS);
 
     if (!shouldShowIndividuals) {
       // Use clustering

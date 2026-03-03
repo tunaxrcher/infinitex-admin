@@ -1066,7 +1066,8 @@ export const taxSubmissionReportService = {
       (payment) => !payment.installmentId || payment.installmentId === '',
     );
     const installmentPayments = payments.filter(
-      (payment) => payment.installmentId != null && payment.installmentId !== '',
+      (payment) =>
+        payment.installmentId != null && payment.installmentId !== '',
     );
 
     const closeAccountPayment = closePayments.reduce(
@@ -1168,11 +1169,13 @@ export const taxSubmissionReportService = {
                     landAreaText: true,
                     ownerName: true,
                     landType: true,
+                    imageUrl: true,
                   },
                   orderBy: {
                     sortOrder: 'asc',
                   },
                 },
+                supportingImages: true,
               },
             },
           },
@@ -1192,7 +1195,9 @@ export const taxSubmissionReportService = {
     });
 
     const closePayments = payments
-      .filter((payment) => !payment.installmentId || payment.installmentId === '')
+      .filter(
+        (payment) => !payment.installmentId || payment.installmentId === '',
+      )
       .map((payment) => ({
         id: payment.id,
         type: 'close-payment',
@@ -1204,18 +1209,24 @@ export const taxSubmissionReportService = {
       }));
 
     const feePayments = payments
-      .filter((payment) => payment.installmentId != null && payment.installmentId !== '')
+      .filter(
+        (payment) =>
+          payment.installmentId != null && payment.installmentId !== '',
+      )
       .map((payment) => {
         // Follow product-list logic exactly: use titleDeeds from LoanApplication include.
         const resolvedTitleDeeds = payment.loan?.application?.titleDeeds || [];
         const primaryDeed =
-          resolvedTitleDeeds.find((deed) => deed.isPrimary) || resolvedTitleDeeds[0];
+          resolvedTitleDeeds.find((deed) => deed.isPrimary) ||
+          resolvedTitleDeeds[0];
         const collateralDetails = payment.loan?.collateralDetails as
           | Record<string, any>
           | null
           | undefined;
         const allPlaceNames = resolvedTitleDeeds
-          .map((deed) => `${deed.amphurName || ''} ${deed.provinceName || ''}`.trim())
+          .map((deed) =>
+            `${deed.amphurName || ''} ${deed.provinceName || ''}`.trim(),
+          )
           .filter(Boolean);
         const titleDeedCount = resolvedTitleDeeds.length;
         // Keep behavior aligned with /loan/product-list:
@@ -1250,6 +1261,9 @@ export const taxSubmissionReportService = {
           customerAddress: payment.loan?.customer?.profile?.address || '-',
           customerTaxId: payment.loan?.customer?.profile?.idCardNumber || '-',
           installmentNumber: payment.installment?.installmentNumber || null,
+          loanStatus: payment.loan?.status || null,
+          currentInstallment: Number(payment.loan?.currentInstallment || 0),
+          totalInstallments: Number(payment.loan?.totalInstallments || 0),
           paymentAmount: Number(payment.amount || 0),
           loanPrincipal,
           interestRate: Number(payment.loan?.interestRate || 0),
@@ -1269,9 +1283,24 @@ export const taxSubmissionReportService = {
           titleDeedCount,
           propertyType,
           propertyValue: Number(payment.loan?.application?.propertyValue || 0),
-          estimatedValue: Number(payment.loan?.application?.estimatedValue || 0),
+          estimatedValue: Number(
+            payment.loan?.application?.estimatedValue || 0,
+          ),
           valuationDate: payment.loan?.application?.valuationDate || null,
-          titleDeeds: resolvedTitleDeeds,
+          titleDeeds: resolvedTitleDeeds.map((d) => ({
+            ...d,
+            imageUrl: (d as any).imageUrl || null,
+          })),
+          primaryImageUrl:
+            (resolvedTitleDeeds[0] as any)?.imageUrl || null,
+          supportingImages: (() => {
+            const raw = payment.loan?.application?.supportingImages;
+            if (!raw) return [] as string[];
+            if (typeof raw === 'string') {
+              try { return JSON.parse(raw) as string[]; } catch { return []; }
+            }
+            return raw as string[];
+          })(),
           taxRate,
           feeAmount,
         };

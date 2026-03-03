@@ -35,7 +35,10 @@ export interface TaxFeeLoanItem {
     landAreaText?: string | null;
     ownerName?: string | null;
     landType?: string | null;
+    imageUrl?: string | null;
   }>;
+  primaryImageUrl?: string | null;
+  supportingImages?: string[];
   date?: string | null;
   installmentNumber?: number | null;
   loanStatus?: string | null;
@@ -157,7 +160,12 @@ export const pdfStyles = PdfStyleSheet.create({
   textRight: { textAlign: 'right' },
   receiptTitleTh: { fontSize: 34, fontWeight: 700, lineHeight: 1.1 },
   receiptTitleEn: { fontSize: 14, color: '#6b7280', marginTop: 2 },
-  tableBlueTitle: { color: '#1d4ed8', fontSize: 18, fontWeight: 700, marginTop: 22 },
+  tableBlueTitle: {
+    color: '#1d4ed8',
+    fontSize: 18,
+    fontWeight: 700,
+    marginTop: 22,
+  },
   box: {
     borderWidth: 1,
     borderColor: '#d1d5db',
