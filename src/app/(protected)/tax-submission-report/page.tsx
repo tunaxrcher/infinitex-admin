@@ -2,12 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Font, pdf } from '@react-pdf/renderer';
 import { taxSubmissionReportApi } from '@src/features/documents/api';
-import {
-  TaxSubmissionPackagePdf,
-  type TaxFeeLoanItem,
-} from '@src/features/documents/components/tax-submission-package-pdf';
+import { type TaxFeeLoanItem } from '@src/features/documents/components/tax-submission-package-pdf';
 import { useGetTaxSubmissionReport } from '@src/features/documents/hooks';
 import { format } from 'date-fns';
 import { Loader2, Printer, Search, Settings2, X } from 'lucide-react';
@@ -46,74 +42,6 @@ import {
 import { Container } from '@src/shared/components/common/container';
 
 const TAX_RATE_STORAGE_KEY = 'tax_submission_rate_percent';
-const PDF_FONT_FAMILY = 'SarabunPDF';
-const PDF_FONT_FLAG_KEY = '__tax_submission_pdf_font_registered__';
-const PDF_FONT_READY_KEY = '__tax_submission_pdf_font_ready__';
-
-/** แปลง URL → absolute */
-const toAbsoluteUrl = (url?: string | null): string | null => {
-  if (!url) return null;
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
-  }
-  return url;
-};
-
-/** แปลง ArrayBuffer → base64 data URI */
-const bufToBase64 = (buf: ArrayBuffer, contentType: string) => {
-  const bytes = new Uint8Array(buf);
-  let binary = '';
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-  return `data:${contentType};base64,${btoa(binary)}`;
-};
-
-/** fetch image → base64
- *  - URL ภายนอก (S3 / DigitalOcean Spaces) ผ่าน /api/proxy-image เพื่อหลีก CORS
- *  - URL ภายใน (/uploads/...) fetch โดยตรง */
-const fetchImageAsBase64 = async (url?: string | null): Promise<string | null> => {
-  if (!url) return null;
-  if (url.startsWith('data:')) return url;
-  try {
-    const fetchUrl =
-      url.startsWith('http://') || url.startsWith('https://')
-        ? `/api/proxy-image?url=${encodeURIComponent(url)}`
-        : toAbsoluteUrl(url) || url;
-
-    const res = await fetch(fetchUrl, { credentials: 'include' });
-    if (!res.ok) return null;
-    const buf = await res.arrayBuffer();
-    const contentType = res.headers.get('content-type') || 'image/jpeg';
-    return bufToBase64(buf, contentType);
-  } catch {
-    return null;
-  }
-};
-
-/** แปลง image URLs ทั้งหมดใน TaxFeeLoanItem เป็น base64 (async) */
-const resolveImageUrls = async (loan: TaxFeeLoanItem): Promise<TaxFeeLoanItem> => {
-  const [primaryBase64, ...supportBase64s] = await Promise.all([
-    fetchImageAsBase64(loan.primaryImageUrl),
-    ...(loan.supportingImages || []).map(fetchImageAsBase64),
-  ]);
-
-  const titleDeedsWithBase64 = await Promise.all(
-    (loan.titleDeeds || []).map(async (d) => ({
-      ...d,
-      imageUrl: await fetchImageAsBase64(d.imageUrl),
-    })),
-  );
-
-  return {
-    ...loan,
-    primaryImageUrl: primaryBase64,
-    supportingImages: supportBase64s.filter((u): u is string => Boolean(u)),
-    titleDeeds: titleDeedsWithBase64,
-  };
-};
 
 const generateYearOptions = () => {
   const currentYear = new Date().getFullYear();
@@ -132,60 +60,6 @@ const formatCurrency = (value: number | undefined | null) => {
   });
 };
 
-const toBase64 = (buffer: ArrayBuffer) => {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    const chunk = bytes.subarray(i, i + chunkSize);
-    binary += String.fromCharCode(...chunk);
-  }
-  return btoa(binary);
-};
-
-const registerThaiPdfFont = async () => {
-  if (typeof window === 'undefined') return false;
-  const globalRef = window as unknown as Record<string, boolean>;
-
-  if (globalRef[PDF_FONT_READY_KEY]) return true;
-  if (globalRef[PDF_FONT_FLAG_KEY]) return false;
-
-  globalRef[PDF_FONT_FLAG_KEY] = true;
-  try {
-    const [regularRes, boldRes] = await Promise.all([
-      fetch('/fonts/THSarabunNew.ttf'),
-      fetch('/fonts/THSarabunNew%20Bold.ttf'),
-    ]);
-
-    if (!regularRes.ok || !boldRes.ok) {
-      return false;
-    }
-
-    const [regularBuffer, boldBuffer] = await Promise.all([
-      regularRes.arrayBuffer(),
-      boldRes.arrayBuffer(),
-    ]);
-
-    Font.register({
-      family: PDF_FONT_FAMILY,
-      fonts: [
-        {
-          src: `data:font/ttf;base64,${toBase64(regularBuffer)}`,
-          fontWeight: 'normal',
-        },
-        {
-          src: `data:font/ttf;base64,${toBase64(boldBuffer)}`,
-          fontWeight: 'bold',
-        },
-      ],
-    });
-
-    globalRef[PDF_FONT_READY_KEY] = true;
-    return true;
-  } catch {
-    return false;
-  }
-};
 
 type DetailType =
   | 'loan-open'
@@ -674,37 +548,33 @@ export default function TaxSubmissionReportPage() {
 
   const openPrintPreview = useCallback(
     async (loans: TaxFeeLoanItem[], monthName: string) => {
-      const hasThaiFont = await registerThaiPdfFont();
       const viewerWindow = window.open('', '_blank');
       if (!viewerWindow) {
         toast.error('ไม่สามารถเปิด PDF Viewer ได้ กรุณาอนุญาต Pop-up');
         return;
       }
 
-      viewerWindow.document.write(`
-        <!doctype html>
-        <html lang="th">
-          <head>
-            <meta charset="UTF-8" />
-            <title>กำลังสร้าง PDF...</title>
-            <style>
-              body { font-family: Arial, sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; color:#374151; }
-            </style>
-          </head>
-          <body>กำลังสร้างเอกสาร PDF...</body>
-        </html>
-      `);
+      viewerWindow.document.write(`<!doctype html><html lang="th"><head><meta charset="UTF-8"/><title>กำลังสร้าง PDF...</title><style>body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#e5e7eb;background:#111827;flex-direction:column;gap:12px}.spinner{width:40px;height:40px;border:3px solid #374151;border-top-color:#60a5fa;border-radius:50%;animation:spin 0.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div>กำลังสร้างเอกสาร PDF...</div></body></html>`);
       viewerWindow.document.close();
 
       try {
-        const blob = await pdf(
-          <TaxSubmissionPackagePdf
-            loans={loans}
-            monthName={monthName}
-            buddhistYear={selectedYear + 543}
-            fontFamily={hasThaiFont ? PDF_FONT_FAMILY : 'Helvetica'}
-          />,
-        ).toBlob();
+        // POST ไปยัง API — server fetch รูปจาก S3 + generate PDF (ไม่มี CORS)
+        const res = await fetch('/api/tax-submission-report/pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            loans,
+            monthName,
+            buddhistYear: selectedYear + 543,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Server error ${res.status}`);
+        }
+
+        const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         viewerWindow.document.open();
         viewerWindow.document.write(`
@@ -718,23 +588,14 @@ export default function TaxSubmissionReportPage() {
                 html, body { margin:0; padding:0; height:100%; background:#111827; }
                 .viewer-wrap { height:100%; display:flex; flex-direction:column; }
                 .toolbar {
-                  height:44px;
-                  background:#1f2937;
-                  color:#fff;
-                  display:flex;
-                  align-items:center;
-                  justify-content:space-between;
-                  padding:0 12px;
-                  font-family:Arial, sans-serif;
-                  font-size:13px;
+                  height:44px; background:#1f2937; color:#fff;
+                  display:flex; align-items:center; justify-content:space-between;
+                  padding:0 12px; font-family:Arial,sans-serif; font-size:13px;
                 }
                 .toolbar a {
-                  color:#fff;
-                  text-decoration:none;
+                  color:#fff; text-decoration:none;
                   border:1px solid rgba(255,255,255,0.35);
-                  border-radius:6px;
-                  padding:6px 10px;
-                  margin-left:8px;
+                  border-radius:6px; padding:6px 10px; margin-left:8px;
                 }
                 iframe { width:100%; height:calc(100% - 44px); border:none; background:#374151; }
               </style>
@@ -835,8 +696,7 @@ export default function TaxSubmissionReportPage() {
           toast.error('ไม่พบรายการชำระค่าธรรมเนียมของเดือนนี้');
           return;
         }
-        const itemsWithImages = await Promise.all(items.map(resolveImageUrls));
-        await openPrintPreview(itemsWithImages, monthName);
+        await openPrintPreview(items, monthName);
       } catch (error) {
         toast.error('ไม่สามารถสร้างเอกสาร PDF ได้');
       } finally {
@@ -848,8 +708,7 @@ export default function TaxSubmissionReportPage() {
 
   const handlePrintSingleLoanPackage = useCallback(
     async (loan: TaxFeeLoanItem) => {
-      const loanWithImages = await resolveImageUrls(loan);
-      await openPrintPreview([loanWithImages], 'เอกสารรายสินเชื่อ');
+      await openPrintPreview([loan], 'เอกสารรายสินเชื่อ');
     },
     [openPrintPreview],
   );
