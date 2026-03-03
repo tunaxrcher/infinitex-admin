@@ -168,14 +168,6 @@ interface TaxFeeLoanItem {
   feeAmount: number;
 }
 
-const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-
 const formatDateOrDash = (value?: string | Date | null) => {
   if (!value) return '-';
   try {
@@ -246,321 +238,6 @@ const toThaiBahtText = (amount: number): string => {
   }
 
   return `(${text}บาทถ้วน)`;
-};
-
-const buildLoanPackageHtml = (
-  loans: TaxFeeLoanItem[],
-  monthName: string,
-  buddhistYear: number,
-) => {
-  const style = `
-    @page { size: A4; margin: 14mm; }
-    body { font-family: 'Sarabun', 'TH Sarabun New', Arial, sans-serif; color: #1f2937; margin: 0; }
-    .page { width: 100%; min-height: 260mm; page-break-after: always; }
-    .page:last-child { page-break-after: auto; }
-    .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .muted { color: #6b7280; font-size: 12px; }
-    .title-th { font-size: 34px; font-weight: 700; line-height: 1.15; margin: 0 0 2px; }
-    .title-en { font-size: 14px; color: #4b5563; margin: 0; }
-    .grid-2 { display: grid; grid-template-columns: 1.2fr 2fr; gap: 12px; align-items: stretch; }
-    .receipt-box {
-      border: 1px solid #d1d5db;
-      padding: 10px;
-      min-height: 142px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .doc-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(2, 68px);
-      gap: 6px;
-      min-height: 142px;
-      height: 100%;
-    }
-    .doc-item {
-      border: 1px solid #d1d5db;
-      display: flex;
-      align-items: stretch;
-      min-height: 68px;
-      max-height: 68px;
-      overflow: hidden;
-    }
-    .doc-item .label {
-      width: 40%;
-      background: #f3f4f6;
-      color: #4b5563;
-      font-size: 10px;
-      line-height: 1.2;
-      padding: 6px;
-      border-right: 1px solid #d1d5db;
-      display: flex;
-      align-items: center;
-    }
-    .doc-item .value {
-      width: 60%;
-      padding: 7px 6px 6px;
-      font-weight: 600;
-      font-size: 10px;
-      line-height: 1.15;
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    .doc-item .value.right { justify-content: flex-end; word-break: normal; text-align: right; }
-    .table-title { color: #1d4ed8; font-size: 18px; font-weight: 700; margin-top: 18px; margin-bottom: 8px; }
-    table.simple { width: 100%; border-collapse: collapse; font-size: 13px; }
-    table.simple th, table.simple td { padding: 8px 6px; }
-    table.simple thead th { border-top: 2px solid #374151; border-bottom: 1px solid #374151; }
-    table.simple tbody td { border-bottom: 1px solid #e5e7eb; }
-    table.simple tfoot td { border-top: 1px solid #374151; font-weight: 700; }
-    .right { text-align: right; }
-    .summary { margin-top: 12px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: end; }
-    .summary-right .line { display: flex; justify-content: space-between; border-bottom: 1px dashed #d1d5db; padding: 4px 0; font-size: 13px; }
-    .summary-right .grand { font-size: 18px; font-weight: 700; color: #111827; border-bottom: 2px solid #111827; }
-    .note-title { margin-top: 20px; color: #1d4ed8; font-size: 15px; font-weight: 700; }
-    .section-title { font-size: 28px; font-weight: 700; text-align: center; margin: 6px 0 8px; }
-    .thin-divider { border-top: 1px solid #9ca3af; margin: 6px 0 10px; }
-    .box { border: 1px solid #d1d5db; padding: 10px; position: relative; }
-    .box-label { position: absolute; top: -11px; left: 14px; background: #fff; padding: 0 8px; font-weight: 700; }
-    .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px; font-size: 13px; margin-bottom: 4px; }
-    .a4-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
-    .col-7 { grid-column: span 7; }
-    .col-5 { grid-column: span 5; }
-    .map-placeholder, .photo-placeholder { border: 1px solid #d1d5db; background: #f9fafb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 12px; }
-    .map-placeholder { height: 210px; }
-    .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .photo-placeholder { height: 84px; }
-    .market-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .market-table th, .market-table td { border-bottom: 1px solid #e5e7eb; padding: 6px; }
-    .market-table tbody tr:nth-child(odd) { background: #f8fafc; }
-    .sign-area { margin-top: 30px; display: flex; justify-content: flex-end; }
-    .sign-line { width: 280px; border-bottom: 1px dashed #6b7280; text-align: center; padding-bottom: 20px; font-size: 12px; color: #4b5563; }
-  `;
-
-  const documentPages = loans.flatMap((loan) => {
-    const subtotal = Number(loan.feeAmount || 0);
-    const vat = subtotal * 0.07;
-    const grandTotal = subtotal + vat;
-    const titleDeed = loan.titleDeeds?.[0];
-
-    const receiptPage = `
-      <section class="page">
-        <div class="row">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <img src="/images/logo.png" alt="InfiniteX" style="height:48px; object-fit:contain;" />
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:31px; font-weight:700;">บริษัท อินฟินิทเอ็กซ์ ไทย จำกัด</div>
-            <div class="muted">ที่อยู่ 11/2 ซอย เอ็นเจ์เนีย 1 ถนนเชียงเมือง ตำบลในเมือง</div>
-            <div class="muted">อำเภอเมืองอุบลราชธานี จังหวัดอุบลราชธานี 34000</div>
-          </div>
-        </div>
-        <div style="margin-top:22px;" class="row">
-          <div>
-            <h1 class="title-th">ใบเสร็จรับเงิน</h1>
-            <p class="title-en">Receipt</p>
-          </div>
-          <div style="text-align:right;" class="muted">
-            <div>ทะเบียนเลขที่ / Registration No. 0345568003383</div>
-            <div>เลขประจำตัวผู้เสียภาษี / Tax ID. 0345568003383</div>
-            <div>เลขที่สาขา 00000</div>
-          </div>
-        </div>
-        <div class="grid-2" style="margin-top:16px;">
-          <div class="receipt-box">
-            <div style="font-size:15px; font-weight:700;">${escapeHtml(loan.customerName || '-')}</div>
-            <div style="margin-top:8px; font-size:13px;">${escapeHtml(loan.customerAddress || '-')}</div>
-            <div style="margin-top:10px; font-size:12px;">เลขประจำตัวผู้เสียภาษี / TAX ID. ${escapeHtml(loan.customerTaxId || '-')}</div>
-          </div>
-          <div class="doc-grid">
-            <div class="doc-item"><div class="label">เลขที่ / No.</div><div class="value right">${escapeHtml(loan.loanNumber || '-')}</div></div>
-            <div class="doc-item"><div class="label">เลขที่ใบเสร็จ / Receipt No.</div><div class="value">${escapeHtml(wrapDocCode(loan.paymentRef))}</div></div>
-            <div class="doc-item"><div class="label">เลขที่ทำรายการ / Transaction No.</div><div class="value">${escapeHtml(wrapDocCode(loan.transactionId || loan.id || '-'))}</div></div>
-            <div class="doc-item"><div class="label">วันออกใบเสร็จ / Receipt Date</div><div class="value right">${escapeHtml(formatDateOrDash(loan.date))}</div></div>
-          </div>
-        </div>
-        <div class="table-title">รายการ / List</div>
-        <table class="simple">
-          <thead>
-            <tr>
-              <th>ชื่อรายการ<br/><span class="muted">Item name</span></th>
-              <th>รายละเอียด<br/><span class="muted">Details</span></th>
-              <th class="right">ค่าธรรมเนียม<br/><span class="muted">Fee</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>บันทึกชำระค่าธรรมเนียมสินเชื่อ ${escapeHtml(loan.loanNumber || '-')}</td>
-              <td>- ค่าธรรมเนียมเงินกู้<br/>- ค่าดำเนินการ</td>
-              <td class="right">${escapeHtml(formatCurrency(subtotal))}</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" class="right">ค่าธรรมเนียมรวมทั้งสิ้น</td>
-              <td class="right">${escapeHtml(formatCurrency(subtotal))} บาท</td>
-            </tr>
-          </tfoot>
-        </table>
-        <div class="summary">
-          <div style="font-size:13px; color:#374151;">${escapeHtml(toThaiBahtText(grandTotal))}</div>
-          <div class="summary-right">
-            <div class="line"><span>ยอดรวมก่อนภาษี (Subtotal)</span><strong>${escapeHtml(formatCurrency(subtotal))}</strong></div>
-            <div class="line"><span>ภาษีมูลค่าเพิ่ม 7% (VAT 7%)</span><strong>${escapeHtml(formatCurrency(vat))}</strong></div>
-            <div class="line grand"><span>ยอดรวมทั้งสิ้น (Grand Total)</span><strong>${escapeHtml(formatCurrency(grandTotal))}</strong></div>
-          </div>
-        </div>
-        <div class="note-title">หมายเหตุ</div>
-        <div class="muted">-</div>
-      </section>
-    `;
-
-    const closeCasePage = `
-      <section class="page">
-        <div class="section-title">ใบปิดเคสสินเชื่อ</div>
-        <div class="thin-divider"></div>
-        <div class="row" style="margin-bottom:10px;">
-          <div><strong>เลขที่สินเชื่อ:</strong> ${escapeHtml(loan.loanNumber || '-')}</div>
-          <div><strong>งวดที่:</strong> ${escapeHtml(String(loan.installmentNumber || '-'))}</div>
-        </div>
-        <div class="a4-grid">
-          <div class="col-7">
-            <div class="box">
-              <div class="box-label">รายละเอียดสินเชื่อ</div>
-              <div class="kv"><strong>ชื่อลูกค้า</strong><span>${escapeHtml(loan.customerName || '-')}</span></div>
-              <div class="kv"><strong>ผู้ถือกรรมสิทธิ์</strong><span>${escapeHtml(loan.ownerName || '-')}</span></div>
-              <div class="kv"><strong>วันที่ทำสัญญา</strong><span>${escapeHtml(formatDateOrDash(loan.contractDate))}</span></div>
-              <div class="kv"><strong>วันครบกำหนด</strong><span>${escapeHtml(formatDateOrDash(loan.expiryDate))}</span></div>
-              <div class="kv"><strong>ดอกเบี้ยต่อปี</strong><span>${escapeHtml(formatCurrency(loan.interestRate || 0))}%</span></div>
-              <div class="kv"><strong>ระยะเวลา</strong><span>${escapeHtml(String(loan.termMonths || 0))} เดือน</span></div>
-              <div class="kv"><strong>ยอดสินเชื่อ</strong><span>${escapeHtml(formatCurrency(loan.loanPrincipal || 0))} บาท</span></div>
-              <div class="kv"><strong>ค่างวดรายเดือน</strong><span>${escapeHtml(formatCurrency(loan.monthlyPayment || 0))} บาท</span></div>
-              <div class="kv"><strong>คงเหลือก่อนปิด</strong><span>${escapeHtml(formatCurrency(loan.remainingBalance || 0))} บาท</span></div>
-            </div>
-            <div class="box" style="margin-top:14px;">
-              <div class="box-label">สรุปรายการปิดเคส</div>
-              <div class="kv"><strong>วันที่ชำระ</strong><span>${escapeHtml(formatDateOrDash(loan.date))}</span></div>
-              <div class="kv"><strong>เลขที่อ้างอิง</strong><span>${escapeHtml(loan.paymentRef || '-')}</span></div>
-              <div class="kv"><strong>ยอดค่าธรรมเนียม</strong><span>${escapeHtml(formatCurrency(loan.feeAmount || 0))} บาท</span></div>
-              <div class="kv"><strong>สถานะเคส</strong><span>ปิดเคสเรียบร้อย</span></div>
-            </div>
-          </div>
-          <div class="col-5">
-            <div class="box">
-              <div class="box-label">ข้อมูลหลักประกัน</div>
-              <div class="kv"><strong>เลขที่โฉนด</strong><span>${escapeHtml(loan.titleDeedNumber || titleDeed?.deedNumber || '-')}</span></div>
-              <div class="kv"><strong>ที่ตั้ง</strong><span>${escapeHtml(`${titleDeed?.amphurName || '-'} ${titleDeed?.provinceName || '-'}`)}</span></div>
-              <div class="kv"><strong>ขนาดที่ดิน</strong><span>${escapeHtml(titleDeed?.landAreaText || '-')}</span></div>
-              <div class="kv"><strong>ประเภทที่ดิน</strong><span>${escapeHtml(titleDeed?.landType || '-')}</span></div>
-              <div class="map-placeholder" style="margin-top:10px;">แผนที่ทรัพย์ (Placeholder)</div>
-            </div>
-          </div>
-        </div>
-      </section>
-    `;
-
-    const appraisalPage = `
-      <section class="page">
-        <div class="section-title">ใบประเมินมูลค่าทรัพย์สิน</div>
-        <div class="row" style="align-items:center; margin-bottom:6px;">
-          <div style="flex:1; border-top:1px solid #9ca3af;"></div>
-          <div style="padding:0 12px; font-size:14px;">รายงานการประเมินราคาอสังหาริมทรัพย์</div>
-          <div style="flex:1; border-top:1px solid #9ca3af;"></div>
-        </div>
-        <div class="row" style="margin:8px 0 14px;">
-          <div><strong>หลักทรัพย์:</strong> ${escapeHtml(loan.loanNumber || '-')}</div>
-          <div style="text-align:right;">
-            <div><strong>วันที่ประเมิน:</strong> ${escapeHtml(formatDateOrDash(loan.valuationDate || loan.date))}</div>
-            <div><strong>เลขที่รายงาน:</strong> AV-REP-${escapeHtml((loan.loanNumber || '-').replace(/\s+/g, ''))}</div>
-          </div>
-        </div>
-        <div class="a4-grid">
-          <div class="col-7">
-            <div class="box">
-              <div class="box-label">ข้อมูลทรัพย์สิน</div>
-              <div class="kv"><strong>ปลูกสร้างทรัพย์</strong><span>${escapeHtml(titleDeed?.landType || 'ที่ดินพร้อมสิ่งปลูกสร้าง')}</span></div>
-              <div class="kv"><strong>เนื้อที่ดิน</strong><span>${escapeHtml(titleDeed?.landAreaText || '-')}</span></div>
-              <div class="kv"><strong>ที่ตั้ง</strong><span>${escapeHtml(`${titleDeed?.amphurName || '-'}, ${titleDeed?.provinceName || '-'}`)}</span></div>
-              <div class="kv"><strong>ผู้ถือกรรมสิทธิ์</strong><span>${escapeHtml(titleDeed?.ownerName || loan.ownerName || '-')}</span></div>
-            </div>
-            <div class="box" style="margin-top:14px;">
-              <div class="box-label">ผลการประเมินมูลค่า</div>
-              <div class="kv"><strong>มูลค่าต้น</strong><span>${escapeHtml(formatCurrency(loan.propertyValue || 0))}</span></div>
-              <div class="kv"><strong>มูลค่าปรับตามสภาพ</strong><span>${escapeHtml(formatCurrency((loan.propertyValue || 0) * 0.95))}</span></div>
-              <div class="kv" style="margin-top:8px; background:#f3f4f6; padding:8px;">
-                <strong style="font-size:20px;">มูลค่าประเมินสุทธิ</strong>
-                <span style="font-size:26px; font-weight:700; text-align:right;">${escapeHtml(formatCurrency(loan.estimatedValue || loan.propertyValue || 0))}</span>
-              </div>
-            </div>
-            <div class="box" style="margin-top:14px;">
-              <div class="box-label">สรุปการเปรียบเทียบตลาด</div>
-              <table class="market-table">
-                <thead>
-                  <tr><th>ลำดับ</th><th>ทรัพย์เปรียบเทียบ</th><th class="right">ราคาขาย</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>1</td><td>บ้านใกล้เคียงโซนเดียวกัน</td><td class="right">${escapeHtml(formatCurrency((loan.estimatedValue || 0) * 0.98))}</td></tr>
-                  <tr><td>2</td><td>ทรัพย์แปลงติดกัน</td><td class="right">${escapeHtml(formatCurrency((loan.estimatedValue || 0) * 1.02))}</td></tr>
-                  <tr><td>3</td><td>ทรัพย์ขนาดใกล้เคียง</td><td class="right">${escapeHtml(formatCurrency((loan.estimatedValue || 0) * 0.96))}</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="col-5">
-            <div class="map-placeholder">รูปแผนผังที่ดิน (Placeholder)</div>
-            <div class="box" style="margin-top:10px;">
-              <div class="box-label">รายละเอียดการประเมิน</div>
-              <table class="market-table">
-                <tbody>
-                  <tr><td>ราคาประเมินที่ดิน</td><td class="right">${escapeHtml(formatCurrency((loan.propertyValue || 0) * 0.55))}</td></tr>
-                  <tr><td>ราคาประเมินสิ่งปลูกสร้าง</td><td class="right">${escapeHtml(formatCurrency((loan.propertyValue || 0) * 0.45))}</td></tr>
-                  <tr><td>ค่าปรับปรุง/ซ่อมแซม</td><td class="right">-${escapeHtml(formatCurrency((loan.propertyValue || 0) * 0.03))}</td></tr>
-                  <tr><td><strong>รวม</strong></td><td class="right"><strong>${escapeHtml(formatCurrency(loan.estimatedValue || loan.propertyValue || 0))}</strong></td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="box" style="margin-top:10px;">
-              <div class="box-label">กฎ.หมายเหตุ</div>
-              <ul style="font-size:12px; padding-left:16px; margin:0;">
-                <li>ราคาประเมินใช้เพื่อประกอบการอนุมัติสินเชื่อภายใน</li>
-                <li>การประเมินอ้างอิงราคาตลาดและสภาพทรัพย์ ณ วันประเมิน</li>
-                <li>ผลประเมินอาจเปลี่ยนแปลงตามภาวะตลาด</li>
-              </ul>
-            </div>
-            <div class="photos">
-              <div class="photo-placeholder">รูปทรัพย์ 1</div>
-              <div class="photo-placeholder">รูปทรัพย์ 2</div>
-              <div class="photo-placeholder">รูปทรัพย์ 3</div>
-              <div class="photo-placeholder">รูปทรัพย์ 4</div>
-            </div>
-          </div>
-        </div>
-        <div class="sign-area">
-          <div class="sign-line">วันที่ ......... เดือน ......... พ.ศ. .........</div>
-        </div>
-      </section>
-    `;
-
-    return [receiptPage, closeCasePage, appraisalPage];
-  });
-
-  return `
-    <!doctype html>
-    <html lang="th">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>ชุดเอกสารนำส่งภาษี - ${escapeHtml(monthName)} ${buddhistYear}</title>
-        <style>${style}</style>
-      </head>
-      <body>${documentPages.join('\n')}</body>
-    </html>
-  `;
 };
 
 const pdfStyles = PdfStyleSheet.create({
@@ -764,7 +441,7 @@ function TaxSubmissionPackagePdf({
                             lineHeight: 1.1,
                           }}
                         >
-                          {loan.paymentRef || '-'}
+                          {wrapDocCode(loan.paymentRef)}
                         </PdfText>
                       </PdfView>
                     </PdfView>
@@ -796,7 +473,7 @@ function TaxSubmissionPackagePdf({
                             lineHeight: 1.1,
                           }}
                         >
-                          {loan.transactionId || loan.id}
+                          {wrapDocCode(loan.transactionId || loan.id || '-')}
                         </PdfText>
                       </PdfView>
                     </PdfView>
@@ -1731,6 +1408,12 @@ export default function TaxSubmissionReportPage() {
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown PDF error';
+        const safeErrorMessage = errorMessage
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
         viewerWindow.document.open();
         viewerWindow.document.write(`
           <!doctype html>
@@ -1738,7 +1421,7 @@ export default function TaxSubmissionReportPage() {
             <head><meta charset="UTF-8" /><title>PDF Error</title></head>
             <body style="font-family:Arial,sans-serif;padding:24px;">
               <h2>สร้าง PDF ไม่สำเร็จ</h2>
-              <p>${escapeHtml(errorMessage)}</p>
+              <p>${safeErrorMessage}</p>
             </body>
           </html>
         `);
