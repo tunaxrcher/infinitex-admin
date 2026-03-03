@@ -1158,8 +1158,12 @@ export const taxSubmissionReportService = {
               select: {
                 ownerName: true,
                 propertyValue: true,
+                totalPropertyValue: true,
                 estimatedValue: true,
                 valuationDate: true,
+                requestedAmount: true,
+                approvedAmount: true,
+                maxApprovedAmount: true,
                 titleDeeds: {
                   select: {
                     isPrimary: true,
@@ -1283,10 +1287,12 @@ export const taxSubmissionReportService = {
           titleDeedCount,
           propertyType,
           propertyValue: Number(payment.loan?.application?.propertyValue || 0),
-          estimatedValue: Number(
-            payment.loan?.application?.estimatedValue || 0,
-          ),
+          totalPropertyValue: Number(payment.loan?.application?.totalPropertyValue || 0),
+          estimatedValue: Number(payment.loan?.application?.estimatedValue || 0),
           valuationDate: payment.loan?.application?.valuationDate || null,
+          requestedAmount: Number(payment.loan?.application?.requestedAmount || 0),
+          approvedAmount: Number(payment.loan?.application?.approvedAmount || 0),
+          maxApprovedAmount: Number(payment.loan?.application?.maxApprovedAmount || 0),
           titleDeeds: resolvedTitleDeeds.map((d) => ({
             ...d,
             imageUrl: (d as any).imageUrl || null,

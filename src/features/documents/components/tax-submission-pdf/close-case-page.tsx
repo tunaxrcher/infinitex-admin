@@ -90,9 +90,27 @@ function PropRow({ label, value, stripe }: { label: string; value: string; strip
 
 // ── compute ratios ─────────────────────────────────────────────────────────
 function computeRatios(loan: TaxFeeLoanItem) {
-  const principal    = Number(loan.loanPrincipal   || 0); // ราคาขาย
-  const approvedAmt  = Number(loan.approvedAmount  || 0); // วงเงินกู้ยืม
-  const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0); // ราคาประเมิน
+  const principal = Number(loan.loanPrincipal || 0); // ราคาขาย
+
+  /**
+   * วงเงินกู้สำหรับคำนวณ LTV
+   * ลำดับ fallback: approvedAmount → maxApprovedAmount → requestedAmount → loanPrincipal
+   */
+  const approvedAmt =
+    Number(loan.approvedAmount    || 0) ||
+    Number(loan.maxApprovedAmount || 0) ||
+    Number(loan.requestedAmount   || 0) ||
+    principal;
+
+  /**
+   * ราคาประเมินสำหรับคำนวณ LTV
+   * ลำดับ fallback: totalPropertyValue → estimatedValue → propertyValue
+   */
+  const totalPropValue =
+    Number(loan.totalPropertyValue || 0) ||
+    Number(loan.estimatedValue     || 0) ||
+    Number(loan.propertyValue      || 0);
+
   const feeRate   = Number(loan.taxRate   || 0);
   const feeAmount = Number(loan.feeAmount || 0);
 
@@ -109,9 +127,10 @@ function computeRatios(loan: TaxFeeLoanItem) {
    * ตัวอย่าง: (300,000 ÷ 1,100,000) × 100 = 27.27%
    * ถ้าไม่มีราคาประเมิน: (วงเงินกู้ ÷ วงเงินกู้) × 100 = 100%
    */
+  const ltvNumerator   = approvedAmt;
   const ltvDenominator = totalPropValue > 0 ? totalPropValue : approvedAmt;
-  const ltv = approvedAmt > 0 && ltvDenominator > 0
-    ? (approvedAmt / ltvDenominator) * 100
+  const ltv = ltvNumerator > 0 && ltvDenominator > 0
+    ? (ltvNumerator / ltvDenominator) * 100
     : null;
 
   const pToLoan = totalPropValue > 0 && principal > 0 ? totalPropValue / principal : 0;
