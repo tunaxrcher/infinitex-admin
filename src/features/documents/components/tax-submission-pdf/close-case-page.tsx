@@ -1,73 +1,69 @@
 import {
   Image as PdfImage,
   Page as PdfPage,
+  Path,
+  Polyline,
+  Svg,
   Text as PdfText,
   View as PdfView,
 } from '@react-pdf/renderer';
 import { formatCurrency, formatDateOrDash, TaxFeeLoanItem } from './shared';
 
-// ── design tokens ──────────────────────────────────────────────────────────
-const C = {
-  bg: '#0a0d14',
-  surface: '#111827',
-  card: '#0f1420',
-  border: '#1e2435',
-  text: '#e5e7eb',
-  textMuted: '#9ca3af',
-  textDim: '#6b7280',
-  primary: '#60a5fa',
-  success: '#34d399',
-  warning: '#fbbf24',
-  purple: '#3b0764', purpleBorder: '#7c3aed',
-  green: '#022c22', greenBorder: '#059669',
-  blue: '#172554', blueBorder: '#3b82f6',
-  amber: '#451a03', amberBorder: '#d97706',
-  indigo: '#1e1b4b', indigoBorder: '#6366f1',
-  gray: '#1f2937', grayBorder: '#4b5563',
+// ── design tokens ─────────────────────────────────────────────────────────
+const T = {
+  text: '#111827',
+  label: '#6b7280',
+  border: '#e5e7eb',
+  borderMid: '#d1d5db',
+  bg: '#ffffff',
+  bgStripe: '#f9fafb',
+  bgTag: '#f3f4f6',
+  blue: '#2563eb',
+  green: '#16a34a',
+  red: '#dc2626',
+  primary: '#4f46e5',
 };
 
-// ── helpers ────────────────────────────────────────────────────────────────
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <PdfView
-      style={{
-        flexDirection: 'row',
-        paddingVertical: 5,
-        borderBottomWidth: 1,
-        borderBottomColor: C.border,
-        borderBottomStyle: 'solid',
-      }}
-    >
-      <PdfText style={{ width: '42%', fontSize: 9, color: C.textMuted }}>
-        {label}
-      </PdfText>
-      <PdfText style={{ flex: 1, fontSize: 9, color: C.text, fontWeight: 700 }}>
-        {value}
-      </PdfText>
-    </PdfView>
-  );
+// ── helpers ───────────────────────────────────────────────────────────────
+function miniChartPoints(values: number[], w = 126, h = 36): string {
+  const max = Math.max(...values, 1);
+  const step = w / Math.max(values.length - 1, 1);
+  return values
+    .map((v, i) => `${(i * step).toFixed(1)},${(h - (v / max) * h).toFixed(1)}`)
+    .join(' ');
 }
 
-function Badge({
-  text,
-  color,
-  bg,
-}: {
-  text: string;
-  color: string;
-  bg: string;
-}) {
+function computeRatios(loan: TaxFeeLoanItem) {
+  const principal = Number(loan.loanPrincipal || 0);
+  const interestRate = Number(loan.interestRate || 0);
+  const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0);
+  const currentInst = Number(loan.currentInstallment || 0);
+
+  const nim = interestRate;
+  const ltv = totalPropValue > 0 ? (principal / totalPropValue) * 100 : null;
+  const pToLoan = totalPropValue > 0 && principal > 0 ? totalPropValue / principal : 0;
+  const feeRate = Number(loan.taxRate || 0);
+  const feeAmount = Number(loan.feeAmount || 0);
+  const ytdRealized = principal > 0 && currentInst > 0 ? (interestRate / 12) * currentInst : interestRate;
+  const remainingValue = totalPropValue - principal;
+
+  return { nim, ltv, pToLoan, feeRate, feeAmount, ytdRealized, remainingValue, totalPropValue };
+}
+
+// ── sub-components ────────────────────────────────────────────────────────
+function SectionLabel({ text }: { text: string }) {
   return (
-    <PdfView
-      style={{
-        backgroundColor: bg,
-        borderRadius: 10,
-        paddingHorizontal: 7,
-        paddingVertical: 2,
-        alignSelf: 'flex-start',
-      }}
-    >
-      <PdfText style={{ fontSize: 8.5, color, fontWeight: 700 }}>
+    <PdfView style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+      <PdfView
+        style={{
+          width: 4,
+          height: 12,
+          backgroundColor: T.text,
+          marginRight: 5,
+          borderRadius: 1,
+        }}
+      />
+      <PdfText style={{ fontSize: 9, fontWeight: 700, color: T.text }}>
         {text}
       </PdfText>
     </PdfView>
@@ -78,115 +74,95 @@ function RatioCard({
   title,
   value,
   subtitle,
-  bg,
-  border,
 }: {
   title: string;
   value: string;
   subtitle: string;
-  bg: string;
-  border: string;
 }) {
   return (
     <PdfView
       style={{
-        width: '32%',
-        backgroundColor: bg,
+        flex: 1,
         borderWidth: 1,
-        borderColor: border,
+        borderColor: T.border,
         borderStyle: 'solid',
-        borderRadius: 6,
-        padding: 7,
-        marginBottom: 5,
+        borderRadius: 4,
+        padding: 8,
+        backgroundColor: T.bg,
       }}
     >
-      <PdfText style={{ fontSize: 7.5, color: border, fontWeight: 700, marginBottom: 3 }}>
-        {title}
-      </PdfText>
-      <PdfText style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 2 }}>
+      <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 3 }}>{title}</PdfText>
+      <PdfText style={{ fontSize: 15, fontWeight: 700, color: T.text, marginBottom: 2 }}>
         {value}
       </PdfText>
-      <PdfText style={{ fontSize: 7, color: C.textDim, lineHeight: 1.3 }}>
-        {subtitle}
-      </PdfText>
+      <PdfText style={{ fontSize: 7, color: T.label, lineHeight: 1.3 }}>{subtitle}</PdfText>
     </PdfView>
   );
 }
 
-function BulletPoint({ highlight, text }: { highlight: string; text: string }) {
-  return (
-    <PdfView style={{ flexDirection: 'row', marginBottom: 4 }}>
-      <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginRight: 4 }}>•</PdfText>
-      <PdfText style={{ flex: 1, fontSize: 7.5, color: C.textMuted, lineHeight: 1.35 }}>
-        <PdfText style={{ fontWeight: 700, color: C.text }}>{highlight}</PdfText>
-        {' '}{text}
-      </PdfText>
-    </PdfView>
-  );
-}
-
-// ── Simulated mini line-chart using bars ──────────────────────────────────
-function MiniChart({
-  values,
-  color,
-}: {
-  values: number[];
-  color: string;
-}) {
-  const max = Math.max(...values, 1);
+function TableRow({ label, value, stripe }: { label: string; value: string; stripe?: boolean }) {
   return (
     <PdfView
       style={{
         flexDirection: 'row',
-        alignItems: 'flex-end',
-        height: 50,
-        width: '100%',
-        marginTop: 4,
+        backgroundColor: stripe ? T.bgStripe : T.bg,
+        paddingHorizontal: 8,
+        paddingVertical: 4.5,
       }}
     >
-      {values.map((v, i) => (
-        <PdfView
-          key={i}
-          style={{
-            flex: 1,
-            marginHorizontal: 1,
-            height: Math.round((v / max) * 50),
-            backgroundColor: color,
-            opacity: 0.5 + (i / values.length) * 0.5,
-            borderRadius: 1,
-          }}
-        />
-      ))}
+      <PdfText style={{ width: '45%', fontSize: 8, color: T.label }}>{label}</PdfText>
+      <PdfText style={{ flex: 1, fontSize: 8, color: T.text, fontWeight: 700 }}>{value}</PdfText>
     </PdfView>
   );
 }
 
-// ── compute ratios ────────────────────────────────────────────────────────
-function computeRatios(loan: TaxFeeLoanItem) {
-  const principal = Number(loan.loanPrincipal || 0);
-  const interestRate = Number(loan.interestRate || 0);
-  const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0);
-  const currentInst = Number(loan.currentInstallment || 0);
-  const totalInst = Number(loan.totalInstallments || 0);
+function MiniLineChart({
+  values,
+  color = T.primary,
+  label,
+  sublabel,
+}: {
+  values: number[];
+  color?: string;
+  label: string;
+  sublabel: string;
+}) {
+  const W = 130;
+  const H = 38;
+  const points = miniChartPoints(values, W, H);
 
-  const roi = principal > 0 && currentInst > 0
-    ? (interestRate / 12) * currentInst
-    : interestRate;
-  const ltv = totalPropValue > 0 ? (principal / totalPropValue) * 100 : null;
-  const pToLoan = totalPropValue > 0 && principal > 0 ? totalPropValue / principal : 0;
-  const ytdRealized = roi;
-  const ytdPlanned = interestRate;
-  const ytdGap = Math.abs(ytdRealized - ytdPlanned);
-  const ytdDir = ytdRealized >= ytdPlanned ? 'lead' : 'lag';
-  const nim = interestRate;
-  const remainingMonths = totalInst > 0
-    ? Math.max(0, totalInst - currentInst)
-    : Number(loan.termMonths || 0);
-
-  return { roi, ltv, pToLoan, ytdRealized, ytdPlanned, ytdGap, ytdDir, nim, remainingMonths };
+  return (
+    <PdfView
+      style={{
+        flex: 1,
+        borderWidth: 1,
+        borderColor: T.border,
+        borderStyle: 'solid',
+        borderRadius: 4,
+        padding: 8,
+        backgroundColor: T.bg,
+      }}
+    >
+      <PdfText style={{ fontSize: 8.5, color: T.label, marginBottom: 2 }}>Demo.</PdfText>
+      <PdfText style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 1 }}>
+        {label}
+      </PdfText>
+      <PdfText style={{ fontSize: 7, color: T.label, marginBottom: 5 }}>{sublabel}</PdfText>
+      <Svg width={W} height={H}>
+        <Polyline
+          points={points}
+          stroke={color}
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+      </Svg>
+    </PdfView>
+  );
 }
 
-// ── main component ────────────────────────────────────────────────────────
+// ── main component ─────────────────────────────────────────────────────────
 export function CloseCasePage({
   loan,
   fontFamily,
@@ -194,12 +170,9 @@ export function CloseCasePage({
   loan: TaxFeeLoanItem;
   fontFamily: string;
 }) {
-  const primaryDeed =
-    loan.titleDeeds?.find((d) => d.isPrimary) || loan.titleDeeds?.[0];
-  const titleDeeds = loan.titleDeeds || [];
-  const isMultipleDeed = titleDeeds.length > 1;
+  const primaryDeed = loan.titleDeeds?.find((d) => d.isPrimary) || loan.titleDeeds?.[0];
 
-  // place display (product-list style)
+  // place
   const normalizedAllPlaceNames = (loan.allPlaceNames || [])
     .map((n) => String(n || '').trim().replace(/\s+/g, ' '))
     .filter((n) => n && n !== '-');
@@ -208,534 +181,402 @@ export function CloseCasePage({
     placeNameFromLoan ||
     normalizedAllPlaceNames[0] ||
     [primaryDeed?.amphurName, primaryDeed?.provinceName].filter(Boolean).join(' ').trim();
+  const isMultipleDeed = (loan.titleDeeds?.length || 0) > 1;
   const placeDisplay = isMultipleDeed
     ? `โฉนดชุด (${normalizedAllPlaceNames.join(', ') || fallbackPlace || '-'})`
     : fallbackPlace || '-';
-  const primaryPlaceText =
-    primaryDeed
-      ? `${primaryDeed.amphurName || ''} ${primaryDeed.provinceName || ''}`.trim() || '-'
-      : '-';
   const placeWithArea =
     primaryDeed?.landAreaText
-      ? `${primaryPlaceText} (${primaryDeed.landAreaText})`
-      : primaryPlaceText;
+      ? `${fallbackPlace} (${primaryDeed.landAreaText})`
+      : fallbackPlace || '-';
 
-  // status
   const statusText =
     loan.loanStatus === 'ACTIVE' ? 'ยังไม่ถึงกำหนด'
-    : loan.loanStatus === 'COMPLETED' ? 'ปิดบัญชี'
+    : loan.loanStatus === 'COMPLETED' ? 'ปิดการขาย'
     : loan.loanStatus === 'DEFAULTED' ? 'เกินกำหนดชำระ'
     : 'รออนุมัติ';
-  const statusColor =
-    loan.loanStatus === 'ACTIVE' ? C.success
-    : loan.loanStatus === 'COMPLETED' ? C.primary
-    : loan.loanStatus === 'DEFAULTED' ? '#f87171'
-    : C.warning;
-  const statusBg =
-    loan.loanStatus === 'COMPLETED' ? '#1e3a5f'
-    : loan.loanStatus === 'ACTIVE' ? '#1a3d2a'
-    : '#3b1a00';
 
-  const currentInst = Number(loan.currentInstallment || 0);
-  const totalInst = Number(loan.totalInstallments || 0);
-  const installmentText = totalInst > 0 ? `${currentInst}/${totalInst}` : '-';
   const termMonths = Number(loan.termMonths || 0);
-  const durationText =
-    termMonths > 0
-      ? `${(termMonths / 12).toFixed(termMonths % 12 === 0 ? 0 : 1)} ปี (${termMonths} งวด)`
-      : '-';
+  const durationText = termMonths > 0
+    ? `${(termMonths / 12).toFixed(termMonths % 12 === 0 ? 0 : 1)} ปี (${termMonths} งวด)`
+    : '-';
   const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0);
-  const requestedAmount = Number(loan.requestedAmount || 0);
   const approvedAmount = Number(loan.approvedAmount || 0);
-  const maxApprovedAmount = Number(loan.maxApprovedAmount || 0);
 
   const ratios = computeRatios(loan);
 
-  // images — use real URLs when available
-  const mainImageUrl = loan.primaryImageUrl || (loan.titleDeeds?.find((d) => d.isPrimary || true)?.imageUrl) || null;
-  const thumbImages: (string | null)[] = [
-    mainImageUrl,
-    ...(loan.supportingImages?.slice(0, 4) ?? [null, null, null, null]),
-  ].slice(0, 5);
+  // images
+  const mainImageUrl = loan.primaryImageUrl || loan.titleDeeds?.[0]?.imageUrl || null;
+  const extraImages = [
+    ...(loan.supportingImages || []),
+    ...((loan.titleDeeds || []).slice(1).map((d) => d.imageUrl).filter(Boolean) as string[]),
+  ].slice(0, 4);
 
-  // mock chart data (simulated, similar to original In-development charts)
-  const chartData1 = [30, 38, 35, 42, 40, 45, 55];
-  const chartData2 = [28, 50, 36, 42, 38, 45, 50];
+  // chart data
+  const chartData1 = [30, 42, 38, 55, 48, 60, 65, 72, 68, 75];
+  const chartData2 = [28, 35, 30, 42, 45, 40, 52, 48, 55, 58];
 
-  const tabs = [
-    'รายละเอียดสินเชื่อ',
-    'ชำระสินเชื่อ',
-    'ประเมินมูลค่าทรัพย์สิน',
-    'หนังสือสัญญากู้เงิน',
-    'ตารางผ่อนชำระ',
-    'ยกเลิกสินเชื่อ',
+  // payment details
+  const feeAmount = ratios.feeAmount;
+  const halfFee = feeAmount / 2;
+
+  // property details rows
+  const propertyRows: Array<[string, string]> = [
+    ['รหัสทรัพย์', loan.titleDeedNumber || primaryDeed?.deedNumber || loan.loanNumber || '-'],
+    ['ที่ตั้ง', placeWithArea],
+    ['ประเภท', primaryDeed?.landType || loan.propertyType || '-'],
+    ['ค่าคอมมิชชัน', `${ratios.feeRate.toFixed(2)}%`],
+    ['อัตราเงินกู้', ratios.ltv !== null ? `${ratios.ltv.toFixed(2)}%` : '-'],
+    ['ค่าคอมสุทธิ', `฿${formatCurrency(feeAmount)}`],
+    ['IRR', '-'],
+    ['IRR:', `${ratios.ytdRealized.toFixed(2)}% Lead`],
+    ['ราคาประเมิน', totalPropValue > 0 ? `฿${formatCurrency(totalPropValue)}` : '-'],
+    ['ราคาขาย', `฿${formatCurrency(loan.loanPrincipal || 0)}`],
+    ['วงเงินกู้ยืม', approvedAmount > 0 ? `฿${formatCurrency(approvedAmount)}` : '-'],
+    ['มูลค่าทรัพย์สินคงเหลือ', ratios.remainingValue > 0 ? `฿${formatCurrency(ratios.remainingValue)}` : '-'],
   ];
 
   return (
     <PdfPage
       key={`c-${loan.id}`}
       size="A4"
-      style={{ fontFamily, backgroundColor: C.bg, color: C.text, padding: 0 }}
+      style={{
+        fontFamily,
+        backgroundColor: T.bg,
+        color: T.text,
+        paddingHorizontal: 30,
+        paddingVertical: 24,
+        fontSize: 10,
+      }}
     >
-      <PdfView
+      {/* ── 1. HEADER ──────────────────────────────────────────────────────── */}
+      <PdfText
         style={{
-          margin: 8,
-          borderWidth: 1,
-          borderColor: C.border,
-          borderStyle: 'solid',
-          borderRadius: 8,
-          backgroundColor: C.card,
-          overflow: 'hidden',
-          flex: 1,
+          fontSize: 26,
+          fontWeight: 700,
+          textAlign: 'center',
+          color: T.text,
+          marginBottom: 14,
         }}
       >
-        {/* ── Sheet header ── */}
-        <PdfView
+        ใบปิดเคสค่านายหน้า
+      </PdfText>
+      <PdfView
+        style={{
+          borderTopWidth: 1,
+          borderTopColor: T.borderMid,
+          borderTopStyle: 'solid',
+          marginBottom: 10,
+        }}
+      />
+
+      <PdfView
+        style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}
+      >
+        <PdfText
           style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: T.text,
             borderBottomWidth: 1,
-            borderBottomColor: C.border,
+            borderBottomColor: T.text,
             borderBottomStyle: 'solid',
-            paddingHorizontal: 14,
-            paddingVertical: 8,
+            paddingBottom: 1,
           }}
         >
-          <PdfText style={{ fontSize: 10, fontWeight: 700, color: '#7c3aed' }}>
-            รายละเอียดและวิเคราะห์สินเชื่อ
+          {loan.customerName || '-'}
+        </PdfText>
+        <PdfView
+          style={{
+            borderWidth: 1,
+            borderColor: T.borderMid,
+            borderStyle: 'solid',
+            borderRadius: 3,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+          }}
+        >
+          <PdfText style={{ fontSize: 9, fontWeight: 700, color: T.text }}>
+            REF-{(loan.loanNumber || 'N/A').replace(/[^0-9A-Za-z]/g, '').slice(-6)}
           </PdfText>
         </PdfView>
+      </PdfView>
 
-        {/* ── customer row ── */}
-        <PdfView
-          style={{
-            borderBottomWidth: 1,
-            borderBottomColor: C.border,
-            borderBottomStyle: 'solid',
-            paddingHorizontal: 14,
-            paddingVertical: 9,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-          }}
-        >
-          <PdfView>
-            <PdfView style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-              <PdfText style={{ fontSize: 16, fontWeight: 700, color: C.text }}>
-                {loan.customerName || '-'}
-              </PdfText>
-              <PdfView style={{ marginLeft: 8 }}>
-                <Badge text={statusText} color={statusColor} bg={statusBg} />
+      <PdfText style={{ fontSize: 8, color: T.label, marginBottom: 12 }}>
+        เลขประจำตัวผู้เสียภาษี : {loan.customerTaxId || '-'}
+        {'   '}วันที่รายงานผล: วันที่ : {formatDateOrDash(loan.date)}
+        {'   '}วันที่สิ้นสุดสัญญา: {formatDateOrDash(loan.expiryDate)}
+      </PdfText>
+
+      {/* ── 2. MAIN CONTENT (60 / 40) ────────────────────────────────────── */}
+      <PdfView style={{ flexDirection: 'row', gap: 14, flex: 1 }}>
+        {/* ── LEFT 60% ── */}
+        <PdfView style={{ width: '58%' }}>
+
+          {/* 2.1 สรุปผล */}
+          <PdfView
+            style={{
+              borderWidth: 1,
+              borderColor: T.border,
+              borderStyle: 'solid',
+              borderRadius: 4,
+              padding: 10,
+              marginBottom: 10,
+              backgroundColor: T.bg,
+            }}
+          >
+            <PdfText style={{ fontSize: 8.5, fontWeight: 700, color: T.text, marginBottom: 8 }}>
+              สรุปผล
+            </PdfText>
+            <PdfView style={{ flexDirection: 'row' }}>
+              <PdfView style={{ flex: 1 }}>
+                <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 3 }}>ราคาขาย</PdfText>
+                <PdfText style={{ fontSize: 14, fontWeight: 700, color: T.text }}>
+                  ฿{Number(loan.loanPrincipal || 0).toLocaleString('th-TH')}
+                </PdfText>
+              </PdfView>
+              <PdfView style={{ flex: 1 }}>
+                <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 3 }}>วงเงิน</PdfText>
+                <PdfText style={{ fontSize: 14, fontWeight: 700, color: T.text }}>
+                  ฿{formatCurrency(feeAmount)}{' '}
+                  <PdfText style={{ fontSize: 10, fontWeight: 400 }}>
+                    ({ratios.feeRate.toFixed(0)}%)
+                  </PdfText>
+                </PdfText>
+              </PdfView>
+              <PdfView style={{ flex: 1 }}>
+                <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 3 }}>สถานะ</PdfText>
+                <PdfText style={{ fontSize: 11, fontWeight: 700, color: T.text }}>
+                  {statusText}
+                </PdfText>
               </PdfView>
             </PdfView>
-            <PdfView style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-              <PdfText style={{ fontSize: 8, color: C.textMuted, marginRight: 12 }}>
-                เลขที่สินเชื่อ{' '}
-                <PdfText style={{ color: C.text, fontWeight: 700 }}>
-                  {loan.loanNumber || '-'}
-                </PdfText>
+          </PdfView>
+
+          {/* 2.2 Core Financial Ratios */}
+          <SectionLabel text="Core Financial Ratios" />
+          <PdfView style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
+            <RatioCard
+              title="NIM"
+              value={`${ratios.nim.toFixed(2)}%`}
+              subtitle="สัดส่วนมาร์จิ้นดอกเบี้ยสุทธิเทียบกับราคาขาย"
+            />
+            <RatioCard
+              title="LTV"
+              value={ratios.ltv !== null ? `${ratios.ltv.toFixed(1)}%` : '-'}
+              subtitle="สัดส่วนเงินกู้เทียบกับราคาประเมิน"
+            />
+            <RatioCard
+              title="PT Loan"
+              value={ratios.pToLoan > 0 ? `${ratios.pToLoan.toFixed(2)}x (Test)` : '-'}
+              subtitle="สัดส่วนราคาทรัพย์สินเทียบกับวงเงินกู้"
+            />
+          </PdfView>
+
+          {/* 2.3 ค่าคอมมิชชัน */}
+          <SectionLabel text="Core Financial Ratios" />
+          <PdfView
+            style={{
+              borderWidth: 1,
+              borderColor: T.border,
+              borderStyle: 'solid',
+              borderRadius: 4,
+              flexDirection: 'row',
+              overflow: 'hidden',
+              marginBottom: 10,
+            }}
+          >
+            <PdfView style={{ flex: 1, padding: 10, borderRightWidth: 1, borderRightColor: T.border, borderRightStyle: 'solid' }}>
+              <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 3 }}>ค่าคอมมิชชัน</PdfText>
+              <PdfText style={{ fontSize: 18, fontWeight: 700, color: T.text }}>
+                {ratios.feeRate.toFixed(2)}%
               </PdfText>
-              <PdfText style={{ fontSize: 8, color: C.textMuted, marginRight: 12 }}>
-                วันที่ออกสินเชื่อ{' '}
-                <PdfText style={{ color: C.text }}>
-                  {formatDateOrDash(loan.contractDate)}
-                </PdfText>
+              <PdfText style={{ fontSize: 7.5, color: T.label, marginTop: 2 }}>
+                สัดส่วนคอมจากยอดขายทรัพย์สินจากราคาขาย
               </PdfText>
-              <PdfText style={{ fontSize: 8, color: C.textMuted }}>
-                อัปเดตล่าสุด{' '}
-                <PdfText style={{ color: C.text }}>
-                  {formatDateOrDash(loan.date)}
-                </PdfText>
+            </PdfView>
+            <PdfView style={{ flex: 1, padding: 10 }}>
+              <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 3 }}>ค่าคอมมิชชัน</PdfText>
+              <PdfText style={{ fontSize: 18, fontWeight: 700, color: T.text }}>
+                ฿ {formatCurrency(feeAmount)}
+              </PdfText>
+              <PdfText style={{ fontSize: 7.5, color: T.label, marginTop: 2 }}>
+                ({ratios.feeRate.toFixed(2)}%)
               </PdfText>
             </PdfView>
           </PdfView>
-        </PdfView>
 
-        {/* ── tab bar ── */}
-        <PdfView
-          style={{
-            flexDirection: 'row',
-            borderBottomWidth: 1,
-            borderBottomColor: C.border,
-            borderBottomStyle: 'solid',
-            paddingHorizontal: 14,
-          }}
-        >
-          {tabs.map((tab, i) => (
+          {/* 2.4 รายละเอียดการจ่ายเงิน */}
+          <SectionLabel text="รายละเอียดการจ่ายเงิน" />
+          <PdfView
+            style={{
+              borderWidth: 1,
+              borderColor: T.border,
+              borderStyle: 'solid',
+              borderRadius: 4,
+              marginBottom: 10,
+              overflow: 'hidden',
+            }}
+          >
+            <PdfView style={{ paddingHorizontal: 10, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: T.border, borderBottomStyle: 'solid' }}>
+              <PdfText style={{ fontSize: 7.5, color: T.label }}>
+                • วงกฎหมาย-ค่าธรรมเนียมกรม: สามารถจัดรับมวลงานดังกล่าวเจ้าหน้าที่นายทะเบียนการจัดสรร (36. ไ. 6.)
+              </PdfText>
+            </PdfView>
+            <PdfView style={{ paddingHorizontal: 10, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: T.border, borderBottomStyle: 'solid' }}>
+              <PdfText style={{ fontSize: 7.5, color: T.label }}>
+                • โอนกรรมสิทธิ์: ค่านายหน้าสาระเป็นอัตราอยู่ในอัตราวลีอินทรรมนายหน้า
+              </PdfText>
+            </PdfView>
+            <PdfView style={{ paddingHorizontal: 10, paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: T.border, borderBottomStyle: 'solid', backgroundColor: T.bgStripe }}>
+              <PdfText style={{ fontSize: 7.5, color: T.label }}>
+                รวม{(halfFee * 2 + feeAmount * 0.1).toFixed(0)}
+              </PdfText>
+            </PdfView>
             <PdfView
-              key={tab}
               style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: 10,
                 paddingVertical: 6,
-                paddingHorizontal: 1,
-                marginRight: 14,
-                borderBottomWidth: i === 0 ? 2 : 0,
-                borderBottomColor: C.primary,
+                borderBottomWidth: 1,
+                borderBottomColor: T.border,
                 borderBottomStyle: 'solid',
+              }}
+            >
+              <PdfText style={{ fontSize: 7.5, color: T.label }}>ค่าคอมมิชชัน (ก้อนสัญญากู้อนุมัติสมบูรณ์)</PdfText>
+              <PdfText style={{ fontSize: 7.5, fontWeight: 700, color: T.text }}>
+                ฿{formatCurrency(feeAmount)}
+              </PdfText>
+            </PdfView>
+            <PdfView
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: 10,
+                paddingVertical: 6,
               }}
             >
               <PdfText
                 style={{
-                  fontSize: 8,
-                  color: i === 0 ? C.primary : C.textDim,
-                  fontWeight: i === 0 ? 700 : 400,
-                }}
-              >
-                {tab}
-              </PdfText>
-            </PdfView>
-          ))}
-        </PdfView>
-
-        {/* ── main 58/42 layout ── */}
-        <PdfView
-          style={{
-            flexDirection: 'row',
-            flex: 1,
-            paddingHorizontal: 12,
-            paddingTop: 8,
-          }}
-        >
-          {/* ── LEFT 58% ── */}
-          <PdfView style={{ width: '58%', paddingRight: 10 }}>
-
-            {/* สรุปสินเชื่อ */}
-            <PdfView
-              style={{
-                borderWidth: 1,
-                borderColor: C.border,
-                borderStyle: 'solid',
-                borderRadius: 6,
-                backgroundColor: C.surface,
-                marginBottom: 8,
-                overflow: 'hidden',
-              }}
-            >
-              <PdfView
-                style={{
-                  backgroundColor: '#162032',
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
+                  fontSize: 7.5,
+                  color: T.text,
+                  fontWeight: 700,
                   borderBottomWidth: 1,
-                  borderBottomColor: C.border,
+                  borderBottomColor: T.text,
                   borderBottomStyle: 'solid',
                 }}
               >
-                <PdfText style={{ fontSize: 8.5, fontWeight: 700, color: C.text }}>
-                  สรุปสินเชื่อ
-                </PdfText>
-              </PdfView>
-              <PdfView style={{ flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 8 }}>
-                {/* สถานะ */}
-                <PdfView style={{ flex: 1 }}>
-                  <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginBottom: 4 }}>สถานะ</PdfText>
-                  <Badge text={statusText} color={statusColor} bg={statusBg} />
-                </PdfView>
-                {/* วงเงิน */}
-                <PdfView style={{ flex: 1 }}>
-                  <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginBottom: 4 }}>วงเงิน</PdfText>
-                  <PdfText style={{ fontSize: 10, fontWeight: 700, color: C.text }}>
-                    ฿{Number(loan.loanPrincipal || 0).toLocaleString('th-TH')}
-                  </PdfText>
-                </PdfView>
-                {/* ดอกเบี้ย */}
-                <PdfView style={{ flex: 1 }}>
-                  <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginBottom: 4 }}>ดอกเบี้ย</PdfText>
-                  <PdfText style={{ fontSize: 10, fontWeight: 700, color: C.text }}>
-                    {Number(loan.interestRate || 0).toFixed(2)}%
-                  </PdfText>
-                </PdfView>
-                {/* งวดที่ชำระ */}
-                <PdfView style={{ flex: 1 }}>
-                  <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginBottom: 4 }}>งวดที่ชำระ</PdfText>
-                  <Badge text={installmentText} color="#93c5fd" bg="#1e3a5f" />
-                </PdfView>
-              </PdfView>
-            </PdfView>
-
-            {/* Core Financial Ratios */}
-            <PdfText style={{ fontSize: 8.5, fontWeight: 700, color: C.text, marginBottom: 5 }}>
-              📊 Core Financial Ratios
-            </PdfText>
-            <PdfView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <RatioCard title="ROI" value={`${ratios.roi.toFixed(2)}%`}
-                subtitle={`ลูกหนี้ทำกำไร ${ratios.roi.toFixed(2)}% ของเงินต้น`}
-                bg={C.purple} border={C.purpleBorder} />
-              <RatioCard title="LTV"
-                value={ratios.ltv !== null ? `${ratios.ltv.toFixed(1)}%` : '-'}
-                subtitle={ratios.ltv !== null
-                  ? ratios.ltv < 80 ? 'อัตราส่วนสูง มีความเสี่ยงปานกลาง' : 'อัตราส่วนสูง มีความเสี่ยง'
-                  : '💡ประเมินมูลค่าทรัพย์สินก่อน'}
-                bg={C.green} border={C.greenBorder} />
-              <RatioCard title="P/Loan"
-                value={ratios.pToLoan > 0 ? `${ratios.pToLoan.toFixed(2)}x (Test)` : '-'}
-                subtitle={`มูลค่าทรัพย์สินกว่าเงินกู้ ${ratios.pToLoan.toFixed(2)} เท่า`}
-                bg={C.blue} border={C.blueBorder} />
-            </PdfView>
-            <PdfView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <RatioCard title="YTD (Realized)" value={`${ratios.ytdRealized.toFixed(1)}%`}
-                subtitle="ผลตอบแทนจริง ณ ปัจจุบันสูงกว่าดอกเบี้ยที่เสนอ"
-                bg={C.purple} border={C.purpleBorder} />
-              <RatioCard title="YTD (Planned)" value={`${ratios.ytdPlanned.toFixed(1)}%`}
-                subtitle="ผลตอบแทนคาดการณ์ตามแผน ดำเนินไปได้ดี"
-                bg={C.blue} border={C.blueBorder} />
-              <RatioCard title="Δ YTD Gap"
-                value={`${ratios.ytdGap.toFixed(1)}% ${ratios.ytdDir}`}
-                subtitle={`ส่วนต่างระหว่างจริงและแผน (${ratios.ytdDir === 'lag' ? 'ต่ำกว่า' : 'สูงกว่า'} ${ratios.ytdGap.toFixed(1)}%)`}
-                bg={C.amber} border={C.amberBorder} />
-            </PdfView>
-            <PdfView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <RatioCard title="NIM (Net Interest Margin)" value={`${ratios.nim.toFixed(1)}%`}
-                subtitle="มาร์จิ้นดอกเบี้ยสุทธิเทียบกับเงินต้น"
-                bg={C.purple} border={C.purpleBorder} />
-              <RatioCard title="IRR (Internal Rate of Return)" value="ยังไม่มีข้อมูล"
-                subtitle="อัตราผลตอบแทนแท้จริงรวมเวลา"
-                bg={C.indigo} border={C.indigoBorder} />
-              <RatioCard title="Duration (Tenor Remaining)"
-                value={ratios.remainingMonths > 0
-                  ? ratios.remainingMonths < 12
-                    ? `${ratios.remainingMonths} เดือน`
-                    : `${(ratios.remainingMonths / 12).toFixed(1)} ปี`
-                  : 'ยังไม่มีข้อมูล'}
-                subtitle="ระยะเวลาคงเหลือ ใช้ในการวัด risk exposure"
-                bg={C.gray} border={C.grayBorder} />
-            </PdfView>
-
-            {/* กราฟการวิเคราะห์ (In development) */}
-            <PdfView
-              style={{
-                borderWidth: 1,
-                borderColor: C.border,
-                borderStyle: 'solid',
-                borderRadius: 6,
-                backgroundColor: C.surface,
-                marginTop: 3,
-                overflow: 'hidden',
-              }}
-            >
-              <PdfView
+                ยอดคงเหลือ:
+              </PdfText>
+              <PdfText
                 style={{
-                  backgroundColor: '#162032',
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
+                  fontSize: 7.5,
+                  fontWeight: 700,
+                  color: T.text,
                   borderBottomWidth: 1,
-                  borderBottomColor: C.border,
+                  borderBottomColor: T.text,
                   borderBottomStyle: 'solid',
                 }}
               >
-                <PdfText style={{ fontSize: 8, fontWeight: 700, color: C.text }}>
-                  กราฟการวิเคราะห์ (In development)
-                </PdfText>
-              </PdfView>
-              <PdfView style={{ flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 8 }}>
-                <PdfView style={{ flex: 1, marginRight: 8 }}>
-                  <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginBottom: 2 }}>Demo...</PdfText>
-                  <PdfText style={{ fontSize: 12, fontWeight: 700, color: C.text }}>$0,000,000.00</PdfText>
-                  <MiniChart values={chartData1} color="#4921EA" />
-                </PdfView>
-                <PdfView style={{ flex: 1 }}>
-                  <PdfText style={{ fontSize: 7.5, color: C.textMuted, marginBottom: 2 }}>Demo..</PdfText>
-                  <PdfText style={{ fontSize: 12, fontWeight: 700, color: C.text }}>0,000.00</PdfText>
-                  <MiniChart values={chartData2} color="#4921EA" />
-                </PdfView>
-              </PdfView>
-            </PdfView>
-
-            {/* วิเคราะห์การลงทุน */}
-            <PdfView
-              style={{
-                backgroundColor: '#111827',
-                borderRadius: 4,
-                padding: 7,
-                marginTop: 5,
-              }}
-            >
-              <PdfText style={{ fontSize: 8, fontWeight: 700, color: C.text, marginBottom: 4 }}>
-                💡 วิเคราะห์การลงทุน
+                ฿{formatCurrency(0)}
               </PdfText>
-              <BulletPoint
-                highlight={`ลูกค้าคำนวณถึง ROI สะสมสูง (${ratios.roi.toFixed(2)}%)`}
-                text={`จากการจัดเก็บดอกเบี้ยของเงินต้น ${currentInst} เดือน`}
-              />
-              {ratios.ltv !== null ? (
-                <BulletPoint
-                  highlight={`LTV ต่ำ (${ratios.ltv.toFixed(0)}%)`}
-                  text="ของมูลค่าหลักทรัพย์ ค่อนข้างปลอดภัย"
-                />
-              ) : (
-                <BulletPoint
-                  highlight="ยังไม่มีข้อมูล LTV"
-                  text="ต้องประเมินมูลค่าทรัพย์สินก่อน"
-                />
-              )}
-              <BulletPoint
-                highlight={`YTD Real ${ratios.ytdRealized.toFixed(1)}%`}
-                text="แปลว่าดอกเบี้ยจริง ณ ปัจจุบันนี้ ยังคงอยู่ในระดับดอกเบี้ยเสนอ"
-              />
-              <BulletPoint
-                highlight={`P/Loan ${ratios.pToLoan.toFixed(2)}`}
-                text={`แปลว่าพรีเมียมราคาบนทรัพย์สิน ${ratios.pToLoan.toFixed(2)} เท่า แสดงถึงศักยภาพที่ดี`}
-              />
-              <BulletPoint
-                highlight="การตั้งงวดดอก Duration = ∞ (ไม่มีกำหนด)"
-                text="หมายความว่าไม่มีผลิตภัณฑ์สะสมระยะสั้น เนื่องจากเลือกการผ่อนชำระระยะยาว"
-              />
             </PdfView>
           </PdfView>
 
-          {/* ── RIGHT 42% ── */}
-          <PdfView style={{ width: '42%' }}>
-            {/* main image */}
-            <PdfView
-              style={{
-                height: 175,
-                borderRadius: 6,
-                backgroundColor: C.surface,
-                borderWidth: 1,
-                borderColor: C.border,
-                borderStyle: 'solid',
-                overflow: 'hidden',
-                marginBottom: 6,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              {mainImageUrl ? (
-                <PdfImage
-                  src={mainImageUrl}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                <PdfText style={{ fontSize: 8.5, color: C.textDim }}>
-                  รูปหลักประกัน / โฉนด
-                </PdfText>
-              )}
-            </PdfView>
-
-            {/* 5 thumbnails */}
-            <PdfView style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 7 }}>
-              {[0, 1, 2, 3, 4].map((i) => {
-                const url = thumbImages[i] ?? null;
-                return (
-                  <PdfView
-                    key={i}
-                    style={{
-                      width: '18.5%',
-                      height: 34,
-                      borderRadius: 4,
-                      borderWidth: 1,
-                      borderColor: i === 0 ? C.text : C.border,
-                      borderStyle: 'solid',
-                      backgroundColor: C.surface,
-                      overflow: 'hidden',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {url ? (
-                      <PdfImage
-                        src={url}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <PdfText style={{ fontSize: 6.5, color: C.textDim }}>{i + 1}</PdfText>
-                    )}
-                  </PdfView>
-                );
-              })}
-            </PdfView>
-
-            {/* description text */}
-            <PdfText style={{ fontSize: 8, color: C.textMuted, lineHeight: 1.4, marginBottom: 7 }}>
-              รายละเอียด (In development): Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Hic dolorum voluptatum temporibus officia.
-            </PdfText>
-
-            {/* divider */}
-            <PdfView
-              style={{
-                borderTopWidth: 1,
-                borderTopColor: C.border,
-                borderTopStyle: 'solid',
-                marginBottom: 7,
-              }}
+          {/* 2.5 กราฟ */}
+          <PdfView style={{ flexDirection: 'row', gap: 6 }}>
+            <MiniLineChart
+              values={chartData1}
+              color={T.primary}
+              label={`฿${(Number(loan.loanPrincipal || 0) * 0.02).toLocaleString('th-TH')} (${ratios.feeRate.toFixed(2)}%)`}
+              sublabel="ค่าคอมมิชชัน"
             />
-
-            {/* property details */}
-            <InfoRow label="ประเภทสินเชื่อ" value="จำนองบ้านและที่ดิน" />
-            <InfoRow label="ระยะเวลา" value={durationText} />
-            <InfoRow
-              label="อัตราดอกเบี้ย"
-              value={`${Number(loan.interestRate || 0).toFixed(2)}% ต่อปี`}
+            <MiniLineChart
+              values={chartData2}
+              color="#0ea5e9"
+              label={`฿${formatCurrency(feeAmount)}`}
+              sublabel="ค่าคอมสุทธิ"
             />
-            <InfoRow label="ความเสี่ยง" value="ความเสี่ยงปานกลาง" />
+          </PdfView>
+        </PdfView>
 
-            {!isMultipleDeed ? (
-              <>
-                <InfoRow label="สถานที่" value={placeWithArea} />
-                <InfoRow label="ประเภททรัพย์" value={primaryDeed?.landType || '-'} />
-                <InfoRow
-                  label="มูลค่าประเมิน"
-                  value={totalPropValue > 0 ? `฿${totalPropValue.toLocaleString('th-TH')}` : '-'}
-                />
-                <InfoRow
-                  label="โฉนด"
-                  value={loan.titleDeedNumber || primaryDeed?.deedNumber || '-'}
-                />
-                <InfoRow
-                  label="เจ้าของ"
-                  value={primaryDeed?.ownerName || loan.ownerName || '-'}
-                />
-              </>
+        {/* ── RIGHT 40% ── */}
+        <PdfView style={{ width: '42%' }}>
+          {/* 3.1 รูปภาพ */}
+          <PdfView
+            style={{
+              height: 160,
+              borderRadius: 4,
+              borderWidth: 1,
+              borderColor: T.border,
+              borderStyle: 'solid',
+              overflow: 'hidden',
+              marginBottom: 6,
+              backgroundColor: T.bgStripe,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {mainImageUrl ? (
+              <PdfImage
+                src={mainImageUrl}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             ) : (
-              <>
-                <InfoRow
-                  label="มูลค่าประเมินรวม"
-                  value={totalPropValue > 0 ? `฿${totalPropValue.toLocaleString('th-TH')}` : '-'}
-                />
-                <InfoRow
-                  label="โฉนดที่ดิน"
-                  value={`${titleDeeds.length} โฉนด — ${placeDisplay}`}
-                />
-              </>
-            )}
-
-            {requestedAmount > 0 && (
-              <InfoRow
-                label="วงเงินที่ขอ"
-                value={`฿${requestedAmount.toLocaleString('th-TH')}`}
-              />
-            )}
-            {approvedAmount > 0 && (
-              <InfoRow
-                label="วงเงินอนุมัติ"
-                value={`฿${approvedAmount.toLocaleString('th-TH')}`}
-              />
-            )}
-            {maxApprovedAmount > 0 && (
-              <InfoRow
-                label="วงเงินสูงสุด"
-                value={`฿${maxApprovedAmount.toLocaleString('th-TH')}`}
-              />
+              <PdfText style={{ fontSize: 8, color: T.label }}>ไม่มีรูปภาพ</PdfText>
             )}
           </PdfView>
-        </PdfView>
 
-        {/* ── footer ── */}
-        <PdfView
-          style={{
-            borderTopWidth: 1,
-            borderTopColor: C.border,
-            borderTopStyle: 'solid',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 14,
-            paddingVertical: 5,
-          }}
-        >
-          <PdfText style={{ fontSize: 7.5, color: C.textDim }}>
-            ชุดเอกสารนำส่งภาษี — {loan.loanNumber || '-'}
+          <PdfView style={{ flexDirection: 'row', gap: 5, marginBottom: 10 }}>
+            {[0, 1, 2, 3].map((i) => {
+              const url = extraImages[i] ?? null;
+              return (
+                <PdfView
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: 42,
+                    borderRadius: 3,
+                    borderWidth: 1,
+                    borderColor: i === 0 && url ? T.text : T.border,
+                    borderStyle: 'solid',
+                    overflow: 'hidden',
+                    backgroundColor: T.bgStripe,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {url ? (
+                    <PdfImage
+                      src={url}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <PdfText style={{ fontSize: 7, color: T.label }}>{i + 1}</PdfText>
+                  )}
+                </PdfView>
+              );
+            })}
+          </PdfView>
+
+          {/* 3.2 รายละเอียดทรัพย์สิน */}
+          <PdfText style={{ fontSize: 8.5, fontWeight: 700, color: T.text, marginBottom: 5 }}>
+            รายละเอียดทรัพย์สิน
           </PdfText>
-          <PdfText style={{ fontSize: 7.5, color: C.textDim }}>
-            ออกเมื่อ {formatDateOrDash(loan.date)}
-          </PdfText>
+          <PdfView
+            style={{
+              borderWidth: 1,
+              borderColor: T.border,
+              borderStyle: 'solid',
+              borderRadius: 4,
+              overflow: 'hidden',
+            }}
+          >
+            {propertyRows.map(([label, value], i) => (
+              <TableRow key={label} label={label} value={value} stripe={i % 2 === 1} />
+            ))}
+          </PdfView>
         </PdfView>
       </PdfView>
     </PdfPage>
