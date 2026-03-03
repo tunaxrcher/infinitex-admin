@@ -60,7 +60,6 @@ const formatCurrency = (value: number | undefined | null) => {
   });
 };
 
-
 type DetailType =
   | 'loan-open'
   | 'loan-total'
@@ -554,7 +553,9 @@ export default function TaxSubmissionReportPage() {
         return;
       }
 
-      viewerWindow.document.write(`<!doctype html><html lang="th"><head><meta charset="UTF-8"/><title>กำลังสร้าง PDF...</title><style>body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#e5e7eb;background:#111827;flex-direction:column;gap:12px}.spinner{width:40px;height:40px;border:3px solid #374151;border-top-color:#60a5fa;border-radius:50%;animation:spin 0.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div>กำลังสร้างเอกสาร PDF...</div></body></html>`);
+      viewerWindow.document.write(
+        `<!doctype html><html lang="th"><head><meta charset="UTF-8"/><title>กำลังสร้าง PDF...</title><style>body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#e5e7eb;background:#111827;flex-direction:column;gap:12px}.spinner{width:40px;height:40px;border:3px solid #374151;border-top-color:#60a5fa;border-radius:50%;animation:spin 0.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div>กำลังสร้างเอกสาร PDF...</div></body></html>`,
+      );
       viewerWindow.document.close();
 
       try {

@@ -1287,12 +1287,22 @@ export const taxSubmissionReportService = {
           titleDeedCount,
           propertyType,
           propertyValue: Number(payment.loan?.application?.propertyValue || 0),
-          totalPropertyValue: Number(payment.loan?.application?.totalPropertyValue || 0),
-          estimatedValue: Number(payment.loan?.application?.estimatedValue || 0),
+          totalPropertyValue: Number(
+            payment.loan?.application?.totalPropertyValue || 0,
+          ),
+          estimatedValue: Number(
+            payment.loan?.application?.estimatedValue || 0,
+          ),
           valuationDate: payment.loan?.application?.valuationDate || null,
-          requestedAmount: Number(payment.loan?.application?.requestedAmount || 0),
-          approvedAmount: Number(payment.loan?.application?.approvedAmount || 0),
-          maxApprovedAmount: Number(payment.loan?.application?.maxApprovedAmount || 0),
+          requestedAmount: Number(
+            payment.loan?.application?.requestedAmount || 0,
+          ),
+          approvedAmount: Number(
+            payment.loan?.application?.approvedAmount || 0,
+          ),
+          maxApprovedAmount: Number(
+            payment.loan?.application?.maxApprovedAmount || 0,
+          ),
           titleDeeds: resolvedTitleDeeds.map((d) => ({
             ...d,
             imageUrl: (d as any).imageUrl || null,
@@ -1305,7 +1315,11 @@ export const taxSubmissionReportService = {
             const raw = payment.loan?.application?.supportingImages;
             if (!raw) return [] as string[];
             if (typeof raw === 'string') {
-              try { return JSON.parse(raw) as string[]; } catch { return []; }
+              try {
+                return JSON.parse(raw) as string[];
+              } catch {
+                return [];
+              }
             }
             return raw as string[];
           })(),

@@ -1,10 +1,10 @@
+import fs from 'fs';
+import path from 'path';
+import React from 'react';
+import { NextRequest, NextResponse } from 'next/server';
 import { Font, pdf } from '@react-pdf/renderer';
 import { TaxSubmissionPackagePdf } from '@src/features/documents/components/tax-submission-package-pdf';
 import type { TaxFeeLoanItem } from '@src/features/documents/components/tax-submission-pdf/shared';
-import fs from 'fs';
-import { NextRequest, NextResponse } from 'next/server';
-import path from 'path';
-import React from 'react';
 
 // Force Node.js runtime (ไม่ใช้ Edge — ต้องการ fs + Node.js crypto)
 export const runtime = 'nodejs';
@@ -132,8 +132,7 @@ export async function POST(request: NextRequest) {
     console.error('[PDF Route] Error:', error);
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : 'PDF generation failed',
+        error: error instanceof Error ? error.message : 'PDF generation failed',
       },
       { status: 500 },
     );

@@ -73,12 +73,12 @@ export function ReceiptPage({
     >
       <PdfView style={pdfStyles.rowBetween}>
         <PdfView style={{ width: '35%' }}>
-                {logoSrc && (
-                  <PdfImage
-                    src={logoSrc}
-                    style={{ width: 140, height: 48, objectFit: 'contain' }}
-                  />
-                )}
+          {logoSrc && (
+            <PdfImage
+              src={logoSrc}
+              style={{ width: 140, height: 48, objectFit: 'contain' }}
+            />
+          )}
         </PdfView>
         <PdfView style={{ width: '63%' }}>
           <PdfText

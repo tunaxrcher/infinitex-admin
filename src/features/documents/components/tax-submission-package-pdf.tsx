@@ -32,8 +32,16 @@ export function TaxSubmissionPackagePdf({
           fontFamily={fontFamily}
           logoSrc={logoSrc}
         />,
-        <CloseCasePage key={`c-${loan.id}`} loan={loan} fontFamily={fontFamily} />,
-        <AppraisalPage key={`a-${loan.id}`} loan={loan} fontFamily={fontFamily} />,
+        <CloseCasePage
+          key={`c-${loan.id}`}
+          loan={loan}
+          fontFamily={fontFamily}
+        />,
+        <AppraisalPage
+          key={`a-${loan.id}`}
+          loan={loan}
+          fontFamily={fontFamily}
+        />,
       ])}
     </PdfDocument>
   );
