@@ -1147,9 +1147,33 @@ export const taxSubmissionReportService = {
       },
       include: {
         loan: {
-          select: {
-            loanNumber: true,
-            principalAmount: true,
+          include: {
+            customer: {
+              include: {
+                profile: true,
+              },
+            },
+            application: {
+              select: {
+                ownerName: true,
+                propertyValue: true,
+                estimatedValue: true,
+                valuationDate: true,
+                titleDeeds: {
+                  select: {
+                    deedNumber: true,
+                    provinceName: true,
+                    amphurName: true,
+                    landAreaText: true,
+                    ownerName: true,
+                    landType: true,
+                  },
+                  orderBy: {
+                    sortOrder: 'asc',
+                  },
+                },
+              },
+            },
           },
         },
         user: {
@@ -1186,12 +1210,35 @@ export const taxSubmissionReportService = {
         return {
           id: payment.id,
           type: 'fee-payment',
+          loanId: payment.loanId,
+          paymentRef: payment.referenceNumber,
+          transactionId: payment.transactionId,
           date: payment.paidDate,
           loanNumber: payment.loan?.loanNumber || '-',
-          customerName: payment.user?.profile?.fullName || '-',
+          customerName:
+            payment.loan?.customer?.profile?.fullName ||
+            payment.user?.profile?.fullName ||
+            '-',
+          customerAddress: payment.loan?.customer?.profile?.address || '-',
+          customerTaxId: payment.loan?.customer?.profile?.idCardNumber || '-',
           installmentNumber: payment.installment?.installmentNumber || null,
           paymentAmount: Number(payment.amount || 0),
           loanPrincipal,
+          interestRate: Number(payment.loan?.interestRate || 0),
+          termMonths: Number(payment.loan?.termMonths || 0),
+          monthlyPayment: Number(payment.loan?.monthlyPayment || 0),
+          remainingBalance: Number(payment.loan?.remainingBalance || 0),
+          contractDate: payment.loan?.contractDate || null,
+          expiryDate: payment.loan?.expiryDate || null,
+          titleDeedNumber: payment.loan?.titleDeedNumber || null,
+          ownerName:
+            payment.loan?.application?.ownerName ||
+            payment.loan?.customer?.profile?.fullName ||
+            '-',
+          propertyValue: Number(payment.loan?.application?.propertyValue || 0),
+          estimatedValue: Number(payment.loan?.application?.estimatedValue || 0),
+          valuationDate: payment.loan?.application?.valuationDate || null,
+          titleDeeds: payment.loan?.application?.titleDeeds || [],
           taxRate,
           feeAmount,
         };
