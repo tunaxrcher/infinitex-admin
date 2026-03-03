@@ -90,20 +90,49 @@ function PropRow({ label, value, stripe }: { label: string; value: string; strip
 
 // ── compute ratios ─────────────────────────────────────────────────────────
 function computeRatios(loan: TaxFeeLoanItem) {
-  const principal = Number(loan.loanPrincipal || 0);
-  const interestRate = Number(loan.interestRate || 0);
-  const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0);
-  const nim = interestRate;
-  const ltv = totalPropValue > 0 ? (principal / totalPropValue) * 100 : null;
-  const pToLoan = totalPropValue > 0 && principal > 0 ? totalPropValue / principal : 0;
-  const feeRate = Number(loan.taxRate || 0);
+  const principal    = Number(loan.loanPrincipal   || 0); // ราคาขาย
+  const approvedAmt  = Number(loan.approvedAmount  || 0); // วงเงินกู้ยืม
+  const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0); // ราคาประเมิน
+  const feeRate   = Number(loan.taxRate   || 0);
   const feeAmount = Number(loan.feeAmount || 0);
-  const currentInst = Number(loan.currentInstallment || 0);
-  const ytdRealized = principal > 0 && currentInst > 0
+
+  /**
+   * NIM (Net Interest Margin) ในบริบทค่านายหน้า
+   * สูตร: (รายได้สุทธิ ÷ ราคาขาย) × 100
+   * ตัวอย่าง: (15,000 ÷ 1,200,000) × 100 = 1.25%
+   */
+  const nim = principal > 0 ? (feeAmount / principal) * 100 : 0;
+
+  /**
+   * LTV (Loan-to-Value)
+   * สูตร: (วงเงินกู้ ÷ ราคาประเมิน) × 100
+   * ตัวอย่าง: (300,000 ÷ 1,100,000) × 100 = 27.27%
+   * ถ้าไม่มีราคาประเมิน: (วงเงินกู้ ÷ วงเงินกู้) × 100 = 100%
+   */
+  const ltvDenominator = totalPropValue > 0 ? totalPropValue : approvedAmt;
+  const ltv = approvedAmt > 0 && ltvDenominator > 0
+    ? (approvedAmt / ltvDenominator) * 100
+    : null;
+
+  const pToLoan = totalPropValue > 0 && principal > 0 ? totalPropValue / principal : 0;
+  const remainingValue = totalPropValue > 0 ? totalPropValue - principal : 0;
+
+  /**
+   * ytdRealized — ผลตอบแทนจริงสะสม ณ ปัจจุบัน
+   * ใช้สำหรับแสดงใน IRR row ของตาราง property details
+   */
+  const interestRate  = Number(loan.interestRate  || 0);
+  const currentInst   = Number(loan.currentInstallment || 0);
+  const ytdRealized   = principal > 0 && currentInst > 0
     ? (interestRate / 12) * currentInst
     : interestRate;
-  const remainingValue = totalPropValue > 0 ? totalPropValue - principal : 0;
-  return { nim, ltv, pToLoan, feeRate, feeAmount, ytdRealized, remainingValue, totalPropValue };
+
+  // LTV subtitle
+  const ltvSubtitle = totalPropValue > 0
+    ? 'สัดส่วนเงินกู้เทียบกับราคาประเมิน'
+    : 'ไม่มีราคาประเมิน — ใช้วงเงินกู้แทน';
+
+  return { nim, ltv, ltvSubtitle, pToLoan, feeRate, feeAmount, remainingValue, totalPropValue, approvedAmt, ytdRealized };
 }
 
 // ── main component ─────────────────────────────────────────────────────────
@@ -133,9 +162,8 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
     : loan.loanStatus === 'DEFAULTED' ? 'เกินกำหนดชำระ'
     : 'รออนุมัติ';
 
-  const approvedAmount = Number(loan.approvedAmount || 0);
-  const totalPropValue = Number(loan.totalPropertyValue || loan.propertyValue || 0);
   const ratios = computeRatios(loan);
+  const { approvedAmt: approvedAmount, totalPropValue } = ratios;
 
   // images — 1 main + 3 thumbnails
   const mainImageUrl = loan.primaryImageUrl || loan.titleDeeds?.[0]?.imageUrl || null;
@@ -144,9 +172,30 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
     ...((loan.titleDeeds || []).slice(1).map((d) => d.imageUrl).filter(Boolean) as string[]),
   ].slice(0, 3);
 
-  // chart data (demo)
-  const chart1 = [30, 42, 38, 55, 48, 60, 58, 65, 70, 75];
-  const chart2 = [28, 35, 30, 45, 48, 42, 55, 52, 60, 65];
+  // chart data — real derived data (ไม่ใช่ demo ล้วนๆ)
+  const termMonths = Number(loan.termMonths || 12);
+  const remainingBalance = Number(loan.remainingBalance || 0);
+  const principal = Number(loan.loanPrincipal || 0);
+  const monthlyPay = Number(loan.monthlyPayment || principal / Math.max(termMonths, 1));
+
+  /**
+   * Chart 1 — สะสมค่าคอมมิชชั่น (commission realization over time)
+   * แสดง: ค่าคอมสะสมทีละ period จากต้นจนถึงปัจจุบัน
+   */
+  const chart1Steps = 8;
+  const feePerStep = ratios.feeAmount / chart1Steps;
+  const chart1 = Array.from({ length: chart1Steps }, (_, i) => feePerStep * (i + 1));
+
+  /**
+   * Chart 2 — ยอดสินเชื่อคงเหลือ (remaining balance decreasing)
+   * แสดง: ยอดเงินต้นที่ลดลงตามงวดชำระ โดยประมาณ
+   */
+  const chart2Steps = 8;
+  const balanceNow = remainingBalance > 0 ? remainingBalance : principal;
+  const balanceReduction = monthlyPay * Math.floor(termMonths / chart2Steps);
+  const chart2 = Array.from({ length: chart2Steps }, (_, i) =>
+    Math.max(0, balanceNow - balanceReduction * i),
+  ).reverse(); // เริ่มจากสูงลงล่าง
 
   // property detail rows
   const propRows: Array<[string, string]> = [
@@ -251,7 +300,7 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
                 <PdfText style={{ fontSize: 16, fontWeight: 700, color: T.text }}>
                   ฿{formatCurrency(ratios.feeAmount)}
                   <PdfText style={{ fontSize: 11, fontWeight: 400 }}>
-                    {' '}({ratios.feeRate.toFixed(0)}%)
+                    {' '}({ratios.feeRate.toFixed(2)}%)
                   </PdfText>
                 </PdfText>
               </PdfView>
@@ -268,12 +317,12 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
             <RatioCard
               title="NIM"
               value={`${ratios.nim.toFixed(2)}%`}
-              subtitle="สัดส่วนมาร์จิ้นดอกเบี้ยสุทธิเทียบกับราคาขาย"
+              subtitle={`(${formatCurrency(ratios.feeAmount)} ÷ ${formatCurrency(principal)}) × 100`}
             />
             <RatioCard
               title="LTV"
               value={ratios.ltv !== null ? `${ratios.ltv.toFixed(1)}%` : '-'}
-              subtitle="สัดส่วนเงินกู้เทียบกับราคาประเมิน"
+              subtitle={ratios.ltvSubtitle}
             />
             <RatioCard
               title="PT Loan"
@@ -380,9 +429,9 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
             </PdfView>
           </PdfView>
 
-          {/* 2.5 Demo charts — ไม่มี subtitle text ใต้กราฟ */}
+          {/* 2.5 Charts — real derived data */}
           <PdfView style={{ flexDirection: 'row', gap: 6, marginTop: 4 }}>
-            {/* Chart 1 */}
+            {/* Chart 1: ค่าคอมสะสม */}
             <PdfView
               style={{
                 flex: 1,
@@ -394,10 +443,14 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
                 backgroundColor: T.bg,
               }}
             >
-              <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 2 }}>Demo.</PdfText>
+              <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 2 }}>
+                ค่าคอมมิชชั่นสะสม
+              </PdfText>
               <PdfText style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 5 }}>
-                ฿{formatCurrency(Number(loan.loanPrincipal || 0) * 0.02)}{' '}
-                <PdfText style={{ fontSize: 9, fontWeight: 400 }}>({ratios.feeRate.toFixed(2)}%)</PdfText>
+                ฿{formatCurrency(ratios.feeAmount)}{' '}
+                <PdfText style={{ fontSize: 9, fontWeight: 400 }}>
+                  ({ratios.feeRate.toFixed(2)}%)
+                </PdfText>
               </PdfText>
               <Svg width={128} height={36}>
                 <Polyline
@@ -410,7 +463,7 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
                 />
               </Svg>
             </PdfView>
-            {/* Chart 2 */}
+            {/* Chart 2: ยอดสินเชื่อคงเหลือ */}
             <PdfView
               style={{
                 flex: 1,
@@ -422,9 +475,11 @@ export function CloseCasePage({ loan, fontFamily }: { loan: TaxFeeLoanItem; font
                 backgroundColor: T.bg,
               }}
             >
-              <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 2 }}>Demo.</PdfText>
+              <PdfText style={{ fontSize: 7.5, color: T.label, marginBottom: 2 }}>
+                ยอดสินเชื่อคงเหลือ
+              </PdfText>
               <PdfText style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 5 }}>
-                ฿{formatCurrency(ratios.feeAmount)}
+                ฿{formatCurrency(remainingBalance > 0 ? remainingBalance : principal)}
               </PdfText>
               <Svg width={128} height={36}>
                 <Polyline
