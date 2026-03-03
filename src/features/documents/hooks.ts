@@ -5,6 +5,7 @@ import {
   documentApi,
   documentTitleListApi,
   incomeExpenseReportApi,
+  taxSubmissionReportApi,
 } from './api';
 import {
   type DocumentCreateSchema,
@@ -13,6 +14,7 @@ import {
   type DocumentUpdateSchema,
   type GenerateDocNumberSchema,
   type IncomeExpenseReportFiltersSchema,
+  type TaxSubmissionReportFiltersSchema,
 } from './validations';
 
 // ============================================
@@ -36,6 +38,12 @@ export const incomeExpenseReportKeys = {
   all: () => ['incomeExpenseReport'] as const,
   monthly: (filters?: IncomeExpenseReportFiltersSchema) =>
     ['incomeExpenseReport', 'monthly', filters] as const,
+};
+
+export const taxSubmissionReportKeys = {
+  all: () => ['taxSubmissionReport'] as const,
+  monthly: (filters?: TaxSubmissionReportFiltersSchema) =>
+    ['taxSubmissionReport', 'monthly', filters] as const,
 };
 
 // ============================================
@@ -162,6 +170,20 @@ export const useGetIncomeExpenseReport = (
   return useQuery({
     queryKey: incomeExpenseReportKeys.monthly(filters),
     queryFn: () => incomeExpenseReportApi.getMonthlyReport(filters),
+    placeholderData: (previousData) => previousData,
+    staleTime: 60000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+};
+
+export const useGetTaxSubmissionReport = (
+  filters: TaxSubmissionReportFiltersSchema,
+) => {
+  return useQuery({
+    queryKey: taxSubmissionReportKeys.monthly(filters),
+    queryFn: () => taxSubmissionReportApi.getMonthlyReport(filters),
     placeholderData: (previousData) => previousData,
     staleTime: 60000,
     gcTime: 5 * 60 * 1000,

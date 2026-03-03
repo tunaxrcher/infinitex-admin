@@ -118,6 +118,7 @@ export const MENU_SIDEBAR: MenuConfig = [
   { heading: 'บัญชี' },
   { title: 'ใบสำคัญรับ', icon: Theater, action: 'open-receipt-voucher' },
   { title: 'ใบสำคัญจ่าย', icon: Theater, action: 'open-payment-voucher' },
+  { title: 'นำส่งภาษี', icon: ScrollText, path: '/tax-submission-report' },
   { heading: 'ตั้งค่า' },
   { title: 'ตั้งค่า', icon: Settings, path: '/settings' },
   // { heading: 'Finx' },

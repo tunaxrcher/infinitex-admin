@@ -7,6 +7,7 @@ import {
   type DocumentUpdateSchema,
   type GenerateDocNumberSchema,
   type IncomeExpenseReportFiltersSchema,
+  type TaxSubmissionReportFiltersSchema,
 } from './validations';
 
 export const documentApi = {
@@ -155,6 +156,60 @@ export const incomeExpenseReportApi = {
 
     const response = await apiFetch(
       `/api/income-expense-report/details?${searchParams}`,
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+};
+
+// ============================================
+// TAX SUBMISSION REPORT API
+// ============================================
+
+export const taxSubmissionReportApi = {
+  getMonthlyReport: async (filters: TaxSubmissionReportFiltersSchema) => {
+    const searchParams = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        searchParams.append(key, value.toString());
+      }
+    });
+
+    const response = await apiFetch(
+      `/api/tax-submission-report?${searchParams}`,
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
+
+  getMonthlyDetails: async (
+    year: number,
+    month: number,
+    type:
+      | 'loan-open'
+      | 'loan-total'
+      | 'close-payment'
+      | 'fee-payment'
+      | 'expense'
+      | 'income-expense-total',
+    taxRate: number,
+  ) => {
+    const searchParams = new URLSearchParams({
+      year: year.toString(),
+      month: month.toString(),
+      type,
+      taxRate: taxRate.toString(),
+    });
+
+    const response = await apiFetch(
+      `/api/tax-submission-report/details?${searchParams}`,
     );
     if (!response.ok) {
       const error = await response.json();

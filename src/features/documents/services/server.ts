@@ -12,6 +12,7 @@ import {
   type DocumentUpdateSchema,
   type GenerateDocNumberSchema,
   type IncomeExpenseReportFiltersSchema,
+  type TaxSubmissionReportFiltersSchema,
 } from '../validations';
 
 // ============================================
@@ -926,6 +927,353 @@ export const incomeExpenseReportService = {
         amount: Number(doc.price),
         note: doc.note,
       }));
+    }
+
+    return [];
+  },
+};
+
+type TaxSubmissionDetailType =
+  | 'loan-open'
+  | 'loan-total'
+  | 'close-payment'
+  | 'fee-payment'
+  | 'expense'
+  | 'income-expense-total';
+
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+export const taxSubmissionReportService = {
+  async getMonthlyReport(filters: TaxSubmissionReportFiltersSchema) {
+    const { year, taxRate = 1.25 } = filters;
+    const rateDecimal = taxRate / 100;
+
+    const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+      month: i + 1,
+      monthName: getThaiMonthName(i + 1),
+      loanOpenAmount: 0,
+      loanTotalAmount: 0,
+      closeAccountPayment: 0,
+      feePayment: 0,
+      expense: 0,
+      incomeExpenseTotal: 0,
+    }));
+
+    const monthPromises = Array.from({ length: 12 }, (_, i) =>
+      this._getMonthData(year, i + 1, rateDecimal),
+    );
+    const monthResults = await Promise.all(monthPromises);
+
+    monthResults.forEach((result, index) => {
+      monthlyData[index].loanOpenAmount = result.loanOpenAmount;
+      monthlyData[index].loanTotalAmount = result.loanTotalAmount;
+      monthlyData[index].closeAccountPayment = result.closeAccountPayment;
+      monthlyData[index].feePayment = result.feePayment;
+      monthlyData[index].expense = result.expense;
+      monthlyData[index].incomeExpenseTotal = result.incomeExpenseTotal;
+    });
+
+    const totals = {
+      loanOpenAmount: monthlyData.reduce((sum, m) => sum + m.loanOpenAmount, 0),
+      loanTotalAmount: monthlyData.reduce(
+        (sum, m) => sum + m.loanTotalAmount,
+        0,
+      ),
+      closeAccountPayment: monthlyData.reduce(
+        (sum, m) => sum + m.closeAccountPayment,
+        0,
+      ),
+      feePayment: monthlyData.reduce((sum, m) => sum + m.feePayment, 0),
+      expense: monthlyData.reduce((sum, m) => sum + m.expense, 0),
+      incomeExpenseTotal: monthlyData.reduce(
+        (sum, m) => sum + m.incomeExpenseTotal,
+        0,
+      ),
+    };
+
+    return {
+      year,
+      taxRate,
+      data: monthlyData,
+      totals: {
+        loanOpenAmount: round2(totals.loanOpenAmount),
+        loanTotalAmount: round2(totals.loanTotalAmount),
+        closeAccountPayment: round2(totals.closeAccountPayment),
+        feePayment: round2(totals.feePayment),
+        expense: round2(totals.expense),
+        incomeExpenseTotal: round2(totals.incomeExpenseTotal),
+      },
+    };
+  },
+
+  async _getMonthData(year: number, month: number, rateDecimal: number) {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+    const [loansCreated, payments, expenseDocuments] = await Promise.all([
+      prisma.loan.findMany({
+        where: {
+          status: { in: ['ACTIVE', 'COMPLETED'] },
+          contractDate: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        select: {
+          principalAmount: true,
+        },
+      }),
+      prisma.payment.findMany({
+        where: {
+          status: 'COMPLETED',
+          paidDate: {
+            not: null,
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        include: {
+          loan: {
+            select: {
+              principalAmount: true,
+            },
+          },
+        },
+      }),
+      prisma.document.findMany({
+        where: {
+          docType: 'PAYMENT_VOUCHER',
+          deletedAt: null,
+          docDate: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        select: {
+          price: true,
+        },
+      }),
+    ]);
+
+    const loanOpenAmount = loansCreated.reduce(
+      (sum, loan) => sum + Number(loan.principalAmount || 0),
+      0,
+    );
+
+    const closePayments = payments.filter(
+      (payment) => !payment.installmentId || payment.installmentId === '',
+    );
+    const installmentPayments = payments.filter(
+      (payment) => payment.installmentId != null && payment.installmentId !== '',
+    );
+
+    const closeAccountPayment = closePayments.reduce(
+      (sum, payment) => sum + Number(payment.amount || 0),
+      0,
+    );
+
+    const feePayment = installmentPayments.reduce((sum, payment) => {
+      const loanPrincipal = Number(payment.loan?.principalAmount || 0);
+      return sum + loanPrincipal * rateDecimal;
+    }, 0);
+
+    const expense = expenseDocuments.reduce(
+      (sum, doc) => sum + Number(doc.price || 0),
+      0,
+    );
+
+    const loanTotalAmount = closeAccountPayment + feePayment;
+    const incomeExpenseTotal = feePayment - expense;
+
+    return {
+      loanOpenAmount: round2(loanOpenAmount),
+      loanTotalAmount: round2(loanTotalAmount),
+      closeAccountPayment: round2(closeAccountPayment),
+      feePayment: round2(feePayment),
+      expense: round2(expense),
+      incomeExpenseTotal: round2(incomeExpenseTotal),
+    };
+  },
+
+  async getMonthlyDetails(
+    year: number,
+    month: number,
+    type: TaxSubmissionDetailType,
+    taxRate: number,
+  ) {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+    const rateDecimal = taxRate / 100;
+
+    if (type === 'loan-open') {
+      const loans = await prisma.loan.findMany({
+        where: {
+          status: { in: ['ACTIVE', 'COMPLETED'] },
+          contractDate: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        include: {
+          customer: {
+            include: {
+              profile: true,
+            },
+          },
+        },
+        orderBy: { contractDate: 'desc' },
+      });
+
+      return loans.map((loan) => ({
+        id: loan.id,
+        type: 'loan-open',
+        date: loan.contractDate,
+        loanNumber: loan.loanNumber,
+        customerName: loan.customer?.profile?.fullName || '-',
+        principalAmount: Number(loan.principalAmount || 0),
+      }));
+    }
+
+    const payments = await prisma.payment.findMany({
+      where: {
+        status: 'COMPLETED',
+        paidDate: {
+          not: null,
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        loan: {
+          select: {
+            loanNumber: true,
+            principalAmount: true,
+          },
+        },
+        user: {
+          include: {
+            profile: true,
+          },
+        },
+        installment: {
+          select: {
+            installmentNumber: true,
+          },
+        },
+      },
+      orderBy: { paidDate: 'desc' },
+    });
+
+    const closePayments = payments
+      .filter((payment) => !payment.installmentId || payment.installmentId === '')
+      .map((payment) => ({
+        id: payment.id,
+        type: 'close-payment',
+        date: payment.paidDate,
+        loanNumber: payment.loan?.loanNumber || '-',
+        customerName: payment.user?.profile?.fullName || '-',
+        loanPrincipal: Number(payment.loan?.principalAmount || 0),
+        amount: Number(payment.amount || 0),
+      }));
+
+    const feePayments = payments
+      .filter((payment) => payment.installmentId != null && payment.installmentId !== '')
+      .map((payment) => {
+        const loanPrincipal = Number(payment.loan?.principalAmount || 0);
+        const feeAmount = round2(loanPrincipal * rateDecimal);
+        return {
+          id: payment.id,
+          type: 'fee-payment',
+          date: payment.paidDate,
+          loanNumber: payment.loan?.loanNumber || '-',
+          customerName: payment.user?.profile?.fullName || '-',
+          installmentNumber: payment.installment?.installmentNumber || null,
+          paymentAmount: Number(payment.amount || 0),
+          loanPrincipal,
+          taxRate,
+          feeAmount,
+        };
+      });
+
+    if (type === 'close-payment') {
+      return closePayments;
+    }
+
+    if (type === 'fee-payment') {
+      return feePayments;
+    }
+
+    if (type === 'loan-total') {
+      return [...closePayments, ...feePayments]
+        .map((item) => ({
+          ...item,
+          amount:
+            item.type === 'close-payment'
+              ? Number(item.amount || 0)
+              : Number((item as { feeAmount?: number }).feeAmount || 0),
+        }))
+        .sort((a, b) => {
+          const dateA = a.date ? new Date(a.date).getTime() : 0;
+          const dateB = b.date ? new Date(b.date).getTime() : 0;
+          return dateB - dateA;
+        });
+    }
+
+    const expenseDocs = await prisma.document.findMany({
+      where: {
+        docType: 'PAYMENT_VOUCHER',
+        deletedAt: null,
+        docDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: { docDate: 'desc' },
+    });
+
+    const expenses = expenseDocs.map((doc) => ({
+      id: doc.id,
+      type: 'expense',
+      date: doc.docDate,
+      docNumber: doc.docNumber,
+      title: doc.title,
+      cashFlowName: doc.cashFlowName,
+      note: doc.note,
+      amount: Number(doc.price || 0),
+    }));
+
+    if (type === 'expense') {
+      return expenses;
+    }
+
+    if (type === 'income-expense-total') {
+      const incomeItems = feePayments.map((item) => ({
+        id: item.id,
+        type: 'income',
+        source: 'ชำระค่าธรรมเนียม',
+        date: item.date,
+        loanNumber: item.loanNumber,
+        customerName: item.customerName,
+        amount: item.feeAmount,
+      }));
+
+      const expenseItems = expenses.map((item) => ({
+        id: item.id,
+        type: 'expense',
+        source: 'ใบสำคัญจ่าย',
+        date: item.date,
+        docNumber: item.docNumber,
+        title: item.title,
+        amount: item.amount,
+      }));
+
+      return [...incomeItems, ...expenseItems].sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateB - dateA;
+      });
     }
 
     return [];

@@ -78,6 +78,15 @@ export type IncomeExpenseReportFiltersSchema = z.infer<
   typeof incomeExpenseReportFiltersSchema
 >;
 
+export const taxSubmissionReportFiltersSchema = z.object({
+  year: z.coerce.number().min(2020).max(2100),
+  taxRate: z.coerce.number().min(0).max(100).optional().default(1.25),
+});
+
+export type TaxSubmissionReportFiltersSchema = z.infer<
+  typeof taxSubmissionReportFiltersSchema
+>;
+
 // ============================================
 // GENERATE DOCUMENT NUMBER SCHEMA
 // ============================================
