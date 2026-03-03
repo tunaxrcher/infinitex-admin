@@ -6,6 +6,7 @@ import {
   Polyline,
   Svg,
 } from '@react-pdf/renderer';
+import { toThaiDate } from '@src/features/documents/utils';
 import { formatCurrency, TaxFeeLoanItem } from './shared';
 
 // ── design tokens ─────────────────────────────────────────────────────────
@@ -19,31 +20,6 @@ const T = {
   primary: '#4f46e5',
   skyBlue: '#0ea5e9',
 };
-
-// ── Thai date helper ───────────────────────────────────────────────────────
-const MONTHS_TH = [
-  'ม.ค.',
-  'ก.พ.',
-  'มี.ค.',
-  'เม.ย.',
-  'พ.ค.',
-  'มิ.ย.',
-  'ก.ค.',
-  'ส.ค.',
-  'ก.ย.',
-  'ต.ค.',
-  'พ.ย.',
-  'ธ.ค.',
-];
-function toThaiDate(value?: string | Date | null): string {
-  if (!value) return '-';
-  try {
-    const d = new Date(value);
-    return `${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear() + 543}`;
-  } catch {
-    return '-';
-  }
-}
 
 // ── mini SVG line chart ────────────────────────────────────────────────────
 function miniChartPoints(values: number[], w = 128, h = 36): string {

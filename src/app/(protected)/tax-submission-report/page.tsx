@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { taxSubmissionReportApi } from '@src/features/documents/api';
 import { type TaxFeeLoanItem } from '@src/features/documents/components/tax-submission-package-pdf';
 import { useGetTaxSubmissionReport } from '@src/features/documents/hooks';
+// formatCurrency นำเข้าจาก shared utils
+import { formatCurrency } from '@src/features/documents/utils';
 import { format } from 'date-fns';
 import { Loader2, Printer, Search, Settings2, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -50,14 +52,6 @@ const generateYearOptions = () => {
     years.push(currentYear - i);
   }
   return years;
-};
-
-const formatCurrency = (value: number | undefined | null) => {
-  const num = value ?? 0;
-  return num.toLocaleString('th-TH', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 };
 
 type DetailType =

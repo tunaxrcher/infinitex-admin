@@ -5,6 +5,7 @@ import {
   View as PdfView,
   Rect,
   Svg,
+  type ViewProps,
 } from '@react-pdf/renderer';
 import {
   formatCurrency,
@@ -12,6 +13,9 @@ import {
   TaxFeeLoanItem,
   toThaiBahtText,
 } from './shared';
+
+/** Type ที่ถูกต้องสำหรับ style prop ของ PdfView */
+type PdfViewStyle = ViewProps['style'];
 
 // ── design tokens ──────────────────────────────────────────────────────────
 const T = {
@@ -36,24 +40,27 @@ const T = {
 function FieldsetBox({
   label,
   children,
-  style = {},
+  style,
 }: {
   label: string;
   children: React.ReactNode;
-  style?: Record<string, unknown>;
+  style?: PdfViewStyle;
 }) {
   return (
     <PdfView
-      style={{
-        borderWidth: 1,
-        borderColor: T.border,
-        borderStyle: 'solid',
-        borderRadius: 3,
-        padding: 8,
-        paddingTop: 10,
-        backgroundColor: T.bg,
-        ...(style as any),
-      }}
+      style={
+        {
+          borderWidth: 1,
+          borderColor: T.border,
+          borderStyle: 'solid',
+          borderRadius: 3,
+          padding: 8,
+          paddingTop: 10,
+          backgroundColor: T.bg,
+          // caller overrides go last
+          ...(style as object | undefined),
+        } as ViewProps['style']
+      }
     >
       <PdfView
         style={{
@@ -117,25 +124,27 @@ function KVRow({
 function PhotoBox({
   src,
   label,
-  style = {},
+  style,
 }: {
   src?: string | null;
   label?: string;
-  style?: Record<string, unknown>;
+  style?: PdfViewStyle;
 }) {
   return (
     <PdfView
-      style={{
-        borderWidth: 1,
-        borderColor: T.borderLight,
-        borderStyle: 'solid',
-        borderRadius: 3,
-        overflow: 'hidden',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: T.bgGray,
-        ...(style as any),
-      }}
+      style={
+        {
+          borderWidth: 1,
+          borderColor: T.borderLight,
+          borderStyle: 'solid',
+          borderRadius: 3,
+          overflow: 'hidden',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: T.bgGray,
+          ...(style as object | undefined),
+        } as ViewProps['style']
+      }
     >
       {src ? (
         <PdfImage

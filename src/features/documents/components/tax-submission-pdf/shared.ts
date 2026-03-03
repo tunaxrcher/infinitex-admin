@@ -1,6 +1,9 @@
 import { StyleSheet as PdfStyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 
+// formatCurrency, toThaiDate re-exported from shared utils (ไม่มี PDF dependency)
+export { formatCurrency, toThaiDate } from '@src/features/documents/utils';
+
 export interface TaxFeeLoanItem {
   id: string;
   loanId?: string;
@@ -52,13 +55,7 @@ export interface TaxFeeLoanItem {
   feeAmount: number;
 }
 
-export const formatCurrency = (value: number | undefined | null) => {
-  const num = value ?? 0;
-  return num.toLocaleString('th-TH', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
+// formatCurrency is now in ../../utils and re-exported above
 
 export const formatDateOrDash = (value?: string | Date | null) => {
   if (!value) return '-';
