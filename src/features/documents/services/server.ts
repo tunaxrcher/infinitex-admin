@@ -1174,6 +1174,7 @@ export const taxSubmissionReportService = {
                     ownerName: true,
                     landType: true,
                     imageUrl: true,
+                    titleDeedData: true,
                   },
                   orderBy: {
                     sortOrder: 'asc',
@@ -1304,10 +1305,21 @@ export const taxSubmissionReportService = {
           maxApprovedAmount: Number(
             payment.loan?.application?.maxApprovedAmount || 0,
           ),
-          titleDeeds: resolvedTitleDeeds.map((d) => ({
-            ...d,
-            imageUrl: (d as any).imageUrl || null,
-          })),
+          titleDeeds: resolvedTitleDeeds.map((d) => {
+            const raw = (d as any);
+            // parse titleDeedData JSON เป็น fallback สำหรับ field ที่อาจไม่ได้อยู่ใน column โดยตรง
+            const jsonData = raw.titleDeedData as Record<string, any> | null | undefined;
+            const deedNumberFromJson =
+              jsonData?.deedNumber ||
+              jsonData?.titleDeedNumber ||
+              jsonData?.result?.[0]?.deedNumber ||
+              null;
+            return {
+              ...d,
+              deedNumber: d.deedNumber || deedNumberFromJson || null,
+              imageUrl: raw.imageUrl || null,
+            };
+          }),
           primaryImageUrl:
             (resolvedTitleDeeds.find((d) => d.isPrimary) as any)?.imageUrl ||
             (resolvedTitleDeeds[0] as any)?.imageUrl ||
