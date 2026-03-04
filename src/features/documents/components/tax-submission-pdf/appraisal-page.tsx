@@ -15,11 +15,8 @@ import {
   toThaiBahtText,
 } from './shared';
 
-/** Type ที่ถูกต้องสำหรับ style prop ของ PdfView */
-type PdfViewStyle = ViewProps['style'];
-
-// ── design tokens ──────────────────────────────────────────────────────────
-const T = {
+// ── design tokens ─────────────────────────────────────────────────────────
+const C = {
   text: '#111827',
   label: '#4b5563',
   muted: '#6b7280',
@@ -32,12 +29,33 @@ const T = {
   blue: '#1d4ed8',
   indigo50: '#eef2ff',
   indigo200: '#c7d2fe',
-  indigo400: '#818cf8',
   indigoDark: '#3730a3',
   indigoText: '#6366f1',
 };
 
-// ── Fieldset / Legend style box ───────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────
+const confidenceColor = (pct: number) =>
+  pct >= 80 ? '#16a34a' : pct >= 60 ? '#d97706' : '#dc2626';
+const confidenceLabel = (pct: number) =>
+  pct >= 80 ? 'สูง' : pct >= 60 ? 'ปานกลาง' : 'ต่ำ';
+
+/** คำนวณมูลค่าย่อยจาก netValue */
+function computeValuation(netValue: number) {
+  const depRate = 0.1;
+  const gross = netValue / (1 - depRate);
+  const land = Math.round(gross * 0.6);
+  const build = Math.round(gross * 0.4);
+  return {
+    land,
+    build,
+    gross: land + build,
+    dep: Math.round((land + build) * depRate),
+  };
+}
+
+// ── tiny UI components ────────────────────────────────────────────────────
+
+/** กล่อง Fieldset / Legend: เส้นขอบพร้อม label ตัดเส้นขอบบน */
 function FieldsetBox({
   label,
   children,
@@ -45,20 +63,19 @@ function FieldsetBox({
 }: {
   label: string;
   children: React.ReactNode;
-  style?: PdfViewStyle;
+  style?: ViewProps['style'];
 }) {
   return (
     <PdfView
       style={
         {
           borderWidth: 1,
-          borderColor: T.border,
+          borderColor: C.border,
           borderStyle: 'solid',
           borderRadius: 3,
           padding: 8,
           paddingTop: 10,
-          backgroundColor: T.bg,
-          // caller overrides go last
+          backgroundColor: C.bg,
           ...(style as object | undefined),
         } as ViewProps['style']
       }
@@ -68,11 +85,11 @@ function FieldsetBox({
           position: 'absolute',
           top: -8,
           left: 10,
-          backgroundColor: T.bg,
+          backgroundColor: C.bg,
           paddingHorizontal: 4,
         }}
       >
-        <PdfText style={{ fontSize: 8.5, fontWeight: 700, color: T.text }}>
+        <PdfText style={{ fontSize: 8.5, fontWeight: 700, color: C.text }}>
           {label}
         </PdfText>
       </PdfView>
@@ -81,38 +98,37 @@ function FieldsetBox({
   );
 }
 
-// ── 2-column key-value row ─────────────────────────────────────────────────
+/** แถว key–value 2 คอลัมน์ */
 function KVRow({
   label,
   value,
-  last = false,
-  highlight = false,
+  last,
+  bold,
 }: {
   label: string;
   value: string;
   last?: boolean;
-  highlight?: boolean;
+  bold?: boolean;
 }) {
   return (
     <PdfView
       style={{
         flexDirection: 'row',
         paddingVertical: 4,
-        backgroundColor: highlight ? T.highlight : T.bg,
         borderBottomWidth: last ? 0 : 1,
-        borderBottomColor: T.borderLight,
+        borderBottomColor: C.borderLight,
         borderBottomStyle: 'solid',
       }}
     >
-      <PdfText style={{ width: '42%', fontSize: 8.5, color: T.label }}>
+      <PdfText style={{ width: '42%', fontSize: 8.5, color: C.label }}>
         {label}
       </PdfText>
       <PdfText
         style={{
           flex: 1,
           fontSize: 8.5,
-          color: T.text,
-          fontWeight: highlight ? 700 : 400,
+          color: C.text,
+          fontWeight: bold ? 700 : 400,
         }}
       >
         {value}
@@ -121,7 +137,7 @@ function KVRow({
   );
 }
 
-// ── Photo box ─────────────────────────────────────────────────────────────
+/** กล่องรูปภาพ */
 function PhotoBox({
   src,
   label,
@@ -129,20 +145,20 @@ function PhotoBox({
 }: {
   src?: string | null;
   label?: string;
-  style?: PdfViewStyle;
+  style?: ViewProps['style'];
 }) {
   return (
     <PdfView
       style={
         {
           borderWidth: 1,
-          borderColor: T.borderLight,
+          borderColor: C.borderLight,
           borderStyle: 'solid',
           borderRadius: 3,
           overflow: 'hidden',
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: T.bgGray,
+          backgroundColor: C.bgGray,
           ...(style as object | undefined),
         } as ViewProps['style']
       }
@@ -153,7 +169,7 @@ function PhotoBox({
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       ) : (
-        <PdfText style={{ fontSize: 7.5, color: T.muted }}>
+        <PdfText style={{ fontSize: 7.5, color: C.muted }}>
           {label || '-'}
         </PdfText>
       )}
@@ -161,27 +177,34 @@ function PhotoBox({
   );
 }
 
-// ── Confidence bar (SVG) ─────────────────────────────────────────────────
+/** แถบ confidence */
 function ConfidenceBar({ pct, width = 150 }: { pct: number; width?: number }) {
   const filled = Math.round((pct / 100) * width);
-  const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#d97706' : '#dc2626';
   return (
     <Svg width={width} height={9}>
       <Rect x="0" y="1.5" width={width} height={6} rx="3" fill="#e5e7eb" />
-      <Rect x="0" y="1.5" width={filled} height={6} rx="3" fill={color} />
+      <Rect
+        x="0"
+        y="1.5"
+        width={filled}
+        height={6}
+        rx="3"
+        fill={confidenceColor(pct)}
+      />
     </Svg>
   );
 }
 
-// ── AI section (full-width, compact 3 panels) ────────────────────────────
-function AiAppraisalSection({
+// ── section: AI appraisal ─────────────────────────────────────────────────
+function AiSection({
   aiValue,
   manualValue,
   loanPrincipal,
   propertyType,
   placeText,
   valuationDate,
-  aiConfidence,
+  confidence,
+  notes,
 }: {
   aiValue: number;
   manualValue: number;
@@ -189,36 +212,28 @@ function AiAppraisalSection({
   propertyType: string;
   placeText: string;
   valuationDate?: string | Date | null;
-  aiConfidence?: number | null;
+  confidence: number; // จาก valuationResult.confidence โดยตรง
+  notes: string[];
 }) {
-  /**
-   * ใช้ confidence จาก AI โดยตรง (valuationResult.confidence)
-   * ถ้าไม่มีค่า AI จริง → ไม่แสดงค่าสุ่ม
-   */
-  const confidence = aiConfidence != null ? Math.min(99, Math.max(0, aiConfidence)) : 0;
-  const confidenceLabel =
-    confidence >= 80 ? 'สูง' : confidence >= 60 ? 'ปานกลาง' : 'ต่ำ';
-  const confidenceColor =
-    confidence >= 80 ? '#16a34a' : confidence >= 60 ? '#d97706' : '#dc2626';
+  const hasAiValue = aiValue > 0;
   const diff = aiValue - manualValue;
   const diffPct =
     manualValue > 0 ? ((diff / manualValue) * 100).toFixed(1) : '0.0';
-  const diffSign = diff >= 0 ? '+' : '';
-  const diffColor = diff >= 0 ? '#16a34a' : '#dc2626';
   const ltv =
     loanPrincipal > 0 && aiValue > 0
       ? ((loanPrincipal / aiValue) * 100).toFixed(1)
       : null;
+  const color = confidenceColor(confidence);
 
   const factors = [
-    { label: `ทำเล: ${placeText.slice(0, 18)}`, impact: '+', color: '#16a34a' },
+    { text: `ทำเล: ${placeText.slice(0, 18)}`, impact: '+', color: '#16a34a' },
     {
-      label: `ประเภท: ${(propertyType || 'ที่ดิน').slice(0, 14)}`,
+      text: `ประเภท: ${propertyType || 'ที่ดิน'}`,
       impact: '≈',
       color: '#6b7280',
     },
     {
-      label: `LTV: ${ltv ? ltv + '%' : '-'}`,
+      text: `LTV: ${ltv ? ltv + '%' : '-'}`,
       impact: ltv && Number(ltv) < 70 ? '+' : '–',
       color: ltv && Number(ltv) < 70 ? '#16a34a' : '#d97706',
     },
@@ -229,44 +244,44 @@ function AiAppraisalSection({
       style={{
         marginTop: 7,
         borderWidth: 1,
-        borderColor: T.indigo200,
+        borderColor: C.indigo200,
         borderStyle: 'solid',
         borderRadius: 4,
         overflow: 'hidden',
       }}
     >
-      {/* Header — compact */}
+      {/* header */}
       <PdfView
         style={{
-          backgroundColor: T.indigo50,
-          paddingHorizontal: 8,
-          paddingVertical: 3,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          backgroundColor: C.indigo50,
+          paddingHorizontal: 8,
+          paddingVertical: 3,
           borderBottomWidth: 1,
-          borderBottomColor: T.indigo200,
+          borderBottomColor: C.indigo200,
           borderBottomStyle: 'solid',
         }}
       >
         <PdfView style={{ flexDirection: 'row', alignItems: 'center' }}>
           <PdfText
-            style={{ fontSize: 8.5, fontWeight: 700, color: T.indigoDark }}
+            style={{ fontSize: 8.5, fontWeight: 700, color: C.indigoDark }}
           >
-            ผลประเมินมูลค่าจาก AI
+            🤖 ผลประเมินมูลค่าจาก AI
           </PdfText>
-          <PdfText style={{ fontSize: 7, color: T.indigoText, marginLeft: 6 }}>
+          <PdfText style={{ fontSize: 7, color: C.indigoText, marginLeft: 6 }}>
             InfiniteX Valuation Engine v1.0
           </PdfText>
         </PdfView>
-        <PdfText style={{ fontSize: 7, color: T.muted }}>
+        <PdfText style={{ fontSize: 7, color: C.muted }}>
           ประมวลผล ณ {formatDateOrDash(valuationDate)}
         </PdfText>
       </PdfView>
 
-      {/* 3 panels — compact */}
-      <PdfView style={{ flexDirection: 'row', backgroundColor: T.bg }}>
-        {/* Panel 1: AI value + diff */}
+      {/* 3 panels */}
+      <PdfView style={{ flexDirection: 'row', backgroundColor: C.bg }}>
+        {/* Panel 1 — ราคาประเมิน */}
         <PdfView
           style={{
             flex: 1,
@@ -279,14 +294,14 @@ function AiAppraisalSection({
           <PdfText
             style={{
               fontSize: 7,
-              color: T.indigoText,
+              color: C.indigoText,
               fontWeight: 700,
-              marginBottom: 2,
+              marginBottom: 3,
             }}
           >
             AI ราคาประเมิน
           </PdfText>
-          {aiValue > 0 ? (
+          {hasAiValue ? (
             <>
               <PdfText
                 style={{
@@ -298,38 +313,41 @@ function AiAppraisalSection({
               >
                 ฿{formatCurrency(aiValue)}
               </PdfText>
-              <PdfText style={{ fontSize: 6.5, color: T.muted, marginTop: 1 }}>
+              <PdfText style={{ fontSize: 6.5, color: C.muted, marginTop: 1 }}>
                 {toThaiBahtText(aiValue)}
               </PdfText>
+              {manualValue > 0 && (
+                <PdfView
+                  style={{
+                    marginTop: 4,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <PdfText style={{ fontSize: 7, color: C.muted }}>
+                    vs Manual:{' '}
+                  </PdfText>
+                  <PdfText
+                    style={{
+                      fontSize: 7.5,
+                      fontWeight: 700,
+                      color: diff >= 0 ? '#16a34a' : '#dc2626',
+                    }}
+                  >
+                    {diff >= 0 ? '+' : ''}
+                    {diffPct}%
+                  </PdfText>
+                </PdfView>
+              )}
             </>
           ) : (
-            <PdfText style={{ fontSize: 8.5, color: T.muted, marginTop: 2 }}>
-              ยังไม่มีข้อมูล (AI ยังไม่ได้ประเมิน)
+            <PdfText style={{ fontSize: 8.5, color: C.muted, marginTop: 2 }}>
+              ยังไม่ได้ประเมิน
             </PdfText>
-          )}
-          {manualValue > 0 && (
-            <PdfView
-              style={{
-                marginTop: 4,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              <PdfText style={{ fontSize: 7, color: T.muted }}>
-                vs Manual:
-              </PdfText>
-              <PdfText
-                style={{ fontSize: 7.5, fontWeight: 700, color: diffColor }}
-              >
-                {diffSign}
-                {diffPct}%
-              </PdfText>
-            </PdfView>
           )}
         </PdfView>
 
-        {/* Panel 2: Confidence (no method text) */}
+        {/* Panel 2 — ความเชื่อมั่น */}
         <PdfView
           style={{
             flex: 1,
@@ -342,9 +360,9 @@ function AiAppraisalSection({
           <PdfText
             style={{
               fontSize: 7,
-              color: T.indigoText,
+              color: C.indigoText,
               fontWeight: 700,
-              marginBottom: 2,
+              marginBottom: 3,
             }}
           >
             ความเชื่อมั่น (Confidence)
@@ -360,7 +378,7 @@ function AiAppraisalSection({
               style={{
                 fontSize: 16,
                 fontWeight: 700,
-                color: T.text,
+                color: C.text,
                 lineHeight: 1,
               }}
             >
@@ -369,7 +387,7 @@ function AiAppraisalSection({
             <PdfText
               style={{
                 fontSize: 10,
-                color: T.muted,
+                color: C.muted,
                 marginLeft: 1,
                 marginBottom: 1,
               }}
@@ -379,40 +397,34 @@ function AiAppraisalSection({
             <PdfView
               style={{
                 marginLeft: 5,
-                backgroundColor: confidenceColor + '20',
+                backgroundColor: color + '20',
                 borderRadius: 6,
                 paddingHorizontal: 4,
                 paddingVertical: 1,
               }}
             >
-              <PdfText
-                style={{
-                  fontSize: 6.5,
-                  color: confidenceColor,
-                  fontWeight: 700,
-                }}
-              >
-                {confidenceLabel}
+              <PdfText style={{ fontSize: 6.5, color, fontWeight: 700 }}>
+                {confidenceLabel(confidence)}
               </PdfText>
             </PdfView>
           </PdfView>
           <ConfidenceBar pct={confidence} width={148} />
-          <PdfText style={{ fontSize: 7, color: T.label, marginTop: 3 }}>
+          <PdfText style={{ fontSize: 7, color: C.label, marginTop: 3 }}>
             Sales Comparison • วิเคราะห์ข้อมูล 12 เดือน
           </PdfText>
         </PdfView>
 
-        {/* Panel 3: ปัจจัยหลัก (3 items only, compact) */}
+        {/* Panel 3 — ปัจจัย */}
         <PdfView style={{ flex: 1, padding: 6 }}>
           <PdfText
             style={{
               fontSize: 7,
-              color: T.indigoText,
+              color: C.indigoText,
               fontWeight: 700,
               marginBottom: 3,
             }}
           >
-            ปัจจัยสำคัญที่ใช้ประเมิน
+            ปัจจัยสำคัญ
           </PdfText>
           {factors.map((f, i) => (
             <PdfView
@@ -440,33 +452,18 @@ function AiAppraisalSection({
                   {f.impact}
                 </PdfText>
               </PdfView>
-              <PdfText style={{ flex: 1, fontSize: 7.5, color: T.text }}>
-                {f.label}
+              <PdfText style={{ flex: 1, fontSize: 7.5, color: C.text }}>
+                {f.text}
               </PdfText>
             </PdfView>
           ))}
-          <PdfView
-            style={{
-              marginTop: 3,
-              backgroundColor: '#fef9c3',
-              borderRadius: 2,
-              padding: 4,
-            }}
-          >
-            <PdfText
-              style={{ fontSize: 6.5, color: '#713f12', lineHeight: 1.3 }}
-            >
-              ⚠️ ผลประเมิน AI ใช้ประกอบการตัดสินใจเท่านั้น
-              ต้องผ่านการรับรองผู้ประเมินที่ได้รับอนุญาต
-            </PdfText>
-          </PdfView>
         </PdfView>
       </PdfView>
     </PdfView>
   );
 }
 
-// ── main component ─────────────────────────────────────────────────────────
+// ── main export ───────────────────────────────────────────────────────────
 export function AppraisalPage({
   loan,
   fontFamily,
@@ -474,25 +471,30 @@ export function AppraisalPage({
   loan: TaxFeeLoanItem;
   fontFamily: string;
 }) {
+  // ── derive data ──────────────────────────────────────────────────────────
   const deed =
     loan.titleDeeds?.find((d) => d.isPrimary) || loan.titleDeeds?.[0];
-
-  const netValue = Number(
-    loan.estimatedValue || loan.totalPropertyValue || loan.propertyValue || 0,
-  );
-  const depRate = 0.1;
-  const grossValue = netValue / (1 - depRate);
-  const landValue = Math.round(grossValue * 0.6);
-  const buildValue = Math.round(grossValue * 0.4);
-  const totalGross = landValue + buildValue;
-  const depAmount = Math.round(totalGross * depRate);
-
+  const placeText =
+    [deed?.amphurName, deed?.provinceName].filter(Boolean).join(' ') || '-';
   const areaText = deed?.landAreaText || '-';
   const sqWahMatch = areaText.match(/(\d+(?:\.\d+)?)\s*ตร\.ว/);
   const sqWah = sqWahMatch ? Number(sqWahMatch[1]) : null;
+
+  // ราคาประเมินรวม (manual)
+  const netValue = Number(
+    loan.estimatedValue || loan.totalPropertyValue || loan.propertyValue || 0,
+  );
+  const {
+    land: landValue,
+    build: buildValue,
+    gross: totalGross,
+    dep: depAmount,
+  } = computeValuation(netValue);
   const pricePerSqWah =
     sqWah && landValue > 0 ? Math.round(landValue / sqWah) : null;
 
+  // ตารางเปรียบเทียบตลาด (±3%, ±5%, ±3%)
+  const medianValue = Math.round(netValue * 0.96);
   const compareRows: [string, string, string, number][] = [
     [
       '1',
@@ -513,36 +515,46 @@ export function AppraisalPage({
       Math.round(netValue * 0.95),
     ],
   ];
-  const medianValue = Math.round(netValue * 0.96);
 
+  // รูปภาพ
   const deedImageUrl = deed?.imageUrl || loan.primaryImageUrl || null;
-  const supportImgs = loan.supportingImages || [];
-  const largePhoto = supportImgs[0] || null;
-  const smallPhoto1 = supportImgs[1] || null;
-  const smallPhoto2 = supportImgs[2] || null;
+  const [photo1, photo2, photo3] = loan.supportingImages || [];
 
-  const placeText =
-    [deed?.amphurName, deed?.provinceName].filter(Boolean).join(' ') || '-';
+  // AI section
+  const vr = loan.valuationResult;
+  const aiValue = Number(vr?.estimatedValue || loan.estimatedValue || 0);
+  const aiConfidence =
+    vr?.confidence != null ? Math.min(99, Math.max(0, vr.confidence)) : 0;
+  const manualValue = Number(
+    loan.totalPropertyValue || loan.propertyValue || 0,
+  );
+
+  const propertyType = resolvePropertyType(
+    loan.propertyType,
+    deed?.landType,
+    loan.loanType,
+  );
   const notes = [
     'ราคาประเมินเพื่อใช้ประกอบการพิจารณาสินเชื่อ',
     'อ้างอิงจากราคาตลาดและสภาพทรัพย์ปัจจุบัน',
     'ค่าประเมินอาจเปลี่ยนแปลงตามภาวะตลาด',
   ];
 
+  // ── render ───────────────────────────────────────────────────────────────
   return (
     <PdfPage
       key={`a-${loan.id}`}
       size="A4"
       style={{
         fontFamily,
-        backgroundColor: T.bg,
-        color: T.text,
+        backgroundColor: C.bg,
+        color: C.text,
         paddingHorizontal: 28,
         paddingVertical: 20,
         fontSize: 9,
       }}
     >
-      {/* ── HEADER ── */}
+      {/* header */}
       <PdfText
         style={{
           fontSize: 22,
@@ -560,18 +572,18 @@ export function AppraisalPage({
           style={{
             flex: 1,
             borderTopWidth: 1,
-            borderTopColor: T.border,
+            borderTopColor: C.border,
             borderTopStyle: 'solid',
           }}
         />
-        <PdfText style={{ paddingHorizontal: 10, fontSize: 9, color: T.muted }}>
+        <PdfText style={{ paddingHorizontal: 10, fontSize: 9, color: C.muted }}>
           รายงานการประเมินราคาอสังหาริมทรัพย์
         </PdfText>
         <PdfView
           style={{
             flex: 1,
             borderTopWidth: 1,
-            borderTopColor: T.border,
+            borderTopColor: C.border,
             borderTopStyle: 'solid',
           }}
         />
@@ -587,7 +599,7 @@ export function AppraisalPage({
           <PdfText style={{ fontWeight: 700, fontSize: 9 }}>
             หลักทรัพย์ : {loan.loanNumber || '-'}
           </PdfText>
-          <PdfText style={{ marginTop: 2, fontSize: 8.5, color: T.muted }}>
+          <PdfText style={{ marginTop: 2, fontSize: 8.5, color: C.muted }}>
             คำรับ : วางหลักทรัพย์จำนอง
           </PdfText>
         </PdfView>
@@ -595,21 +607,18 @@ export function AppraisalPage({
           <PdfText style={{ fontWeight: 700, fontSize: 9 }}>
             วันที่ประเมิน : {formatDateOrDash(loan.valuationDate || loan.date)}
           </PdfText>
-          <PdfText style={{ marginTop: 2, fontSize: 8.5, color: T.muted }}>
+          <PdfText style={{ marginTop: 2, fontSize: 8.5, color: C.muted }}>
             เลขที่รายงาน : AV-REP-{loan.loanNumber || '-'}
           </PdfText>
         </PdfView>
       </PdfView>
 
-      {/* ── 2-COLUMN MAIN ── */}
+      {/* 2-column body */}
       <PdfView style={{ flexDirection: 'row', gap: 12 }}>
-        {/* LEFT 57% */}
+        {/* LEFT — ข้อมูล + ผลประเมิน + ตลาด */}
         <PdfView style={{ width: '57%' }}>
           <FieldsetBox label="ข้อมูลทรัพย์สิน" style={{ marginBottom: 8 }}>
-            <KVRow
-              label="ประเภททรัพย์"
-              value={resolvePropertyType(loan.propertyType, deed?.landType, loan.loanType)}
-            />
+            <KVRow label="ประเภททรัพย์" value={propertyType} />
             <KVRow label="เนื้อที่" value={areaText} />
             <KVRow
               label="เลขที่โฉนด"
@@ -632,55 +641,19 @@ export function AppraisalPage({
               label="มูลค่าสิ่งปลูกสร้าง"
               value={`฿${formatCurrency(buildValue)}`}
             />
+            <KVRow
+              label="รวมมูลค่าทรัพย์สิน"
+              value={`฿${formatCurrency(totalGross)}`}
+              bold
+            />
+            <KVRow
+              label="หัก ค่าเสื่อมราคา (10%)"
+              value={`-${formatCurrency(depAmount)}`}
+            />
+            {/* highlight row */}
             <PdfView
               style={{
-                flexDirection: 'row',
-                paddingVertical: 4,
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'solid',
-              }}
-            >
-              <PdfText
-                style={{
-                  width: '42%',
-                  fontSize: 8.5,
-                  color: T.label,
-                  fontWeight: 700,
-                }}
-              >
-                รวมมูลค่าทรัพย์สิน
-              </PdfText>
-              <PdfText
-                style={{
-                  flex: 1,
-                  fontSize: 8.5,
-                  color: T.text,
-                  fontWeight: 700,
-                }}
-              >
-                ฿{formatCurrency(totalGross)}
-              </PdfText>
-            </PdfView>
-            <PdfView
-              style={{
-                flexDirection: 'row',
-                paddingVertical: 4,
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'solid',
-              }}
-            >
-              <PdfText style={{ width: '42%', fontSize: 8.5, color: T.label }}>
-                หัก ค่าเสื่อมราคา ({(depRate * 100).toFixed(0)}%)
-              </PdfText>
-              <PdfText style={{ flex: 1, fontSize: 8.5, color: '#dc2626' }}>
-                -{formatCurrency(depAmount)}
-              </PdfText>
-            </PdfView>
-            <PdfView
-              style={{
-                backgroundColor: T.highlight,
+                backgroundColor: C.highlight,
                 borderWidth: 1,
                 borderColor: '#bfdbfe',
                 borderStyle: 'solid',
@@ -697,12 +670,12 @@ export function AppraisalPage({
                 }}
               >
                 <PdfText
-                  style={{ fontSize: 10, fontWeight: 700, color: T.text }}
+                  style={{ fontSize: 10, fontWeight: 700, color: C.text }}
                 >
                   มูลค่าประเมินสุทธิ
                 </PdfText>
                 <PdfText
-                  style={{ fontSize: 17, fontWeight: 700, color: T.blue }}
+                  style={{ fontSize: 17, fontWeight: 700, color: C.blue }}
                 >
                   ฿{formatCurrency(netValue)}
                 </PdfText>
@@ -710,7 +683,7 @@ export function AppraisalPage({
               <PdfText
                 style={{
                   fontSize: 7.5,
-                  color: T.label,
+                  color: C.label,
                   marginTop: 2,
                   textAlign: 'right',
                 }}
@@ -721,14 +694,15 @@ export function AppraisalPage({
           </FieldsetBox>
 
           <FieldsetBox label="สรุปการเปรียบเทียบตลาด">
+            {/* table header */}
             <PdfView
               style={{
                 flexDirection: 'row',
-                backgroundColor: T.bgHeader,
+                backgroundColor: C.bgHeader,
                 paddingVertical: 4,
                 paddingHorizontal: 4,
                 borderBottomWidth: 1,
-                borderBottomColor: T.border,
+                borderBottomColor: C.border,
                 borderBottomStyle: 'solid',
               }}
             >
@@ -773,9 +747,9 @@ export function AppraisalPage({
                   flexDirection: 'row',
                   paddingVertical: 4,
                   paddingHorizontal: 4,
-                  backgroundColor: idx % 2 === 0 ? T.bg : T.bgGray,
+                  backgroundColor: idx % 2 === 0 ? C.bg : C.bgGray,
                   borderBottomWidth: 1,
-                  borderBottomColor: T.borderLight,
+                  borderBottomColor: C.borderLight,
                   borderBottomStyle: 'solid',
                 }}
               >
@@ -784,12 +758,12 @@ export function AppraisalPage({
                     width: '8%',
                     fontSize: 8,
                     textAlign: 'center',
-                    color: T.muted,
+                    color: C.muted,
                   }}
                 >
                   {no}
                 </PdfText>
-                <PdfText style={{ width: '40%', fontSize: 8, color: T.text }}>
+                <PdfText style={{ width: '40%', fontSize: 8, color: C.text }}>
                   {name}
                 </PdfText>
                 <PdfText
@@ -797,7 +771,7 @@ export function AppraisalPage({
                     width: '22%',
                     fontSize: 8,
                     textAlign: 'center',
-                    color: T.muted,
+                    color: C.muted,
                   }}
                 >
                   {area}
@@ -807,7 +781,7 @@ export function AppraisalPage({
                     flex: 1,
                     fontSize: 8,
                     textAlign: 'right',
-                    color: T.text,
+                    color: C.text,
                   }}
                 >
                   {formatCurrency(price)}
@@ -826,7 +800,7 @@ export function AppraisalPage({
                 ค่ากลางตลาด (Median)
               </PdfText>
               <PdfText
-                style={{ fontSize: 8.5, fontWeight: 700, color: T.blue }}
+                style={{ fontSize: 8.5, fontWeight: 700, color: C.blue }}
               >
                 ฿{formatCurrency(medianValue)}
               </PdfText>
@@ -834,7 +808,7 @@ export function AppraisalPage({
           </FieldsetBox>
         </PdfView>
 
-        {/* RIGHT 41% — ไม่มี หมายเหตุ แล้ว (ย้ายไปใน AI section) */}
+        {/* RIGHT — แผนผัง + รายละเอียด + รูป + หมายเหตุ */}
         <PdfView style={{ width: '41%' }}>
           <FieldsetBox label="แผนผังที่ดิน" style={{ marginBottom: 8 }}>
             <PhotoBox
@@ -845,14 +819,15 @@ export function AppraisalPage({
           </FieldsetBox>
 
           <FieldsetBox label="รายละเอียดการประเมิน" style={{ marginBottom: 8 }}>
+            {/* table header */}
             <PdfView
               style={{
                 flexDirection: 'row',
-                backgroundColor: T.bgHeader,
+                backgroundColor: C.bgHeader,
                 paddingVertical: 4,
                 paddingHorizontal: 3,
                 borderBottomWidth: 1,
-                borderBottomColor: T.border,
+                borderBottomColor: C.border,
                 borderBottomStyle: 'solid',
               }}
             >
@@ -890,173 +865,111 @@ export function AppraisalPage({
                 รวม
               </PdfText>
             </PdfView>
-            <PdfView
-              style={{
-                flexDirection: 'row',
-                paddingVertical: 4,
-                paddingHorizontal: 3,
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'solid',
-              }}
-            >
-              <PdfText style={{ width: '32%', fontSize: 7.5 }}>
-                ราคาที่ดิน
-              </PdfText>
-              <PdfText
+            {[
+              {
+                label: 'ราคาที่ดิน',
+                area: sqWah ? `${sqWah} ตร.ว.` : areaText,
+                unit: pricePerSqWah ? formatCurrency(pricePerSqWah) : '-',
+                total: formatCurrency(landValue),
+                color: C.text,
+              },
+              {
+                label: 'สิ่งปลูกสร้าง',
+                area: '-',
+                unit: '-',
+                total: formatCurrency(buildValue),
+                color: C.text,
+              },
+              {
+                label: 'ค่าเสื่อมราคา',
+                area: '-',
+                unit: '10%',
+                total: `-${formatCurrency(depAmount)}`,
+                color: '#dc2626',
+              },
+              {
+                label: 'รวม',
+                area: '',
+                unit: '',
+                total: formatCurrency(netValue),
+                color: C.blue,
+                bold: true,
+              },
+            ].map((row) => (
+              <PdfView
+                key={row.label}
                 style={{
-                  width: '22%',
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: T.muted,
+                  flexDirection: 'row',
+                  paddingVertical: 4,
+                  paddingHorizontal: 3,
+                  borderBottomWidth: 1,
+                  borderBottomColor: C.borderLight,
+                  borderBottomStyle: 'solid',
                 }}
               >
-                {sqWah ? `${sqWah} ตร.ว.` : areaText}
-              </PdfText>
-              <PdfText
-                style={{
-                  width: '22%',
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: T.muted,
-                }}
-              >
-                {pricePerSqWah ? formatCurrency(pricePerSqWah) : '-'}
-              </PdfText>
-              <PdfText style={{ flex: 1, fontSize: 7.5, textAlign: 'right' }}>
-                {formatCurrency(landValue)}
-              </PdfText>
-            </PdfView>
-            <PdfView
-              style={{
-                flexDirection: 'row',
-                paddingVertical: 4,
-                paddingHorizontal: 3,
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'solid',
-              }}
-            >
-              <PdfText style={{ width: '32%', fontSize: 7.5 }}>
-                สิ่งปลูกสร้าง
-              </PdfText>
-              <PdfText
-                style={{
-                  width: '22%',
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: T.muted,
-                }}
-              >
-                -
-              </PdfText>
-              <PdfText
-                style={{
-                  width: '22%',
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: T.muted,
-                }}
-              >
-                -
-              </PdfText>
-              <PdfText style={{ flex: 1, fontSize: 7.5, textAlign: 'right' }}>
-                {formatCurrency(buildValue)}
-              </PdfText>
-            </PdfView>
-            <PdfView
-              style={{
-                flexDirection: 'row',
-                paddingVertical: 4,
-                paddingHorizontal: 3,
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'solid',
-              }}
-            >
-              <PdfText style={{ width: '32%', fontSize: 7.5 }}>
-                ค่าเสื่อมราคา
-              </PdfText>
-              <PdfText
-                style={{
-                  width: '22%',
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: T.muted,
-                }}
-              >
-                -
-              </PdfText>
-              <PdfText
-                style={{
-                  width: '22%',
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: T.muted,
-                }}
-              >
-                10%
-              </PdfText>
-              <PdfText
-                style={{
-                  flex: 1,
-                  fontSize: 7.5,
-                  textAlign: 'right',
-                  color: '#dc2626',
-                }}
-              >
-                -{formatCurrency(depAmount)}
-              </PdfText>
-            </PdfView>
-            <PdfView
-              style={{
-                flexDirection: 'row',
-                paddingVertical: 4,
-                paddingHorizontal: 3,
-              }}
-            >
-              <PdfText style={{ width: '32%', fontSize: 7.5, fontWeight: 700 }}>
-                รวม
-              </PdfText>
-              <PdfText
-                style={{ width: '22%', fontSize: 7.5, textAlign: 'right' }}
-              />
-              <PdfText
-                style={{ width: '22%', fontSize: 7.5, textAlign: 'right' }}
-              />
-              <PdfText
-                style={{
-                  flex: 1,
-                  fontSize: 7.5,
-                  fontWeight: 700,
-                  textAlign: 'right',
-                  color: T.blue,
-                }}
-              >
-                {formatCurrency(netValue)}
-              </PdfText>
-            </PdfView>
+                <PdfText
+                  style={{
+                    width: '32%',
+                    fontSize: 7.5,
+                    fontWeight: row.bold ? 700 : 400,
+                  }}
+                >
+                  {row.label}
+                </PdfText>
+                <PdfText
+                  style={{
+                    width: '22%',
+                    fontSize: 7.5,
+                    textAlign: 'right',
+                    color: C.muted,
+                  }}
+                >
+                  {row.area}
+                </PdfText>
+                <PdfText
+                  style={{
+                    width: '22%',
+                    fontSize: 7.5,
+                    textAlign: 'right',
+                    color: C.muted,
+                  }}
+                >
+                  {row.unit}
+                </PdfText>
+                <PdfText
+                  style={{
+                    flex: 1,
+                    fontSize: 7.5,
+                    textAlign: 'right',
+                    fontWeight: row.bold ? 700 : 400,
+                    color: row.color,
+                  }}
+                >
+                  {row.total}
+                </PdfText>
+              </PdfView>
+            ))}
           </FieldsetBox>
 
-          {/* รูปถ่าย: 1 ใหญ่ + 2 เล็ก */}
+          {/* รูปถ่าย: 1 ใหญ่ + 2 เล็กขวา */}
           <FieldsetBox
             label="รูปถ่ายทรัพย์สิน"
             style={{ position: 'relative', marginBottom: 8 }}
           >
             <PdfView style={{ flexDirection: 'row', gap: 4, height: 72 }}>
               <PhotoBox
-                src={largePhoto}
+                src={photo1 || null}
                 label="รูปที่ 1"
                 style={{ flex: 2, height: '100%' }}
               />
               <PdfView style={{ flex: 1, gap: 4 }}>
                 <PhotoBox
-                  src={smallPhoto1}
+                  src={photo2 || null}
                   label="รูปที่ 2"
                   style={{ flex: 1 }}
                 />
                 <PhotoBox
-                  src={smallPhoto2}
+                  src={photo3 || null}
                   label="รูปที่ 3"
                   style={{ flex: 1 }}
                 />
@@ -1072,7 +985,7 @@ export function AppraisalPage({
                 height: 40,
                 borderRadius: 20,
                 borderWidth: 1.5,
-                borderColor: T.border,
+                borderColor: C.border,
                 borderStyle: 'solid',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -1082,7 +995,7 @@ export function AppraisalPage({
               <PdfText
                 style={{
                   fontSize: 5.5,
-                  color: T.muted,
+                  color: C.muted,
                   textAlign: 'center',
                   lineHeight: 1.3,
                 }}
@@ -1091,15 +1004,16 @@ export function AppraisalPage({
               </PdfText>
             </PdfView>
           </FieldsetBox>
-          {/* หมายเหตุ — ท้ายสุดของ right column */}
+
+          {/* หมายเหตุท้ายสุด right column */}
           <FieldsetBox label="หมายเหตุ">
-            {notes.map((note, i) => (
+            {notes.map((n, i) => (
               <PdfView
                 key={i}
                 style={{ flexDirection: 'row', marginTop: i === 0 ? 2 : 3 }}
               >
                 <PdfText
-                  style={{ fontSize: 7.5, color: T.muted, marginRight: 4 }}
+                  style={{ fontSize: 7.5, color: C.muted, marginRight: 4 }}
                 >
                   •
                 </PdfText>
@@ -1107,11 +1021,11 @@ export function AppraisalPage({
                   style={{
                     flex: 1,
                     fontSize: 7.5,
-                    color: T.muted,
+                    color: C.muted,
                     lineHeight: 1.35,
                   }}
                 >
-                  {note}
+                  {n}
                 </PdfText>
               </PdfView>
             ))}
@@ -1119,22 +1033,19 @@ export function AppraisalPage({
         </PdfView>
       </PdfView>
 
-      {/* ── AI SECTION (full-width, compact) ── */}
-      {/* ใช้ข้อมูลจาก valuationResult โดยตรง:
-          - estimatedValue: ราคาที่ AI ประเมิน
-          - confidence: ความเชื่อมั่นที่ AI ให้มา (0-100)
-          ถ้ายังไม่มี valuationResult แสดงว่า AI ยังไม่ได้ประเมิน */}
-      <AiAppraisalSection
-        aiValue={Number(loan.valuationResult?.estimatedValue || loan.estimatedValue || 0)}
-        manualValue={Number(loan.totalPropertyValue || loan.propertyValue || 0)}
+      {/* AI section */}
+      <AiSection
+        aiValue={aiValue}
+        manualValue={manualValue}
         loanPrincipal={Number(loan.loanPrincipal || 0)}
-        propertyType={resolvePropertyType(loan.propertyType, deed?.landType, loan.loanType)}
+        propertyType={propertyType}
         placeText={placeText}
         valuationDate={loan.valuationDate || loan.date}
-        aiConfidence={loan.valuationResult?.confidence ?? null}
+        confidence={aiConfidence}
+        notes={notes}
       />
 
-      {/* ── SIGNATURE ── */}
+      {/* signature */}
       <PdfView
         style={{
           flexDirection: 'row',
@@ -1143,72 +1054,46 @@ export function AppraisalPage({
         }}
       >
         <PdfView style={{ width: '52%', flexDirection: 'row', gap: 20 }}>
-          <PdfView style={{ flex: 1, alignItems: 'center' }}>
-            <PdfText style={{ fontSize: 8, color: T.muted, marginBottom: 16 }}>
-              ลงชื่อ
-            </PdfText>
-            <PdfView
-              style={{
-                width: '100%',
-                borderBottomWidth: 1,
-                borderBottomColor: T.text,
-                borderBottomStyle: 'solid',
-                marginBottom: 4,
-              }}
-            />
-            <PdfText style={{ fontSize: 8, color: T.muted }}>
-              (...................................)
-            </PdfText>
-            <PdfText style={{ fontSize: 7.5, color: T.muted, marginTop: 2 }}>
-              ผู้ประเมินราคาทรัพย์สิน
-            </PdfText>
-            <PdfView
-              style={{
-                width: '100%',
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'dashed',
-                marginTop: 7,
-                marginBottom: 3,
-              }}
-            />
-            <PdfText style={{ fontSize: 7.5, color: T.muted }}>
-              วันที่ ......../........../..........พ.ศ.
-            </PdfText>
-          </PdfView>
-          <PdfView style={{ flex: 1, alignItems: 'center' }}>
-            <PdfText style={{ fontSize: 8, color: T.muted, marginBottom: 16 }}>
-              อนุมัติโดย
-            </PdfText>
-            <PdfView
-              style={{
-                width: '100%',
-                borderBottomWidth: 1,
-                borderBottomColor: T.text,
-                borderBottomStyle: 'solid',
-                marginBottom: 4,
-              }}
-            />
-            <PdfText style={{ fontSize: 8, color: T.muted }}>
-              (...................................)
-            </PdfText>
-            <PdfText style={{ fontSize: 7.5, color: T.muted, marginTop: 2 }}>
-              หัวหน้าฝ่ายสินเชื่อ
-            </PdfText>
-            <PdfView
-              style={{
-                width: '100%',
-                borderBottomWidth: 1,
-                borderBottomColor: T.borderLight,
-                borderBottomStyle: 'dashed',
-                marginTop: 7,
-                marginBottom: 3,
-              }}
-            />
-            <PdfText style={{ fontSize: 7.5, color: T.muted }}>
-              วันที่ ......../........../..........พ.ศ.
-            </PdfText>
-          </PdfView>
+          {[
+            { title: 'ลงชื่อ', role: 'ผู้ประเมินราคาทรัพย์สิน' },
+            { title: 'อนุมัติโดย', role: 'หัวหน้าฝ่ายสินเชื่อ' },
+          ].map((sig) => (
+            <PdfView key={sig.role} style={{ flex: 1, alignItems: 'center' }}>
+              <PdfText
+                style={{ fontSize: 8, color: C.muted, marginBottom: 16 }}
+              >
+                {sig.title}
+              </PdfText>
+              <PdfView
+                style={{
+                  width: '100%',
+                  borderBottomWidth: 1,
+                  borderBottomColor: C.text,
+                  borderBottomStyle: 'solid',
+                  marginBottom: 4,
+                }}
+              />
+              <PdfText style={{ fontSize: 8, color: C.muted }}>
+                (...................................)
+              </PdfText>
+              <PdfText style={{ fontSize: 7.5, color: C.muted, marginTop: 2 }}>
+                {sig.role}
+              </PdfText>
+              <PdfView
+                style={{
+                  width: '100%',
+                  borderBottomWidth: 1,
+                  borderBottomColor: C.borderLight,
+                  borderBottomStyle: 'dashed',
+                  marginTop: 7,
+                  marginBottom: 3,
+                }}
+              />
+              <PdfText style={{ fontSize: 7.5, color: C.muted }}>
+                วันที่ ......../........../..........พ.ศ.
+              </PdfText>
+            </PdfView>
+          ))}
         </PdfView>
       </PdfView>
     </PdfPage>

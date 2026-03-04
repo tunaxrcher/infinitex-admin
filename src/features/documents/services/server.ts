@@ -1269,11 +1269,12 @@ export const taxSubmissionReportService = {
           installmentNumber: payment.installment?.installmentNumber || null,
           loanStatus: payment.loan?.status || null,
           loanType: payment.loan?.loanType || null,
-          valuationResult: (payment.loan?.application?.valuationResult as {
-            estimatedValue?: number;
-            confidence?: number;
-            reasoning?: string;
-          } | null) || null,
+          valuationResult:
+            (payment.loan?.application?.valuationResult as {
+              estimatedValue?: number;
+              confidence?: number;
+              reasoning?: string;
+            } | null) || null,
           currentInstallment: Number(payment.loan?.currentInstallment || 0),
           totalInstallments: Number(payment.loan?.totalInstallments || 0),
           paymentAmount: Number(payment.amount || 0),
@@ -1312,9 +1313,12 @@ export const taxSubmissionReportService = {
             payment.loan?.application?.maxApprovedAmount || 0,
           ),
           titleDeeds: resolvedTitleDeeds.map((d) => {
-            const raw = (d as any);
+            const raw = d as any;
             // parse titleDeedData JSON เป็น fallback สำหรับ field ที่อาจไม่ได้อยู่ใน column โดยตรง
-            const jsonData = raw.titleDeedData as Record<string, any> | null | undefined;
+            const jsonData = raw.titleDeedData as
+              | Record<string, any>
+              | null
+              | undefined;
             const deedNumberFromJson =
               jsonData?.deedNumber ||
               jsonData?.titleDeedNumber ||

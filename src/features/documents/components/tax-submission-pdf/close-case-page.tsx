@@ -302,7 +302,14 @@ export function CloseCasePage({
       loan.titleDeedNumber || primaryDeed?.deedNumber || loan.loanNumber || '-',
     ],
     ['ที่ตั้ง', placeWithArea],
-    ['ประเภท', resolvePropertyType(loan.propertyType, primaryDeed?.landType, loan.loanType)],
+    [
+      'ประเภท',
+      resolvePropertyType(
+        loan.propertyType,
+        primaryDeed?.landType,
+        loan.loanType,
+      ),
+    ],
     ['ค่าคอมมิชชั่น', `${ratios.feeRate.toFixed(2)}%`],
     [
       'อัตราส่วนเงินกู้',
