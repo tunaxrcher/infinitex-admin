@@ -268,7 +268,7 @@ function AiSection({
           <PdfText
             style={{ fontSize: 8.5, fontWeight: 700, color: C.indigoDark }}
           >
-            🤖 ผลประเมินมูลค่าจาก AI
+            ผลประเมินมูลค่าจาก AI
           </PdfText>
           <PdfText style={{ fontSize: 7, color: C.indigoText, marginLeft: 6 }}>
             InfiniteX Valuation Engine v1.0
