@@ -23,8 +23,8 @@ export function ExpenseReceiptPage({
   logoSrc?: string | null;
 }) {
   const subtotal = Number(expense.amount || 0);
-  const vat = subtotal * 0.07;
-  const grand = subtotal + vat;
+  // const vat = subtotal * 0.07;
+  const grand = subtotal; // + vat;
 
   return (
     <PdfPage
@@ -225,36 +225,25 @@ export function ExpenseReceiptPage({
       >
         <PdfText
           style={{
-            width: '30%',
+            width: '40%',
             fontSize: 11,
             textAlign: 'center',
             lineHeight: 1.25,
           }}
         >
-          หมวดหมู่{'\n'}
-          <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Category</PdfText>
+          ชื่อรายการ{'\n'}
+          <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Item name</PdfText>
         </PdfText>
         <PdfText
           style={{
-            width: '30%',
+            width: '40%',
             fontSize: 11,
             textAlign: 'center',
             lineHeight: 1.25,
           }}
         >
-          บัญชี{'\n'}
-          <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Account</PdfText>
-        </PdfText>
-        <PdfText
-          style={{
-            width: '20%',
-            fontSize: 11,
-            textAlign: 'center',
-            lineHeight: 1.25,
-          }}
-        >
-          หมายเหตุ{'\n'}
-          <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Note</PdfText>
+          รายละเอียด{'\n'}
+          <PdfText style={{ fontSize: 9, color: '#6b7280' }}>Details</PdfText>
         </PdfText>
         <PdfText
           style={{
@@ -269,13 +258,10 @@ export function ExpenseReceiptPage({
         </PdfText>
       </PdfView>
       <PdfView style={{ flexDirection: 'row', paddingVertical: 8 }}>
-        <PdfText style={{ width: '30%', fontSize: 12 }}>
+        <PdfText style={{ width: '40%', fontSize: 12 }}>
           {expense.title || '-'}
         </PdfText>
-        <PdfText style={{ width: '30%', fontSize: 12 }}>
-          {expense.cashFlowName || '-'}
-        </PdfText>
-        <PdfText style={{ width: '20%', fontSize: 12 }}>
+        <PdfText style={{ width: '40%', fontSize: 12 }}>
           {expense.note || '-'}
         </PdfText>
         <PdfText style={{ width: '20%', fontSize: 12, textAlign: 'right' }}>
@@ -290,9 +276,9 @@ export function ExpenseReceiptPage({
           paddingBottom: 6,
         }}
       >
-        <PdfText style={{ textAlign: 'right', fontSize: 12 }}>
+        {/* <PdfText style={{ textAlign: 'right', fontSize: 12 }}>
           รวมรายจ่ายทั้งสิ้น {formatCurrency(subtotal)} บาท
-        </PdfText>
+        </PdfText> */}
       </PdfView>
 
       <PdfView
@@ -306,25 +292,22 @@ export function ExpenseReceiptPage({
           {toThaiBahtText(grand)}
         </PdfText>
         <PdfView style={{ width: '43%' }}>
-          <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
+          {/* <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
             <PdfText>ยอดรวมก่อนภาษี (Subtotal)</PdfText>
             <PdfText>{formatCurrency(subtotal)}</PdfText>
-          </PdfView>
-          <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
+          </PdfView> */}
+          {/* <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
             <PdfText>ภาษีมูลค่าเพิ่ม 7% (VAT 7%)</PdfText>
             <PdfText>{formatCurrency(vat)}</PdfText>
-          </PdfView>
+          </PdfView> */}
           <PdfView
             style={{
               ...pdfStyles.rowBetween,
-              borderTopWidth: 1,
-              borderTopColor: '#111827',
-              borderTopStyle: 'solid',
               paddingTop: 4,
             }}
           >
             <PdfText style={{ fontWeight: 700 }}>
-              ยอดรวมทั้งสิ้น (Grand Total)
+              จำนวนเงินรวมทั้งสิ้น
             </PdfText>
             <PdfText style={{ fontWeight: 700 }}>
               {formatCurrency(grand)}
@@ -343,9 +326,7 @@ export function ExpenseReceiptPage({
       >
         หมายเหตุ
       </PdfText>
-      <PdfText style={{ marginTop: 6, color: '#6b7280' }}>
-        {expense.note || '-'}
-      </PdfText>
+      <PdfText style={{ marginTop: 6, color: '#6b7280' }}>-</PdfText>
     </PdfPage>
   );
 }
