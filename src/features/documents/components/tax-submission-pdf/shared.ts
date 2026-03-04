@@ -82,8 +82,13 @@ export interface IncomeExpenseItem {
   date?: string | Date | null;
   loanNumber?: string;
   customerName?: string;
+  propertyType?: string;
+  placeName?: string;
+  titleDeedCount?: number;
+  allPlaceNames?: string[];
   docNumber?: string;
   title?: string;
+  note?: string | null;
   amount: number;
 }
 

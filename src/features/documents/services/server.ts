@@ -1410,6 +1410,10 @@ export const taxSubmissionReportService = {
         date: item.date,
         loanNumber: item.loanNumber,
         customerName: item.customerName,
+        propertyType: item.propertyType,
+        placeName: item.placeName,
+        titleDeedCount: item.titleDeedCount,
+        allPlaceNames: item.allPlaceNames,
         amount: item.feeAmount,
       }));
 
@@ -1420,13 +1424,14 @@ export const taxSubmissionReportService = {
         date: item.date,
         docNumber: item.docNumber,
         title: item.title,
+        note: item.note,
         amount: item.amount,
       }));
 
       return [...incomeItems, ...expenseItems].sort((a, b) => {
         const dateA = a.date ? new Date(a.date).getTime() : 0;
         const dateB = b.date ? new Date(b.date).getTime() : 0;
-        return dateB - dateA;
+        return dateA - dateB;
       });
     }
 
