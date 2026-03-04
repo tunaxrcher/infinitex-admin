@@ -1406,7 +1406,7 @@ export const taxSubmissionReportService = {
       const incomeItems = feePayments.map((item) => ({
         id: item.id,
         type: 'income',
-        source: 'ชำระค่าธรรมเนียม',
+        source: 'ค่าธรรมเนียม',
         date: item.date,
         loanNumber: item.loanNumber,
         customerName: item.customerName,

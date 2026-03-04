@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { taxSubmissionReportApi } from '@src/features/documents/api';
 import { type TaxFeeLoanItem } from '@src/features/documents/components/tax-submission-package-pdf';
 import { type ExpenseItem } from '@src/features/documents/components/expense-receipt-pdf';
+import { type IncomeExpenseItem } from '@src/features/documents/components/income-expense-pdf';
 import { useGetTaxSubmissionReport } from '@src/features/documents/hooks';
 // formatCurrency นำเข้าจาก shared utils
 import { formatCurrency } from '@src/features/documents/utils';
@@ -485,6 +486,7 @@ export default function TaxSubmissionReportPage() {
   const [modalLoading, setModalLoading] = useState(false);
   const [printingMonth, setPrintingMonth] = useState<number | null>(null);
   const [printingExpenseMonth, setPrintingExpenseMonth] = useState<number | null>(null);
+  const [printingIncomeExpenseMonth, setPrintingIncomeExpenseMonth] = useState<number | null>(null);
 
   useEffect(() => {
     const storedRate = window.localStorage.getItem(TAX_RATE_STORAGE_KEY);
@@ -853,6 +855,128 @@ export default function TaxSubmissionReportPage() {
     [openExpensePrintPreview],
   );
 
+  const openIncomeExpensePrintPreview = useCallback(
+    async (items: IncomeExpenseItem[], monthName: string) => {
+      const viewerWindow = window.open('', '_blank');
+      if (!viewerWindow) {
+        toast.error('ไม่สามารถเปิด PDF Viewer ได้ กรุณาอนุญาต Pop-up');
+        return;
+      }
+
+      viewerWindow.document.write(
+        `<!doctype html><html lang="th"><head><meta charset="UTF-8"/><title>กำลังสร้าง PDF...</title><style>body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#e5e7eb;background:#111827;flex-direction:column;gap:12px}.spinner{width:40px;height:40px;border:3px solid #374151;border-top-color:#60a5fa;border-radius:50%;animation:spin 0.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div>กำลังสร้างเอกสาร PDF...</div></body></html>`,
+      );
+      viewerWindow.document.close();
+
+      try {
+        const res = await fetch('/api/tax-submission-report/income-expense-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items,
+            monthName,
+            buddhistYear: selectedYear + 543,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Server error ${res.status}`);
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        viewerWindow.document.open();
+        viewerWindow.document.write(`
+          <!doctype html>
+          <html lang="th">
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>PDF Viewer - ใบสรุปยอดรับ-จ่าย</title>
+              <style>
+                html, body { margin:0; padding:0; height:100%; background:#111827; }
+                .viewer-wrap { height:100%; display:flex; flex-direction:column; }
+                .toolbar {
+                  height:44px; background:#1f2937; color:#fff;
+                  display:flex; align-items:center; justify-content:space-between;
+                  padding:0 12px; font-family:Arial,sans-serif; font-size:13px;
+                }
+                .toolbar a {
+                  color:#fff; text-decoration:none;
+                  border:1px solid rgba(255,255,255,0.35);
+                  border-radius:6px; padding:6px 10px; margin-left:8px;
+                }
+                iframe { width:100%; height:calc(100% - 44px); border:none; background:#374151; }
+              </style>
+            </head>
+            <body>
+              <div class="viewer-wrap">
+                <div class="toolbar">
+                  <div>PDF Viewer: ใบสรุปยอดรับ-จ่าย</div>
+                  <div>
+                    <a href="${url}" download="income-expense-statement.pdf">Download</a>
+                    <a href="${url}" target="_blank">Open Native Viewer</a>
+                  </div>
+                </div>
+                <iframe src="${url}#toolbar=1&navpanes=1&scrollbar=1" title="PDF Viewer"></iframe>
+              </div>
+            </body>
+          </html>
+        `);
+        viewerWindow.document.close();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown PDF error';
+        const safeErrorMessage = errorMessage
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+        viewerWindow.document.open();
+        viewerWindow.document.write(`
+          <!doctype html>
+          <html lang="th">
+            <head><meta charset="UTF-8" /><title>PDF Error</title></head>
+            <body style="font-family:Arial,sans-serif;padding:24px;">
+              <h2>สร้าง PDF ไม่สำเร็จ</h2>
+              <p>${safeErrorMessage}</p>
+            </body>
+          </html>
+        `);
+        viewerWindow.document.close();
+        toast.error(`สร้าง PDF ไม่สำเร็จ: ${errorMessage}`);
+      }
+    },
+    [selectedYear],
+  );
+
+  const handlePrintMonthIncomeExpense = useCallback(
+    async (month: number, monthName: string) => {
+      setPrintingIncomeExpenseMonth(month);
+      try {
+        const response = await taxSubmissionReportApi.getMonthlyDetails(
+          selectedYear,
+          month,
+          'income-expense-total',
+          taxRate,
+        );
+        const items = (response.data || []) as IncomeExpenseItem[];
+        if (items.length === 0) {
+          toast.error('ไม่พบรายการรับ/จ่ายของเดือนนี้');
+          return;
+        }
+        await openIncomeExpensePrintPreview(items, monthName);
+      } catch (error) {
+        toast.error('ไม่สามารถสร้างเอกสาร PDF ได้');
+      } finally {
+        setPrintingIncomeExpenseMonth(null);
+      }
+    },
+    [openIncomeExpensePrintPreview, selectedYear, taxRate],
+  );
+
   return (
     <Container>
       <div className="space-y-6">
@@ -1112,19 +1236,40 @@ export default function TaxSubmissionReportPage() {
                           : 'text-red-600'
                       }`}
                     >
-                      <span
-                        className="cursor-pointer underline decoration-dotted"
-                        onClick={() =>
-                          handleCellClick(
-                            month.month,
-                            month.monthName,
-                            'income-expense-total',
-                            'รวมรับ/จ่าย',
-                          )
-                        }
-                      >
-                        {formatCurrency(month.incomeExpenseTotal)}
-                      </span>
+                      <div className="flex items-center justify-end gap-2">
+                        <span
+                          className="cursor-pointer underline decoration-dotted"
+                          onClick={() =>
+                            handleCellClick(
+                              month.month,
+                              month.monthName,
+                              'income-expense-total',
+                              'รวมรับ/จ่าย',
+                            )
+                          }
+                        >
+                          {formatCurrency(month.incomeExpenseTotal)}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          disabled={printingIncomeExpenseMonth === month.month}
+                          className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
+                          onClick={() =>
+                            handlePrintMonthIncomeExpense(
+                              month.month,
+                              month.monthName,
+                            )
+                          }
+                        >
+                          {printingIncomeExpenseMonth === month.month ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Printer className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

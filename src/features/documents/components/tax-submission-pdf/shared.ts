@@ -75,6 +75,18 @@ export interface ExpenseItem {
   amount: number;
 }
 
+export interface IncomeExpenseItem {
+  id: string;
+  type: 'income' | 'expense';
+  source?: string;
+  date?: string | Date | null;
+  loanNumber?: string;
+  customerName?: string;
+  docNumber?: string;
+  title?: string;
+  amount: number;
+}
+
 // formatCurrency is now in ../../utils and re-exported above
 
 export const formatDateOrDash = (value?: string | Date | null) => {
