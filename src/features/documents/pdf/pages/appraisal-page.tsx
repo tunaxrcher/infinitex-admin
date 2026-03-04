@@ -13,7 +13,7 @@ import {
   resolvePropertyType,
   TaxFeeLoanItem,
   toThaiBahtText,
-} from './shared';
+} from '../shared';
 
 // ── design tokens ─────────────────────────────────────────────────────────
 const C = {

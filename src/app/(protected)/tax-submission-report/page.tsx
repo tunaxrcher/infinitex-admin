@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { taxSubmissionReportApi } from '@src/features/documents/api';
-import { type TaxFeeLoanItem } from '@src/features/documents/components/tax-submission-package-pdf';
-import { type ExpenseItem } from '@src/features/documents/components/expense-receipt-pdf';
-import { type IncomeExpenseItem } from '@src/features/documents/components/income-expense-pdf';
 import { useGetTaxSubmissionReport } from '@src/features/documents/hooks';
+import {
+  type ExpenseItem,
+  type IncomeExpenseItem,
+  type TaxFeeLoanItem,
+} from '@src/features/documents/pdf';
 // formatCurrency นำเข้าจาก shared utils
 import { formatCurrency } from '@src/features/documents/utils';
 import { format } from 'date-fns';
@@ -485,8 +487,12 @@ export default function TaxSubmissionReportPage() {
   const [modalType, setModalType] = useState<DetailType>('loan-open');
   const [modalLoading, setModalLoading] = useState(false);
   const [printingMonth, setPrintingMonth] = useState<number | null>(null);
-  const [printingExpenseMonth, setPrintingExpenseMonth] = useState<number | null>(null);
-  const [printingIncomeExpenseMonth, setPrintingIncomeExpenseMonth] = useState<number | null>(null);
+  const [printingExpenseMonth, setPrintingExpenseMonth] = useState<
+    number | null
+  >(null);
+  const [printingIncomeExpenseMonth, setPrintingIncomeExpenseMonth] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     const storedRate = window.localStorage.getItem(TAX_RATE_STORAGE_KEY);
@@ -869,15 +875,18 @@ export default function TaxSubmissionReportPage() {
       viewerWindow.document.close();
 
       try {
-        const res = await fetch('/api/tax-submission-report/income-expense-pdf', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items,
-            monthName,
-            buddhistYear: selectedYear + 543,
-          }),
-        });
+        const res = await fetch(
+          '/api/tax-submission-report/income-expense-pdf',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items,
+              monthName,
+              buddhistYear: selectedYear + 543,
+            }),
+          },
+        );
 
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));

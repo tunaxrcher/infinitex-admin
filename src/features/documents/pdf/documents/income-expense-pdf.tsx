@@ -1,8 +1,8 @@
 import { Document as PdfDocument } from '@react-pdf/renderer';
-import { IncomeExpensePage } from './tax-submission-pdf/income-expense-page';
-import type { IncomeExpenseItem } from './tax-submission-pdf/shared';
+import { IncomeExpensePage } from '../pages/income-expense-page';
+import type { IncomeExpenseItem } from '../shared';
 
-export type { IncomeExpenseItem } from './tax-submission-pdf/shared';
+export type { IncomeExpenseItem } from '../shared';
 
 export function IncomeExpensePdf({
   items,

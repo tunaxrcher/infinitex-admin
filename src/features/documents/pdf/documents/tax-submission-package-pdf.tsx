@@ -1,10 +1,10 @@
 import { Document as PdfDocument } from '@react-pdf/renderer';
-import { AppraisalPage } from './tax-submission-pdf/appraisal-page';
-import { CloseCasePage } from './tax-submission-pdf/close-case-page';
-import { ReceiptPage } from './tax-submission-pdf/receipt-page';
-import { TaxFeeLoanItem } from './tax-submission-pdf/shared';
+import { AppraisalPage } from '../pages/appraisal-page';
+import { CloseCasePage } from '../pages/close-case-page';
+import { ReceiptPage } from '../pages/receipt-page';
+import { TaxFeeLoanItem } from '../shared';
 
-export type { TaxFeeLoanItem } from './tax-submission-pdf/shared';
+export type { TaxFeeLoanItem } from '../shared';
 
 export function TaxSubmissionPackagePdf({
   loans,

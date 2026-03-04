@@ -1,8 +1,8 @@
 import { Document as PdfDocument } from '@react-pdf/renderer';
-import { ExpenseReceiptPage } from './tax-submission-pdf/expense-receipt-page';
-import type { ExpenseItem } from './tax-submission-pdf/shared';
+import { ExpenseReceiptPage } from '../pages/expense-receipt-page';
+import type { ExpenseItem } from '../shared';
 
-export type { ExpenseItem } from './tax-submission-pdf/shared';
+export type { ExpenseItem } from '../shared';
 
 export function ExpenseReceiptPdf({
   expenses,

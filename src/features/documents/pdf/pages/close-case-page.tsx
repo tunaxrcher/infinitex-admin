@@ -6,8 +6,8 @@ import {
   Polyline,
   Svg,
 } from '@react-pdf/renderer';
-import { toThaiDate } from '@src/features/documents/utils';
-import { formatCurrency, resolvePropertyType, TaxFeeLoanItem } from './shared';
+import { formatCurrency, resolvePropertyType, TaxFeeLoanItem } from '../shared';
+import { toThaiDate } from '../shared/utils';
 
 // ── design tokens ─────────────────────────────────────────────────────────
 const T = {
