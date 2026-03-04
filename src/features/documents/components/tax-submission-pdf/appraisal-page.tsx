@@ -10,6 +10,7 @@ import {
 import {
   formatCurrency,
   formatDateOrDash,
+  resolvePropertyType,
   TaxFeeLoanItem,
   toThaiBahtText,
 } from './shared';
@@ -604,7 +605,7 @@ export function AppraisalPage({
           <FieldsetBox label="ข้อมูลทรัพย์สิน" style={{ marginBottom: 8 }}>
             <KVRow
               label="ประเภททรัพย์"
-              value={deed?.landType || 'ที่ดินพร้อมสิ่งปลูกสร้าง'}
+              value={resolvePropertyType(loan.propertyType, deed?.landType, loan.loanType)}
             />
             <KVRow label="เนื้อที่" value={areaText} />
             <KVRow
@@ -1120,7 +1121,7 @@ export function AppraisalPage({
         aiValue={netValue}
         manualValue={Number(loan.totalPropertyValue || loan.propertyValue || 0)}
         loanPrincipal={Number(loan.loanPrincipal || 0)}
-        propertyType={deed?.landType || loan.propertyType || ''}
+        propertyType={resolvePropertyType(loan.propertyType, deed?.landType, loan.loanType)}
         placeText={placeText}
         valuationDate={loan.valuationDate || loan.date}
       />

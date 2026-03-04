@@ -2,7 +2,7 @@ import { StyleSheet as PdfStyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 
 // formatCurrency, toThaiDate re-exported from shared utils (ไม่มี PDF dependency)
-export { formatCurrency, toThaiDate } from '@src/features/documents/utils';
+export { formatCurrency, toThaiDate, resolvePropertyType } from '@src/features/documents/utils';
 
 export interface TaxFeeLoanItem {
   id: string;
@@ -45,6 +45,7 @@ export interface TaxFeeLoanItem {
   date?: string | null;
   installmentNumber?: number | null;
   loanStatus?: string | null;
+  loanType?: string | null;
   currentInstallment?: number;
   totalInstallments?: number;
   totalPropertyValue?: number;

@@ -28,6 +28,22 @@ const MONTHS_TH = [
 ];
 
 /** แปลง Date → "27 ก.พ. 2569" (Thai Buddhist year, abbreviated month) */
+/**
+ * แปลง loanType + landType → ชื่อประเภททรัพย์สินที่แสดงใน PDF
+ * ลำดับ: landType จากโฉนด → คำนวณจาก loanType → '-'
+ */
+export const resolvePropertyType = (
+  propertyType?: string | null,
+  landType?: string | null,
+  loanType?: string | null,
+): string => {
+  if (propertyType) return propertyType;
+  if (landType) return landType;
+  if (loanType === 'HOUSE_LAND_MORTGAGE') return 'ที่ดินพร้อมสิ่งปลูกสร้าง';
+  if (loanType) return 'ที่ดิน'; // loanType อื่นๆ ที่เกี่ยวกับที่ดิน
+  return '-';
+};
+
 export const toThaiDate = (value?: string | Date | null): string => {
   if (!value) return '-';
   try {

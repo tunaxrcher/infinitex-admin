@@ -1266,6 +1266,7 @@ export const taxSubmissionReportService = {
           customerTaxId: payment.loan?.customer?.profile?.idCardNumber || '-',
           installmentNumber: payment.installment?.installmentNumber || null,
           loanStatus: payment.loan?.status || null,
+          loanType: payment.loan?.loanType || null,
           currentInstallment: Number(payment.loan?.currentInstallment || 0),
           totalInstallments: Number(payment.loan?.totalInstallments || 0),
           paymentAmount: Number(payment.amount || 0),

@@ -7,7 +7,7 @@ import {
   Svg,
 } from '@react-pdf/renderer';
 import { toThaiDate } from '@src/features/documents/utils';
-import { formatCurrency, TaxFeeLoanItem } from './shared';
+import { formatCurrency, resolvePropertyType, TaxFeeLoanItem } from './shared';
 
 // ── design tokens ─────────────────────────────────────────────────────────
 const T = {
@@ -302,7 +302,7 @@ export function CloseCasePage({
       loan.titleDeedNumber || primaryDeed?.deedNumber || loan.loanNumber || '-',
     ],
     ['ที่ตั้ง', placeWithArea],
-    ['ประเภท', primaryDeed?.landType || loan.propertyType || '-'],
+    ['ประเภท', resolvePropertyType(loan.propertyType, primaryDeed?.landType, loan.loanType)],
     ['ค่าคอมมิชชั่น', `${ratios.feeRate.toFixed(2)}%`],
     [
       'อัตราส่วนเงินกู้',

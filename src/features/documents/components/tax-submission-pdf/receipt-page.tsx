@@ -8,6 +8,7 @@ import {
   formatCurrency,
   formatDateOrDash,
   pdfStyles,
+  resolvePropertyType,
   TaxFeeLoanItem,
   toThaiBahtText,
   wrapDocCode,
@@ -28,11 +29,11 @@ export function ReceiptPage({
   const primaryDeed =
     loan.titleDeeds?.find((deed) => deed.isPrimary) || loan.titleDeeds?.[0];
   const titleDeed = primaryDeed;
-  const propertyType = (
-    loan.propertyType ||
-    primaryDeed?.landType ||
-    ''
-  ).trim();
+  const propertyType = resolvePropertyType(
+    loan.propertyType,
+    primaryDeed?.landType,
+    loan.loanType,
+  );
   const normalizedAllPlaceNames = (loan.allPlaceNames || [])
     .map((name) =>
       String(name || '')
@@ -59,7 +60,7 @@ export function ReceiptPage({
     productListPlaceDisplay && productListPlaceDisplay !== '-'
       ? productListPlaceDisplay
       : '';
-  const displayType = (propertyType || titleDeed?.landType || 'ที่ดิน').trim();
+  const displayType = propertyType;
   const receiptItemName = [displayType, propertyLocation]
     .filter(Boolean)
     .join(' ')
