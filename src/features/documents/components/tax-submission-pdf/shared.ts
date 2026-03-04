@@ -65,6 +65,16 @@ export interface TaxFeeLoanItem {
   feeAmount: number;
 }
 
+export interface ExpenseItem {
+  id: string;
+  date?: string | null;
+  docNumber?: string | null;
+  title?: string | null;
+  cashFlowName?: string | null;
+  note?: string | null;
+  amount: number;
+}
+
 // formatCurrency is now in ../../utils and re-exported above
 
 export const formatDateOrDash = (value?: string | Date | null) => {
