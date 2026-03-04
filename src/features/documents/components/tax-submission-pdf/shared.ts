@@ -46,6 +46,11 @@ export interface TaxFeeLoanItem {
   installmentNumber?: number | null;
   loanStatus?: string | null;
   loanType?: string | null;
+  valuationResult?: {
+    estimatedValue?: number;
+    confidence?: number;
+    reasoning?: string;
+  } | null;
   currentInstallment?: number;
   totalInstallments?: number;
   totalPropertyValue?: number;

@@ -181,6 +181,7 @@ function AiAppraisalSection({
   propertyType,
   placeText,
   valuationDate,
+  aiConfidence,
 }: {
   aiValue: number;
   manualValue: number;
@@ -188,19 +189,13 @@ function AiAppraisalSection({
   propertyType: string;
   placeText: string;
   valuationDate?: string | Date | null;
+  aiConfidence?: number | null;
 }) {
-  const confidence =
-    manualValue > 0 && aiValue > 0
-      ? Math.max(
-          40,
-          Math.min(
-            99,
-            Math.round(
-              100 - (Math.abs(aiValue - manualValue) / manualValue) * 100,
-            ),
-          ),
-        )
-      : 0;
+  /**
+   * ใช้ confidence จาก AI โดยตรง (valuationResult.confidence)
+   * ถ้าไม่มีค่า AI จริง → ไม่แสดงค่าสุ่ม
+   */
+  const confidence = aiConfidence != null ? Math.min(99, Math.max(0, aiConfidence)) : 0;
   const confidenceLabel =
     confidence >= 80 ? 'สูง' : confidence >= 60 ? 'ปานกลาง' : 'ต่ำ';
   const confidenceColor =
@@ -291,19 +286,27 @@ function AiAppraisalSection({
           >
             AI ราคาประเมิน
           </PdfText>
-          <PdfText
-            style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color: '#1e1b4b',
-              lineHeight: 1.1,
-            }}
-          >
-            ฿{formatCurrency(aiValue)}
-          </PdfText>
-          <PdfText style={{ fontSize: 6.5, color: T.muted, marginTop: 1 }}>
-            {toThaiBahtText(aiValue)}
-          </PdfText>
+          {aiValue > 0 ? (
+            <>
+              <PdfText
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#1e1b4b',
+                  lineHeight: 1.1,
+                }}
+              >
+                ฿{formatCurrency(aiValue)}
+              </PdfText>
+              <PdfText style={{ fontSize: 6.5, color: T.muted, marginTop: 1 }}>
+                {toThaiBahtText(aiValue)}
+              </PdfText>
+            </>
+          ) : (
+            <PdfText style={{ fontSize: 8.5, color: T.muted, marginTop: 2 }}>
+              ยังไม่มีข้อมูล (AI ยังไม่ได้ประเมิน)
+            </PdfText>
+          )}
           {manualValue > 0 && (
             <PdfView
               style={{
@@ -1117,13 +1120,18 @@ export function AppraisalPage({
       </PdfView>
 
       {/* ── AI SECTION (full-width, compact) ── */}
+      {/* ใช้ข้อมูลจาก valuationResult โดยตรง:
+          - estimatedValue: ราคาที่ AI ประเมิน
+          - confidence: ความเชื่อมั่นที่ AI ให้มา (0-100)
+          ถ้ายังไม่มี valuationResult แสดงว่า AI ยังไม่ได้ประเมิน */}
       <AiAppraisalSection
-        aiValue={netValue}
+        aiValue={Number(loan.valuationResult?.estimatedValue || loan.estimatedValue || 0)}
         manualValue={Number(loan.totalPropertyValue || loan.propertyValue || 0)}
         loanPrincipal={Number(loan.loanPrincipal || 0)}
         propertyType={resolvePropertyType(loan.propertyType, deed?.landType, loan.loanType)}
         placeText={placeText}
         valuationDate={loan.valuationDate || loan.date}
+        aiConfidence={loan.valuationResult?.confidence ?? null}
       />
 
       {/* ── SIGNATURE ── */}

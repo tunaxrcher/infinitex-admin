@@ -1161,6 +1161,7 @@ export const taxSubmissionReportService = {
                 totalPropertyValue: true,
                 estimatedValue: true,
                 valuationDate: true,
+                valuationResult: true,
                 requestedAmount: true,
                 approvedAmount: true,
                 maxApprovedAmount: true,
@@ -1268,6 +1269,11 @@ export const taxSubmissionReportService = {
           installmentNumber: payment.installment?.installmentNumber || null,
           loanStatus: payment.loan?.status || null,
           loanType: payment.loan?.loanType || null,
+          valuationResult: (payment.loan?.application?.valuationResult as {
+            estimatedValue?: number;
+            confidence?: number;
+            reasoning?: string;
+          } | null) || null,
           currentInstallment: Number(payment.loan?.currentInstallment || 0),
           totalInstallments: Number(payment.loan?.totalInstallments || 0),
           paymentAmount: Number(payment.amount || 0),
