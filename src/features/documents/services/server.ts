@@ -1197,7 +1197,7 @@ export const taxSubmissionReportService = {
           },
         },
       },
-      orderBy: { paidDate: 'desc' },
+      orderBy: { paidDate: 'asc' },
     });
 
     const closePayments = payments
@@ -1384,7 +1384,7 @@ export const taxSubmissionReportService = {
           lte: endDate,
         },
       },
-      orderBy: { docDate: 'desc' },
+      orderBy: { docDate: 'asc' },
     });
 
     const expenses = expenseDocs.map((doc) => ({
