@@ -183,7 +183,7 @@ export function ReceiptPage({
                 >
                   <PdfText
                     style={{
-                      fontSize: 11.5,
+                      fontSize: 9.5,
                       fontWeight: 700,
                       textAlign: 'right',
                     }}
@@ -240,9 +240,9 @@ export function ReceiptPage({
                 >
                   <PdfText
                     style={{
-                      fontSize: 8.7,
+                      fontSize: 9.5,
                       fontWeight: 700,
-                      textAlign: 'left',
+                      textAlign: 'right',
                       lineHeight: 1.1,
                     }}
                   >
@@ -300,8 +300,8 @@ export function ReceiptPage({
                 >
                   <PdfText
                     style={{
-                      fontSize: 8.7,
-                      textAlign: 'left',
+                      fontSize: 9.5,
+                      textAlign: 'right',
                       lineHeight: 1.1,
                     }}
                   >
@@ -355,7 +355,7 @@ export function ReceiptPage({
                     paddingTop: 7,
                   }}
                 >
-                  <PdfText style={{ fontSize: 11, textAlign: 'right' }}>
+                  <PdfText style={{ fontSize: 9.5, textAlign: 'right' }}>
                     {formatDateOrDash(loan.date)}
                   </PdfText>
                 </PdfView>
