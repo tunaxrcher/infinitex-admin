@@ -240,7 +240,7 @@ function DetailModal({
                       type="button"
                       variant="outline"
                       size="icon"
-                      className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
+                      className="h-8 w-8 border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
                       onClick={() => onPrintExpense?.(item as ExpenseItem)}
                     >
                       <Printer className="h-4 w-4" />
@@ -372,7 +372,7 @@ function DetailModal({
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
+                        className="h-8 w-8 "
                         onClick={() => onPrintLoan?.(item as TaxFeeLoanItem)}
                       >
                         <Printer className="h-4 w-4" />
@@ -1021,7 +1021,7 @@ export default function TaxSubmissionReportPage() {
 
             <Button
               variant="outline"
-              className="gap-2"
+              className="gap-2 gradientButton"
               onClick={() => setRateDialogOpen(true)}
             >
               <Settings2 className="h-4 w-4" />
@@ -1116,8 +1116,15 @@ export default function TaxSubmissionReportPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {monthlyData.map((month: any) => (
-                  <TableRow key={month.month}>
+                {monthlyData.map((month: any) => {
+                  const isCurrentMonth =
+                    selectedYear === currentYear &&
+                    month.month === new Date().getMonth() + 1;
+                  return (
+                  <TableRow
+                    key={month.month}
+                    className={isCurrentMonth ? 'bg-primary/5 font-semibold' : ''}
+                  >
                     <TableCell className="font-medium">
                       {month.monthName}
                     </TableCell>
@@ -1186,7 +1193,7 @@ export default function TaxSubmissionReportPage() {
                           variant="outline"
                           size="icon"
                           disabled={printingMonth === month.month}
-                          className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
+                          className="h-8 w-8"
                           onClick={() =>
                             handlePrintMonthPackage(
                               month.month,
@@ -1222,7 +1229,7 @@ export default function TaxSubmissionReportPage() {
                           variant="outline"
                           size="icon"
                           disabled={printingExpenseMonth === month.month}
-                          className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
+                          className="h-8 w-8"
                           onClick={() =>
                             handlePrintMonthExpense(
                               month.month,
@@ -1264,7 +1271,7 @@ export default function TaxSubmissionReportPage() {
                           variant="outline"
                           size="icon"
                           disabled={printingIncomeExpenseMonth === month.month}
-                          className="h-8 w-8 border-[#e5d8c7] bg-[#f7efe6] text-[#a67752] hover:bg-[#efdfcd]"
+                          className="h-8 w-8"
                           onClick={() =>
                             handlePrintMonthIncomeExpense(
                               month.month,
@@ -1281,7 +1288,8 @@ export default function TaxSubmissionReportPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
               <TableFooter>
                 <TableRow className="bg-muted/50 font-bold">
