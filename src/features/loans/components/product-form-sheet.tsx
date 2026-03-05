@@ -1134,14 +1134,28 @@ export function ProductFormSheet({
                           {phoneNumber ? (
                             <>
                               <div className="flex flex-col gap-2 md:col-span-2">
-                                <div className="text-xs text-green-600 bg-green-50 dark:bg-green-950/20 p-2 rounded border border-green-200 dark:border-green-800">
-                                  ✓ เบอร์โทร:{' '}
-                                  <span className="font-medium">
-                                    {phoneNumber}
-                                  </span>{' '}
-                                  -
-                                  ตรวจสอบความถูกต้องของข้อมูลลูกค้าได้ที่ด้านล่าง
-                                </div>
+                                {phoneNumber === '0000000000' ? (
+                                  <div className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/20 p-2 rounded border border-amber-300 dark:border-amber-800">
+                                    ⚠ เบอร์โทร:{' '}
+                                    <span className="font-medium">
+                                      {phoneNumber}
+                                    </span>{' '}
+                                    - เป็นยูสของระบบ
+                                    ไม่สามารถแก้ไขข้อมูลลูกค้าได้โดยตรง
+                                    <br />
+                                    กรุณาเปลี่ยนเบอร์โทรเป็นเบอร์อื่น
+                                    เพื่อสร้างข้อมูลลูกค้าใหม่
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-green-600 bg-green-50 dark:bg-green-950/20 p-2 rounded border border-green-200 dark:border-green-800">
+                                    ✓ เบอร์โทร:{' '}
+                                    <span className="font-medium">
+                                      {phoneNumber}
+                                    </span>{' '}
+                                    -
+                                    ตรวจสอบความถูกต้องของข้อมูลลูกค้าได้ที่ด้านล่าง
+                                  </div>
+                                )}
                               </div>
 
                               <div className="flex flex-col gap-2 md:col-span-2">

@@ -386,7 +386,8 @@ export function ReceiptPage({
           {receiptItemName}
         </PdfText>
         <PdfText style={{ width: '40%', fontSize: 12 }}>
-          - ค่านายหน้า/คอมมิชชั่น{'\n'}- ค่าธรรมเนียมบริการ{'\n'}- ค่าดำเนินการ โอน-รับโอน
+          - ค่านายหน้า/คอมมิชชั่น{'\n'}- ค่าธรรมเนียมบริการ{'\n'}- ค่าดำเนินการ
+          โอน-รับโอน
         </PdfText>
         <PdfText style={{ width: '20%', fontSize: 12, textAlign: 'right' }}>
           {formatCurrency(grand)}

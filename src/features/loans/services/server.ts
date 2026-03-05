@@ -23,6 +23,12 @@ import {
 } from '../validations';
 
 // ============================================
+// CONSTANTS
+// ============================================
+
+const PLACEHOLDER_PHONE = '0000000000';
+
+// ============================================
 // HELPER FUNCTIONS (exported for reuse)
 // ============================================
 
@@ -780,6 +786,88 @@ function transformApplicationWithoutLoan(app: any) {
 }
 
 // ============================================
+// PLACEHOLDER CUSTOMER HELPERS
+// ============================================
+
+/**
+ * Create a new customer and update loan/application relations
+ * Used when changing from placeholder customer (0000000000) to a real customer
+ * Mirrors logic from /api/loan-check/[id]/customer route
+ */
+async function createNewCustomerForLoan(
+  tx: any,
+  loanId: string,
+  existing: any,
+  data: LoanUpdateSchema,
+) {
+  const phoneNumber = data.phoneNumber!;
+
+  // Validate phone number uniqueness
+  const existingUser = await tx.user.findUnique({ where: { phoneNumber } });
+  if (existingUser) {
+    throw new Error(
+      'เบอร์โทรศัพท์นี้มีอยู่ในระบบแล้ว กรุณาใช้เบอร์อื่นหรือกดปุ่ม "สุ่มเบอร์"',
+    );
+  }
+
+  // Create new User
+  const newCustomer = await tx.user.create({
+    data: {
+      phoneNumber,
+      userType: 'CUSTOMER',
+      isActive: true,
+    },
+  });
+
+  // Build profile data
+  const profileData: any = {};
+  if (data.fullName) profileData.fullName = data.fullName;
+  if (data.email) profileData.email = data.email;
+  if (data.address) profileData.address = data.address;
+  if (data.birthDate) profileData.dateOfBirth = new Date(data.birthDate);
+  if (data.idCard) profileData.idCardNumber = data.idCard.replace(/\D/g, '');
+  if (data.idCardImage) profileData.idCardFrontImage = data.idCardImage;
+
+  // Create UserProfile
+  await tx.userProfile.create({
+    data: {
+      userId: newCustomer.id,
+      ...profileData,
+    },
+  });
+
+  // Update LoanApplication to point to new customer
+  if (existing.applicationId) {
+    await tx.loanApplication.update({
+      where: { id: existing.applicationId },
+      data: {
+        customerId: newCustomer.id,
+        ownerName: data.fullName || undefined,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  // Update Loan record to point to new customer (if exists)
+  const hasLoanRecord = await tx.loan.findUnique({ where: { id: loanId } });
+  if (hasLoanRecord) {
+    await tx.loan.update({
+      where: { id: loanId },
+      data: {
+        customerId: newCustomer.id,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  console.log(
+    `[Update] Created new customer ${newCustomer.id} (phone: ${phoneNumber}) replacing placeholder`,
+  );
+
+  return newCustomer;
+}
+
+// ============================================
 // UPDATE HELPERS
 // ============================================
 
@@ -1362,18 +1450,38 @@ export const loanService = {
         updatedLoan = await updateLoanRecord(tx, id, data, calculatedValues);
       }
 
-      // Step 2: Update customer profile
+      // Step 2 & 3: Handle customer data based on placeholder logic
       if (existing.customerId) {
-        await updateCustomerProfile(tx, existing.customerId, data);
-      }
+        const currentCustomer = await tx.user.findUnique({
+          where: { id: existing.customerId },
+        });
+        const isPlaceholderCustomer =
+          currentCustomer?.phoneNumber === PLACEHOLDER_PHONE;
 
-      // Step 3: Update phone number
-      if (existing.customerId && data.phoneNumber) {
-        await updateCustomerPhoneNumber(
-          tx,
-          existing.customerId,
-          data.phoneNumber,
-        );
+        if (isPlaceholderCustomer) {
+          if (!data.phoneNumber || data.phoneNumber === PLACEHOLDER_PHONE) {
+            // Case 1: Still placeholder phone - skip customer update
+            console.log(
+              '[Update] Skipping customer update - placeholder customer (0000000000) unchanged',
+            );
+          } else {
+            // Case 2: Changing from placeholder to real customer - create new
+            console.log(
+              `[Update] Replacing placeholder customer with new customer (phone: ${data.phoneNumber})`,
+            );
+            await createNewCustomerForLoan(tx, id, existing, data);
+          }
+        } else {
+          // Case 3: Normal customer (not placeholder) - update existing
+          await updateCustomerProfile(tx, existing.customerId, data);
+          if (data.phoneNumber) {
+            await updateCustomerPhoneNumber(
+              tx,
+              existing.customerId,
+              data.phoneNumber,
+            );
+          }
+        }
       }
 
       // Step 4: Update loan application
