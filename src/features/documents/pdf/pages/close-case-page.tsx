@@ -311,22 +311,14 @@ export function CloseCasePage({
       ),
     ],
     ['ค่าคอมมิชชั่น', `${ratios.feeRate.toFixed(2)}%`],
-    [
-      'อัตราส่วนเงินกู้',
-      ratios.ltv !== null ? `${ratios.ltv.toFixed(2)}%` : '-',
-    ],
     ['ค่าคอมสุทธิ', `฿${formatCurrency(ratios.feeAmount)}`],
     ['IRR', '-'],
-    ['IRR:', `${ratios.ytdRealized.toFixed(2)}% Lead`],
+    // ['IRR:', `${ratios.ytdRealized.toFixed(2)}% Lead`],
     [
       'ราคาประเมิน',
       totalPropValue > 0 ? `฿${formatCurrency(totalPropValue)}` : '-',
     ],
     ['ราคาขาย', `฿${formatCurrency(loan.loanPrincipal || 0)}`],
-    [
-      'วงเงินกู้',
-      approvedAmount > 0 ? `฿${formatCurrency(approvedAmount)}` : '-',
-    ],
     [
       'มูลค่าทรัพย์สินคงเหลือ',
       ratios.remainingValue > 0
@@ -457,7 +449,7 @@ export function CloseCasePage({
                 <PdfText
                   style={{ fontSize: 7.5, color: T.label, marginBottom: 4 }}
                 >
-                  วงเงิน
+                  ค่าคอมมิชชั่น
                 </PdfText>
                 <PdfText
                   style={{ fontSize: 16, fontWeight: 700, color: T.text }}
@@ -720,7 +712,7 @@ export function CloseCasePage({
               <PdfText
                 style={{ fontSize: 7.5, color: T.label, marginBottom: 2 }}
               >
-                ยอดสินเชื่อคงเหลือ
+                วงเงินธุรกรรม
               </PdfText>
               <PdfText
                 style={{
