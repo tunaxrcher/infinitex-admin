@@ -23,9 +23,9 @@ export function ReceiptPage({
   fontFamily: string;
   logoSrc?: string | null;
 }) {
-  const subtotal = Number(loan.feeAmount || 0);
-  const vat = subtotal * 0.07;
-  const grand = subtotal + vat;
+  const grand = Number(loan.feeAmount || 0);
+  const subtotal = grand / 1.07;
+  const vat = grand - subtotal;
   const primaryDeed =
     loan.titleDeeds?.find((deed) => deed.isPrimary) || loan.titleDeeds?.[0];
   const titleDeed = primaryDeed;
@@ -389,7 +389,7 @@ export function ReceiptPage({
           - ค่านายหน้า/คอมมิชชั่น{'\n'}- ค่าดำเนินการ โอน-รับโอน
         </PdfText>
         <PdfText style={{ width: '20%', fontSize: 12, textAlign: 'right' }}>
-          {formatCurrency(subtotal)}
+          {formatCurrency(grand)}
         </PdfText>
       </PdfView>
       <PdfView

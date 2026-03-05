@@ -1120,173 +1120,177 @@ export default function TaxSubmissionReportPage() {
                     selectedYear === currentYear &&
                     month.month === new Date().getMonth() + 1;
                   return (
-                  <TableRow
-                    key={month.month}
-                    className={isCurrentMonth ? 'bg-primary/5 font-semibold' : ''}
-                  >
-                    <TableCell className="font-medium">
-                      {month.monthName}
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      <span
-                        className="cursor-pointer underline decoration-dotted hover:text-primary"
-                        onClick={() =>
-                          handleCellClick(
-                            month.month,
-                            month.monthName,
-                            'loan-open',
-                            'ยอดเปิดสินเชื่อ',
-                          )
-                        }
-                      >
-                        {formatCurrency(month.loanOpenAmount)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      <span
-                        className="cursor-pointer underline decoration-dotted hover:text-primary"
-                        onClick={() =>
-                          handleCellClick(
-                            month.month,
-                            month.monthName,
-                            'loan-total',
-                            'ยอดรวมสินเชื่อ',
-                          )
-                        }
-                      >
-                        {formatCurrency(month.loanTotalAmount)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      <span
-                        className="cursor-pointer underline decoration-dotted hover:text-primary"
-                        onClick={() =>
-                          handleCellClick(
-                            month.month,
-                            month.monthName,
-                            'close-payment',
-                            'ชำระปิดบัญชี',
-                          )
-                        }
-                      >
-                        {formatCurrency(month.closeAccountPayment)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-green-600">
-                      <div className="flex items-center justify-end gap-2">
-                        <span
-                          className="cursor-pointer underline decoration-dotted hover:text-green-700"
-                          onClick={() =>
-                            handleCellClick(
-                              month.month,
-                              month.monthName,
-                              'fee-payment',
-                              'ชำระค่าธรรมเนียม',
-                            )
-                          }
-                        >
-                          {formatCurrency(month.feePayment)}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          disabled={printingMonth === month.month}
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handlePrintMonthPackage(
-                              month.month,
-                              month.monthName,
-                            )
-                          }
-                        >
-                          {printingMonth === month.month ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Printer className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-red-600">
-                      <div className="flex items-center justify-end gap-2">
-                        <span
-                          className="cursor-pointer underline decoration-dotted hover:text-red-700"
-                          onClick={() =>
-                            handleCellClick(
-                              month.month,
-                              month.monthName,
-                              'expense',
-                              'รายจ่าย',
-                            )
-                          }
-                        >
-                          {formatCurrency(month.expense)}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          disabled={printingExpenseMonth === month.month}
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handlePrintMonthExpense(
-                              month.month,
-                              month.monthName,
-                            )
-                          }
-                        >
-                          {printingExpenseMonth === month.month ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Printer className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell
-                      className={`text-right font-mono font-semibold ${
-                        (month.incomeExpenseTotal ?? 0) >= 0
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }`}
+                    <TableRow
+                      key={month.month}
+                      className={
+                        isCurrentMonth ? 'bg-primary/5 font-semibold' : ''
+                      }
                     >
-                      <div className="flex items-center justify-end gap-2">
+                      <TableCell className="font-medium">
+                        {month.monthName}
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
                         <span
-                          className="cursor-pointer underline decoration-dotted"
+                          className="cursor-pointer underline decoration-dotted hover:text-primary"
                           onClick={() =>
                             handleCellClick(
                               month.month,
                               month.monthName,
-                              'income-expense-total',
-                              'รวมรับ/จ่าย',
+                              'loan-open',
+                              'ยอดเปิดสินเชื่อ',
                             )
                           }
                         >
-                          {formatCurrency(month.incomeExpenseTotal)}
+                          {formatCurrency(month.loanOpenAmount)}
                         </span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          disabled={printingIncomeExpenseMonth === month.month}
-                          className="h-8 w-8"
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        <span
+                          className="cursor-pointer underline decoration-dotted hover:text-primary"
                           onClick={() =>
-                            handlePrintMonthIncomeExpense(
+                            handleCellClick(
                               month.month,
                               month.monthName,
+                              'loan-total',
+                              'ยอดรวมสินเชื่อ',
                             )
                           }
                         >
-                          {printingIncomeExpenseMonth === month.month ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Printer className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                          {formatCurrency(month.loanTotalAmount)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        <span
+                          className="cursor-pointer underline decoration-dotted hover:text-primary"
+                          onClick={() =>
+                            handleCellClick(
+                              month.month,
+                              month.monthName,
+                              'close-payment',
+                              'ชำระปิดบัญชี',
+                            )
+                          }
+                        >
+                          {formatCurrency(month.closeAccountPayment)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-green-600">
+                        <div className="flex items-center justify-end gap-2">
+                          <span
+                            className="cursor-pointer underline decoration-dotted hover:text-green-700"
+                            onClick={() =>
+                              handleCellClick(
+                                month.month,
+                                month.monthName,
+                                'fee-payment',
+                                'ชำระค่าธรรมเนียม',
+                              )
+                            }
+                          >
+                            {formatCurrency(month.feePayment)}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            disabled={printingMonth === month.month}
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handlePrintMonthPackage(
+                                month.month,
+                                month.monthName,
+                              )
+                            }
+                          >
+                            {printingMonth === month.month ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Printer className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-red-600">
+                        <div className="flex items-center justify-end gap-2">
+                          <span
+                            className="cursor-pointer underline decoration-dotted hover:text-red-700"
+                            onClick={() =>
+                              handleCellClick(
+                                month.month,
+                                month.monthName,
+                                'expense',
+                                'รายจ่าย',
+                              )
+                            }
+                          >
+                            {formatCurrency(month.expense)}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            disabled={printingExpenseMonth === month.month}
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handlePrintMonthExpense(
+                                month.month,
+                                month.monthName,
+                              )
+                            }
+                          >
+                            {printingExpenseMonth === month.month ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Printer className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        className={`text-right font-mono font-semibold ${
+                          (month.incomeExpenseTotal ?? 0) >= 0
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        <div className="flex items-center justify-end gap-2">
+                          <span
+                            className="cursor-pointer underline decoration-dotted"
+                            onClick={() =>
+                              handleCellClick(
+                                month.month,
+                                month.monthName,
+                                'income-expense-total',
+                                'รวมรับ/จ่าย',
+                              )
+                            }
+                          >
+                            {formatCurrency(month.incomeExpenseTotal)}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            disabled={
+                              printingIncomeExpenseMonth === month.month
+                            }
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handlePrintMonthIncomeExpense(
+                                month.month,
+                                month.monthName,
+                              )
+                            }
+                          >
+                            {printingIncomeExpenseMonth === month.month ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Printer className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
               </TableBody>
