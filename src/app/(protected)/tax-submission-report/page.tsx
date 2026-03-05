@@ -28,7 +28,6 @@ import {
   DialogTitle,
 } from '@src/shared/components/ui/dialog';
 import { Input } from '@src/shared/components/ui/input';
-import { ScrollArea } from '@src/shared/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -402,7 +401,7 @@ function DetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-6xl overflow-hidden">
+      <DialogContent className="flex max-h-[90vh] max-w-6xl flex-col overflow-hidden">
         <DialogHeader className="flex flex-col items-center gap-4 pb-4">
           <div className="flex justify-center">
             <Image
@@ -440,9 +439,9 @@ function DetailModal({
           )}
         </div>
 
-        <ScrollArea className="max-h-[calc(90vh-300px)]">
+        <div className="max-h-[calc(90vh-280px)] overflow-y-auto">
           {renderContent()}
-        </ScrollArea>
+        </div>
 
         <div className="mt-4 flex items-center justify-between border-t pt-4">
           <div className="text-sm text-gray-500">
