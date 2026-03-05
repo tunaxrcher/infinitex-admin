@@ -1,6 +1,6 @@
 // src/features/land-accounts/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { landAccountApi, landAccountReportApi } from './api';
 import {
   type AccountDepositSchema,

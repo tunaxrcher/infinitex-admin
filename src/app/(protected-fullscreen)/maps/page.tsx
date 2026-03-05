@@ -1,4 +1,4 @@
-// src/app/(fullscreen)/maps/page.tsx
+// src/app/(protected-fullscreen)/maps/page.tsx
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

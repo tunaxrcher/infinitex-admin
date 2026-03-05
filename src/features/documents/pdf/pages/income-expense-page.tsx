@@ -356,7 +356,7 @@ export function IncomeExpensePage({
                 {formatDateOrDash(item.date)}
               </PdfText>
               <PdfText style={{ width: '44%', fontSize: 10 }}>
-                {resolveIncomeDetail(item)}
+                ที่ดิน{resolveIncomeDetail(item)}
               </PdfText>
               <PdfText
                 style={{ width: '20%', fontSize: 10, textAlign: 'right' }}

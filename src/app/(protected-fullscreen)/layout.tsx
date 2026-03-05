@@ -1,4 +1,4 @@
-// src/app/(fullscreen)/layout.tsx
+// src/app/(protected-fullscreen)/layout.tsx
 'use client';
 
 import { useEffect } from 'react';

@@ -400,9 +400,9 @@ export function ReceiptPage({
           paddingBottom: 6,
         }}
       >
-        <PdfText style={{ textAlign: 'right', fontSize: 12 }}>
+        {/* <PdfText style={{ textAlign: 'right', fontSize: 12 }}>
           ค่าธรรมเนียมรวมทั้งสิ้น {formatCurrency(subtotal)} บาท
-        </PdfText>
+        </PdfText> */}
       </PdfView>
 
       <PdfView

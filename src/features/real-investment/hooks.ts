@@ -1,6 +1,6 @@
 // src/features/real-investment/hooks.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { realInvestmentApi } from './api';
 import { type InvestmentUpdateSchema } from './validations';
 
