@@ -75,7 +75,7 @@ class LandsMapsAPI {
       zenrows: {
         apiUrl: 'https://api.zenrows.com/v1/',
         options: {
-          js_render: 'true',
+          // js_render: 'true',
           premium_proxy: 'true',
           proxy_country: 'TH',
           custom_headers: 'true',
