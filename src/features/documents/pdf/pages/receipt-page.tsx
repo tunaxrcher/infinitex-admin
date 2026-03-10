@@ -76,7 +76,7 @@ export function ReceiptPage({
 
       <PdfView style={{ ...pdfStyles.rowBetween, marginTop: 20 }}>
         <PdfView>
-          <PdfText style={pdfStyles.receiptTitleTh}>ใบเสร็จรับเงิน</PdfText>
+          <PdfText style={pdfStyles.receiptTitleTh}>ใบเสร็จรับเงิน/ใบกํากับภาษี</PdfText>
           <PdfText style={pdfStyles.receiptTitleEn}>Receipt</PdfText>
         </PdfView>
         <PdfView style={{ width: '44%' }}>
