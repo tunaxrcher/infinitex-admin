@@ -751,6 +751,13 @@ model Document {
 
   note String? @db.Text
 
+  // Withholding tax (หัก ณ ที่จ่าย)
+  withholdingTax         Boolean  @default(false)
+  withholdingTaxRate     Decimal? @db.Decimal(5, 2) // เปอร์เซ็นต์ เช่น 3.00
+  withholdingTaxRecipient String? @db.VarChar(200) // ผู้รับเงิน
+  withholdingTaxAddress   String? @db.Text // ที่อยู่ผู้รับเงิน
+  withholdingTaxApprover  String? @db.VarChar(200) // ผู้อนุมัติ
+
   createdAt DateTime  @default(now()) @db.DateTime(0)
   updatedAt DateTime  @updatedAt @db.DateTime(0)
   deletedAt DateTime? @db.DateTime(0) // Soft delete 

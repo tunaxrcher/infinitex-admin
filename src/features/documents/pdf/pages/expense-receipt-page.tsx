@@ -25,7 +25,22 @@ export function ExpenseReceiptPage({
 }) {
   const subtotal = Number(expense.amount || 0);
   // const vat = subtotal * 0.07;
-  const grand = subtotal; // + vat;
+
+  // Withholding tax calculation for commission items
+  const isCommission = (expense.title || '').toLowerCase().includes('คอมมิชชั่น') || (expense.title || '').toLowerCase().includes('commission');
+  const hasWithholdingTax = expense.withholdingTax && expense.withholdingTaxRate;
+  const withholdingTaxRate = Number(expense.withholdingTaxRate || 0);
+  const withholdingTaxAmount = (isCommission && hasWithholdingTax)
+    ? subtotal * (withholdingTaxRate / 100)
+    : 0;
+  const grand = subtotal - withholdingTaxAmount;
+
+  // Signature colors
+  const C = {
+    text: '#111827',
+    muted: '#6b7280',
+    borderLight: '#e5e7eb',
+  };
 
   return (
     <PdfPage
@@ -261,14 +276,18 @@ export function ExpenseReceiptPage({
           {toThaiBahtText(grand)}
         </PdfText>
         <PdfView style={{ width: '43%' }}>
-          {/* <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
-            <PdfText>ยอดรวมก่อนภาษี (Subtotal)</PdfText>
-            <PdfText>{formatCurrency(subtotal)}</PdfText>
-          </PdfView> */}
-          {/* <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
-            <PdfText>ภาษีมูลค่าเพิ่ม 7% (VAT 7%)</PdfText>
-            <PdfText>{formatCurrency(vat)}</PdfText>
-          </PdfView> */}
+          {isCommission && hasWithholdingTax && (
+            <>
+              <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
+                <PdfText>ยอดรวมก่อนหักภาษี (Subtotal)</PdfText>
+                <PdfText>{formatCurrency(subtotal)}</PdfText>
+              </PdfView>
+              <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
+                <PdfText>หัก ณ ที่จ่าย {withholdingTaxRate}%</PdfText>
+                <PdfText>-{formatCurrency(withholdingTaxAmount)}</PdfText>
+              </PdfView>
+            </>
+          )}
           <PdfView
             style={{
               ...pdfStyles.rowBetween,
@@ -294,6 +313,58 @@ export function ExpenseReceiptPage({
         หมายเหตุ
       </PdfText>
       <PdfText style={{ marginTop: 6, color: '#6b7280' }}>-</PdfText>
+
+      {/* Approver & Recipient Signature Section */}
+      <PdfView
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          marginTop: 30,
+        }}
+      >
+        <PdfView style={{ width: '52%', flexDirection: 'row', gap: 20 }}>
+          {[
+            { title: 'อนุมัติโดย', role: 'ผู้อนุมัติ' },
+            { title: 'ลงชื่อ', role: 'ผู้รับเงิน' },
+          ].map((sig) => (
+            <PdfView key={sig.role} style={{ flex: 1, alignItems: 'center' }}>
+              <PdfText
+                style={{ fontSize: 8, color: C.muted, marginBottom: 16 }}
+              >
+                {sig.title}
+              </PdfText>
+              <PdfView
+                style={{
+                  width: '100%',
+                  borderBottomWidth: 1,
+                  borderBottomColor: C.text,
+                  borderBottomStyle: 'solid',
+                  marginBottom: 4,
+                }}
+              />
+              <PdfText style={{ fontSize: 8, color: C.muted }}>
+                (...................................)                
+              </PdfText>
+              <PdfText style={{ fontSize: 7.5, color: C.muted, marginTop: 2 }}>
+                {sig.role}
+              </PdfText>
+              <PdfView
+                style={{
+                  width: '100%',
+                  borderBottomWidth: 1,
+                  borderBottomColor: C.borderLight,
+                  borderBottomStyle: 'dashed',
+                  marginTop: 7,
+                  marginBottom: 3,
+                }}
+              />
+              <PdfText style={{ fontSize: 7.5, color: C.muted }}>
+                วันที่ ......../........../..........พ.ศ.
+              </PdfText>
+            </PdfView>
+          ))}
+        </PdfView>
+      </PdfView>
     </PdfPage>
   );
 }

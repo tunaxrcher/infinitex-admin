@@ -458,6 +458,14 @@ export const documentService = {
       note: data.note,
       filePath: data.filePath,
       username: adminName,
+      // Withholding tax
+      withholdingTax: data.withholdingTax ?? false,
+      ...(data.withholdingTax && {
+        withholdingTaxRate: data.withholdingTaxRate,
+        withholdingTaxRecipient: data.withholdingTaxRecipient,
+        withholdingTaxAddress: data.withholdingTaxAddress,
+        withholdingTaxApprover: data.withholdingTaxApprover,
+      }),
     });
 
     // Apply transaction to land account if exists
@@ -563,6 +571,22 @@ export const documentService = {
       ...(data.cashFlowName && { cashFlowName: data.cashFlowName }),
       ...(data.note !== undefined && { note: data.note }),
       ...(data.filePath !== undefined && { filePath: data.filePath }),
+      // Withholding tax
+      ...(data.withholdingTax !== undefined && {
+        withholdingTax: data.withholdingTax,
+      }),
+      ...(data.withholdingTaxRate !== undefined && {
+        withholdingTaxRate: data.withholdingTaxRate,
+      }),
+      ...(data.withholdingTaxRecipient !== undefined && {
+        withholdingTaxRecipient: data.withholdingTaxRecipient,
+      }),
+      ...(data.withholdingTaxAddress !== undefined && {
+        withholdingTaxAddress: data.withholdingTaxAddress,
+      }),
+      ...(data.withholdingTaxApprover !== undefined && {
+        withholdingTaxApprover: data.withholdingTaxApprover,
+      }),
       updatedAt: new Date(),
     });
   },
@@ -926,6 +950,14 @@ export const incomeExpenseReportService = {
         cashFlowName: doc.cashFlowName,
         amount: Number(doc.price),
         note: doc.note,
+        // Withholding tax
+        withholdingTax: doc.withholdingTax,
+        withholdingTaxRate: doc.withholdingTaxRate
+          ? Number(doc.withholdingTaxRate)
+          : null,
+        withholdingTaxRecipient: doc.withholdingTaxRecipient,
+        withholdingTaxAddress: doc.withholdingTaxAddress,
+        withholdingTaxApprover: doc.withholdingTaxApprover,
       }));
     }
 

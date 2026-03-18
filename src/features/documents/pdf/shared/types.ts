@@ -63,6 +63,12 @@ export interface ExpenseItem {
   cashFlowName?: string | null;
   note?: string | null;
   amount: number;
+  // Withholding tax (หัก ณ ที่จ่าย)
+  withholdingTax?: boolean;
+  withholdingTaxRate?: number | null;
+  withholdingTaxRecipient?: string | null;
+  withholdingTaxAddress?: string | null;
+  withholdingTaxApprover?: string | null;
 }
 
 export interface IncomeExpenseItem {

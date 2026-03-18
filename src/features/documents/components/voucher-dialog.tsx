@@ -69,6 +69,8 @@ import {
   TabsTrigger,
 } from '@src/shared/components/ui/tabs';
 import { Textarea } from '@src/shared/components/ui/textarea';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
+import { Label } from '@src/shared/components/ui/label';
 
 // ============================================
 // TYPES
@@ -88,6 +90,12 @@ const voucherFormSchema = z.object({
   price: z.number().min(0, 'จำนวนเงินต้องมากกว่าหรือเท่ากับ 0'),
   cashFlowName: z.string().min(1, 'กรุณาเลือกบัญชีบริษัท'),
   note: z.string().optional(),
+  // Withholding tax (หัก ณ ที่จ่าย)
+  withholdingTax: z.boolean().optional().default(false),
+  withholdingTaxRate: z.number().min(0).max(100).optional(),
+  withholdingTaxRecipient: z.string().optional(),
+  withholdingTaxAddress: z.string().optional(),
+  withholdingTaxApprover: z.string().optional(),
 });
 
 type VoucherFormValues = z.infer<typeof voucherFormSchema>;
@@ -103,6 +111,12 @@ interface DocumentItem {
   cashFlowName: string;
   username?: string;
   createdAt: string;
+  // Withholding tax
+  withholdingTax?: boolean;
+  withholdingTaxRate?: number;
+  withholdingTaxRecipient?: string;
+  withholdingTaxAddress?: string;
+  withholdingTaxApprover?: string;
 }
 
 // ============================================
@@ -144,8 +158,17 @@ function VoucherFormSection({
       price: 0,
       cashFlowName: '',
       note: '',
+      withholdingTax: false,
+      withholdingTaxRate: 3,
+      withholdingTaxRecipient: '',
+      withholdingTaxAddress: '',
+      withholdingTaxApprover: '',
     },
   });
+
+  const watchWithholdingTax = form.watch('withholdingTax');
+  const watchPrice = form.watch('price');
+  const watchTaxRate = form.watch('withholdingTaxRate');
 
   // Generate document number when form loads
   useEffect(() => {
@@ -171,6 +194,11 @@ function VoucherFormSection({
         price: Number(editingDoc.price),
         cashFlowName: editingDoc.cashFlowName,
         note: editingDoc.note || '',
+        withholdingTax: editingDoc.withholdingTax || false,
+        withholdingTaxRate: editingDoc.withholdingTaxRate ?? 3,
+        withholdingTaxRecipient: editingDoc.withholdingTaxRecipient || '',
+        withholdingTaxAddress: editingDoc.withholdingTaxAddress || '',
+        withholdingTaxApprover: editingDoc.withholdingTaxApprover || '',
       });
     }
   }, [editingDoc, form]);
@@ -185,6 +213,11 @@ function VoucherFormSection({
         price: 0,
         cashFlowName: '',
         note: '',
+        withholdingTax: false,
+        withholdingTaxRate: 3,
+        withholdingTaxRecipient: '',
+        withholdingTaxAddress: '',
+        withholdingTaxApprover: '',
       });
       generateDocNumberMutation.mutate(
         { docType: docType === 'RECEIPT' ? 'RECEIPT' : 'PAYMENT_VOUCHER' },
@@ -233,6 +266,11 @@ function VoucherFormSection({
             price: data.price,
             cashFlowName: data.cashFlowName,
             note: data.note,
+            withholdingTax: data.withholdingTax,
+            withholdingTaxRate: data.withholdingTax ? data.withholdingTaxRate : null,
+            withholdingTaxRecipient: data.withholdingTax ? data.withholdingTaxRecipient : null,
+            withholdingTaxAddress: data.withholdingTax ? data.withholdingTaxAddress : null,
+            withholdingTaxApprover: data.withholdingTax ? data.withholdingTaxApprover : null,
           },
         },
         {
@@ -247,6 +285,11 @@ function VoucherFormSection({
               price: 0,
               cashFlowName: '',
               note: '',
+              withholdingTax: false,
+              withholdingTaxRate: 3,
+              withholdingTaxRecipient: '',
+              withholdingTaxAddress: '',
+              withholdingTaxApprover: '',
             });
             generateDocNumberMutation.mutate(
               {
@@ -271,6 +314,11 @@ function VoucherFormSection({
           price: data.price,
           cashFlowName: data.cashFlowName,
           note: data.note,
+          withholdingTax: data.withholdingTax,
+          withholdingTaxRate: data.withholdingTax ? data.withholdingTaxRate : undefined,
+          withholdingTaxRecipient: data.withholdingTax ? data.withholdingTaxRecipient : undefined,
+          withholdingTaxAddress: data.withholdingTax ? data.withholdingTaxAddress : undefined,
+          withholdingTaxApprover: data.withholdingTax ? data.withholdingTaxApprover : undefined,
         },
         {
           onSuccess: () => {
@@ -283,6 +331,11 @@ function VoucherFormSection({
               price: 0,
               cashFlowName: '',
               note: '',
+              withholdingTax: false,
+              withholdingTaxRate: 3,
+              withholdingTaxRecipient: '',
+              withholdingTaxAddress: '',
+              withholdingTaxApprover: '',
             });
             generateDocNumberMutation.mutate(
               {
@@ -435,6 +488,119 @@ function VoucherFormSection({
           )}
         />
 
+        {/* Withholding Tax Section */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="withholdingTax"
+              checked={watchWithholdingTax}
+              onCheckedChange={(checked) => {
+                form.setValue('withholdingTax', checked === true);
+                if (!checked) {
+                  form.setValue('withholdingTaxRate', 3);
+                  form.setValue('withholdingTaxRecipient', '');
+                  form.setValue('withholdingTaxAddress', '');
+                  form.setValue('withholdingTaxApprover', '');
+                }
+              }}
+            />
+            <Label htmlFor="withholdingTax" className="cursor-pointer font-medium">
+              หัก ณ ที่จ่าย
+            </Label>
+          </div>
+
+          {watchWithholdingTax && (
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Tax Rate */}
+                <FormField
+                  control={form.control}
+                  name="withholdingTaxRate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>อัตราภาษี (%)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="3"
+                          {...field}
+                          value={field.value ?? 3}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Tax Amount Preview */}
+                <div className="space-y-2">
+                  <FormLabel>จำนวนภาษีหัก ณ ที่จ่าย</FormLabel>
+                  <div className="flex items-center h-9 px-3 rounded-md border bg-muted text-sm font-mono">
+                    {((watchPrice || 0) * ((watchTaxRate || 0) / 100)).toLocaleString('th-TH', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}{' '}
+                    บาท
+                  </div>
+                </div>
+              </div>
+
+              {/* Recipient Name */}
+              <FormField
+                control={form.control}
+                name="withholdingTaxRecipient"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ชื่อผู้รับเงิน</FormLabel>
+                    <FormControl>
+                      <Input placeholder="ชื่อ-นามสกุล ผู้รับเงิน" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Recipient Address */}
+              <FormField
+                control={form.control}
+                name="withholdingTaxAddress"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ที่อยู่ผู้รับเงิน</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="ที่อยู่ผู้รับเงิน (ถ้ามี)"
+                        {...field}
+                        rows={2}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Approver */}
+              <FormField
+                control={form.control}
+                name="withholdingTaxApprover"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ผู้อนุมัติ</FormLabel>
+                    <FormControl>
+                      <Input placeholder="ชื่อผู้อนุมัติ (ถ้ามี)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+        </div>
+
         {/* File Upload */}
         <div className="space-y-2">
           <FormLabel>อัพโหลดไฟล์</FormLabel>
@@ -489,6 +655,11 @@ function VoucherFormSection({
                   price: 0,
                   cashFlowName: '',
                   note: '',
+                  withholdingTax: false,
+                  withholdingTaxRate: 3,
+                  withholdingTaxRecipient: '',
+                  withholdingTaxAddress: '',
+                  withholdingTaxApprover: '',
                 });
                 generateDocNumberMutation.mutate(
                   {

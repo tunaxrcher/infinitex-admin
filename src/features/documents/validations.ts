@@ -33,6 +33,12 @@ export const documentCreateSchema = z.object({
   cashFlowName: z.string().min(1, 'กรุณาเลือกบัญชีบริษัท'),
   note: z.string().optional(),
   filePath: z.string().optional(),
+  // Withholding tax (หัก ณ ที่จ่าย)
+  withholdingTax: z.boolean().optional().default(false),
+  withholdingTaxRate: z.number().min(0).max(100).optional(),
+  withholdingTaxRecipient: z.string().optional(),
+  withholdingTaxAddress: z.string().optional(),
+  withholdingTaxApprover: z.string().optional(),
 });
 
 export type DocumentCreateSchema = z.infer<typeof documentCreateSchema>;
@@ -44,6 +50,12 @@ export const documentUpdateSchema = z.object({
   cashFlowName: z.string().optional(),
   note: z.string().optional(),
   filePath: z.string().optional(),
+  // Withholding tax (หัก ณ ที่จ่าย)
+  withholdingTax: z.boolean().optional(),
+  withholdingTaxRate: z.number().min(0).max(100).optional().nullable(),
+  withholdingTaxRecipient: z.string().optional().nullable(),
+  withholdingTaxAddress: z.string().optional().nullable(),
+  withholdingTaxApprover: z.string().optional().nullable(),
 });
 
 export type DocumentUpdateSchema = z.infer<typeof documentUpdateSchema>;
