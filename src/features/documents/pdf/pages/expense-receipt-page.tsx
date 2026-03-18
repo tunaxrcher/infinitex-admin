@@ -29,8 +29,12 @@ export function ExpenseReceiptPage({
   // Withholding tax calculation for commission items
   const isCommission = (expense.title || '').toLowerCase().includes('คอมมิชชั่น') || (expense.title || '').toLowerCase().includes('commission');
   const hasWithholdingTax = expense.withholdingTax && expense.withholdingTaxRate;
-  const withholdingTaxRate = Number(expense.withholdingTaxRate || 0);
-  const withholdingTaxAmount = (isCommission && hasWithholdingTax)
+  // For old commission records without withholding tax data, default to 3%
+  const shouldApplyWithholdingTax = isCommission && (hasWithholdingTax || !expense.withholdingTax);
+  const withholdingTaxRate = hasWithholdingTax
+    ? Number(expense.withholdingTaxRate)
+    : (isCommission ? 3 : 0);
+  const withholdingTaxAmount = shouldApplyWithholdingTax
     ? subtotal * (withholdingTaxRate / 100)
     : 0;
   const grand = subtotal - withholdingTaxAmount;
@@ -276,7 +280,7 @@ export function ExpenseReceiptPage({
           {toThaiBahtText(grand)}
         </PdfText>
         <PdfView style={{ width: '43%' }}>
-          {isCommission && hasWithholdingTax && (
+          {shouldApplyWithholdingTax && (
             <>
               <PdfView style={{ ...pdfStyles.rowBetween, paddingVertical: 3 }}>
                 <PdfText>ยอดรวมก่อนหักภาษี (Subtotal)</PdfText>
