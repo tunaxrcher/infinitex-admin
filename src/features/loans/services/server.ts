@@ -794,30 +794,13 @@ function transformApplicationWithoutLoan(app: any) {
  * Used when changing from placeholder customer (0000000000) to a real customer
  * Mirrors logic from /api/loan-check/[id]/customer route
  */
-async function createNewCustomerForLoan(
+async function createOrLinkCustomerForLoan(
   tx: any,
   loanId: string,
   existing: any,
   data: LoanUpdateSchema,
 ) {
   const phoneNumber = data.phoneNumber!;
-
-  // Validate phone number uniqueness
-  const existingUser = await tx.user.findUnique({ where: { phoneNumber } });
-  if (existingUser) {
-    throw new Error(
-      'เบอร์โทรศัพท์นี้มีอยู่ในระบบแล้ว กรุณาใช้เบอร์อื่นหรือกดปุ่ม "สุ่มเบอร์"',
-    );
-  }
-
-  // Create new User
-  const newCustomer = await tx.user.create({
-    data: {
-      phoneNumber,
-      userType: 'CUSTOMER',
-      isActive: true,
-    },
-  });
 
   // Build profile data
   const profileData: any = {};
@@ -828,43 +811,80 @@ async function createNewCustomerForLoan(
   if (data.idCard) profileData.idCardNumber = data.idCard.replace(/\D/g, '');
   if (data.idCardImage) profileData.idCardFrontImage = data.idCardImage;
 
-  // Create UserProfile
-  await tx.userProfile.create({
-    data: {
-      userId: newCustomer.id,
-      ...profileData,
-    },
+  // Check if a customer with this phone already exists
+  let customer = await tx.user.findUnique({
+    where: { phoneNumber },
+    include: { profile: true },
   });
 
-  // Update LoanApplication to point to new customer
+  if (customer) {
+    // Phone exists - link loan to existing customer and update profile
+    console.log(
+      `[Update] Linking loan to existing customer ${customer.id} (phone: ${phoneNumber})`,
+    );
+
+    // Update existing customer's profile
+    if (customer.profile) {
+      await tx.userProfile.update({
+        where: { userId: customer.id },
+        data: profileData,
+      });
+    } else {
+      await tx.userProfile.create({
+        data: {
+          userId: customer.id,
+          ...profileData,
+        },
+      });
+    }
+  } else {
+    // Phone doesn't exist - create new customer
+    customer = await tx.user.create({
+      data: {
+        phoneNumber,
+        userType: 'CUSTOMER',
+        isActive: true,
+      },
+      include: { profile: true },
+    });
+
+    await tx.userProfile.create({
+      data: {
+        userId: customer.id,
+        ...profileData,
+      },
+    });
+
+    console.log(
+      `[Update] Created new customer ${customer.id} (phone: ${phoneNumber})`,
+    );
+  }
+
+  // Update LoanApplication to point to customer
   if (existing.applicationId) {
     await tx.loanApplication.update({
       where: { id: existing.applicationId },
       data: {
-        customerId: newCustomer.id,
+        customerId: customer.id,
         ownerName: data.fullName || undefined,
         updatedAt: new Date(),
       },
     });
   }
 
-  // Update Loan record to point to new customer (if exists)
+  // Update Loan record to point to customer (if exists)
   const hasLoanRecord = await tx.loan.findUnique({ where: { id: loanId } });
   if (hasLoanRecord) {
     await tx.loan.update({
       where: { id: loanId },
       data: {
-        customerId: newCustomer.id,
+        customerId: customer.id,
         updatedAt: new Date(),
       },
     });
   }
 
-  console.log(
-    `[Update] Created new customer ${newCustomer.id} (phone: ${phoneNumber}) replacing placeholder`,
-  );
-
-  return newCustomer;
+  return customer;
 }
 
 // ============================================
@@ -1469,7 +1489,7 @@ export const loanService = {
             console.log(
               `[Update] Replacing placeholder customer with new customer (phone: ${data.phoneNumber})`,
             );
-            await createNewCustomerForLoan(tx, id, existing, data);
+            await createOrLinkCustomerForLoan(tx, id, existing, data);
           }
         } else {
           // Case 3: Normal customer (not placeholder) - update existing
