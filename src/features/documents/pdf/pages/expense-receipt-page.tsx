@@ -26,14 +26,15 @@ export function ExpenseReceiptPage({
   const subtotal = Number(expense.amount || 0);
   // const vat = subtotal * 0.07;
 
-  // Withholding tax calculation for commission items
+  // Withholding tax calculation
+  // 1) New records: use withholdingTax flag + withholdingTaxRate from DB
+  // 2) Old commission records without flag: fallback to 3%
   const isCommission = (expense.title || '').toLowerCase().includes('คอมมิชชั่น') || (expense.title || '').toLowerCase().includes('commission');
-  const hasWithholdingTax = expense.withholdingTax && expense.withholdingTaxRate;
-  // For old commission records without withholding tax data, default to 3%
-  const shouldApplyWithholdingTax = isCommission && (hasWithholdingTax || !expense.withholdingTax);
-  const withholdingTaxRate = hasWithholdingTax
-    ? Number(expense.withholdingTaxRate)
-    : (isCommission ? 3 : 0);
+  const isOldCommissionWithoutFlag = isCommission && !expense.withholdingTax;
+  const shouldApplyWithholdingTax = expense.withholdingTax || isOldCommissionWithoutFlag;
+  const withholdingTaxRate = expense.withholdingTax
+    ? Number(expense.withholdingTaxRate || 3)
+    : (isOldCommissionWithoutFlag ? 3 : 0);
   const withholdingTaxAmount = shouldApplyWithholdingTax
     ? subtotal * (withholdingTaxRate / 100)
     : 0;

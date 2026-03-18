@@ -951,13 +951,13 @@ export const incomeExpenseReportService = {
         amount: Number(doc.price),
         note: doc.note,
         // Withholding tax
-        withholdingTax: doc.withholdingTax,
-        withholdingTaxRate: doc.withholdingTaxRate
-          ? Number(doc.withholdingTaxRate)
+        withholdingTax: (doc as any).withholdingTax ?? false,
+        withholdingTaxRate: (doc as any).withholdingTaxRate
+          ? Number((doc as any).withholdingTaxRate)
           : null,
-        withholdingTaxRecipient: doc.withholdingTaxRecipient,
-        withholdingTaxAddress: doc.withholdingTaxAddress,
-        withholdingTaxApprover: doc.withholdingTaxApprover,
+        withholdingTaxRecipient: (doc as any).withholdingTaxRecipient ?? null,
+        withholdingTaxAddress: (doc as any).withholdingTaxAddress ?? null,
+        withholdingTaxApprover: (doc as any).withholdingTaxApprover ?? null,
       }));
     }
 
@@ -1428,6 +1428,14 @@ export const taxSubmissionReportService = {
       cashFlowName: doc.cashFlowName,
       note: doc.note,
       amount: Number(doc.price || 0),
+      // Withholding tax
+      withholdingTax: (doc as any).withholdingTax ?? false,
+      withholdingTaxRate: (doc as any).withholdingTaxRate
+        ? Number((doc as any).withholdingTaxRate)
+        : null,
+      withholdingTaxRecipient: (doc as any).withholdingTaxRecipient ?? null,
+      withholdingTaxAddress: (doc as any).withholdingTaxAddress ?? null,
+      withholdingTaxApprover: (doc as any).withholdingTaxApprover ?? null,
     }));
 
     if (type === 'expense') {
