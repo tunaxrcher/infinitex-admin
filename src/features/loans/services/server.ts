@@ -917,7 +917,65 @@ function calculateUpdatedLoanValues(existing: any, data: LoanUpdateSchema) {
     remainingBalance = loanAmount * (1 + interestRate / 100);
   }
 
-  return { monthlyPayment, termMonths, remainingBalance };
+  return { monthlyPayment, termMonths, remainingBalance, hasLoanChanges };
+}
+
+/**
+ * Regenerate installments when loan calculation fields change
+ */
+async function regenerateInstallments(
+  tx: any,
+  loanId: string,
+  contractDate: Date,
+  termMonths: number,
+  monthlyPayment: number,
+) {
+  // Delete existing installments (only unpaid ones to preserve payment history)
+  const unpaidCount = await tx.loanInstallment.count({
+    where: { loanId, isPaid: false },
+  });
+  const paidCount = await tx.loanInstallment.count({
+    where: { loanId, isPaid: true },
+  });
+
+  // If no paid installments, safe to delete all and regenerate
+  if (paidCount === 0) {
+    await tx.loanInstallment.deleteMany({ where: { loanId } });
+    const installmentsData = generateInstallmentsData(
+      loanId,
+      contractDate,
+      termMonths,
+      monthlyPayment,
+    );
+    await tx.loanInstallment.createMany({ data: installmentsData });
+  } else {
+    // If some are paid, only regenerate unpaid ones
+    await tx.loanInstallment.deleteMany({
+      where: { loanId, isPaid: false },
+    });
+
+    // Generate remaining installments starting after last paid
+    const remainingMonths = termMonths - paidCount;
+    if (remainingMonths > 0) {
+      const installments = [];
+      for (let i = 1; i <= remainingMonths; i++) {
+        const dueDate = new Date(contractDate);
+        dueDate.setMonth(dueDate.getMonth() + paidCount + i);
+
+        installments.push({
+          loanId,
+          installmentNumber: paidCount + i,
+          dueDate,
+          principalAmount: 0,
+          interestAmount: monthlyPayment,
+          totalAmount: monthlyPayment,
+          isPaid: false,
+          isLate: false,
+        });
+      }
+      await tx.loanInstallment.createMany({ data: installments });
+    }
+  }
 }
 
 /**
@@ -1468,6 +1526,20 @@ export const loanService = {
       // Step 1: Update Loan record (if exists)
       if (!isApplicationOnly) {
         updatedLoan = await updateLoanRecord(tx, id, data, calculatedValues);
+
+        // Step 1.5: Regenerate installments if loan calculation fields changed
+        if (calculatedValues.hasLoanChanges) {
+          const contractDate = data.loanStartDate
+            ? new Date(data.loanStartDate)
+            : new Date(existing.contractDate);
+          await regenerateInstallments(
+            tx,
+            id,
+            contractDate,
+            calculatedValues.termMonths,
+            calculatedValues.monthlyPayment,
+          );
+        }
       }
 
       // Step 2 & 3: Handle customer data based on placeholder logic
