@@ -92,6 +92,17 @@ export const documentApi = {
     }
     return response.json();
   },
+
+  getWithholdingTaxSuggestions: async () => {
+    const response = await apiFetch(
+      '/api/documents/withholding-tax-suggestions',
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'เกิดข้อผิดพลาด');
+    }
+    return response.json();
+  },
 };
 
 // ============================================

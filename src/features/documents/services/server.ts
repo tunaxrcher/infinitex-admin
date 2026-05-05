@@ -644,6 +644,42 @@ export const documentService = {
     const docNumber = `${prefix}-${yearMonth}${String(runNumber).padStart(4, '0')}`;
     return { docNumber };
   },
+
+  async getWithholdingTaxSuggestions() {
+    const docs = await prisma.document.findMany({
+      where: {
+        deletedAt: null,
+        withholdingTax: true,
+      },
+      select: {
+        withholdingTaxRecipient: true,
+        withholdingTaxAddress: true,
+        withholdingTaxApprover: true,
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    const recipientMap = new Map<string, string>();
+    const approverSet = new Set<string>();
+
+    for (const doc of docs) {
+      const name = doc.withholdingTaxRecipient?.trim();
+      if (name && !recipientMap.has(name)) {
+        recipientMap.set(name, doc.withholdingTaxAddress?.trim() || '');
+      }
+      const approver = doc.withholdingTaxApprover?.trim();
+      if (approver) approverSet.add(approver);
+    }
+
+    const recipients = Array.from(recipientMap.entries()).map(
+      ([name, address]) => ({ name, address }),
+    );
+
+    return {
+      recipients,
+      approvers: Array.from(approverSet),
+    };
+  },
 };
 
 // ============================================

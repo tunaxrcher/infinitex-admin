@@ -8,6 +8,7 @@ import {
   useDeleteDocument,
   useGenerateDocNumber,
   useGetDocumentList,
+  useGetWithholdingTaxSuggestions,
   useUpdateDocument,
 } from '@src/features/documents/hooks';
 import { useGetLandAccountList } from '@src/features/land-accounts/hooks';
@@ -71,6 +72,7 @@ import {
 import { Textarea } from '@src/shared/components/ui/textarea';
 import { Checkbox } from '@src/shared/components/ui/checkbox';
 import { Label } from '@src/shared/components/ui/label';
+import { AutocompleteInput, AutocompleteTextarea } from '@src/shared/components/ui/autocomplete-input';
 
 // ============================================
 // TYPES
@@ -140,6 +142,14 @@ function VoucherFormSection({
   const createMutation = useCreateDocument();
   const updateMutation = useUpdateDocument();
   const generateDocNumberMutation = useGenerateDocNumber();
+
+  const { data: suggestionsData } = useGetWithholdingTaxSuggestions();
+  const recipientSuggestions = suggestionsData?.data?.recipients || [];
+  const recipientNames = recipientSuggestions.map((r: { name: string }) => r.name);
+  const addressSuggestions = recipientSuggestions
+    .map((r: { address: string }) => r.address)
+    .filter(Boolean) as string[];
+  const approverSuggestions = suggestionsData?.data?.approvers || [];
 
   // Get land accounts for dropdown
   const { data: accountsData } = useGetLandAccountList({
@@ -557,7 +567,20 @@ function VoucherFormSection({
                   <FormItem>
                     <FormLabel>ชื่อผู้รับเงิน</FormLabel>
                     <FormControl>
-                      <Input placeholder="ชื่อ-นามสกุล ผู้รับเงิน" {...field} />
+                      <AutocompleteInput
+                        suggestions={recipientNames}
+                        placeholder="ชื่อ-นามสกุล ผู้รับเงิน"
+                        value={field.value}
+                        onChange={(val) => field.onChange(val)}
+                        onSelect={(name) => {
+                          const match = recipientSuggestions.find(
+                            (r: { name: string; address: string }) => r.name === name,
+                          );
+                          if (match?.address) {
+                            form.setValue('withholdingTaxAddress', match.address);
+                          }
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -572,9 +595,11 @@ function VoucherFormSection({
                   <FormItem>
                     <FormLabel>ที่อยู่ผู้รับเงิน</FormLabel>
                     <FormControl>
-                      <Textarea
+                      <AutocompleteTextarea
+                        suggestions={addressSuggestions}
                         placeholder="ที่อยู่ผู้รับเงิน (ถ้ามี)"
-                        {...field}
+                        value={field.value}
+                        onChange={(val) => field.onChange(val)}
                         rows={2}
                       />
                     </FormControl>
@@ -591,7 +616,12 @@ function VoucherFormSection({
                   <FormItem>
                     <FormLabel>ผู้อนุมัติ</FormLabel>
                     <FormControl>
-                      <Input placeholder="ชื่อผู้อนุมัติ (ถ้ามี)" {...field} />
+                      <AutocompleteInput
+                        suggestions={approverSuggestions}
+                        placeholder="ชื่อผู้อนุมัติ (ถ้ามี)"
+                        value={field.value}
+                        onChange={(val) => field.onChange(val)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

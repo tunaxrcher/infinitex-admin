@@ -307,6 +307,67 @@ export function ExpenseReceiptPage({
         </PdfView>
       </PdfView>
 
+      {/* Withholding Tax Person Details Box */}
+      {shouldApplyWithholdingTax && (
+        <PdfView
+          style={{
+            marginTop: 18,
+            borderWidth: 1.5,
+            borderColor: '#1d4ed8',
+            borderStyle: 'solid',
+            borderRadius: 4,
+          }}
+        >
+          <PdfView
+            style={{
+              backgroundColor: '#1d4ed8',
+              paddingVertical: 5,
+              paddingHorizontal: 10,
+            }}
+          >
+            <PdfText style={{ color: '#ffffff', fontSize: 12, fontWeight: 700 }}>
+              รายละเอียดบุคคลที่หัก ณ ที่จ่าย / Withholding Tax Details
+            </PdfText>
+          </PdfView>
+          <PdfView style={{ padding: 10 }}>
+            <PdfView style={{ flexDirection: 'row', marginBottom: 6 }}>
+              <PdfText style={{ width: '25%', fontSize: 10, color: '#6b7280' }}>
+                ชื่อผู้รับเงิน :
+              </PdfText>
+              <PdfText style={{ width: '75%', fontSize: 11, fontWeight: 700 }}>
+                {expense.withholdingTaxRecipient || '-'}
+              </PdfText>
+            </PdfView>
+            <PdfView style={{ flexDirection: 'row', marginBottom: 6 }}>
+              <PdfText style={{ width: '25%', fontSize: 10, color: '#6b7280' }}>
+                ที่อยู่ :
+              </PdfText>
+              <PdfText style={{ width: '75%', fontSize: 10 }}>
+                {expense.withholdingTaxAddress || '-'}
+              </PdfText>
+            </PdfView>
+            <PdfView style={{ flexDirection: 'row', marginBottom: 6 }}>
+              <PdfText style={{ width: '25%', fontSize: 10, color: '#6b7280' }}>
+                อัตราภาษี :
+              </PdfText>
+              <PdfText style={{ width: '75%', fontSize: 10 }}>
+                {withholdingTaxRate}% (จำนวน {formatCurrency(withholdingTaxAmount)} บาท)
+              </PdfText>
+            </PdfView>
+            {expense.withholdingTaxApprover && (
+              <PdfView style={{ flexDirection: 'row' }}>
+                <PdfText style={{ width: '25%', fontSize: 10, color: '#6b7280' }}>
+                  ผู้อนุมัติ :
+                </PdfText>
+                <PdfText style={{ width: '75%', fontSize: 10 }}>
+                  {expense.withholdingTaxApprover}
+                </PdfText>
+              </PdfView>
+            )}
+          </PdfView>
+        </PdfView>
+      )}
+
       <PdfText
         style={{
           marginTop: 20,

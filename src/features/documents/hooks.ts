@@ -142,6 +142,16 @@ export const useGenerateDocNumber = () => {
   });
 };
 
+export const useGetWithholdingTaxSuggestions = () => {
+  return useQuery({
+    queryKey: ['documents', 'withholding-tax-suggestions'] as const,
+    queryFn: () => documentApi.getWithholdingTaxSuggestions(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+};
+
 // ============================================
 // DOCUMENT TITLE LIST HOOKS
 // ============================================
