@@ -511,6 +511,7 @@ model Payment {
 
   // Payment reference
   referenceNumber String  @unique @db.VarChar(100)
+  receiptNumber   String? @db.VarChar(100) // Sequential receipt number for PDF (e.g. RV-2025050001)
   transactionId   String? @db.VarChar(100) // External transaction ID
 
   // QR/Barcode specific

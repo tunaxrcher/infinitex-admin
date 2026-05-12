@@ -73,6 +73,58 @@ function buildDocumentOrderBy(
   return { createdAt: 'desc' };
 }
 
+/**
+ * Generate the next sequential receipt number for a given YYYYMM.
+ * Format: RV-YYYYMMXXXX  (e.g. RV-2025050001)
+ * Looks at existing receiptNumber values in the payments table.
+ */
+async function generateNextReceiptNumber(paidDate: Date): Promise<string> {
+  const year = paidDate.getFullYear();
+  const month = String(paidDate.getMonth() + 1).padStart(2, '0');
+  const yearMonth = `${year}${month}`;
+  const prefix = `RV-${yearMonth}`;
+
+  const latest = await prisma.payment.findFirst({
+    where: {
+      receiptNumber: { startsWith: prefix },
+    },
+    orderBy: { receiptNumber: 'desc' },
+    select: { receiptNumber: true },
+  });
+
+  let runNumber = 1;
+  if (latest?.receiptNumber) {
+    const match = latest.receiptNumber.match(/\d{6}(\d{4})$/);
+    if (match) {
+      runNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+
+  return `${prefix}${String(runNumber).padStart(4, '0')}`;
+}
+
+/**
+ * Ensure a payment has a persistent receiptNumber.
+ * If it already has one, return it. Otherwise generate, save, and return.
+ */
+async function ensureReceiptNumber(
+  paymentId: string,
+  existingReceiptNumber: string | null | undefined,
+  paidDate: Date | null | undefined,
+): Promise<string> {
+  if (existingReceiptNumber) return existingReceiptNumber;
+
+  const date = paidDate ?? new Date();
+  const receiptNumber = await generateNextReceiptNumber(date);
+
+  await prisma.payment.update({
+    where: { id: paymentId },
+    data: { receiptNumber },
+  });
+
+  return receiptNumber;
+}
+
 function buildDocumentTitleListWhere(filters: {
   docType?: string;
   search?: string;
@@ -1282,12 +1334,18 @@ export const taxSubmissionReportService = {
         amount: Number(payment.amount || 0),
       }));
 
-    const feePayments = payments
-      .filter(
-        (payment) =>
-          payment.installmentId != null && payment.installmentId !== '',
-      )
-      .map((payment) => {
+    if (type === 'close-payment') {
+      return closePayments;
+    }
+
+    const feePayments: any[] = [];
+    if (type !== 'expense') {
+    const filteredPayments = payments.filter(
+      (payment) =>
+        payment.installmentId != null && payment.installmentId !== '',
+    );
+
+    for (const payment of filteredPayments) {
         // Follow product-list logic exactly: use titleDeeds from LoanApplication include.
         const resolvedTitleDeeds = payment.loan?.application?.titleDeeds || [];
         const primaryDeed =
@@ -1320,11 +1378,15 @@ export const taxSubmissionReportService = {
           '';
         const loanPrincipal = Number(payment.loan?.principalAmount || 0);
         const feeAmount = round2(loanPrincipal * rateDecimal);
-        return {
+        feePayments.push({
           id: payment.id,
           type: 'fee-payment',
           loanId: payment.loanId,
-          paymentRef: payment.referenceNumber,
+          paymentRef: await ensureReceiptNumber(
+            payment.id,
+            payment.receiptNumber,
+            payment.paidDate,
+          ),
           transactionId: payment.transactionId,
           date: payment.paidDate,
           loanNumber: payment.loan?.loanNumber || '-',
@@ -1416,12 +1478,9 @@ export const taxSubmissionReportService = {
           })(),
           taxRate,
           feeAmount,
-        };
-      });
-
-    if (type === 'close-payment') {
-      return closePayments;
+        });
     }
+    } // end if (type !== 'expense')
 
     if (type === 'fee-payment') {
       return feePayments;
