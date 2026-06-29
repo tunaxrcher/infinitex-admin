@@ -1,9 +1,10 @@
 /**
  * ย้อนข้อมูลสินเชื่อที่ถูกชำระ/ปิดผิดพลาด กลับไปสถานะ ACTIVE ก่อนทำรายการ
  *
- * การใช้งาน:
- *   ตรวจสอบแผน (ไม่แก้ข้อมูล):   node --env-file=.env scripts/revert-loans.mjs
- *   ลงมือแก้จริง:                APPLY=1 node --env-file=.env scripts/revert-loans.mjs
+ * การใช้งาน (รันจาก root ของโปรเจกต์):
+ *   ตรวจสอบแผน (ไม่แก้ข้อมูล):   node --env-file=.env scripts/loan-revert/revert-loans.mjs
+ *   ลงมือแก้จริง:                APPLY=1 node --env-file=.env scripts/loan-revert/revert-loans.mjs
+ *   ระบุเลขสินเชื่อเองได้:        LOANS="LOAxxx,LOAyyy" node --env-file=.env scripts/loan-revert/revert-loans.mjs
  *
  * สิ่งที่ทำต่อแต่ละสินเชื่อ:
  *   1. loan        -> status=ACTIVE, currentInstallment=0, remainingBalance=principal*(1+rate/100)
@@ -16,7 +17,9 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const APPLY = process.env.APPLY === '1';
-const LOAN_NUMBERS = ['LOA86274001428', 'LOA86326135635'];
+const LOAN_NUMBERS = process.env.LOANS
+  ? process.env.LOANS.split(',').map((s) => s.trim()).filter(Boolean)
+  : ['LOA86274001428', 'LOA86326135635'];
 
 function money(v) {
   return Number(v).toLocaleString('th-TH', { minimumFractionDigits: 2 });

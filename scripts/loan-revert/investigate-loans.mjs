@@ -2,7 +2,9 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const LOAN_NUMBERS = ['LOA86274001428', 'LOA86326135635'];
+const LOAN_NUMBERS = process.env.LOANS
+  ? process.env.LOANS.split(',').map((s) => s.trim()).filter(Boolean)
+  : ['LOA86274001428', 'LOA86326135635'];
 
 function money(v) {
   return Number(v).toLocaleString('th-TH', { minimumFractionDigits: 2 });
