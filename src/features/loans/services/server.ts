@@ -685,26 +685,56 @@ function buildLoanListWhere(
 function buildLoanListOrderBy(
   sortBy: string,
   sortOrder: 'asc' | 'desc',
-): Prisma.LoanApplicationOrderByWithRelationInput {
+): Prisma.LoanApplicationOrderByWithRelationInput[] {
   if (sortBy === 'createdAt') {
-    return { createdAt: sortOrder };
+    return [{ createdAt: sortOrder }];
   }
-  return { [sortBy]: sortOrder, createdAt: 'desc' };
+  // Multiple sort fields must be an array - Prisma rejects a single object
+  // holding more than one field
+  return [{ [sortBy]: sortOrder }, { createdAt: 'desc' }];
+}
+
+type OverdueSummary = {
+  count: number;
+  oldestDueDate: Date | null;
+};
+
+/**
+ * Get overdue installment count + oldest due date for many loans at once
+ */
+async function getOverdueSummaries(
+  loanIds: string[],
+): Promise<Map<string, OverdueSummary>> {
+  if (loanIds.length === 0) return new Map();
+
+  const groups = await prisma.loanInstallment.groupBy({
+    by: ['loanId'],
+    where: {
+      loanId: { in: loanIds },
+      isPaid: false,
+      dueDate: { lt: new Date() },
+    },
+    _count: { _all: true },
+    _min: { dueDate: true },
+  });
+
+  return new Map(
+    groups.map((group) => [
+      group.loanId,
+      {
+        count: group._count._all,
+        oldestDueDate: group._min.dueDate ?? null,
+      },
+    ]),
+  );
 }
 
 /**
  * Transform application with loan to unified format
  * Updated: Include titleDeeds and deedMode
  */
-async function transformApplicationWithLoan(app: any) {
-  const overdueInstallments = await prisma.loanInstallment.findMany({
-    where: {
-      loanId: app.loan.id,
-      isPaid: false,
-      dueDate: { lt: new Date() },
-    },
-    orderBy: { dueDate: 'asc' },
-  });
+function transformApplicationWithLoan(app: any, overdue?: OverdueSummary) {
+  const overdueCount = overdue?.count ?? 0;
 
   // Get primary title deed for backward compatibility
   const primaryDeed =
@@ -714,10 +744,10 @@ async function transformApplicationWithLoan(app: any) {
     ...app.loan,
     application: app,
     customer: app.customer,
-    hasOverdueInstallments: overdueInstallments.length > 0,
-    overdueCount: overdueInstallments.length,
-    oldestOverdueDate: overdueInstallments[0]?.dueDate || null,
-    // Include valuation fields from application
+    hasOverdueInstallments: overdueCount > 0,
+    overdueCount,
+    oldestOverdueDate: overdue?.oldestDueDate || null,
+    // valuationResult is not selected by the list query - use getById for it
     valuationResult: app.valuationResult || null,
     valuationDate: app.valuationDate || null,
     estimatedValue: app.estimatedValue || null,
@@ -775,7 +805,7 @@ function transformApplicationWithoutLoan(app: any) {
     hasOverdueInstallments: false,
     overdueCount: 0,
     oldestOverdueDate: null,
-    // Include valuation fields from application
+    // valuationResult is not selected by the list query - use getById for it
     valuationResult: app.valuationResult || null,
     valuationDate: app.valuationDate || null,
     estimatedValue: app.estimatedValue || null,
@@ -1262,44 +1292,91 @@ export const loanService = {
     const orderBy = buildLoanListOrderBy(sortBy, sortOrder);
     const skip = (page - 1) * limit;
 
-    // Query applications with pagination - include titleDeeds
-    const [applications, total] = await Promise.all([
+    const meta = (total: number) => ({
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    });
+
+    // Sort/paginate on ids only. Sorting the full rows makes MySQL filesort the
+    // JSON/TEXT columns of loan_applications, whose max packed length exceeds
+    // sort_buffer_size ("Out of sort memory", MySQL error 1038) at any page size.
+    const [pageRows, total] = await Promise.all([
       prisma.loanApplication.findMany({
         where,
         skip,
         take: limit,
         orderBy,
-        include: {
-          customer: { include: { profile: true } },
-          agent: true,
-          titleDeeds: { orderBy: { sortOrder: 'asc' } },
-          loan: {
-            include: {
-              installments: { orderBy: { installmentNumber: 'asc' }, take: 1 },
-            },
-          },
-        },
+        select: { id: true },
       }),
       prisma.loanApplication.count({ where }),
     ]);
 
-    // Transform to unified format
-    const transformedData = await Promise.all(
-      applications.map((app) =>
-        app.loan
-          ? transformApplicationWithLoan(app)
-          : transformApplicationWithoutLoan(app),
-      ),
+    const ids = pageRows.map((row) => row.id);
+    if (ids.length === 0) {
+      return { data: [], meta: meta(total) };
+    }
+
+    // Fetch the page rows without ORDER BY - ordering is restored below.
+    // supportingImages/valuationResult are omitted because the list UI never
+    // reads them while they make up most of the response size
+    const applications = await prisma.loanApplication.findMany({
+      where: { id: { in: ids } },
+      omit: { supportingImages: true, valuationResult: true },
+      include: {
+        customer: { include: { profile: true } },
+        agent: true,
+        titleDeeds: true,
+        loan: true,
+      },
+    });
+
+    const loanIds = applications
+      .map((app) => app.loan?.id)
+      .filter((id): id is string => Boolean(id));
+
+    // First installment is always number 1, so it can be fetched by its unique
+    // key instead of ordering loan_installments (same sort memory issue)
+    const [firstInstallments, overdueSummaries] = await Promise.all([
+      loanIds.length > 0
+        ? prisma.loanInstallment.findMany({
+            where: { loanId: { in: loanIds }, installmentNumber: 1 },
+          })
+        : Promise.resolve([]),
+      getOverdueSummaries(loanIds),
+    ]);
+
+    const firstInstallmentByLoanId = new Map(
+      firstInstallments.map((installment) => [installment.loanId, installment]),
     );
+
+    const applicationById = new Map(applications.map((app) => [app.id, app]));
+
+    // Transform to unified format
+    const transformedData = ids
+      .map((id) => applicationById.get(id))
+      .filter((app): app is NonNullable<typeof app> => Boolean(app))
+      .map((app) => {
+        app.titleDeeds.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+        if (!app.loan) return transformApplicationWithoutLoan(app);
+
+        const firstInstallment = firstInstallmentByLoanId.get(app.loan.id);
+        const loanWithInstallments = {
+          ...app.loan,
+          installments: firstInstallment ? [firstInstallment] : [],
+        };
+
+        return transformApplicationWithLoan(
+          { ...app, loan: loanWithInstallments },
+          overdueSummaries.get(app.loan.id),
+        );
+      });
 
     return {
       data: transformedData,
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
+      meta: meta(total),
     };
   },
 
